@@ -1,40 +1,50 @@
-name: Deploy to AWS S3
+name: Deploy Vite React App to GitHub Pages
+
 on:
   push:
     branches:
       - staging
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
-    env:
-      CI: false # Set CI to false to prevent warnings from being treated as errors
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: NodeJS Setup
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: "https://npm.pkg.github.com" # GitHub Packages URL
-          scope: "@bmesol" # Replace with your GitHub organization or user scope
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PAT_GITHUB }} # Using GITHUB_TOKEN for GitHub Package
+          cache: npm
 
-      - name: NPM Install
+      - name: Install dependencies
         run: npm install
 
-      - name: NPM Build
+      - name: Build
         run: npm run build
 
-      - name: Config AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+          path: dist
 
-      - name: Deploy to AWS S3
-        run: aws s3 sync build s3://workinsite-frontend --delete
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
