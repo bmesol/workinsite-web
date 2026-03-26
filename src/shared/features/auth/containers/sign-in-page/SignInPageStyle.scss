@@ -1,0 +1,17 @@
+@media (min-width: 0px) and (max-width: 767px) {
+  .signin-page-bg {
+    height: 40vh;
+    background: linear-gradient(to left top, white 50%, var(--primary) 50%);
+  }
+
+}
+
+@media (min-width: 768px) {
+  .signin-page-bg {
+    height: 100vh !important;
+    background: linear-gradient( to left top, white 50%, var(--primary) 50%);
+    background-size: 50%;
+    background-repeat: no-repeat;
+  }
+}
+
