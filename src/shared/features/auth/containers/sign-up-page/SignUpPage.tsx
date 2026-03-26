@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
 } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
