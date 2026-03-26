@@ -1,4 +1,3 @@
-import React from 'react';
 import '@/shared/components/footer/Footer.scss'
 
 export const Footer = () => {

@@ -1,5 +1,4 @@
-import { Footer } from '@/shared/components/footer/Footer';
-import { Navbar } from '@/shared/components/navbar/Navbar';
+
 
 export const SiteListPage = () => {
   return (
