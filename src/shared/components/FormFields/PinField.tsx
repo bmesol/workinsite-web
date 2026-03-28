@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from "react";
 import { FormInput } from "../FormInput/FormInput";
 import type { InputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
@@ -8,27 +9,81 @@ const PinField = (props: InputPropTypes) => {
   const { label, errorMessage, className, isDisabled, required = false } = props;
   const { inputValue, handleInputChange } = useInputField(props);
 
+  const [digits, setDigits] = useState<string[]>(() => {
+    const chars = (inputValue || "").split("").slice(0, 4);
+    return [...chars, ...Array(4 - chars.length).fill("")];
+  });
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    handleInputChange(digits.join(""));
+  }, [digits]);
+
+  const updateDigit = (index: number, value: string) => {
+    if (!/^\d?$/.test(value)) return;
+    const next = [...digits];
+    next[index] = value;
+    setDigits(next);
+    if (value && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace") {
+      if (digits[index]) {
+        const next = [...digits];
+        next[index] = "";
+        setDigits(next);
+      } else if (index > 0) {
+        inputRefs.current[index - 1]?.focus();
+        const next = [...digits];
+        next[index - 1] = "";
+        setDigits(next);
+      }
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 4);
+    if (!pasted) return;
+    const next = [...digits];
+    pasted.split("").forEach((char, i) => { next[i] = char; });
+    setDigits(next);
+    const lastFilled = Math.min(pasted.length, 3);
+    inputRefs.current[lastFilled]?.focus();
+  };
+
   return (
     <FormInput errorMessage={errorMessage} className={className}>
-      <Label className="mb-1">
-        {label || "Pin"}
+      <Label className="mb-1 text-base">
+        {label || "PIN"}
         {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
-      <Input
-        type="password"
-        maxLength={4}
-        value={inputValue}
-        onChange={(e) => {
-          const val = e.target.value;
-          if (/^\d*$/.test(val) && val.length <= 4) {
-            handleInputChange(val);
-          }
-        }}
-        disabled={isDisabled}
-        required={required}
-        placeholder="••••"
-        className="w-full tracking-widest text-center text-lg"
-      />
+      <div className="flex gap-6 w-full">
+        {digits.map((digit, index) => (
+          <Input
+            key={index}
+            ref={(el) => { inputRefs.current[index] = el; }}
+            type="password"
+            inputMode="numeric"
+            maxLength={1}
+            value={digit}
+            disabled={isDisabled}
+            onChange={(e) => updateDigit(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={handlePaste}
+            onFocus={(e) => e.target.select()}
+            className="w-16 h-14 text-center text-lg font-semibold tracking-widest"
+          />
+        ))}
+      </div>
     </FormInput>
   );
 };

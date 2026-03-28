@@ -1,4 +1,5 @@
-import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
+// PinForm.tsx
+import { Button } from "@/shared/components/ui/button";
 import { PinField } from "../FormFields/PinField";
 
 interface PinFormProps {
@@ -15,7 +16,7 @@ const PinForm = (props: PinFormProps) => {
   const { pin, setPin, confirmPin, setConfirmPin, error, onSave, onCancel } = props;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 ">
       <PinField
         label="New Pin"
         inputValue={pin}
@@ -30,10 +31,13 @@ const PinForm = (props: PinFormProps) => {
         errorMessage={error.confirmPin}
         required={true}
       />
-      <FormSubmissionButtons
-        onSave={onSave}
-        onCancel={onCancel}
-      />
+      <Button
+        variant="default"
+        className="w-full h-11 cursor-pointer"
+        onClick={onSave}
+      >
+        Save
+      </Button>
     </div>
   );
 };

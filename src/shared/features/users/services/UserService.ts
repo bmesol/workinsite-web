@@ -1,4 +1,5 @@
 import { userApiClient } from "@/shared/services/ApiClient";
+import type { UserCreationRequest } from "../DTOs/UserCreationRequest";
 
 // DTOs
 export type ProfileUpdationRequest = {
@@ -7,11 +8,6 @@ export type ProfileUpdationRequest = {
   note: string;
 };
 
-export type UserCreationRequest = {
-  name: string;
-  phone: string;
-  pin: string;
-};
 
 export type UserUpdationRequest = {
   name: string;
