@@ -1,6 +1,12 @@
-import { useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/shared/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/shared/components/ui/dialog";
 import { Switch } from "@/shared/components/ui/switch";
 import { Label } from "@/shared/components/ui/label";
 import { Button } from "@/shared/components/ui/button";
@@ -24,9 +30,9 @@ const UserEditPage = () => {
     error,
     roles,
     role,
-    name,        
-    phoneNumber, 
-    notes, 
+    name,
+    phoneNumber,
+    notes,
     setName,
     setPhoneNumber,
     setRole,
@@ -38,7 +44,6 @@ const UserEditPage = () => {
 
   return (
     <div className="container min-h-screen px-4  pb-10">
-
       {/* ── Header ── */}
       <Header title="Edit User">
         <Actions>
@@ -76,15 +81,12 @@ const UserEditPage = () => {
               <RadioField
                 label="Role"
                 items={roles}
-               inputValue={role}
+                inputValue={role}
                 setInputValue={setRole}
               />
               <div className="flex flex-col gap-2">
                 <Label className="text-sm font-medium">Is Active</Label>
-                <Switch
-                  checked={isActive}
-                  onCheckedChange={setIsActive}
-                />
+                <Switch checked={isActive} onCheckedChange={setIsActive} />
               </div>
             </div>
 
@@ -92,7 +94,7 @@ const UserEditPage = () => {
               <Label className="text-sm font-medium">Notes</Label>
               <Textarea
                 placeholder="Enter your notes"
-                defaultValue={user.note ?? ""}
+                value={notes ?? ""}
                 onChange={(e) => setNotes(e.target.value)}
                 className="resize-none"
                 rows={4}
@@ -116,10 +118,12 @@ const UserEditPage = () => {
             <DialogTitle>Change PIN</DialogTitle>
             <DialogDescription>Please set a 4 digit number</DialogDescription>
           </DialogHeader>
-          <UserEditPinForm userId={id as string} onClose={() => setPinModalOpen(false)}/>
+          <UserEditPinForm
+            userId={id as string}
+            onClose={() => setPinModalOpen(false)}
+          />
         </DialogContent>
       </Dialog>
-
     </div>
   );
 };
