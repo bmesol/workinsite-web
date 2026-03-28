@@ -26,7 +26,6 @@ const UserEditPage = () => {
     role,
     name,        
     phoneNumber, 
-    notes, 
     setName,
     setPhoneNumber,
     setRole,

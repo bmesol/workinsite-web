@@ -16,7 +16,7 @@ const useUserEditPinForm = (userId: string, onClose: () => void) => {  // 👈 a
 
   const handleOnSave = async () => {
     if (validate()) {
-      onClose();                                               // 👈 call it here
+      onClose();                                              
       await userService.updatePin(parseInt(userId), pin);
       navigate(UsersUrls.list);
     }

@@ -1,4 +1,3 @@
-// PinForm.tsx
 import { Button } from "@/shared/components/ui/button";
 import { PinField } from "../FormFields/PinField";
 
@@ -9,11 +8,10 @@ interface PinFormProps {
   setConfirmPin: (val: string) => void;
   error: { pin: string; confirmPin: string };
   onSave: () => void;
-  onCancel: () => void;
 }
 
 const PinForm = (props: PinFormProps) => {
-  const { pin, setPin, confirmPin, setConfirmPin, error, onSave, onCancel } = props;
+  const { pin, setPin, confirmPin, setConfirmPin, error, onSave } = props;
 
   return (
     <div className="flex flex-col gap-4 ">
