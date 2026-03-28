@@ -1,10 +1,11 @@
 import { Sheet, SheetContent } from "@/shared/components/ui/sheet";
 import { useMenu } from "./useMenu";
-import { LogOut, X } from "lucide-react";
+import { LogOut, X, ChevronDown, ChevronUp } from "lucide-react";
 import { MenuItems } from "./MenuItems";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BaseUrls } from "@/shared/utils/UrlPages";
-import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper"; 
+import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
+import { useState } from "react";
 
 type SidebarProps = {
   open: boolean;
@@ -38,6 +39,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
   const { userProfile } = useMenu();
   const location = useLocation();
   const navigate = useNavigate();
+  const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
 
   const handleNavigate = (href: string) => {
     navigate(href);
@@ -47,6 +49,19 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
   const handleLogout = () => {
     AuthHelper.logout();
     onOpenChange(false);
+  };
+
+  const toggleDropdown = (href: string) => {
+    setOpenDropdowns((prev) => {
+      const isCurrentlyOpen = prev[href];
+      return isCurrentlyOpen ? {} : { [href]: true };
+    });
+  };
+
+  const isParentActive = (href: string, children?: { href: string }[]) => {
+    if (location.pathname === href) return true;
+    if (children?.some((child) => location.pathname === child.href)) return true;
+    return false;
   };
 
   return (
@@ -59,7 +74,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
           borderLeft: "1px solid var(--border)",
         }}
       >
-        {/* 🔹 PROFILE SECTION */}
+      {/* --------------------Profile-section-------------------------- */}
         <div
           className="relative flex items-center gap-3 px-4"
           style={{
@@ -102,11 +117,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
               <button
                 onClick={() => handleNavigate(BaseUrls.Profile)}
                 title="Profile"
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                style={{ background: "none", border: "none", cursor: "pointer" }}
               >
                 <EditIcon />
               </button>
@@ -117,48 +128,117 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
           </div>
         </div>
 
-        {/* 🔹 MENU ITEMS */}
+       {/* ---------------------Menu-items------------------------------- */}
         <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
           {Object.entries(MenuItems).map(([href, item]) => {
-            const isActive = location.pathname === href;
+            const hasChildren = item.children && item.children.length > 0;
+            const isActive = isParentActive(href, item.children);
+            const isOpen = openDropdowns[href] ?? false;
+
             return (
-              <div
-                key={href}
-                onClick={() => handleNavigate(href)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition"
-                style={{
-                  background: isActive ? "var(--primary-side)" : "var(--card)",
-                  border: isActive ? "1.5px solid var(--primary)" : "1px solid var(--border)",
-                }}
-              >
+              <div key={href}>
                 <div
-                  className="w-8 h-8 flex items-center justify-center rounded-lg"
+                  onClick={() => {
+                    if (hasChildren) {
+                      toggleDropdown(href);
+                    } else {
+                      handleNavigate(href);
+                    }
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition"
                   style={{
-                    background: isActive ? "var(--primary)" : "var(--primary-side)",
+                    background: isActive ? "var(--primary-side)" : "var(--card)",
+                    border: isActive
+                      ? "1.5px solid var(--primary)"
+                      : "1px solid var(--border)",
                   }}
                 >
-                  <item.icon
-                    className="w-4 h-4"
+                  <div
+                    className="w-8 h-8 flex items-center justify-center rounded-lg"
                     style={{
-                      color: isActive ? "var(--primary-foreground)" : "var(--secondary)",
+                      background: isActive ? "var(--primary)" : "var(--primary-side)",
                     }}
-                  />
+                  >
+                    <item.icon
+                      className="w-4 h-4"
+                      style={{
+                        color: isActive
+                          ? "var(--primary-foreground)"
+                          : "var(--secondary)",
+                      }}
+                    />
+                  </div>
+
+                  <span
+                    className="text-sm flex-1"
+                    style={{ fontWeight: isActive ? 600 : 500 }}
+                  >
+                    {item.label}
+                  </span>
+
+                  {hasChildren && (
+                    <span style={{ color: "var(--secondary)" }}>
+                      {isOpen ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </span>
+                  )}
                 </div>
-                <span
-                  className="text-sm"
-                  style={{ fontWeight: isActive ? 600 : 500 }}
-                >
-                  {item.label}
-                </span>
+
+                {hasChildren && isOpen && (
+                  <div className="mt-1 ml-4 space-y-1">
+                    {item.children!.map((child) => {
+                      const isChildActive = location.pathname === child.href;
+                      return (
+                        <div
+                          key={child.href}
+                          onClick={() => handleNavigate(child.href)}
+                          className="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition"
+                          style={{
+                            background: isChildActive
+                              ? "var(--primary-side)"
+                              : "transparent",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "3px",
+                              height: "18px",
+                              borderRadius: "2px",
+                              background: "var(--primary)",
+                              flexShrink: 0,
+                            }}
+                          />
+                          <span
+                            className="text-sm"
+                            style={{
+                              fontWeight: isChildActive ? 600 : 400,
+                              color: isChildActive
+                                ? "var(--primary)"
+                                : "var(--foreground)",
+                            }}
+                          >
+                            {child.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
 
-        {/* 🔹 LOGOUT */}
-        <div className="px-3 py-4" style={{ borderTop: "1px solid var(--border)" }}>
+        {/* ---------------Logout------------------ */}
+        <div
+          className="px-3 py-4"
+          style={{ borderTop: "1px solid var(--border)" }}
+        >
           <button
-            onClick={handleLogout} // ✅ actual logout
+            onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold"
             style={{
               background: "var(--primary)",

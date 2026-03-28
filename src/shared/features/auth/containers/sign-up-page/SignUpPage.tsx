@@ -1,4 +1,3 @@
-import { Navbar } from "@/shared/components/navbar/Navbar";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -76,7 +75,6 @@ export const SignUpPage = () => {
   return (
     <div>
       <div className="registration-container">
-        <Navbar />
         <div className="main-content mt-18 flex-1 flex justify-center items-center p-4 ">
           <Card className="w-full max-w-md">
             <div className="grid  place-items-center ">
