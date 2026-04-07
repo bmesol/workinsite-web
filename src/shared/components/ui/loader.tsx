@@ -1,4 +1,3 @@
-import { cn } from "@/shared/components/ui/lib/utils";
 
 interface LoaderProps {
   size?: "small" | "large";

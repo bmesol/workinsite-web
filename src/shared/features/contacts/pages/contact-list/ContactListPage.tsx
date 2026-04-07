@@ -3,7 +3,6 @@ import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import { ContactTypes } from "@/shared/features/contacts/DTOs/ContactProps";
 import { useContactList } from "./useContactListPage";
 import { ContactsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
