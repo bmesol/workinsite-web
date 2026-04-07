@@ -11,18 +11,18 @@ import { useState } from "react";
 
 const UserCreationPage = () => {
   const [queryString] = useSearchParams();
-  const [pinModalOpen, setPinModalOpen] = useState(false); // 👈 replaces useModel
+  const [pinModalOpen, setPinModalOpen] = useState(false); 
 
   const { name, setName, phoneNumber, setPhoneNumber, role, setRole, error, validate, userDetail, roles, handleOnCancel } = useUserCreation(queryString);
 
   const handleOnSave = () => {
     if (validate()) {
-      setPinModalOpen(true); // 👈 replaces model.open()
+      setPinModalOpen(true); 
     }
   };
 
   return (
-    <div className="container min-h-screen px-4 pb-10">
+    <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
       <Header title="Create User" />

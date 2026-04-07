@@ -43,7 +43,7 @@ const UserEditPage = () => {
   } = useUserEdit(id as string);
 
   return (
-    <div className="container min-h-screen px-4  pb-10">
+    <div className="w-full min-h-screen px-4  pb-10">
       {/* ── Header ── */}
       <Header title="Edit User">
         <Actions>

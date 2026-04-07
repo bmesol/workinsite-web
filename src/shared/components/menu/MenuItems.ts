@@ -12,7 +12,7 @@ import {
   FileText,
   ShieldCheck,
 } from "lucide-react";
-import { ADMIN_USERS, ALL_USERS } from "@/shared/components/helpers/RouteHelper";
+import { ADMIN_USERS, ALL_USERS } from "@/shared/helpers/RouteHelper";
 
 export type MenuChildItem = {
   label: string;

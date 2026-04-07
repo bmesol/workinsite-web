@@ -13,7 +13,7 @@ const UserCard = (props: UserCardProps) => {
     .toUpperCase();
 
   return (
-    <Card className="flex flex-row items-center gap-4 p-4 cursor-pointer hover:shadow-sm transition-shadow">
+    <Card className="w-full flex flex-row items-center gap-4 p-4 cursor-pointer hover:shadow-sm transition-shadow">
       <div className="relative flex-shrink-0">
         <Avatar className="h-16 w-16 rounded-xl">
           <AvatarImage src={imgURL} alt={name} />

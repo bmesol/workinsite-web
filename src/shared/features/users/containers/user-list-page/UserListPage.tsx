@@ -13,7 +13,7 @@ const UserListPage = () => {
   if (!userList.length && !hasSearchFilter) return <UserGetStartedPage />; 
 
   return (
-    <div className="container min-h-screen px-4 py-6">
+    <div className="min-h-screen w-full px-4 py-6">
 
       {/* ── Header ── */}
       <Header title="Users">
@@ -26,14 +26,14 @@ const UserListPage = () => {
       {/* ── Search ── */}
       <div className="flex justify-end mb-4 mt-4">
         <Input
-          className="w-full md:w-72"
+          className="w-full sm:w-72"
           placeholder="Search users..."
           onChange={(e) => fetchUser(e.target.value)}
         />
       </div>
 
       {/* ── User Grid ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 w-full">
         {!userList.length ? (
           <div className="col-span-2 text-center text-sm text-muted-foreground my-4">
             No users found
@@ -43,7 +43,7 @@ const UserListPage = () => {
             <div
               key={user.id}
               onClick={() => handleUserSelect(user.id)}
-              className="cursor-pointer"
+              className="cursor-pointer w-full"
             >
               <UserCard
                 name={user.name}
@@ -60,4 +60,3 @@ const UserListPage = () => {
 };
 
 export { UserListPage };
-
