@@ -20,7 +20,7 @@ const ContactTypes = (props: ContactTypesProps) => {
               {/* Icon + Value */}
               <div className="flex items-center gap-2">
                 <div>{Icons[item.contactType] || Icons.DEFAULT}</div>
-                <span className="text-sm text-foreground">{item.value}</span>
+                <span className="text-sm text-black">{item.value}</span>
               </div>
 
               {/* Edit / Delete Buttons */}

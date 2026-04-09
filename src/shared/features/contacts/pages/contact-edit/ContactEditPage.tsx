@@ -62,12 +62,11 @@ const ContactEditPage = () => {
             required={true}
           />
           <FormActionButton
-  heading="Additional Details"
-  label="Add"
-  onClick={handleAdd}
-  isAddDisabled={isAddDisabled}
-  required={true}
-/>
+            heading="Additional Details"
+            label="Add"
+            onClick={handleAdd}
+            isAddDisabled={isAddDisabled}
+          />
           <ContactTypes
             contactList={contactList}
             setContactList={setContactList}
@@ -81,15 +80,15 @@ const ContactEditPage = () => {
       </Card>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent  className="border overflow-visible">
+        <DialogContent className="border overflow-visible">
           <DialogHeader>
             <DialogTitle>Additional Details</DialogTitle>
           </DialogHeader>
           <ContactCreateForm
-  contactList={contactList}
-  setContactList={setContactList}
-  onClose={() => setIsOpen(false)}  
-/>
+            contactList={contactList}
+            setContactList={setContactList}
+            onClose={() => setIsOpen(false)}
+          />
         </DialogContent>
       </Dialog>
     </div>

@@ -10,9 +10,9 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select"; 
 
-const ContactEditForm = (props: ContactEditFormProps) => {
-  const { contactType, contactItems, input, setInput, error, model, handleUpdate } = useContactEditForm(props);
-  
+const ContactEditForm = (props: ContactEditFormProps & { onClose?: () => void }) => {
+  const { onClose } = props;
+  const { contactType, contactItems, input, setInput, error, handleUpdate } = useContactEditForm(props, onClose);
 
   return (
     <div className="flex flex-col gap-4 ">
@@ -40,7 +40,7 @@ const ContactEditForm = (props: ContactEditFormProps) => {
       {/* Buttons */}
       <FormSubmissionButtons
         label="Update"
-        onCancel={() => model.close()}
+        onCancel={() => onClose?.()}
         onSave={handleUpdate}
       />
 

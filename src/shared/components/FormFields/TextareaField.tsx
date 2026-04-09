@@ -29,9 +29,9 @@ const TextareaField = (props: InputPropTypes) => {
     <FormInput errorMessage={errorMessage} className={className}>
       {/* Label */}
       {!isHideLabel && label && (
-        <Label className="mb-1 text-base">
+        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-500">*</span>}
         </Label>
       )}
 

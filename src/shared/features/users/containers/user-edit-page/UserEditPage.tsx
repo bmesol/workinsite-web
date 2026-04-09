@@ -85,13 +85,17 @@ const UserEditPage = () => {
                 setInputValue={setRole}
               />
               <div className="flex flex-col gap-2">
-                <Label className="text-sm font-medium">Is Active</Label>
+                <Label className="text-base font-medium text-black flex items-center gap-0.5">
+                  Is Active
+                </Label>
                 <Switch checked={isActive} onCheckedChange={setIsActive} />
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label className="text-sm font-medium">Notes</Label>
+              <Label className="text-base font-medium text-black flex items-center gap-0.5">
+                Notes
+              </Label>
               <Textarea
                 placeholder="Enter your notes"
                 value={notes ?? ""}

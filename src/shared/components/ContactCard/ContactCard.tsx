@@ -15,15 +15,13 @@ const ContactCard = (props: ContactCardProps) => {
   return (
     <Card className="w-full flex flex-row justify-between items-center p-4 cursor-pointer hover:shadow-sm transition-shadow">
 
-      {/* Left — Avatar + Details */}
       <div className="flex items-center gap-4 overflow-x-auto">
 
-        {/* Avatar — square, same as UserCard */}
         <div className="relative flex-shrink-0">
-          <Avatar className="h-12 w-12 rounded-xl">
+          <Avatar className="h-16 w-16 rounded-xl">
             <AvatarImage src={imgURL} alt={name} />
             <AvatarFallback
-              className="text-sm font-bold rounded-xl"
+              className="text-lg font-bold rounded-xl"
               style={{ background: "var(--primary)", color: "var(--secondary)" }}
             >
               {initials}
@@ -33,27 +31,21 @@ const ContactCard = (props: ContactCardProps) => {
 
         {/* Contact Details */}
         <div className="flex flex-col gap-1 min-w-0">
-          <span className="font-semibold text-sm text-black">{name}</span>
+          <span className="font-semibold text-base text-black">{name}</span>
 
           {phone && (
-            <div
-              className="flex items-center gap-1"
-              onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            >
+            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
               <Phone className="h-3 w-3 text-black" />
-              <a href={`tel:${phone}`} className="text-xs text-black hover:underline">
+              <a href={`tel:${phone}`} className="text-sm text-black hover:underline">
                 {phone}
               </a>
             </div>
           )}
 
           {email && (
-            <div
-              className="flex items-center gap-1"
-              onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            >
+            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
               <Mail className="h-3 w-3 text-black" />
-              <a href={`mailto:${email}`} className="text-xs text-black hover:underline">
+              <a href={`mailto:${email}`} className="text-sm text-black hover:underline">
                 {email}
               </a>
             </div>

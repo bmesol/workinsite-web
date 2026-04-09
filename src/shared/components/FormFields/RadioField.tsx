@@ -19,7 +19,7 @@ const RadioField = (props: InputPropTypes) => {
     <FormInput errorMessage={errorMessage}>
       {/* Label */}
       {label && (
-        <p className="mb-2 text-sm font-medium">
+        <p className="mb-2 text-base font-medium text-black flex items-center gap-0.5">
           {label} {required && <span className="text-red-500">*</span>}
         </p>
       )}

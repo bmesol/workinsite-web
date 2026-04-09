@@ -18,8 +18,8 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   return (
     <FormInput errorMessage={errorMessage} className={className}>
       {label && (
-        <Label className="mb-1">
-          {label} {required && <span className="text-destructive">*</span>}
+        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
+          {label} {required && <span className="text-red-500">*</span>}
         </Label>
       )}
       <Input

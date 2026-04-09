@@ -15,7 +15,7 @@ const FormActionButton = (props: {
   return (
     <FormInput className={`${isColsTwo ? "w-full" : "md:w-2/3 lg:w-1/2"} flex-row justify-between items-center`}>
       <div className="flex items-center gap-1">
-        <span className="text-sm font-medium text-black">{heading}</span>
+        <span className="text-base font-medium text-black">{heading}</span>
         {required && (
           <sup>
             <Asterisk className="h-3 w-3 text-destructive" />

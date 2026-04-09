@@ -30,12 +30,12 @@ export const PhoneNumberField = (props: InputPropTypes) => {
   return (
     <FormInput errorMessage={errorMessage} className={className}>
       {/* Label */}
-    {!isHideLabel && (
-  <Label className="mb-1 text-base">
-    {label || "Phone Number"}
-    {required && <span className="text-red-500 ml-1">*</span>}
-  </Label>
-)}
+      {!isHideLabel && (
+        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
+          {label || "Phone Number"}
+          {required && <span className="text-red-500">*</span>}
+        </Label>
+      )}
 
       {/* Input */}
       <Input

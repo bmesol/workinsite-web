@@ -31,10 +31,10 @@ const NameField = (props: InputPropTypes) => {
   return (
     <FormInput errorMessage={errorMessage} className={className}>
       {!isHideLabel && (
-        <Label className="mb-1 text-base">
-          {label || "Name"}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </Label>
+        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
+  {label || "Name"}
+  {required && <span className="text-red-500 text-base leading-none">*</span>}
+</Label>
       )}
       <Input
         type="text"

@@ -49,6 +49,7 @@ const ContactEditDeleteButtons = (props: ContactEditDeleteButtonsProps) => {
               contactList={contactList}
               setContactList={setContactList}
               selectedItem={editItem}
+              onClose={() => setIsOpen(false)}
             />
           </DialogContent>
         </Dialog>

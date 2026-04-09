@@ -1,4 +1,8 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/shared/components/ui/avatar";
 import { Card } from "@/shared/components/ui/card";
 import { Phone, Briefcase } from "lucide-react";
 import type { UserCardProps } from "./DTOs";
@@ -27,30 +31,29 @@ const UserCard = (props: UserCardProps) => {
         {/* Status Dot */}
         <span
           className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white"
-          style={{ background: isActive ? "var(--success-color)" : "var(--danger-color)" }}
+          style={{
+            background: isActive
+              ? "var(--success-color)"
+              : "var(--danger-color)",
+          }}
         />
       </div>
 
       {/* User Info */}
       <div className="flex flex-col min-w-0 gap-1">
-        {/* Name */}
-        <span className="font-semibold text-sm text-black">
-          {name}
-        </span>
-        {/* Role with Briefcase icon */}
+        <span className="font-semibold text-sm text-black">{name}</span>
+
         <div className="flex items-center gap-1">
           <Briefcase className="h-3 w-3 text-black" />
           <span className="text-xs text-black">{role}</span>
         </div>
-        {/* Phone */}
-        
+
         <div
           className="flex items-center gap-1"
-          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         >
           <Phone className="h-3 w-3 text-black" />
           <a
-          
             href={`tel:${phoneNumber}`}
             className="text-xs text-black hover:underline"
           >
@@ -58,7 +61,6 @@ const UserCard = (props: UserCardProps) => {
           </a>
         </div>
       </div>
-
     </Card>
   );
 };
