@@ -22,7 +22,7 @@ const ClientListPage = () => {
     return <ClientGetStartedPage />;
 
   return (
-    <div className="container min-h-screen px-4 py-6">
+    <div className="min-h-screen w-full px-4 py-6">
       <Header title="Clients">
         <Actions>
           <Button onClick={() => navigate(ClientsUrls.create)}>

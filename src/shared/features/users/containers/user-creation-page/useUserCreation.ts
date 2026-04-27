@@ -10,7 +10,6 @@ const useUserCreation = (queryString: URLSearchParams) => {
   const [name, setName] = useState(queryString.get("name") || "");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState("");
-
   const { roles, error, validate } = useInputValidate({ name, phoneNumber, role });
   const userDetail = { name, phone: phoneNumber, roleId: Number(role) };
 

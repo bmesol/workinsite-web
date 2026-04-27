@@ -22,7 +22,7 @@ const ContactCreationPage = () => {
   };
 
   return (
-    <div className="w-full min-h-screen px-4 pb-5">
+    <div className="w-full min-h-screen px-4 pb-10">
       <Header title="Create Contact" />
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">

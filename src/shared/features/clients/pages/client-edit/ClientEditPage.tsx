@@ -71,7 +71,7 @@ const ClientEditPage = () => {
   console.log("primaryContactDetails:", primaryContactDetails);
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-5">
+    <div className="w-full min-h-screen px-4 pb-10">
       <Header title="Edit Client" />
 
       <Card className="mt-4 p-6">

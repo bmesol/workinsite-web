@@ -63,6 +63,7 @@
   --success-bg-text-color: white;
   --warning-color: rgb(255, 193, 7);
   --warning-bg-text-color: white;
+  --complete-color: rgb(0, 191, 255);
   --danger-color: rgb(220, 56, 72);
   --danger-bg-text-color: white;
   --gray-color: rgb(130, 126, 125);
@@ -74,6 +75,23 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+
+--active-color: rgb(14, 112, 128);
+--complete-color: rgb(0, 191, 255);
+
+--light-gray: #4f4f4f4f;
+--select-hover-bg: rgba(250, 212, 39, 0.1);
+
+--payment-green: rgb(0, 200, 83);
+--payment-blue: rgb(33, 150, 243);
+--payment-light-green: rgba(0, 200, 83, 0.1);
+--payment-light-blue: rgba(33, 150, 243, 0.1);
+
+--disabled-bg: #D1D1D6;
+--disabled-text: #A1A1AA;
+
+--primary-bg-text: black;
+--secondary-bg-text: white;
 }
 
 /* ================= DARK MODE ================= */

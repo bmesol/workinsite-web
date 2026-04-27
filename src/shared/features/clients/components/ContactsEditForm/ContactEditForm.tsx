@@ -9,13 +9,21 @@ const ContactsEditForm = (props: { contact: Contact; onEdit: () => void; onClose
   return (
     <div className="flex flex-col gap-4 max-h-[300px]">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <span className="font-bold text-slate-900">Contacts</span>
-        <Pencil className="w-5 h-5 cursor-pointer" onClick={onEdit} />
+      <div className="flex justify-between items-center pr-6">
+        <span style={{ fontSize: "var(--font-lg)", fontWeight: 600 }}>
+          Contacts
+        </span>
+        <Pencil
+          style={{ width: 18, height: 18 }}
+          className="cursor-pointer text-gray-600 hover:text-gray-900 transition-colors"
+          onClick={onEdit}
+        />
       </div>
 
       {/* Contact Name */}
-      <span className="text-black text-sm">{contact.name}</span>
+      <span style={{ fontSize: "var(--font-sm)", color: "#000" }}>
+        {contact.name}
+      </span>
 
       {/* Contact Types List */}
       <div className="flex flex-col gap-4 overflow-y-auto max-h-[125px]">

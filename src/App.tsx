@@ -5,7 +5,7 @@ import { ForgetPinPage } from "@/shared/features/auth/containers/forget-pin-page
 import { OtpVerificationPage } from "@/shared/features/auth/containers/otp-verification-page/OtpVerificationPage";
 import { PrivateRoute } from "@/shared/components/routehandlers/PrivateRoute";
 import { EnsureUnauthenticatedRoute } from "@/shared/components/routehandlers/EnsureUnauthenticatedRoute";
-import { SiteListPage } from "@/shared/features/sites/containers/SiteListPage";
+import { SiteListPage } from "@/shared/features/sites/pages/site-list/SiteListPage";
 import { UrlPages } from "@/shared/utils/UrlPages";
 import { NotFoundPage } from "./NotFoundPage";
 

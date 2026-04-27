@@ -21,7 +21,7 @@ const ContactListPage = () => {
   console.log(contactList);
 
   return (
-    <div className=" w-full min-h-screen px-4 py-6">
+    <div className=" min-h-screen w-full px-4 py-6">
       <Header title="Contacts">
         <Actions>
           <Button onClick={() => navigate(ContactsUrls.create)}>
