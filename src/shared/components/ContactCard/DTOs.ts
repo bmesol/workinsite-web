@@ -3,7 +3,11 @@ interface ContactCardProps {
   imgURL?: string;
   phone?: string;
   email?: string;
-  onDelete: (e: React.MouseEvent) => void;
+  workType?: string;
+  workerRole?: string;
+  onDelete: (e: React.MouseEvent) => void;  // ← revert back to original
+  onPress?: () => void;
+  permissionKey?: string;
 }
 
-export type  { ContactCardProps };
+export type { ContactCardProps };

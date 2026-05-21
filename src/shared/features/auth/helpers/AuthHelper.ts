@@ -6,6 +6,12 @@ type DecodedToken = {
   role: string;
 };
 
+// ✅ Added PageRight and pageRights to UserProfile
+export type PageRight = {
+  name: string;
+  roleLevel: number; // 0 = NONE, 1 = VIEW, 2 = EDIT
+};
+
 export type UserProfile = {
   name: string;
   id: string;
@@ -15,6 +21,7 @@ export type UserProfile = {
     id: number;
     name: string;
   };
+  pageRights?: PageRight[]; // ✅ added — for PermissionHelper to work
 };
 
 const ROLE_MAP: Record<number, string> = {
@@ -36,12 +43,13 @@ const AuthHelper = {
       const userProfile: UserProfile = {
         name: decoded.Name,
         id: decoded.UserId,
-        phone: "",   
-        note: "",    
+        phone: "",
+        note: "",
         role: {
           id: roleId,
           name: ROLE_MAP[roleId] || "User",
         },
+        pageRights: [], // ✅ default empty — populated after profile fetch
       };
 
       AuthHelper.setUserProfile(userProfile);
@@ -59,7 +67,6 @@ const AuthHelper = {
     return !!localStorage.getItem("_at");
   },
 
-  // ===== User profile handling =====
   setUserProfile: (profile: UserProfile) => {
     localStorage.setItem("userProfile", JSON.stringify(profile));
   },
@@ -74,7 +81,6 @@ const AuthHelper = {
     }
   },
 
-  // ===== Logout =====
   logout: () => {
     localStorage.removeItem("_at");
     localStorage.removeItem("userProfile");

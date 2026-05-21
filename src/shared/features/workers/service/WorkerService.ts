@@ -1,12 +1,21 @@
+// WorkerService.ts
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
 import type { WorkerRequest } from "../DTOs/WorkerProps";
 
+type GetWorkersParams = {
+  WorkerName?: string;
+  WorkerCategoryId?: number;
+};
+
 const useWorkerService = () => {
-  const baseUrl = import.meta.env.VITE_SUPPLIER_SERVICE_BASE_URL || "";  
+  const baseUrl = import.meta.env.VITE_SUPPLIER_SERVICE_BASE_URL || "";
   const apiHelper = useAPIHelper(baseUrl, true);
 
-  const getWorkers = async (searchString: string = "") => {
-    const response = await apiHelper.get(`workers?searchString=${searchString}`);
+  const getWorkers = async (params: GetWorkersParams = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.WorkerName)       queryParams.append('WorkerName', params.WorkerName);
+    if (params.WorkerCategoryId) queryParams.append('WorkerCategoryId', params.WorkerCategoryId.toString());
+    const response = await apiHelper.get(`workers?${queryParams.toString()}`);
     return response.data;
   };
 

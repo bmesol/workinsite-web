@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
-import { BankAccountCreateForm } from "../../components/BankAccountCreateForm/BankAccountCreateForm";
+import { BankAccountCreateForm } from "@/shared/components/BankAccount/BankAccountCreateForm/BankAccountCreateForm";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { ContactsEditForm } from "@/shared/features/clients/components/ContactsEditForm/ContactEditForm";
 import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { FormInput } from "@/shared/components/FormInput/FormInput";
-import { KycCreateForm } from "../../components/KycCreateForm/KycCreateForm";
-import { UpiCreateForm } from "../../components/UpiCreateForm/UpiCreateForm";
-import { BankAccounts } from "../../components/BankAccounts/BankAccounts";
+import { KycCreateForm } from "@/shared/components/Kyc/KycCreateForm/KycCreateForm";
+import { UpiCreateForm } from "@/shared/components/Upi/UpiCreateForm/UpiCreateForm";
+import { BankAccounts } from "@/shared/components/BankAccount/BankAccounts/BankAccounts";
 import { Header } from "@/shared/components/Header/Header";
-import { UpiTypes } from "../../components/UpiTypes/UpiTypes";
-import { KycTypes } from "../../components/KycTypes/KycTypes";
+import { UpiTypes } from "@/shared/components/Upi/UpiTypes/UpiTypes";
+import { KycTypes } from "@/shared/components/Kyc/KycTypes/KycTypes";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useSupplierEdit } from "./useSupplierEdit";
 import type { Supplier } from "../../DTOs/SupplierProps";
@@ -86,7 +86,6 @@ const SupplierEditPage = () => {
               onCreate={handleContactCreate}
               error={error.contact}
               required={true}
-            
             />
           )}
         </div>
@@ -141,12 +140,18 @@ const SupplierEditPage = () => {
               isColsTwo={true}
             />
             <KycTypes
-              supplierDetails={supplierDetails}
-              setSupplierDetails={setSupplierDetails}
+              details={{ kycDetails: supplierDetails.kycDetails }}
+              setDetails={(updated) =>
+                setSupplierDetails((prev) => ({
+                  ...prev,
+                  kycDetails: updated.kycDetails,
+                }))
+              }
               isColsTwo={true}
             />
           </div>
 
+          {/* Bank Accounts */}
           {/* Bank Accounts */}
           <div>
             <FormActionButton
@@ -157,8 +162,13 @@ const SupplierEditPage = () => {
               isColsTwo={true}
             />
             <BankAccounts
-              supplierDetails={supplierDetails}
-              setSupplierDetails={setSupplierDetails}
+              details={{ bankAccounts: supplierDetails.bankAccounts }}
+              setDetails={(updated) =>
+                setSupplierDetails((prev) => ({
+                  ...prev,
+                  bankAccounts: updated.bankAccounts,
+                }))
+              }
               isColsTwo={true}
             />
           </div>
@@ -173,8 +183,13 @@ const SupplierEditPage = () => {
               isColsTwo={true}
             />
             <UpiTypes
-              supplierDetails={supplierDetails}
-              setSupplierDetails={setSupplierDetails}
+              details={{ upiDetails: supplierDetails.upiDetails }}
+              setDetails={(updated) =>
+                setSupplierDetails((prev) => ({
+                  ...prev,
+                  upiDetails: updated.upiDetails,
+                }))
+              }
               isColsTwo={true}
             />
           </div>
@@ -204,13 +219,17 @@ const SupplierEditPage = () => {
             <DialogTitle>KYC Type</DialogTitle>
           </DialogHeader>
           <KycCreateForm
-            supplierDetails={supplierDetails}
-            setSupplierDetails={setSupplierDetails}
+            details={{ kycDetails: supplierDetails.kycDetails }}
+            setDetails={(updated) =>
+              setSupplierDetails((prev) => ({
+                ...prev,
+                kycDetails: updated.kycDetails,
+              }))
+            }
             onClose={() => setIsKycOpen(false)}
           />
         </DialogContent>
       </Dialog>
-
       {/* Bank Account Dialog */}
       <Dialog open={isBankAccountOpen} onOpenChange={setIsBankAccountOpen}>
         <DialogContent>
@@ -218,8 +237,13 @@ const SupplierEditPage = () => {
             <DialogTitle>Bank Account</DialogTitle>
           </DialogHeader>
           <BankAccountCreateForm
-            supplierDetails={supplierDetails}
-            setSupplierDetails={setSupplierDetails}
+            details={{ bankAccounts: supplierDetails.bankAccounts }}
+            setDetails={(updated) =>
+              setSupplierDetails((prev) => ({
+                ...prev,
+                bankAccounts: updated.bankAccounts,
+              }))
+            }
             onClose={() => setIsBankAccountOpen(false)}
           />
         </DialogContent>
@@ -232,8 +256,13 @@ const SupplierEditPage = () => {
             <DialogTitle>UPI Type</DialogTitle>
           </DialogHeader>
           <UpiCreateForm
-            supplierDetails={supplierDetails}
-            setSupplierDetails={setSupplierDetails}
+            details={{ upiDetails: supplierDetails.upiDetails }}
+            setDetails={(updated) =>
+              setSupplierDetails((prev) => ({
+                ...prev,
+                upiDetails: updated.upiDetails,
+              }))
+            }
             onClose={() => setIsUpiOpen(false)}
           />
         </DialogContent>

@@ -27,6 +27,7 @@ type ComboboxFieldProps = {
   onCreate?: (val: string) => void;
   error?: string;
   required?: boolean;
+  disabled?: boolean; 
 };
 
 const ComboboxField = ({
@@ -39,6 +40,7 @@ const ComboboxField = ({
   onCreate,
   error,
   required,
+  disabled = false, 
 }: ComboboxFieldProps) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -54,6 +56,7 @@ const ComboboxField = ({
       <Popover
         open={open}
         onOpenChange={(val) => {
+          if (disabled) return; 
           setOpen(val);
           if (val) onSearch("");
         }}
@@ -64,9 +67,11 @@ const ComboboxField = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            disabled={disabled} 
             className={cn(
               "w-full justify-between font-normal bg-white",
               !selectedLabel && "text-muted-foreground",
+              disabled && "opacity-50 cursor-not-allowed", 
             )}
           >
             {selectedLabel ?? `Select ${label.toLowerCase()}...`}
@@ -112,20 +117,22 @@ const ComboboxField = ({
                 ))}
               </CommandGroup>
 
-              <div className="border-t p-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full gap-1.5 justify-start text-primary"
-                  onClick={() => {
-                    onCreate?.(searchValue);
-                    setOpen(false);
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                  Create new {label.toLowerCase()}
-                </Button>
-              </div>
+              {onCreate && (
+                <div className="border-t p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full gap-1.5 justify-start text-primary"
+                    onClick={() => {
+                      onCreate?.(searchValue);
+                      setOpen(false);
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create new {label.toLowerCase()}
+                  </Button>
+                </div>
+              )}
             </CommandList>
           </Command>
         </PopoverContent>

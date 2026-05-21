@@ -1,0 +1,13 @@
+import workerCreationIllustration from "@/assets/images/worker-creation-illustration.png";
+import { GetStartedCard } from "@/shared/components/GetStartedCard/GetStartedCard";
+import { WorkersUrls } from "../../utils/urls";
+
+const WorkerGetStartedPage = () => {
+  return (
+    <GetStartedCard imgSrc={workerCreationIllustration} buttonLabel="Create Worker" buttonClick={WorkersUrls.create}>
+      Simplify the management of your construction workers with WorkInSite. Get started today to ensure seamless coordination and productivity on your projects.
+    </GetStartedCard>
+  );
+};
+
+export { WorkerGetStartedPage };

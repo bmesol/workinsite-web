@@ -5,9 +5,9 @@ import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactT
 import { ContactsEditForm } from "../../components/ContactsEditForm/ContactEditForm";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { FormInput } from "@/shared/components/FormInput/FormInput";
-import { KycCreateForm } from "../../components/KycCreateForm/KycCreateForm";
+import { KycCreateForm } from "@/shared/components/Kyc/KycCreateForm/KycCreateForm";
 import { Header } from "@/shared/components/Header/Header";
-import { KycTypes } from "../../components/KycTypes/KycTypes";
+import { KycTypes } from "@/shared/components/Kyc/KycTypes/KycTypes";
 import { useClientCreation } from "./useClientCreation";
 import { useSearchParams } from "react-router-dom";
 import { Card } from "@/shared/components/ui/card";
@@ -71,7 +71,6 @@ const ClientCreationPage = () => {
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
-
           {/* Name + Contact Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <NameField
@@ -91,7 +90,9 @@ const ClientCreationPage = () => {
                     <div className="flex items-center justify-between w-full border rounded-md px-3 py-2">
                       <span className="text-sm text-black">
                         {contactId
-                          ? contactDetails.find((c) => c.value === contactId.toString())?.label
+                          ? contactDetails.find(
+                              (c) => c.value === contactId.toString(),
+                            )?.label
                           : "Select contact..."}
                       </span>
                       <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
@@ -123,7 +124,14 @@ const ClientCreationPage = () => {
                               setIsComboOpen(false);
                             }}
                           >
-                            <Check className={cn("mr-2 h-4 w-4", contactId.toString() === item.value ? "opacity-100" : "opacity-0")} />
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                contactId.toString() === item.value
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
                             {item.label}
                           </CommandItem>
                         ))}
@@ -138,16 +146,26 @@ const ClientCreationPage = () => {
           {/* Contact Details */}
           {contact.id ? (
             <>
-              <FormActionButton heading="Contact detail" label="Edit" onClick={handleContactEdit} />
+              <FormActionButton
+                heading="Contact detail"
+                label="Edit"
+                onClick={handleContactEdit}
+              />
               {contact.phone && (
                 <div className="flex items-center gap-2 ml-1">
                   <Phone className="h-3 w-3 text-black" />
-                  <a href={`tel:${contact.phone}`} className="text-xs text-black hover:underline">
+                  <a
+                    href={`tel:${contact.phone}`}
+                    className="text-xs text-black hover:underline"
+                  >
                     {contact.phone}
                   </a>
                 </div>
               )}
-              <ContactTypes contactList={primaryContactDetails} showEditDeleteButtons={false} />
+              <ContactTypes
+                contactList={primaryContactDetails}
+                showEditDeleteButtons={false}
+              />
               {hasMoreDetails && (
                 <button
                   className="text-sm text-secondary underline text-left ml-3"
@@ -168,11 +186,27 @@ const ClientCreationPage = () => {
           />
 
           {/* KYC */}
-          <FormActionButton heading="KYC" label="Add" onClick={() => setIsKycOpen(true)} isAddDisabled={isAddDisabled} />
-          <KycTypes clientDetails={clientDetails} setClientDetails={setClientDetails} />
+          <FormActionButton
+            heading="KYC"
+            label="Add"
+            onClick={() => setIsKycOpen(true)}
+            isAddDisabled={isAddDisabled}
+          />
+          <KycTypes
+            details={{ kycDetails: clientDetails.kycDetails }}
+            setDetails={(updated) =>
+              setClientDetails((prev) => ({
+                ...prev,
+                kycDetails: updated.kycDetails,
+              }))
+            }
+          />
 
           {/* Submit */}
-          <FormSubmissionButtons onCancel={handleCancel} onSave={handleSubmission} />
+          <FormSubmissionButtons
+            onCancel={handleCancel}
+            onSave={handleSubmission}
+          />
         </div>
       </Card>
 
@@ -183,8 +217,13 @@ const ClientCreationPage = () => {
             <DialogTitle>KYC Type</DialogTitle>
           </DialogHeader>
           <KycCreateForm
-            clientDetails={clientDetails}
-            setClientDetails={setClientDetails}
+            details={{ kycDetails: clientDetails.kycDetails }}
+            setDetails={(updated) =>
+              setClientDetails((prev) => ({
+                ...prev,
+                kycDetails: updated.kycDetails,
+              }))
+            }
             onClose={() => setIsKycOpen(false)}
           />
         </DialogContent>

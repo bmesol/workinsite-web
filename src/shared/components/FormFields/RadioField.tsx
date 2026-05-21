@@ -37,9 +37,7 @@ const RadioField = (props: InputPropTypes) => {
               id={String(item.value)}
               disabled={isDisabled}
             />
-            <Label htmlFor={String(item.value)}>
-              {item.label}
-            </Label>
+            <Label htmlFor={String(item.value)}>{item.label}</Label>
           </div>
         ))}
       </RadioGroup>

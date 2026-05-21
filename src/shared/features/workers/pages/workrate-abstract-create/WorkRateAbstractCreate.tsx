@@ -1,0 +1,127 @@
+import { Header } from "@/shared/components/Header/Header";
+import { TextareaField } from "@/shared/components/FormFields/TextareaField";
+import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
+import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField"; 
+import { Card, CardContent } from "@/shared/components/ui/card";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
+import { useWorkRateAbstractCreate } from "./useWorkRateAbstractCreate";
+
+const WorkRateAbstractCreationPage = () => {
+  const {
+    siteDetails,
+    workTypeDetails,
+    error,
+    siteId,
+    unitId,
+    unitDetails,
+    workTypeId,
+    totalRate,
+    totalQuantity,
+    notes,
+    handleBackPress,
+    setSiteId,
+    fetchSites,
+    fetchWorkTypes,
+    fetchUnits,
+    setWorkTypeId,
+    setTotalRate,
+    setTotalQuantity,
+    setNotes,
+    handleSubmit,
+    setUnitId,
+  } = useWorkRateAbstractCreate();
+
+  return (
+    <div className="min-h-screen w-full px-4 py-6 pb-10">
+      <Header title="Create Work Rate Abstract" />
+
+      <Card className="mt-4">
+        <CardContent className="flex flex-col gap-4 pt-4">
+
+          {/* Site */}
+          <ComboboxField
+            id="site"
+            label="Site"
+            items={siteDetails}
+            selectedValue={siteId}
+            onValueChange={setSiteId}
+            onSearch={fetchSites}
+            error={error.site}
+            required
+          />
+
+          {/* Work Type */}
+          <ComboboxField
+            id="workType"
+            label="Work Type"
+            items={workTypeDetails}
+            selectedValue={workTypeId}
+            onValueChange={setWorkTypeId}
+            onSearch={fetchWorkTypes}
+            error={error.workType}
+            required
+          />
+
+          {/* Total Rate */}
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-base font-medium">
+              Total Rate <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              placeholder="Enter Total Rate"
+              value={totalRate}
+              onChange={(e) => setTotalRate(e.target.value)}
+            />
+            {error.totalRate && (
+              <p className="text-sm text-red-500">{error.totalRate}</p>
+            )}
+          </div>
+
+          {/* Total Quantity */}
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-base font-medium">
+              Total Quantity <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              placeholder="Enter Total Quantity"
+              value={totalQuantity}
+              onChange={(e) => setTotalQuantity(e.target.value)}
+            />
+            {error.totalQuantity && (
+              <p className="text-sm text-red-500">{error.totalQuantity}</p>
+            )}
+          </div>
+
+          {/* Unit */}
+          <ComboboxField
+            id="unit"
+            label="Unit"
+            items={unitDetails}
+            selectedValue={unitId}
+            onValueChange={setUnitId}
+            onSearch={fetchUnits}
+            error={error.unit}
+            required
+          />
+
+          {/* Remark */}
+          <TextareaField
+            label="Remark"
+            inputValue={notes ?? ""}
+            setInputValue={setNotes}
+            placeholder="Enter your Remark"
+          />
+
+          <FormSubmissionButtons
+            onCancel={handleBackPress}
+            onSave={handleSubmit}
+          />
+
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export { WorkRateAbstractCreationPage };

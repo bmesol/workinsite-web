@@ -1,0 +1,1 @@
+export type { BankAccountsProp } from "../DTOs/DTOs";

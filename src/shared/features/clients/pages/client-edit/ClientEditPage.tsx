@@ -5,9 +5,9 @@ import { ContactsEditForm } from "@/shared/features/clients/components/ContactsE
 import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { FormInput } from "@/shared/components/FormInput/FormInput";
-import { KycCreateForm } from "../../components/KycCreateForm/KycCreateForm";
+import { KycCreateForm } from "@/shared/components/Kyc/KycCreateForm/KycCreateForm";
 import { Header } from "@/shared/components/Header/Header";
-import { KycTypes } from "../../components/KycTypes/KycTypes";
+import { KycTypes } from "@/shared/components/Kyc/KycTypes/KycTypes";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Card } from "@/shared/components/ui/card";
 import type { Client } from "../../DTOs/ClientProps";
@@ -204,8 +204,13 @@ const ClientEditPage = () => {
             isAddDisabled={isAddDisabled}
           />
           <KycTypes
-            clientDetails={clientDetails}
-            setClientDetails={setClientDetails}
+            details={{ kycDetails: clientDetails.kycDetails }}
+            setDetails={(updated) =>
+              setClientDetails((prev) => ({
+                ...prev,
+                kycDetails: updated.kycDetails,
+              }))
+            }
           />
 
           {/* Submit */}
@@ -216,15 +221,20 @@ const ClientEditPage = () => {
         </div>
       </Card>
 
-      {/* KYC Dialog */}
+       {/* KYC Dialog */}
       <Dialog open={isKycOpen} onOpenChange={setIsKycOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>KYC Type</DialogTitle>
           </DialogHeader>
           <KycCreateForm
-            clientDetails={clientDetails}
-            setClientDetails={setClientDetails}
+            details={{ kycDetails: clientDetails.kycDetails }}
+            setDetails={(updated) =>
+              setClientDetails((prev) => ({
+                ...prev,
+                kycDetails: updated.kycDetails,
+              }))
+            }
             onClose={() => setIsKycOpen(false)}
           />
         </DialogContent>

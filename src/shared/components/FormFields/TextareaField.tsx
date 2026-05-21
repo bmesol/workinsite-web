@@ -20,7 +20,6 @@ const TextareaField = (props: InputPropTypes) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    // length validate பண்ணு
     if (value.length > length) return;
     handleInputChange(value);
   };

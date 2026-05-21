@@ -21,8 +21,8 @@ const NameField = (props: InputPropTypes) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-  
-    if (value.startsWith(" ")) return; 
+
+    if (value.startsWith(" ")) return;
     if (regex && !new RegExp(regex).test(value)) return;
     if (value.length > length) return;
     handleInputChange(value);
@@ -32,9 +32,11 @@ const NameField = (props: InputPropTypes) => {
     <FormInput errorMessage={errorMessage} className={className}>
       {!isHideLabel && (
         <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
-  {label || "Name"}
-  {required && <span className="text-red-500 text-base leading-none">*</span>}
-</Label>
+          {label || "Name"}
+          {required && (
+            <span className="text-red-500 text-base leading-none">*</span>
+          )}
+        </Label>
       )}
       <Input
         type="text"

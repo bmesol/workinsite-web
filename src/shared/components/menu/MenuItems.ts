@@ -58,9 +58,9 @@ const MenuItems: Record<string, MenuItem> = {
     allowedUserRoles: ALL_USERS,
     children: [
       { label: "Worker", href: "/workers" },
-      { label: "Worker Category", href: "/workers/category" },
-      { label: "Work Rate Abstract", href: "/workers/rate-abstract" },
-      { label: "Work Mode", href: "/workers/work-mode" },
+      { label: "Worker Category", href: "/worker-categories" },
+      { label: "Work Rate Abstract", href: "/work-rate-abstracts" },
+      { label: "Work Mode", href: "/work-modes" },
       { label: "Shift", href: "/workers/shift" },
     ],
   },

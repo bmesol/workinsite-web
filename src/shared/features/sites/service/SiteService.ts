@@ -1,12 +1,20 @@
 import type { SiteCreationRequest, SiteUpdationRequest } from "../DTOs/SiteProps";
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
 
+type GetSitesParams = {
+  searchString?: string;
+  status?: string;
+};
+
 const useSiteService = () => {
   const baseUrl = import.meta.env.VITE_SITE_SERVICE_BASE_URL || "";
   const apiHelper = useAPIHelper(baseUrl, true);
 
-  const getSites = async (searchString: string = "") => {
-    const response = await apiHelper.get(`sites?searchString=${searchString}`);
+  const getSites = async (params: GetSitesParams = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.searchString) queryParams.append('searchString', params.searchString);
+    if (params.status)       queryParams.append('status', params.status);
+    const response = await apiHelper.get(`sites?${queryParams.toString()}`);
     return response.data;
   };
 

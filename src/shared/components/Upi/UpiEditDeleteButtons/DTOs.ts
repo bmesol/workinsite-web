@@ -1,0 +1,1 @@
+export type { UpiEditDeleteButtonsProp } from "../DTOs/DTOs";

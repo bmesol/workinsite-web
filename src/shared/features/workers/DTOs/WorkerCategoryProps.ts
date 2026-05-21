@@ -9,6 +9,9 @@ interface WorkerCategoryUpdationRequest extends WorkerCategoryCreationRequest {
 
 interface WorkerCategoryProps extends WorkerCategoryUpdationRequest {
   id: number;
+  name: string; 
+  workTypes?: any[];      // ← add this
+  workerRoles?: any[];    // ← add this
 }
 
 export type { WorkerCategoryCreationRequest, WorkerCategoryUpdationRequest, WorkerCategoryProps };

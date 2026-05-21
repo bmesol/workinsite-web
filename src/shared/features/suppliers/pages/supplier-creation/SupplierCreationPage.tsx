@@ -4,18 +4,23 @@ import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Card, CardContent } from "@/shared/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/dialog";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
-import { BankAccountCreateForm } from "../../components/BankAccountCreateForm/BankAccountCreateForm";
+import { BankAccountCreateForm } from "@/shared/components/BankAccount/BankAccountCreateForm/BankAccountCreateForm";
 import { ContactEditForm } from "@/shared/features/contacts/components/ContactEditForm/ContactEditForm";
 import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
-import { KycCreateForm } from "../../components/KycCreateForm/KycCreateForm";
-import { UpiCreateForm } from "../../components/UpiCreateForm/UpiCreateForm";
-import { BankAccounts } from "../../components/BankAccounts/BankAccounts";
+import { KycCreateForm } from "@/shared/components/Kyc/KycCreateForm/KycCreateForm";
+import { UpiCreateForm } from "@/shared/components/Upi/UpiCreateForm/UpiCreateForm";
+import { BankAccounts } from "@/shared/components/BankAccount/BankAccounts/BankAccounts";
 import { Header } from "@/shared/components/Header/Header";
-import { UpiTypes } from "../../components/UpiTypes/UpiTypes";
-import { KycTypes } from "../../components/KycTypes/KycTypes";
+import { UpiTypes } from "@/shared/components/Upi/UpiTypes/UpiTypes";
+import { KycTypes } from "@/shared/components/Kyc/KycTypes/KycTypes";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { useSupplierCreation } from "./useSupplierCreation";
 import { SuppliersUrls } from "../../utils/urls";
@@ -62,7 +67,6 @@ const SupplierCreationPage = () => {
       <Header title="Create Supplier" />
 
       <Card className="mt-4 p-6">
-
         {/* Row 1: Name + Contact */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <NameField
@@ -115,7 +119,9 @@ const SupplierCreationPage = () => {
         {/* Notes */}
         {notes !== undefined && (
           <div className="flex flex-col gap-1.5 mt-4">
-            <Label htmlFor="notes" className="text-base">Notes</Label>
+            <Label htmlFor="notes" className="text-base">
+              Notes
+            </Label>
             <Textarea
               id="notes"
               value={notes}
@@ -127,113 +133,96 @@ const SupplierCreationPage = () => {
         )}
 
         {/* KYC + Bank Accounts + UPI — same as SupplierEditPage */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-
-          {/* KYC */}
-          <div>
-            <FormActionButton
-              heading="KYC"
-              label="Add"
-              onClick={() => setActiveDialog("kyc")}
-              isAddDisabled={isKycAddDisabled}
-              isColsTwo={true}
-            />
-            <KycTypes
-              supplierDetails={supplierDetails}
-              setSupplierDetails={setSupplierDetails}
-              isColsTwo={true}
-            />
-          </div>
-
-          {/* Bank Accounts */}
-          <div>
-            <FormActionButton
-              heading="Bank Accounts"
-              label="Add"
-              onClick={() => setActiveDialog("bankAccount")}
-              isAddDisabled={isBankAccountsAddDisabled}
-              isColsTwo={true}
-            />
-            <BankAccounts
-              supplierDetails={supplierDetails}
-              setSupplierDetails={setSupplierDetails}
-              isColsTwo={true}
-            />
-          </div>
-
-          {/* UPIs */}
-          <div>
-            <FormActionButton
-              heading="UPIs"
-              label="Add"
-              onClick={() => setActiveDialog("upi")}
-              isAddDisabled={isUpiAddDisabled}
-              isColsTwo={true}
-            />
-            <UpiTypes
-              supplierDetails={supplierDetails}
-              setSupplierDetails={setSupplierDetails}
-              isColsTwo={true}
-            />
-          </div>
-
-        </div>
+        {/* KYC */}
+<div>
+  <FormActionButton
+    heading="KYC"
+    label="Add"
+    onClick={() => setActiveDialog("kyc")}
+    isAddDisabled={isKycAddDisabled}
+    isColsTwo={true}
+  />
+  <KycTypes
+    details={{ kycDetails: supplierDetails.kycDetails }}
+    setDetails={(updated) =>
+      setSupplierDetails((prev) => ({ ...prev, kycDetails: updated.kycDetails }))
+    }
+    isColsTwo={true}
+  />
+</div>
 
         {/* Footer: Cancel + Save */}
         <div className="flex justify-end gap-2 pt-4  ">
-        <FormSubmissionButtons
-  onCancel={() => navigate(SuppliersUrls.list)}
-  onSave={handleSubmission}
-/>
+          <FormSubmissionButtons
+            onCancel={() => navigate(SuppliersUrls.list)}
+            onSave={handleSubmission}
+          />
         </div>
-
       </Card>
 
       {/* KYC Dialog */}
-      <Dialog open={activeDialog === "kyc"} onOpenChange={(val) => !val && closeDialog()}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>KYC Type</DialogTitle>
-          </DialogHeader>
-          <KycCreateForm
-            supplierDetails={supplierDetails}
-            setSupplierDetails={setSupplierDetails}
-            onClose={closeDialog}
-          />
-        </DialogContent>
-      </Dialog>
-
+      {/* KYC Dialog */}
+<Dialog
+  open={activeDialog === "kyc"}
+  onOpenChange={(val) => !val && closeDialog()}
+>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>KYC Type</DialogTitle>
+    </DialogHeader>
+    <KycCreateForm
+      details={{ kycDetails: supplierDetails.kycDetails }}
+      setDetails={(updated) =>
+        setSupplierDetails((prev) => ({ ...prev, kycDetails: updated.kycDetails }))
+      }
+      onClose={closeDialog}
+    />
+  </DialogContent>
+</Dialog>
       {/* Bank Account Dialog */}
-      <Dialog open={activeDialog === "bankAccount"} onOpenChange={(val) => !val && closeDialog()}>
+      <Dialog
+        open={activeDialog === "bankAccount"}
+        onOpenChange={(val) => !val && closeDialog()}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Bank Account</DialogTitle>
           </DialogHeader>
-          <BankAccountCreateForm
-            supplierDetails={supplierDetails}
-            setSupplierDetails={setSupplierDetails}
-            onClose={closeDialog}
-          />
+           <BankAccountCreateForm
+      details={{ bankAccounts: supplierDetails.bankAccounts }}
+      setDetails={(updated) =>
+        setSupplierDetails((prev) => ({ ...prev, bankAccounts: updated.bankAccounts }))
+      }
+      onClose={closeDialog}
+    />
         </DialogContent>
       </Dialog>
 
       {/* UPI Dialog */}
-      <Dialog open={activeDialog === "upi"} onOpenChange={(val) => !val && closeDialog()}>
+      <Dialog
+        open={activeDialog === "upi"}
+        onOpenChange={(val) => !val && closeDialog()}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>UPI Type</DialogTitle>
           </DialogHeader>
-          <UpiCreateForm
-            supplierDetails={supplierDetails}
-            setSupplierDetails={setSupplierDetails}
-            onClose={closeDialog}
-          />
+        <UpiCreateForm
+  details={{ upiDetails: supplierDetails.upiDetails }}
+  setDetails={(updated) =>
+    setSupplierDetails((prev) => ({ ...prev, upiDetails: updated.upiDetails }))
+  }
+  onClose={closeDialog}
+/>
         </DialogContent>
       </Dialog>
 
       {/* Contact Edit Dialog */}
       {contact && (
-        <Dialog open={activeDialog === "contactEdit"} onOpenChange={(val) => !val && closeDialog()}>
+        <Dialog
+          open={activeDialog === "contactEdit"}
+          onOpenChange={(val) => !val && closeDialog()}
+        >
           <DialogContent>
             <ContactEditForm
               contactList={contact}
@@ -248,7 +237,6 @@ const SupplierCreationPage = () => {
           </DialogContent>
         </Dialog>
       )}
-
     </div>
   );
 };
