@@ -64,12 +64,12 @@ export const useWorkTypeEditForm = (props: WorkTypeEditFormProps) => {
       setUpdatedWorkTypeList(updatedList);
     } else {
       const updatedList = [...workTypeList];
-      updatedList[selectedItem.index] = { name: name.trim() } as any; // ← string → object
+      updatedList[selectedItem.index] = { name: name.trim() } as any; 
       setWorkTypeList(updatedList);
     }
 
     setError("");
-    onClose?.();  // ← Ref?.current?.close() → onClose?.()
+    onClose?.();  
   };
 
   return {

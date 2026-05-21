@@ -4,7 +4,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
 import { WorkRateAbstractUrls } from "../../utils/urls";
-import { useWorkRateAbstractList } from "./useWorkRateAbstractList"; // ✅ fixed: Abstraction → Abstract
+import { useWorkRateAbstractList } from "./useWorkRateAbstractList"; 
 import type { WorkRateAbstractProps } from "../../DTOs/WorkRateAbstract";
 import { Search } from "lucide-react";
 import {
@@ -31,7 +31,7 @@ const WorkRateAbstractListPage = () => {
     deleteId,
     searchText,
     setSearchText,
-  } = useWorkRateAbstractList(); // ✅ fixed: useWorkRateAbstractionList → useWorkRateAbstractList
+  } = useWorkRateAbstractList();
 
   // ✅ Client-side filter by site name
   const filteredList = workRateAbstract?.filter((item: WorkRateAbstractProps) =>

@@ -77,7 +77,7 @@ const WorkerCategoryEditPage = () => {
           />
 
           {/* Work Type Section */}
-          {/* ✅ Replaced Button + PlusCircle with FormActionButton (same as ClientEditPage) */}
+       
           <FormActionButton
             heading="Work Type"
             label="Add"

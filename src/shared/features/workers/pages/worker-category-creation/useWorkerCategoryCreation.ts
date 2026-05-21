@@ -3,6 +3,8 @@ import { useWorkerCategoryService } from "@/shared/features/workers/service/Work
 import { SitesUrls } from "../../../sites/utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import type { WorkerRole, WorkerRoles } from "../../DTOs/WorkRoleProps";
+import type { WorkType } from "../../DTOs/WorkTypeProps";
 
 const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -11,8 +13,14 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
 
   const [workerCategoryName, setWorkerCategoryName] = useState(queryString.get("workerCategoryName") || "");
   const [notes, setNotes] = useState("");
+  const [workTypeList, setWorkTypeList] = useState<WorkType[]>([]);
+const [workerRoleList, setWorkerRoleList] = useState<(WorkerRole | WorkerRoles)[]>([]);
 
-  const { error, validate } = useWorkerCategoryInputValidate(workerCategoryName);
+  const { error, validate } = useWorkerCategoryInputValidate(
+  workerCategoryName,
+  workTypeList,
+  workerRoleList,
+);
 
   const handleCancel = () => {
     if (redirectUrl) {
@@ -34,7 +42,13 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
     }
   };
 
-  return { workerCategoryName, setWorkerCategoryName, notes, setNotes, error, handleCancel, handleSubmission };
+  return {
+  workerCategoryName, setWorkerCategoryName,
+  notes, setNotes,
+  workTypeList, setWorkTypeList,       // ← add
+  workerRoleList, setWorkerRoleList,   // ← add
+  error, handleCancel, handleSubmission
+};
 };
 
 export { useWorkerCategoryCreation };

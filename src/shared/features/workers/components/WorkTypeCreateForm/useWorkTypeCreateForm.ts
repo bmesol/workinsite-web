@@ -28,10 +28,10 @@ export const useWorkType = (props: WorkTypeCreateFormProps) => {
       return;
     }
 
-    setWorkTypeList([...workTypeList, { name: workType.trim() } as any]); // ← object instead of string
+    setWorkTypeList([...workTypeList, { name: workType.trim() } as any]); 
     setWorkType("");
     setError("");
-    onClose?.(); // ← replaces bottomSheetRef?.current.close()
+    onClose?.(); 
   };
 
   return {

@@ -39,11 +39,12 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps[]>([]);
   const [workerCategory, setWorkerCategory] = useState<WorkerCategoryProps>({
-    id: 0,
-    workerCategoryName: "",
-    note: "",
-    isActive: true,
-  });
+  id: 0,
+  name: "",              // ← add this, it's required by the type
+  workerCategoryName: "",
+  note: "",
+  isActive: true,
+});
 
   const [workerDetails, setWorkerDetails] = useState<Worker | WorkerRequest>({
     name: "",
