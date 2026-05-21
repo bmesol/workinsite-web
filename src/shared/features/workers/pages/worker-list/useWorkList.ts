@@ -12,7 +12,7 @@ const useWorkerList = () => {
   const [hasSearchFilter, setHasSearchFilter] = useState<boolean>(false);
 
   const fetchWorker = async (searchString: string = "") => {
-    const workerData = await workerService.getWorkers(searchString);
+    const workerData = await workerService.getWorkers({ WorkerName: searchString });
     if (!!searchString) setHasSearchFilter(true);
     setWorkerDetails(workerData);
   };

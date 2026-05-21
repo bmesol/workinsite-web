@@ -35,7 +35,7 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps[]>([]);
   const [workerCategory, setWorkerCategory] = useState<WorkerCategoryProps>({
-    id: 0, workerCategoryName: "", note: "", isActive: true,
+    id: 0, name: "", workerCategoryName: "", note: "", isActive: true,
   });
 
   const [workerDetails, setWorkerDetails] = useState<Worker | WorkerRequest>({
@@ -43,7 +43,7 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
     name: "",
     dateOfBirth,
     contact: { id: 0, name: "", contactDetails: [] },
-    workerCategory: { id: 0, workerCategoryName: "", note: "", isActive: true },
+    workerCategory: { id: 0, name: "", workerCategoryName: "", note: "", isActive: true },
     note: "",
     gender: gender as GenderTypes,
     kycDetails: [],

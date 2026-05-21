@@ -14,7 +14,6 @@ import type {
 
 const PAGE_SIZE = 10;
 
-// ─── Date Helpers ─────────────────────────────────────────────────────────────
 
 const formatDate = (date: Date): string => {
   const d = String(date.getDate()).padStart(2, '0');
@@ -43,7 +42,6 @@ export const getWeekRange = (option: 'currentWeek' | 'lastWeek'): DateRange => {
   }
 };
 
-// ─── Validation ───────────────────────────────────────────────────────────────
 
 interface ValidationError {
   fromDate: string;
@@ -96,7 +94,6 @@ export function useWorkerReport() {
   const [siteOptions, setSiteOptions]     = useState<SiteOption[]>([]);
   const [workerOptions, setWorkerOptions] = useState<WorkerOption[]>([]);
 
-  // ── fetch reports ──────────────────────────────────────────────────────────
 
   const fetchReports = useCallback(async (reset = false, override?: Partial<{
     SiteId: number | undefined;
@@ -136,21 +133,19 @@ export function useWorkerReport() {
     }
   }, [hasMore, pageNumber, site, worker, dateRange, workerReportService]);
 
-  // ── site / worker search ──────────────────────────────────────────────────
 
   const fetchSites = async (text: string) => {
     if (!text) return;
-    const res = await siteService.getSites(text);
+    const res = await siteService.getSites({ searchString: text });
     setSiteOptions((res ?? []).slice(0, 5));
   };
 
   const fetchWorkers = async (text: string) => {
   if (!text) return;
-  const res = await workerService.getWorkers(text);
+  const res = await workerService.getWorkers({ WorkerName: text });
   setWorkerOptions((res ?? []).slice(0, 5));
 };
 
-  // ── handlers ─────────────────────────────────────────────────────────────
 
   const handleDateOptionChange = (option: DateRangeOption) => {
     setSelectedOption(option);

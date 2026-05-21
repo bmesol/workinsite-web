@@ -11,7 +11,7 @@ const useSiteList = () => {
   const [hasSearchFilter, setHasSearchFilter] = useState<boolean>(false);
 
   const fetchSite = async (searchString: string = "") => {
-    const siteData = await siteService.getSites(searchString);
+    const siteData = await siteService.getSites({ searchString });
     setHasSearchFilter(!!searchString);  // 👈 true/false in one line
     if (siteData) setSiteDetails(siteData);  // 👈 null guard
   };

@@ -66,7 +66,7 @@ const useWorkRateAbstractCreate = () => {
   }));
 
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites(searchString); 
+    const sites = await siteService.getSites({ searchString });
     if (!sites) return;
     setSiteList(searchString ? sites.slice(0, 3) : sites);
   };
