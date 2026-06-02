@@ -38,23 +38,51 @@ const WorkerEditPage = () => {
   const closeDialog = () => setActiveDialog(null);
 
   const {
-    name, setName,
-    dateOfBirth, setDateOfBirth,
-    genderItems, gender, setGender,
-    notes, setNotes,
-    isActive, setIsActive,
-    workerDetails, setWorkerDetails,
-    error, navigate, handleSubmission,
-    isKycAddDisabled, isBankAccountsAddDisabled, isUpiAddDisabled,
-    contactDetails, workerCategoryDetails,
-    contactId, workerCategoryId,
-    handleWorkerCategoryCreate, handleWorkerCategoryEdit,
-    handleContactCreate, handleContactEdit,
-    handleContactChange, handleWorkerCategoryChange,
-    fetchContacts, fetchWorkerCategories,
-    contact, workerCategory,
-    primaryContactDetails, hasMoreDetails,
+    name,
+    setName,
+    dateOfBirth,
+    setDateOfBirth,
+    genderItems,
+    gender,
+    setGender,
+    notes,
+    setNotes,
+    isActive,
+    setIsActive,
+    workerDetails,
+    setWorkerDetails,
+    error,
+    navigate,
+    handleSubmission,
+    isKycAddDisabled,
+    isBankAccountsAddDisabled,
+    isUpiAddDisabled,
+    contactDetails,
+    workerCategoryDetails,
+    contactId,
+    workerCategoryId,
+    handleWorkerCategoryCreate,
+    handleWorkerCategoryEdit,
+    handleContactCreate,
+    handleContactEdit,
+    handleContactChange,
+    handleWorkerCategoryChange,
+    fetchContacts,
+    fetchWorkerCategories,
+    contact,
+    loading,
+    workerCategory,
+    primaryContactDetails,
+    hasMoreDetails,
   } = useWorkerEdit(id as string, queryString);
+
+  if (loading) {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <p className="text-gray-500 text-sm">Loading...</p>
+    </div>
+  );
+}
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
@@ -62,15 +90,20 @@ const WorkerEditPage = () => {
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
-
           {/* Row 1: Name + DOB */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {workerDetails.name && (
-              <NameField inputValue={workerDetails.name} setInputValue={(v) => setName(v)} errorMessage={error.name} required={true} />
-            )}
-            {workerDetails.dateOfBirth && (
-              <DateOfBirthField inputValue={workerDetails.dateOfBirth} setInputValue={(v) => setDateOfBirth(v)} errorMessage={error.dateOfBirth} required={true} />
-            )}
+            <NameField
+              inputValue={name}
+              setInputValue={setName}
+              errorMessage={error.name}
+              required={true}
+            />
+            <DateOfBirthField
+              inputValue={dateOfBirth}
+              setInputValue={setDateOfBirth}
+              errorMessage={error.dateOfBirth}
+              required={true}
+            />
           </div>
 
           {/* Row 2: Contact + Worker Category */}
@@ -108,8 +141,18 @@ const WorkerEditPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {contactId && (
                 <div>
-                  <FormActionButton heading="Contact detail" label="Edit" onClick={handleContactEdit} isColsTwo={true} />
-                  <ContactTypes contactList={primaryContactDetails} showEditDeleteButtons={false} />
+                  <FormActionButton
+                    heading="Contact detail"
+                    label="Edit"
+                    onClick={handleContactEdit}
+                    isColsTwo={true}
+                  />
+                  <div className="flex flex-col gap-2">
+                    <ContactTypes
+                      contactList={primaryContactDetails}
+                      showEditDeleteButtons={false}
+                    />
+                  </div>
                   {hasMoreDetails && (
                     <button
                       onClick={() => setActiveDialog("contactEdit")}
@@ -122,19 +165,25 @@ const WorkerEditPage = () => {
               )}
               {workerCategoryId && (
                 <div>
-                  <FormActionButton heading="Worker Category detail" label="Edit" onClick={handleWorkerCategoryEdit} isColsTwo={true} />
-                  <div className="mt-2 text-sm text-gray-700">{workerCategory.workerCategoryName}</div>
+                  <FormActionButton
+                    heading="Worker Category detail"
+                    label="Edit"
+                    onClick={handleWorkerCategoryEdit}
+                    isColsTwo={true}
+                  />
+                  <div className="mt-2 text-sm text-gray-700">
+                    {workerCategory.name}
+                  </div>
                 </div>
               )}
             </div>
           )}
 
-          {/* Gender */}
           {workerDetails.gender && (
             <RadioField
               label="Gender"
               items={genderItems}
-              inputValue={workerDetails.gender as string}
+              inputValue={gender}
               setInputValue={(v) => setGender(v as GenderTypes)}
               errorMessage={error.gender}
               required={true}
@@ -143,18 +192,32 @@ const WorkerEditPage = () => {
 
           {/* Notes */}
           {notes !== undefined && (
-            <TextareaField label="Notes" inputValue={`${notes ? notes : ""}`} setInputValue={setNotes} placeholder="Enter your notes" />
+            <TextareaField
+              label="Notes"
+              inputValue={`${notes ? notes : ""}`}
+              setInputValue={setNotes}
+              placeholder="Enter your notes"
+            />
           )}
 
           {/* KYC + Bank + UPI */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* KYC */}
             <div>
-              <FormActionButton heading="KYC" label="Add" onClick={() => setActiveDialog("kyc")} isAddDisabled={isKycAddDisabled} isColsTwo={true} />
+              <FormActionButton
+                heading="KYC"
+                label="Add"
+                onClick={() => setActiveDialog("kyc")}
+                isAddDisabled={isKycAddDisabled}
+                isColsTwo={true}
+              />
               <KycTypes
                 details={{ kycDetails: workerDetails.kycDetails }}
                 setDetails={(updated) =>
-                  setWorkerDetails((prev) => ({ ...prev, kycDetails: updated.kycDetails }))
+                  setWorkerDetails((prev) => ({
+                    ...prev,
+                    kycDetails: updated.kycDetails,
+                  }))
                 }
                 isColsTwo={true}
               />
@@ -162,11 +225,20 @@ const WorkerEditPage = () => {
 
             {/* Bank Accounts */}
             <div>
-              <FormActionButton heading="Bank Accounts" label="Add" onClick={() => setActiveDialog("bankAccount")} isAddDisabled={isBankAccountsAddDisabled} isColsTwo={true} />
+              <FormActionButton
+                heading="Bank Accounts"
+                label="Add"
+                onClick={() => setActiveDialog("bankAccount")}
+                isAddDisabled={isBankAccountsAddDisabled}
+                isColsTwo={true}
+              />
               <BankAccounts
                 details={{ bankAccounts: workerDetails.bankAccounts }}
                 setDetails={(updated) =>
-                  setWorkerDetails((prev) => ({ ...prev, bankAccounts: updated.bankAccounts }))
+                  setWorkerDetails((prev) => ({
+                    ...prev,
+                    bankAccounts: updated.bankAccounts,
+                  }))
                 }
                 isColsTwo={true}
               />
@@ -174,11 +246,20 @@ const WorkerEditPage = () => {
 
             {/* UPI */}
             <div>
-              <FormActionButton heading="UPIs" label="Add" onClick={() => setActiveDialog("upi")} isAddDisabled={isUpiAddDisabled} isColsTwo={true} />
+              <FormActionButton
+                heading="UPIs"
+                label="Add"
+                onClick={() => setActiveDialog("upi")}
+                isAddDisabled={isUpiAddDisabled}
+                isColsTwo={true}
+              />
               <UpiTypes
                 details={{ upiDetails: workerDetails.upiDetails }}
                 setDetails={(updated) =>
-                  setWorkerDetails((prev) => ({ ...prev, upiDetails: updated.upiDetails }))
+                  setWorkerDetails((prev) => ({
+                    ...prev,
+                    upiDetails: updated.upiDetails,
+                  }))
                 }
                 isColsTwo={true}
               />
@@ -186,24 +267,37 @@ const WorkerEditPage = () => {
 
             {/* Is Active */}
             <div className="flex items-center gap-3">
-              <Label className="text-base font-medium text-black">Is Active</Label>
+              <Label className="text-base font-medium text-black">
+                Is Active
+              </Label>
               <Switch checked={isActive} onCheckedChange={setIsActive} />
             </div>
           </div>
 
           {/* Submit */}
-          <FormSubmissionButtons onCancel={() => navigate(WorkersUrls.list)} onSave={handleSubmission} />
+          <FormSubmissionButtons
+            onCancel={() => navigate(WorkersUrls.list)}
+            onSave={handleSubmission}
+          />
         </div>
       </Card>
 
       {/* KYC Dialog */}
-      <Dialog open={activeDialog === "kyc"} onOpenChange={(val) => !val && closeDialog()}>
+      <Dialog
+        open={activeDialog === "kyc"}
+        onOpenChange={(val) => !val && closeDialog()}
+      >
         <DialogContent>
-          <DialogHeader><DialogTitle>KYC Type</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>KYC Type</DialogTitle>
+          </DialogHeader>
           <KycCreateForm
             details={{ kycDetails: workerDetails.kycDetails }}
             setDetails={(updated) =>
-              setWorkerDetails((prev) => ({ ...prev, kycDetails: updated.kycDetails }))
+              setWorkerDetails((prev) => ({
+                ...prev,
+                kycDetails: updated.kycDetails,
+              }))
             }
             onClose={closeDialog}
           />
@@ -211,13 +305,21 @@ const WorkerEditPage = () => {
       </Dialog>
 
       {/* Bank Account Dialog */}
-      <Dialog open={activeDialog === "bankAccount"} onOpenChange={(val) => !val && closeDialog()}>
+      <Dialog
+        open={activeDialog === "bankAccount"}
+        onOpenChange={(val) => !val && closeDialog()}
+      >
         <DialogContent>
-          <DialogHeader><DialogTitle>Bank Account</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Bank Account</DialogTitle>
+          </DialogHeader>
           <BankAccountCreateForm
             details={{ bankAccounts: workerDetails.bankAccounts }}
             setDetails={(updated) =>
-              setWorkerDetails((prev) => ({ ...prev, bankAccounts: updated.bankAccounts }))
+              setWorkerDetails((prev) => ({
+                ...prev,
+                bankAccounts: updated.bankAccounts,
+              }))
             }
             onClose={closeDialog}
           />
@@ -225,13 +327,21 @@ const WorkerEditPage = () => {
       </Dialog>
 
       {/* UPI Dialog */}
-      <Dialog open={activeDialog === "upi"} onOpenChange={(val) => !val && closeDialog()}>
+      <Dialog
+        open={activeDialog === "upi"}
+        onOpenChange={(val) => !val && closeDialog()}
+      >
         <DialogContent>
-          <DialogHeader><DialogTitle>UPI Type</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>UPI Type</DialogTitle>
+          </DialogHeader>
           <UpiCreateForm
             details={{ upiDetails: workerDetails.upiDetails }}
             setDetails={(updated) =>
-              setWorkerDetails((prev) => ({ ...prev, upiDetails: updated.upiDetails }))
+              setWorkerDetails((prev) => ({
+                ...prev,
+                upiDetails: updated.upiDetails,
+              }))
             }
             onClose={closeDialog}
           />

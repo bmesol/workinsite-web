@@ -110,7 +110,7 @@ const WorkerCreationPage = () => {
               {workerCategoryId && (
                 <div>
                   <FormActionButton heading="Worker Category detail" label="Edit" onClick={handleWorkerCategoryEdit} isColsTwo={true} />
-                  <div className="mt-2 text-sm text-gray-700">{workerCategory.workerCategoryName}</div>
+                  <div className="mt-2 text-sm text-gray-700">{workerCategory.name}</div>
                 </div>
               )}
             </div>

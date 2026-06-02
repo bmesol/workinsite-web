@@ -9,25 +9,64 @@ const useSupplierList = () => {
   const supplierService = useSupplierService();
   const [supplierDetails, setSupplierDetails] = useState<Supplier[]>([]);
   const [hasSearchFilter, setHasSearchFilter] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);            
+  const [searchLoading, setSearchLoading] = useState(false); 
+  const [deleteId, setDeleteId] = useState<number | null>(null); 
+
+  useEffect(() => {
+    const initialLoad = async () => {
+      setLoading(true);
+      try {
+        const supplierData = await supplierService.getSuppliers("");
+        setSupplierDetails(supplierData);
+      } finally {
+        setLoading(false);
+      }
+    };
+    initialLoad();
+  }, []);
 
   const fetchSupplier = async (searchString: string = "") => {
-    const supplierData = await supplierService.getSuppliers(searchString);
-    if (searchString) setHasSearchFilter(true); // 👈 removed !! (unnecessary)
-    else setHasSearchFilter(false);              // 👈 reset filter when search cleared
+    setSearchLoading(true);
+    try {
+      const supplierData = await supplierService.getSuppliers(searchString);
+      setHasSearchFilter(searchString !== "");
+      setSupplierDetails(supplierData);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const refreshList = async () => {
+    const supplierData = await supplierService.getSuppliers("");
     setSupplierDetails(supplierData);
   };
 
-  useEffect(() => { fetchSupplier(); }, []);
-
   const handleSupplierSelect = (id: number) => navigate(SuppliersUrls.edit(id));
 
-  const handleSupplierDelete = async (e: React.MouseEvent, id: number) => {
+  const confirmDelete = (e: React.MouseEvent, id: number) => {
     e.stopPropagation();
-    await supplierService.deleteSupplier(id);
-    fetchSupplier();  // 👈 avoid full page reload, re-fetch instead
+    setDeleteId(id);
   };
 
-  return { supplierDetails, fetchSupplier, handleSupplierSelect, handleSupplierDelete, hasSearchFilter };
+  const handleSupplierDelete = async (id: number) => {
+    await supplierService.deleteSupplier(id);
+    setDeleteId(null);
+    refreshList(); 
+  };
+
+  return {
+    supplierDetails,
+    fetchSupplier,
+    handleSupplierSelect,
+    confirmDelete,
+    handleSupplierDelete,
+    hasSearchFilter,
+    loading,
+    searchLoading,
+    deleteId,
+    setDeleteId,
+  };
 };
 
 export { useSupplierList };

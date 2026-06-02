@@ -15,6 +15,7 @@ const useUserEdit = (id: string) => {
   const [notes, setNotes]           = useState("");
   const [isActive, setIsActive]     = useState(true);
   const [user, setUser]             = useState<User>();
+  const [loading, setLoading] = useState(true);
 
   const { roles, error, validate } = useInputValidate({ name, phoneNumber, role });
   const navigate     = useNavigate();
@@ -22,14 +23,19 @@ const useUserEdit = (id: string) => {
 
   // ── Fetch user on mount ──
 
- const fetchUser = async () => {
-    const userData = await userService.getUser(parseInt(id));
-    setUser(userData);
-    setName(userData.name);           
-    setPhoneNumber(userData.phone);   
-    setRole(userData.role.id.toString());
-    setNotes(userData.note ?? "");    
-    setIsActive(userData.isActive);
+const fetchUser = async () => {
+    setLoading(true); 
+    try {
+      const userData = await userService.getUser(parseInt(id));
+      setUser(userData);
+      setName(userData.name);
+      setPhoneNumber(userData.phone);
+      setRole(userData.role.id.toString());
+      setNotes(userData.note ?? "");
+      setIsActive(userData.isActive);
+    } finally {
+      setLoading(false); 
+    }
   };
 
   useEffect(() => { fetchUser(); }, []);
@@ -66,6 +72,7 @@ const useUserEdit = (id: string) => {
     role,
     error,
     roles,
+    loading,
     setName,
     setPhoneNumber,
     setRole,

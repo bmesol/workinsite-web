@@ -185,15 +185,17 @@ const useAttendanceCreation = () => {
     setUnitList(searchString ? units.slice(0, 3) : units);
   };
 
-  const fetchWorkers = async (WorkerName: string = '') => {
-    const workers = await workerService.getWorkers({
-      WorkerName,
-      WorkerCategoryId: workType.workerCategory.id,
-    });
-    if (!workers?.items) return;
-    setWorkerList(WorkerName ? workers.items.slice(0, 3) : workers.items);
-  };
-
+const fetchWorkers = async (WorkerName: string = '') => {
+  const workers = await workerService.getWorkers({
+    WorkerName,
+    WorkerCategoryId: workType.workerCategory.id || undefined,
+  });
+  
+  console.log("workers response:", workers);
+  
+  if (!workers) return;
+  setWorkerList(WorkerName ? workers.slice(0, 3) : workers);
+};
   const fetchWageTypes = async (searchString: string = '') => {
     const wageTypes = await wageTypeService.getWageTypes(searchString);
     if (!wageTypes) return;
@@ -324,51 +326,77 @@ const useAttendanceCreation = () => {
     setUploadedImages(updated);
   };
 
-  const handleSubmit = async () => {
-    if (validate()) {
-      try {
-        const formattedAttendanceSplits = attendanceSplit.map(split => ({
-          workerRoleId: split.workerRole.id,
-          shiftId: split.shift.id,
-          noOfPersons: split.noOfPersons,
-        }));
+// ✅ Coordinates → Address convert பண்ற function
+const getAddressFromCoords = async (lat: number, lng: number): Promise<string> => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+    );
+    const data = await response.json();
+    return data.display_name || `${lat}, ${lng}`;
+  } catch {
+    return `${lat}, ${lng}`; // fallback
+  }
+};
 
-        const formData = new FormData();
+const handleSubmit = async () => {
+  if (validate()) {
+    try {
+      // ✅ Get location
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
 
-        formData.append('Date', date);
-        formData.append('SiteId', String(parseInt(siteId)));
-        formData.append('WageTypeId', String(parseInt(wageTypeId)));
-        formData.append('WorkTypeId', String(workType.id));
-        formData.append('WorkerId', String(parseInt(workerId)));
-        formData.append('WorkedQuantity', workedQuantity.toString());
-        formData.append('UnitId', String(parseInt(unitId)));
-        formData.append('WorkModeId', String(parseInt(workModeId)));
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
 
-        formattedAttendanceSplits.forEach((split, index) => {
-          formData.append(`AttendanceSplits[${index}].WorkerRoleId`, String(split.workerRoleId));
-          formData.append(`AttendanceSplits[${index}].ShiftId`, String(split.shiftId));
-          formData.append(`AttendanceSplits[${index}].NoOfPersons`, String(split.noOfPersons));
+      // ✅ Get address
+      const address = await getAddressFromCoords(lat, lng);
+
+      const formData = new FormData();
+
+      formData.append('Date', date);
+      formData.append('SiteId', String(parseInt(siteId)));
+      formData.append('WageTypeId', String(parseInt(wageTypeId)));
+      formData.append('WorkTypeId', String(workType.id));
+      formData.append('WorkerId', String(parseInt(workerId)));
+      formData.append('WorkedQuantity', workedQuantity.toString());
+      formData.append('UnitId', String(parseInt(unitId)));
+      formData.append('WorkModeId', String(parseInt(workModeId)));
+
+      // ✅ Location with address
+      formData.append('CurrentLocation.Lat', lat.toString());
+      formData.append('CurrentLocation.Lng', lng.toString());
+      formData.append('CurrentLocation.Address', address); // ✅ real address
+
+      attendanceSplit.forEach((split, index) => {
+        formData.append(`AttendanceSplits[${index}].WorkerRoleId`, String(split.workerRole.id));
+        formData.append(`AttendanceSplits[${index}].ShiftId`, String(split.shift.id));
+        formData.append(`AttendanceSplits[${index}].NoOfPersons`, String(split.noOfPersons));
+      });
+
+      if (notes) formData.append('Note', notes.trim());
+
+      if (uploadedImages.length > 0) {
+        uploadedImages.forEach(img => {
+          formData.append('Images', img.file, img.name);
         });
-
-        if (notes) formData.append('Note', notes.trim());
-
-        // Web: append File objects directly
-        if (uploadedImages.length > 0) {
-          uploadedImages.forEach(img => {
-            formData.append('Images', img.file, img.name);
-          });
-        }
-
-        await attendanceService.createAttendance(formData);
-        resetFormFields();
-        handleNavigate();
-      } catch (error: any) {
-        const errorMsg =
-          error?.response?.data?.[0]?.message || 'Failed to create Attendance';
-        toast.error(errorMsg);
       }
+
+      await attendanceService.createAttendance(formData);
+      resetFormFields();
+      handleNavigate();
+
+    } catch (error: any) {
+      if (error?.code === 1) {
+        toast.error('Location permission denied. Please allow location access.');
+        return;
+      }
+      const errorMsg = error?.response?.data?.[0]?.message || 'Failed to create Attendance';
+      toast.error(errorMsg);
     }
-  };
+  }
+};
 
   return {
     // form state
@@ -432,6 +460,7 @@ const useAttendanceCreation = () => {
     isWorkTypeChangeDialogOpen,
     confirmWorkTypeChange,
     cancelWorkTypeChange,
+    handleWorkTypeChange,
   };
 };
 

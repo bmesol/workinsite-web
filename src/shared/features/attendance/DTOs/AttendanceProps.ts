@@ -43,6 +43,12 @@ type UploadedImage = {
   file?: File;       // web only: original File object for FormData upload
 };
 
+export type ViewImages = {
+  id: number;
+  imagePath: string;
+  staticBaseUrl: string;
+};
+
 interface AttendanceCreationRequest {
   date: string;
   siteId: number;
@@ -84,7 +90,7 @@ interface AttendanceProps {
   workMode: WorkMode;
   notes: string;
   attendanceSplits: AttendanceSplit[];
-  images?: string[]; // web: array of image URLs instead of any
+  images?: ViewImages[];  // web: array of image URLs instead of any
 }
 
 export type {
@@ -95,4 +101,5 @@ export type {
   AttendanceProps,
   UploadedImage,
   WorkType,
+  
 };

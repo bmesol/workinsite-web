@@ -1,6 +1,6 @@
 import { useContactValidate } from "../../../clients/components/ContactValidate/ContactValidate";
 import { useInputValidate } from "../../../suppliers/components/InputValidate/InputValidate";
-import { UpiTypes } from "../../DTOs/SupplierProps";  // 👈 type remove
+import { UpiTypes } from "../../DTOs/SupplierProps";  
 import type { Supplier, SupplierRequest } from "../../DTOs/SupplierProps";
 import { useContactService } from "@/shared/features/contacts/service/ContactService";
 import { useSupplierService } from "@/shared/features/suppliers/service/SupplierService";
@@ -23,7 +23,8 @@ const useSupplierEdit = (id: string, queryString: URLSearchParams) => {
   const [isActive, setIsActive] = useState(true);
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
-  const [contactEditOpen, setContactEditOpen] = useState(false); // 👈 useModel replace
+  const [contactEditOpen, setContactEditOpen] = useState(false); 
+  const [loading, setLoading] = useState(true);
 
   const [supplierDetails, setSupplierDetails] = useState<Supplier | SupplierRequest>(
     {
@@ -37,14 +38,19 @@ const useSupplierEdit = (id: string, queryString: URLSearchParams) => {
     } as Supplier
   );
 
-const fetchSupplier = async () => {
-  const supplierData: Supplier = await supplierService.getSupplier(parseInt(id));
-  setSupplierDetails(supplierData);
-  setName(supplierData.name);  // 👈 add this line
-  setNotes(supplierData.note);
-  setIsActive(supplierData.isActive as boolean);
-  if (!newContactId) setContactId(supplierData.contact.id.toString());
-};
+  const fetchSupplier = async () => {
+    setLoading(true); 
+    try {
+      const supplierData: Supplier = await supplierService.getSupplier(parseInt(id));
+      setSupplierDetails(supplierData);
+      setName(supplierData.name);
+      setNotes(supplierData.note);
+      setIsActive(supplierData.isActive as boolean);
+      if (!newContactId) setContactId(supplierData.contact.id.toString());
+    } finally {
+      setLoading(false); 
+    }
+  };
   useEffect(() => { fetchSupplier(); }, []);
 
   const fetchContacts = async (searchString: string = "") => {
@@ -95,7 +101,7 @@ const fetchSupplier = async () => {
   const handleContactEdit = () => {
     const redirectParams = new URLSearchParams({ redirect: `${SuppliersUrls.edit(parseInt(id))}?contactId=${contactId}` });
     navigate(`${ContactsUrls.edit(parseInt(contactId))}?${redirectParams.toString()}`);
-    setContactEditOpen(false); // 👈 model.close() replace
+    setContactEditOpen(false);
   };
 
   const handleSubmission = async () => {
@@ -135,8 +141,9 @@ const fetchSupplier = async () => {
     handleContactChange,
     fetchContacts,
     contact,
-    contactEditOpen,       // 👈
-    setContactEditOpen,    // 👈
+    loading,
+    contactEditOpen,      
+    setContactEditOpen,   
     primaryContactDetails,
     hasMoreDetails,
     handleContactEdit,

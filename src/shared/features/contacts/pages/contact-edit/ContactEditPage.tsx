@@ -27,6 +27,7 @@ const ContactEditPage = () => {
     setName,
     setPhone,
     error,
+    loading,
     contactList,
     setContactList,
     handleCancel,
@@ -37,6 +38,14 @@ const ContactEditPage = () => {
   const handleAdd = () => {
     setIsOpen(true);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 text-sm">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen px-4 pb-5">

@@ -1,5 +1,6 @@
 interface ContactCardProps {
   name: string;
+  displayName?: string;
   imgURL?: string;
   phone?: string;
   email?: string;

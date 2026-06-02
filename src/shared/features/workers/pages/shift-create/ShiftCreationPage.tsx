@@ -82,6 +82,7 @@ const ShiftCreationPage = () => {
               placeholder="Enter Multiplier"
               required
               isDisabled={!editable || isFixedMultiplier}
+              regex="^[0-9.]*$" 
             />
 
             {/* Save / Update + Cancel Buttons — right-aligned, fixed width */}

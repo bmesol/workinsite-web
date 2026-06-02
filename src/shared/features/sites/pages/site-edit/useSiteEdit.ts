@@ -17,7 +17,6 @@ import { toast } from "sonner";
 const useSiteEdit = (id: string, queryString: URLSearchParams) => {
   const navigate = useNavigate();
 
-  // shadcn dialog open state — replaces useModel()
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const model = {
     open: () => setIsDialogOpen(true),
@@ -27,6 +26,7 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
   const clientService = useClientService();
   const contactService = useContactService();
   const siteService = useSiteService();
+  const [loading, setLoading] = useState(true);
 
   const getQueryParam = (param: string) => queryString.get(param)?.trim() || "";
 
@@ -55,19 +55,25 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
 
   const [siteDetails, setSiteDetails] = useState<Site>();
 
-  const fetchSite = async () => {
-    const siteData: Site = await siteService.getSite(parseInt(id));
-    setSiteDetails(siteData);
-    if (!newName) setName(siteData.name);
-    if (!newClientId) setClientId(siteData.client.id.toString());
-    if (!newGoogleLocation) setGoogleLocation(siteData.googleLocation);
-    if (!newNotes) setNotes(siteData.note);
-    if (!newContactId) setContactId(siteData.contact.id.toString());
-   if (validSupervisorIds.length === 0)
-  setSupervisorIds(siteData.supervisors?.map((supervisor) => supervisor.id) ?? []);
-    if (!newStatus) setStatus(siteData.status);
-    setWageTypeId(siteData.wageType.id.toString());
+ const fetchSite = async () => {
+    setLoading(true); 
+    try {
+      const siteData: Site = await siteService.getSite(parseInt(id));
+      setSiteDetails(siteData);
+      if (!newName) setName(siteData.name);
+      if (!newClientId) setClientId(siteData.client.id.toString());
+      if (!newGoogleLocation) setGoogleLocation(siteData.googleLocation);
+      if (!newNotes) setNotes(siteData.note);
+      if (!newContactId) setContactId(siteData.contact.id.toString());
+      if (validSupervisorIds.length === 0)
+        setSupervisorIds(siteData.supervisors?.map((supervisor) => supervisor.id) ?? []);
+      if (!newStatus) setStatus(siteData.status);
+      setWageTypeId(siteData.wageType.id.toString());
+    } finally {
+      setLoading(false); 
+    }
   };
+
 
   useEffect(() => { fetchSite(); }, []);
 
@@ -201,6 +207,7 @@ const siteStatus = [
     googleLocation,
     setGoogleLocation,
     notes,
+    loading,
     setNotes,
     contact,
     contactId,

@@ -18,6 +18,7 @@ import { ContactTypes } from "@/shared/features/contacts/DTOs/ContactProps";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
+import { NameField } from "@/shared/components/FormFields/NameField";
 
 const SiteEditPage = () => {
   const { id } = useParams<string>();
@@ -52,6 +53,7 @@ const SiteEditPage = () => {
     supervisorIds,
     setSupervisorIds,
     status,
+    loading,
     setStatus,
     siteStatus,
     redirectUrl,
@@ -65,6 +67,14 @@ const SiteEditPage = () => {
 
   const handleSupervisorsAdd = () => setSupervisorAddOpen(true);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 text-sm">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full min-h-screen px-4 pb-10">
       <Header title="Edit Site" />
@@ -74,20 +84,14 @@ const SiteEditPage = () => {
           <CardContent className="pt-6 flex flex-col gap-6">
             {/* Row 1: Name + Client */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="site-name" className="text-base font-medium">
-                  Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="site-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter site name"
-                />
-                {error.name && (
-                  <p className="text-sm text-destructive">{error.name}</p>
-                )}
-              </div>
+              <NameField
+    label="Name"
+    inputValue={name}
+    setInputValue={setName}
+    errorMessage={error.name}
+    placeholder="Enter site name"
+    required
+  />
 
               <ComboboxField
                 id="client-combobox"

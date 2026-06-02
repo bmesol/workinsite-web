@@ -9,7 +9,7 @@ const FormActionButton = (props: {
   isAddDisabled?: boolean;
   isColsTwo?: boolean;
   required?: boolean;
-  errorMessage?: string; 
+  errorMessage?: string;
 }) => {
   const { heading, label, onClick, isAddDisabled, isColsTwo = false, required, errorMessage } = props;
 
@@ -38,12 +38,12 @@ const FormActionButton = (props: {
           {label}
         </Button>
       </FormInput>
-      {/* ✅ Error message shown below the button row */}
+
+      {/* ✅ Error below the row, not inside flex-row */}
       {errorMessage && (
-        <p className="text-sm text-destructive">{errorMessage}</p>
+        <p className="text-sm text-red-500 mt-0.5">{errorMessage}</p>
       )}
     </div>
   );
 };
-
 export { FormActionButton };

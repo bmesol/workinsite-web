@@ -27,7 +27,7 @@ type ComboboxFieldProps = {
   onCreate?: (val: string) => void;
   error?: string;
   required?: boolean;
-  disabled?: boolean; 
+  disabled?: boolean;
 };
 
 const ComboboxField = ({
@@ -40,7 +40,7 @@ const ComboboxField = ({
   onCreate,
   error,
   required,
-  disabled = false, 
+  disabled = false,
 }: ComboboxFieldProps) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -56,7 +56,7 @@ const ComboboxField = ({
       <Popover
         open={open}
         onOpenChange={(val) => {
-          if (disabled) return; 
+          if (disabled) return;
           setOpen(val);
           if (val) onSearch("");
         }}
@@ -67,11 +67,11 @@ const ComboboxField = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            disabled={disabled} 
+            disabled={disabled}
             className={cn(
-              "w-full justify-between font-normal bg-white",
+              "w-full justify-between font-normal bg-white text-sm",
               !selectedLabel && "text-muted-foreground",
-              disabled && "opacity-50 cursor-not-allowed", 
+              disabled && "opacity-50 cursor-not-allowed",
             )}
           >
             {selectedLabel ?? `Select ${label.toLowerCase()}...`}
@@ -87,6 +87,7 @@ const ComboboxField = ({
                 setSearchValue(val);
                 onSearch(val);
               }}
+              
             />
             <CommandList>
               <CommandEmpty>

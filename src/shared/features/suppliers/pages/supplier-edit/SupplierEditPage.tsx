@@ -59,7 +59,16 @@ const SupplierEditPage = () => {
     primaryContactDetails,
     hasMoreDetails,
     handleContactEdit,
+    loading,
   } = useSupplierEdit(id as string, queryString);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 text-sm">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
@@ -91,33 +100,34 @@ const SupplierEditPage = () => {
         </div>
 
         {/* Contact Details */}
-        {contactId && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormActionButton
-                heading="Contact detail"
-                label="Edit"
-                onClick={handleContactEdit}
-                isColsTwo={true}
-              />
-            </div>
-            <ContactTypes
-              contactList={primaryContactDetails}
-              showEditDeleteButtons={false}
-            />
-            {hasMoreDetails && (
-              <div>
-                <button
-                  onClick={() => setIsContactOpen(true)}
-                  className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
-                >
-                  More details...
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
+       {contactId && (
+  <>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <FormActionButton
+        heading="Contact detail"
+        label="Edit"
+        onClick={handleContactEdit}
+        isColsTwo={true}
+      />
+    </div>
+    <div className="flex flex-col gap-2 ">
+      <ContactTypes
+        contactList={primaryContactDetails}
+        showEditDeleteButtons={false}
+      />
+    </div>
+    {hasMoreDetails && (
+      <div>
+        <button
+          onClick={() => setIsContactOpen(true)}
+          className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
+        >
+          More details...
+        </button>
+      </div>
+    )}
+  </>
+)}
         {/* Notes */}
         {notes !== undefined && (
           <TextareaField
@@ -151,7 +161,6 @@ const SupplierEditPage = () => {
             />
           </div>
 
-          {/* Bank Accounts */}
           {/* Bank Accounts */}
           <div>
             <FormActionButton

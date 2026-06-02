@@ -65,10 +65,19 @@ const ClientEditPage = () => {
     contact,
     primaryContactDetails,
     hasMoreDetails,
+    loading,
   } = useClientEdit(id as string, queryString);
   console.log("contact:", contact);
   console.log("contactId:", contactId);
   console.log("primaryContactDetails:", primaryContactDetails);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 text-sm">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
@@ -221,7 +230,7 @@ const ClientEditPage = () => {
         </div>
       </Card>
 
-       {/* KYC Dialog */}
+      {/* KYC Dialog */}
       <Dialog open={isKycOpen} onOpenChange={setIsKycOpen}>
         <DialogContent>
           <DialogHeader>

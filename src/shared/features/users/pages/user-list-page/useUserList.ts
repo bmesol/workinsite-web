@@ -31,30 +31,52 @@ import { UsersUrls } from "../../utils/urls";
 import { useEffect, useState } from "react";
 import type { User } from "../../DTOs/User";
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 const useUserList = () => {
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
   const userService = useUserService();
 
-  const [userList, setUserList]           = useState<User[]>([]);
+  const [userList, setUserList] = useState<User[]>([]);
   const [hasSearchFilter, setHasSearchFilter] = useState(false);
+  const [loading, setLoading] = useState(true);         // ✅ initial load
+  const [searchLoading, setSearchLoading] = useState(false); // ✅ search load
 
-  // ── Fetch users (with optional search) ──
+  // ✅ Initial load only
+  useEffect(() => {
+    const initialLoad = async () => {
+      setLoading(true);
+      try {
+        const users = await userService.getUsers("");
+        setUserList(users);
+      } finally {
+        setLoading(false);
+      }
+    };
+    initialLoad();
+  }, []);
 
+  // ✅ Search — full page load இல்லை
   const fetchUser = async (searchString: string = "") => {
-    const users = await userService.getUsers(searchString);
-    if (searchString) setHasSearchFilter(true);
-    setUserList(users);
+    setSearchLoading(true);
+    try {
+      const users = await userService.getUsers(searchString);
+      setHasSearchFilter(searchString !== "");
+      setUserList(users);
+    } finally {
+      setSearchLoading(false);
+    }
   };
-
-  useEffect(() => { fetchUser(); }, []);
-
-  // ── Navigate to edit page on card click ──
 
   const handleUserSelect = (id: number) => navigate(UsersUrls.edit(id));
 
-  return { userList, fetchUser, handleUserSelect, hasSearchFilter, navigate };
+  return {
+    userList,
+    fetchUser,
+    handleUserSelect,
+    hasSearchFilter,
+    navigate,
+    loading,
+    searchLoading,
+  };
 };
 
 export { useUserList };

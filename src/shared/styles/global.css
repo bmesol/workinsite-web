@@ -92,6 +92,15 @@
 
 --primary-bg-text: black;
 --secondary-bg-text: white;
+
+/* ✅ Payment text colors */
+  --payment-green-text: white;
+  --payment-blue-text: white;
+
+  /* ✅ Disabled border */
+  --disabled-border: #E5E5EA;
+
+  --table-header-bg: #f8fafc;
 }
 
 /* ================= DARK MODE ================= */
@@ -109,6 +118,10 @@
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+input::placeholder {
+  color: #9ca3af;
 }
 
 /* ================= BASE LAYER ================= */

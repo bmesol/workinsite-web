@@ -9,18 +9,45 @@ const useSiteList = () => {
   const siteService = useSiteService();
   const [siteDetails, setSiteDetails] = useState<Site[]>([]);
   const [hasSearchFilter, setHasSearchFilter] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  useEffect(() => {
+    const initialLoad = async () => {
+      setLoading(true);
+      try {
+        const siteData = await siteService.getSites({});  // ✅ empty object
+        setSiteDetails(siteData ?? []);  // ✅ undefined safe
+      } finally {
+        setLoading(false);
+      }
+    };
+    initialLoad();
+  }, []);
 
   const fetchSite = async (searchString: string = "") => {
-    const siteData = await siteService.getSites({ searchString });
-    setHasSearchFilter(!!searchString);  // 👈 true/false in one line
-    if (siteData) setSiteDetails(siteData);  // 👈 null guard
+    setSearchLoading(true);
+    try {
+      const siteData = await siteService.getSites(
+        searchString ? { searchString } : {}  // ✅ empty string-ஆ இருந்தா {} pass
+      );
+      setHasSearchFilter(searchString !== "");
+      setSiteDetails(siteData ?? []);  // ✅ undefined safe
+    } finally {
+      setSearchLoading(false);
+    }
   };
-
-  useEffect(() => { fetchSite(); }, []);
 
   const handleSiteSelect = (id: number) => navigate(SitesUrls.edit(id));
 
-  return { siteDetails, fetchSite, handleSiteSelect, hasSearchFilter };
+  return {
+    siteDetails,
+    fetchSite,
+    handleSiteSelect,
+    hasSearchFilter,
+    loading,
+    searchLoading,
+  };
 };
 
 export { useSiteList };

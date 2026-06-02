@@ -2,6 +2,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { usePermission } from "@/shared/hooks/usePermission";
 import type { WorkModeListProps } from "../../DTOs/WorkModeProps";
+import { ListItem } from "@/shared/components/ListItem/ListItem";
 
 const WorkModeList = ({
   workModeDetails = [], 
@@ -23,39 +24,17 @@ const WorkModeList = ({
 
   return (
     <div className="flex flex-col gap-2">
-      {workModeDetails.map((item) => {
-        const isEditing = item.id === editingWorkModeId;
-        return (
-          <div
-            key={item.id}
-            className={`flex items-center justify-between px-4 py-3 rounded-md border ${
-              isEditing ? "bg-gray-100 opacity-50" : "bg-white"
-            }`}
-          >
-            <span className="text-base font-medium text-black truncate">
-              {item.name}
-            </span>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={isEditing || !editable}
-                onClick={() => handleWorkModeEdit(item)}
-              >
-                <Pencil className="h-4 w-4 text-secondary" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={isEditing || !editable}
-                onClick={() => handleWorkModeDelete(item.id)}
-              >
-                <Trash2 className="h-4 w-4 text-destructive" />
-              </Button>
-            </div>
-          </div>
-        );
-      })}
+     {workModeDetails.map((item) => (
+  <ListItem
+    key={item.id}
+    label={item.name}
+    isEditing={item.id === editingWorkModeId}
+    actions={[
+      { type: "edit", onClick: () => handleWorkModeEdit(item), disabled: item.id === editingWorkModeId || !editable },
+      { type: "delete", onClick: () => handleWorkModeDelete(item.id), disabled: item.id === editingWorkModeId || !editable },
+    ]}
+  />
+))}
     </div>
   );
 };

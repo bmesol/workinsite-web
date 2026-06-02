@@ -8,25 +8,27 @@ type GetWorkersParams = {
 };
 
 const useWorkerService = () => {
-  const baseUrl = import.meta.env.VITE_SUPPLIER_SERVICE_BASE_URL || "";
+  const baseUrl = import.meta.env.VITE_WORKER_SERVICE_BASE_URL || "";
   const apiHelper = useAPIHelper(baseUrl, true);
 
-  const getWorkers = async (params: GetWorkersParams = {}) => {
-    const queryParams = new URLSearchParams();
-    if (params.WorkerName)       queryParams.append('WorkerName', params.WorkerName);
-    if (params.WorkerCategoryId) queryParams.append('WorkerCategoryId', params.WorkerCategoryId.toString());
-    const response = await apiHelper.get(`workers?${queryParams.toString()}`);
-    return response.data;
-  };
-
+const getWorkers = async (params: GetWorkersParams = {}) => {
+  const queryParams = new URLSearchParams();
+  if (params.WorkerName) queryParams.append('WorkerName', params.WorkerName);
+  if (params.WorkerCategoryId) queryParams.append('WorkerCategoryId', params.WorkerCategoryId.toString());
+  const response = await apiHelper.get(`workers?${queryParams.toString()}`);
+  
+  // ✅ response.data.items இருந்தா items, இல்லன்னா response.data directly
+  return response.data?.items ?? response.data;
+};
   const getWorker = async (id: number) => {
     const response = await apiHelper.get(`workers/${id}`);
     return response.data;
   };
 
   const createWorker = async (worker: WorkerRequest) => {
-    await apiHelper.post("workers", worker);
-  };
+  const response = await apiHelper.post("workers", worker);
+  return response.data; 
+};
 
   const updateWorker = async (id: number, worker: WorkerRequest) => {
     await apiHelper.put(`workers/${id}`, worker);

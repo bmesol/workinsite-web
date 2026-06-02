@@ -12,13 +12,14 @@ import { KYCTypes } from "../../../clients/DTOs/ClientProps";
 import { ContactsUrls } from "../../../contacts/utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const useWorkerCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const modalRef = useRef({ 
-    open: () => setIsModalOpen(true), 
-    close: () => setIsModalOpen(false) 
+  const modalRef = useRef({
+    open: () => setIsModalOpen(true),
+    close: () => setIsModalOpen(false),
   });
   const model = modalRef.current;
 
@@ -39,12 +40,13 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps[]>([]);
   const [workerCategory, setWorkerCategory] = useState<WorkerCategoryProps>({
-  id: 0,
-  name: "",              // ← add this, it's required by the type
-  workerCategoryName: "",
-  note: "",
-  isActive: true,
-});
+    id: 0,
+    name: "",
+    note: "",
+    isActive: true,
+    workTypes: [],
+    workerRoles: [],
+  });
 
   const [workerDetails, setWorkerDetails] = useState<Worker | WorkerRequest>({
     name: "",
@@ -77,18 +79,7 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     ],
   } as WorkerRequest);
 
-  const fetchContacts = async (searchString: string = "") => {
-    if (!searchString) return;
-    const contacts = await contactService.getContacts(searchString, false);
-    if (!contacts) return;
-    if (contactId) {
-      const validContacts = contacts.filter((item: Contact) => item.id !== parseInt(contactId));
-      setContactList([contact, ...validContacts.slice(0, 3)]);
-      return;
-    }
-    setContactList(contacts.slice(0, 3));
-  };
-
+  // ─── Fetch Contact by ID ──────────────────────────────────────────────────────
   useEffect(() => {
     const fetchContactById = async () => {
       if (!contactId) return;
@@ -99,6 +90,33 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     fetchContactById();
   }, [contactId]);
 
+  // ─── Fetch Worker Category by ID ──────────────────────────────────────────────
+  useEffect(() => {
+    const fetchWorkerCategoryById = async () => {
+      if (!workerCategoryId) return;
+      const fetchedCategory = await workerCategoryService.getWorkerCategory(parseInt(workerCategoryId));
+      setWorkerCategory(fetchedCategory);
+      setWorkerCategoryList([fetchedCategory]);
+    };
+    fetchWorkerCategoryById();
+  }, [workerCategoryId]);
+
+  // ─── Fetch Contacts (search) ──────────────────────────────────────────────────
+  const fetchContacts = async (searchString: string = "") => {
+    if (!searchString) return;
+    const contacts = await contactService.getContacts(searchString, false);
+    if (!contacts) return;
+    if (contactId) {
+      const validContacts = contacts.filter(
+        (item: Contact) => item.id !== parseInt(contactId)
+      );
+      setContactList([contact, ...validContacts.slice(0, 3)]);
+      return;
+    }
+    setContactList(contacts.slice(0, 3));
+  };
+
+  // ─── Fetch Worker Categories (search) ────────────────────────────────────────
   const fetchWorkerCategories = async (searchString: string = "") => {
     if (!searchString) return;
     const workerCategories = await workerCategoryService.getWorkerCategories(searchString, false);
@@ -113,16 +131,7 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     setWorkerCategoryList(workerCategories.slice(0, 3));
   };
 
-  useEffect(() => {
-    const fetchWorkerCategoryById = async () => {
-      if (!workerCategoryId) return;
-      const fetchedCategory = await workerCategoryService.getWorkerCategory(parseInt(workerCategoryId));
-      setWorkerCategory(fetchedCategory);
-      setWorkerCategoryList([fetchedCategory]);
-    };
-    fetchWorkerCategoryById();
-  }, [workerCategoryId]);
-
+  // ─── Validation ───────────────────────────────────────────────────────────────
   const { genderItems, error, validate } = useWorkerInputValidate({
     name,
     dateOfBirth,
@@ -130,17 +139,21 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     contactId,
     gender,
   });
+
   const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact);
 
+  // ─── Dropdown Details ─────────────────────────────────────────────────────────
   const contactDetails = contactList.map((item) => ({
     label: item.name,
     value: item.id.toString(),
   }));
+
   const workerCategoryDetails = workerCategoryList.map((item) => ({
-    label: item.workerCategoryName,
+    label: item.name,
     value: item.id.toString(),
   }));
 
+  // ─── Valid Lists ──────────────────────────────────────────────────────────────
   const validKycDetails = workerDetails.kycDetails.filter((item) => item.value);
   const validBankAccounts = workerDetails.bankAccounts.filter(
     (item) => item.accountName && item.accountNumber && item.ifscCode
@@ -155,10 +168,10 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     workerDetails.upiDetails.some((item) => item.upiType === type && item.value)
   );
 
+  // ─── Handlers ─────────────────────────────────────────────────────────────────
   const handleContactChange = (value: string) => setContactId(value);
   const handleWorkerCategoryChange = (value: string) => setWorkerCategoryId(value);
 
-  // ✅ Shared redirect params builder — avoids repetition
   const buildRedirectParams = () => {
     const params = new URLSearchParams({ dateOfBirth, gender, notes });
     validKycDetails.forEach((item) => params.append(item.kycType, item.value));
@@ -204,25 +217,38 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
   const handleWorkerCategoryEdit = () => {
     const redirectParams = buildRedirectParams();
     const redirect = `${WorkersUrls.create}?${redirectParams.toString()}&name=${name}&workerCategoryId=${workerCategoryId}&contactId=${contactId}`;
-    navigate(`${WorkerCategoriesUrls.edit(parseInt(workerCategoryId))}?redirect=${encodeURIComponent(redirect)}`);
+    navigate(
+      `${WorkerCategoriesUrls.edit(parseInt(workerCategoryId))}?redirect=${encodeURIComponent(redirect)}`
+    );
     model.close();
   };
 
+  // ─── Submit ───────────────────────────────────────────────────────────────────
   const handleSubmission = async () => {
     if (!validate()) return;
-    const worker = {
-      name,
-      gender,
-      dateOfBirth,
-      note: notes,
-      workerCategoryId: parseInt(workerCategoryId),
-      contactId: parseInt(contactId),
-      kycDetails: validKycDetails,
-      bankAccounts: validBankAccounts,
-      upiDetails: validUpiDetails,
-    };
-    await workerService.createWorker(worker);
-    navigate(WorkersUrls.list);
+
+    try {
+      const worker = {
+        name,
+        gender,
+        dateOfBirth,
+        note: notes,
+        workerCategoryId: parseInt(workerCategoryId),
+        contactId: parseInt(contactId),
+        kycDetails: validKycDetails,
+        bankAccounts: validBankAccounts,
+        upiDetails: validUpiDetails,
+      };
+
+      await workerService.createWorker(worker); 
+      toast.success("Worker created successfully");
+      navigate(WorkersUrls.list); 
+    } catch (error: any) {
+      const errorMsg =
+        error?.response?.data?.[0]?.message || "Failed to create worker. Please try again.";
+      toast.error(errorMsg);
+      console.error("Worker creation error:", errorMsg);
+    }
   };
 
   return {
@@ -252,7 +278,7 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     contact,
     workerCategory,
     model,
-    isModalOpen,        
+    isModalOpen,
     primaryContactDetails,
     hasMoreDetails,
     handleContactEdit,

@@ -34,16 +34,17 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps[]>([]);
-  const [workerCategory, setWorkerCategory] = useState<WorkerCategoryProps>({
-    id: 0, name: "", workerCategoryName: "", note: "", isActive: true,
-  });
+ const [workerCategory, setWorkerCategory] = useState<WorkerCategoryProps>({
+  id: 0, name: "", note: "", isActive: true, workTypes: [], workerRoles: [],
+});
+const [loading, setLoading] = useState(true);
 
   const [workerDetails, setWorkerDetails] = useState<Worker | WorkerRequest>({
     id: 0,
     name: "",
     dateOfBirth,
     contact: { id: 0, name: "", contactDetails: [] },
-    workerCategory: { id: 0, name: "", workerCategoryName: "", note: "", isActive: true },
+    workerCategory: { id: 0, name: "", note: "", isActive: true, workTypes: [], workerRoles: [] },
     note: "",
     gender: gender as GenderTypes,
     kycDetails: [],
@@ -52,15 +53,22 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
     isActive: true,
   });
 
-  const fetchWorker = async () => {
+ const fetchWorker = async () => {
+  setLoading(true); 
+  try {
     const workerData: Worker = await workerService.getWorker(parseInt(id));
     setWorkerDetails(workerData);
+    setName(workerData.name);
+    setDateOfBirth(workerData.dateOfBirth);
     setNotes(workerData.note);
     setGender(workerData.gender);
     setIsActive(workerData.isActive as boolean);
     if (!newContactId) setContactId(workerData.contact.id.toString());
     if (!newWorkerCategoryId) setWorkerCategoryId(workerData.workerCategory.id.toString());
-  };
+  } finally {
+    setLoading(false);  
+  }
+};
 
   useEffect(() => { fetchWorker(); }, []);
 
@@ -116,7 +124,10 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact);
 
   const contactDetails = contactList.map((item) => ({ label: item.name, value: item.id.toString() }));
-  const workerCategoryDetails = workerCategoryList.map((item) => ({ label: item.workerCategoryName, value: item.id.toString() }));
+  const workerCategoryDetails = workerCategoryList.map((item) => ({ 
+  label: item.name,  
+  value: item.id.toString() 
+}));
 
   const validKycDetails = workerDetails.kycDetails.filter((item) => item.value);
   const validBankAccounts = workerDetails.bankAccounts.filter(
@@ -179,6 +190,7 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
     notes, setNotes,
     isActive, setIsActive,
     workerDetails, setWorkerDetails,
+    loading,
     error, navigate,
     handleSubmission,
     isKycAddDisabled, isBankAccountsAddDisabled, isUpiAddDisabled,

@@ -2,26 +2,52 @@ import { ContactGetStartedPage } from "@/shared/features/contacts/pages/contact-
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
 import { useContactList } from "./useContactListPage";
 import { ContactsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar"; 
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/components/ui/alert-dialog";
 
 const ContactListPage = () => {
   const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
+
   const {
     contactList,
     fetchContact,
     handleContactSelect,
+    confirmDelete,
     handleContactDelete,
     hasSearchFilter,
+    loading,
+    searchLoading,
+    deleteId,
+    setDeleteId,
   } = useContactList();
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 text-sm">Loading...</p>
+      </div>
+    );
+  }
+
   if (!contactList.length && !hasSearchFilter) return <ContactGetStartedPage />;
-  console.log(contactList);
 
   return (
-    <div className=" min-h-screen w-full px-4 py-6">
+    <div className="min-h-screen w-full px-4 py-6">
+      {/* Header */}
       <Header title="Contacts">
         <Actions>
           <Button onClick={() => navigate(ContactsUrls.create)}>
@@ -30,19 +56,19 @@ const ContactListPage = () => {
         </Actions>
       </Header>
 
-      {/* Search Box */}
+      {/* SearchBar ✅ */}
       <div className="flex justify-end mt-4 mb-4">
-        <Input
-          type="text"
-          placeholder="Search contacts..."
-          onChange={(e) => {
-            const value = e.target.value;
-            if (/^[a-zA-Z\s]*$/.test(value) || value === "") {
-              fetchContact(value);
-            }
-          }}
-          className="w-72"
-        />
+        <div className="w-full md:w-3/12">
+          <SearchBar
+            searchText={searchValue}
+            setSearchText={(val) => {
+              setSearchValue(val);
+              fetchContact(val);
+            }}
+            searchCategory="Contacts"
+          />
+         
+        </div>
       </div>
 
       {/* Contact List */}
@@ -63,13 +89,45 @@ const ContactListPage = () => {
                 phone={contact.phone}
                 email={contact.email}
                 onDelete={(e: React.MouseEvent) =>
-                  handleContactDelete(e, contact.id)
+                  confirmDelete(e, contact.id)
                 }
               />
             </div>
           ))
         )}
       </div>
+
+      {/* ✅ Delete Confirm Dialog */}
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(val) => !val && setDeleteId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base">
+              Confirm Delete
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
+              Are you sure you want to delete this contact?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel asChild>
+              <Button variant="outline" onClick={() => setDeleteId(null)}>
+                Cancel
+              </Button>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button
+                variant="destructive"
+                onClick={() => deleteId && handleContactDelete(deleteId)}
+              >
+                Delete
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

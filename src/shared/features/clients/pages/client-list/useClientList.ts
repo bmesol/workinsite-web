@@ -8,26 +8,65 @@ const useClientList = () => {
   const navigate = useNavigate();
   const clientService = useClientService();
   const [clientDetails, setClientDetails] = useState<Client[]>([]);
-
   const [hasSearchFilter, setHasSearchFilter] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);           
+  const [searchLoading, setSearchLoading] = useState(false); 
+  const [deleteId, setDeleteId] = useState<number | null>(null); 
 
-const fetchClient = async (searchString: string = "") => {
-  const clientData = await clientService.getClients(searchString);
-  console.log("RAW API response:", JSON.stringify(clientData[0], null, 2)); // ✅ full structure
-  setClientDetails(clientData);
-};
+  useEffect(() => {
+    const initialLoad = async () => {
+      setLoading(true);
+      try {
+        const clientData = await clientService.getClients("");
+        setClientDetails(clientData);
+      } finally {
+        setLoading(false);
+      }
+    };
+    initialLoad();
+  }, []);
 
-  useEffect(() => { fetchClient() }, []);
+  const fetchClient = async (searchString: string = "") => {
+    setSearchLoading(true);
+    try {
+      const clientData = await clientService.getClients(searchString);
+      setHasSearchFilter(searchString !== "");
+      setClientDetails(clientData);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const refreshList = async () => {
+    const clientData = await clientService.getClients("");
+    setClientDetails(clientData);
+  };
 
   const handleClientSelect = (id: number) => navigate(ClientsUrls.edit(id));
 
-  const handleClientDelete = async (e: React.MouseEvent, id: number) => {
+  const confirmDelete = (e: React.MouseEvent, id: number) => {
     e.stopPropagation();
-    await clientService.deleteClient(id);
-    window.location.reload();
+    setDeleteId(id);
   };
 
-  return { clientDetails, fetchClient, handleClientSelect, handleClientDelete, hasSearchFilter };
+  const handleClientDelete = async (id: number) => {
+    await clientService.deleteClient(id);
+    setDeleteId(null);
+    refreshList(); 
+  };
+
+  return {
+    clientDetails,
+    fetchClient,
+    handleClientSelect,
+    confirmDelete,
+    handleClientDelete,
+    hasSearchFilter,
+    loading,
+    searchLoading,
+    deleteId,
+    setDeleteId,
+  };
 };
 
 export { useClientList };

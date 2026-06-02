@@ -65,9 +65,13 @@
 
 // export { useAPIHelper };
 
-
 import axios from "axios";
-import type { AxiosInstance, AxiosResponse, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import type {
+  AxiosInstance,
+  AxiosResponse,
+  AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+} from "axios";
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
 import { useLoading } from "@/shared/hooks/useLoading";
 
@@ -75,21 +79,32 @@ const useAPIHelper = (baseURL: string, withCredential: boolean = true) => {
   const loading = useLoading();
   let isLoading = true;
 
+  // ✅ FIX 1: Add default JSON header
   const api: AxiosInstance = axios.create({
     baseURL,
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
+  // ✅ FIX 2: Correct Authorization header
   api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    if (withCredential) {
-      const accessToken = AuthHelper.getAccessToken();
-      if (accessToken) {
-        config.headers._at = accessToken;
-      }
-    }
-    if (isLoading) loading.show();
-    return config;
-  });
+  if (withCredential) {
+    const accessToken = AuthHelper.getAccessToken();
 
+    console.log("TOKEN 👉", accessToken);
+
+    if (accessToken) {
+      (config.headers as any).Authorization = `Bearer ${accessToken}`; // ✅ web standard
+      (config.headers as any)._at = accessToken; // ✅ mobile backend support
+    }
+  }
+
+  if (isLoading) loading.show();
+  return config;
+});
+
+  // Response interceptor
   api.interceptors.response.use(
     (response: AxiosResponse<any>) => {
       loading.hide();
@@ -101,17 +116,28 @@ const useAPIHelper = (baseURL: string, withCredential: boolean = true) => {
     }
   );
 
-  // ✅ InternalAxiosRequestConfig → AxiosRequestConfig (accepts plain objects like { headers: {...} })
-  const get = (url: string, setIsLoading?: boolean, config?: AxiosRequestConfig) => {
+  const get = (
+    url: string,
+    setIsLoading?: boolean,
+    config?: AxiosRequestConfig
+  ) => {
     if (setIsLoading !== undefined) isLoading = setIsLoading;
     return api.get(url, config);
   };
 
-  const post = (url: string, data?: any, config?: AxiosRequestConfig) => {
+  const post = (
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ) => {
     return api.post(url, data, config);
   };
 
-  const put = (url: string, data?: any, config?: AxiosRequestConfig) => {
+  const put = (
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ) => {
     return api.put(url, data, config);
   };
 

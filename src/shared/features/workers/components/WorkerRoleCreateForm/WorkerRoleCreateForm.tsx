@@ -1,6 +1,4 @@
 import { NameField } from "@/shared/components/FormFields/NameField";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
 import { Button } from "@/shared/components/ui/button";
 import { useWorkerRoleCreateForm } from "./useWorkerRoleCreateForm";
 import type { WorkerRoleCreateFormProps } from "../../DTOs/WorkRoleProps";
@@ -20,6 +18,7 @@ const WorkerRoleCreateForm = (props: WorkerRoleCreateFormProps) => {
   return (
     <div className="flex flex-col gap-4">
 
+      {/* Worker Role Name */}
       <NameField
         label="Worker Role"
         inputValue={name}
@@ -30,40 +29,28 @@ const WorkerRoleCreateForm = (props: WorkerRoleCreateFormProps) => {
       />
 
       {/* Salary Per Shift */}
-      <div className="flex flex-col gap-1">
-        <Label>
-          Salary Per Shift <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          type="number"
-          inputMode="numeric"
-          placeholder="Enter Salary Per Shift"
-          value={salaryPerShift}
-          onChange={(e) => setSalaryPerShift(e.target.value)}
-          maxLength={10}
-        />
-        {error.salaryPerShift && (
-          <p className="text-sm text-destructive">{error.salaryPerShift}</p>
-        )}
-      </div>
+      <NameField
+        label="Salary Per Shift"
+        inputValue={salaryPerShift}
+        setInputValue={setSalaryPerShift}
+        errorMessage={error.salaryPerShift}
+        placeholder="Enter Salary Per Shift"
+        required={true}
+        regex="^[0-9]*\.?[0-9]*$"  
+        length={10}
+      />
 
       {/* Hours Per Shift */}
-      <div className="flex flex-col gap-1">
-        <Label>
-          Hours Per Shift <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          type="number"
-          inputMode="numeric"
-          placeholder="Enter Hours Per Shift"
-          value={hoursPerShift}
-          onChange={(e) => setHoursPerShift(e.target.value)}
-          maxLength={2}
-        />
-        {error.hoursPerShift && (
-          <p className="text-sm text-destructive">{error.hoursPerShift}</p>
-        )}
-      </div>
+      <NameField
+        label="Hours Per Shift"
+        inputValue={hoursPerShift}
+        setInputValue={setHoursPerShift}
+        errorMessage={error.hoursPerShift}
+        placeholder="Enter Hours Per Shift"
+        required={true}
+        regex="^[0-9]*$"  
+        length={2}
+      />
 
       <Button onClick={handleAdd}>Add</Button>
     </div>

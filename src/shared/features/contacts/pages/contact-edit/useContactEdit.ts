@@ -9,26 +9,29 @@ import { useEffect, useState } from "react";
 
 const useContactEdit = (id: string, queryString: URLSearchParams) => {
   const redirectUrl = queryString.get("redirect");
-
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");  
   const [contactList, setContactList] = useState<ContactRequest>({ name: "", contactDetails: [] });
-
   const { error, validate } = useInputValidate({ name, phone });  
   const contactService = useContactService();
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   const isAddDisabled = [ ContactTypes.PHONE, ContactTypes.EMAIL, ContactTypes.ADDRESS ].every((type) => {
     const ContactsCount = contactList.contactDetails.filter((item) => item.contactType === type).length;
     return ContactsCount >= 5;
   });
 
  const fetchContact = async () => {
-  const contactData = await contactService.getContact(parseInt(id));
-  setContactList(contactData);
-  setName(contactData.name ?? "");    // ✅ sync name state
-  setPhone(contactData.phone ?? "");  // ✅ sync phone state
-};
+    setLoading(true); 
+    try {
+      const contactData = await contactService.getContact(parseInt(id));
+      setContactList(contactData);
+      setName(contactData.name ?? "");
+      setPhone(contactData.phone ?? "");
+    } finally {
+      setLoading(false); 
+    }
+  };
   useEffect(() => { fetchContact() }, []);
 
 const handleSubmission = async () => {
@@ -54,7 +57,8 @@ const handleSubmission = async () => {
     navigate(ContactsUrls.list);
   };
 
-  return { name, phone, setName, setPhone, error, contactList, setContactList, handleCancel, handleSubmission, isAddDisabled }; // ✅ expose setPhone
+  return { name, phone, setName, setPhone, error, contactList, setContactList, handleCancel, loading,
+    handleSubmission, isAddDisabled }; 
 };
 
 export { useContactEdit };
