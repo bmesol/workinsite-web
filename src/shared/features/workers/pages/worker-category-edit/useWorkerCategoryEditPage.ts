@@ -25,15 +25,16 @@
 
 //   // WorkerRole states
 //   const [workerRoleList, setWorkerRoleList] = useState<WorkerRole[]>([]);
-//  const [updateworkerRoleList, setUpdateWorkerRoleList] = useState<WorkerRole[]>([]);
+//   const [updateworkerRoleList, setUpdateWorkerRoleList] = useState<WorkerRoles[]>([]);
 //   const [deleteworkerRoleList, setDeleteWorkerRoleList] = useState<number[]>([]);
 
 //   const [loading, setLoading] = useState(false);
 
+//   // ✅ Pass all 3 args — now validate checks name + workType + workerRole
 //   const { error, validate } = useWorkerCategoryInputValidate(
 //     name,
-//     [...workTypeList, ...updatedWorkTypeList],
-//     [...workerRoleList, ...updateworkerRoleList],
+//     [...workTypeList, ...updatedWorkTypeList],           // combined new + existing
+//     [...workerRoleList, ...updateworkerRoleList],        // combined new + existing
 //   );
 
 //   const fetchWorkerCategory = async () => {
@@ -68,15 +69,9 @@
 //     if (validate()) {
 //       try {
 //         const workerCategory = {
-//           name: name.trim(),
+//           workerCategoryName: name.trim(),
 //           note: notes.trim(),
 //           isActive,
-//           newWorkTypes: workTypeList,
-//           updatedWorkTypes: updatedWorkTypeList,
-//           deletedWorkTypes: deletedWorkTypeList,
-//           newWorkerRoles: workerRoleList,
-//           updatedWorkerRoles: updateworkerRoleList,
-//           deletedWorkerRoles: deleteworkerRoleList,
 //         };
 
 //         await workerCategoryService.updateWorkerCategory(parseInt(id), workerCategory);
@@ -124,6 +119,7 @@
 
 // export { useWorkerCategoryEdit };
 
+
 import { useWorkerCategoryInputValidate } from "../../components/InputValidate/WorkerCategoryInputValidate";
 import { useWorkerCategoryService } from "../../service/WorkerCategoryService";
 import type { WorkerCategoryProps } from "../../DTOs/WorkerCategoryProps";
@@ -144,45 +140,55 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
   const [isActive, setIsActive] = useState(true);
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps>();
 
-  // WorkType states
+  // ✅ WorkType states
   const [workTypeList, setWorkTypeList] = useState<WorkType[]>([]);
   const [updatedWorkTypeList, setUpdatedWorkTypeList] = useState<WorkType[]>([]);
   const [deletedWorkTypeList, setDeletedWorkTypeList] = useState<number[]>([]);
 
-  // WorkerRole states
+  // ✅ WorkerRole states
   const [workerRoleList, setWorkerRoleList] = useState<WorkerRole[]>([]);
   const [updateworkerRoleList, setUpdateWorkerRoleList] = useState<WorkerRoles[]>([]);
   const [deleteworkerRoleList, setDeleteWorkerRoleList] = useState<number[]>([]);
 
   const [loading, setLoading] = useState(false);
 
-  // ✅ Pass all 3 args — now validate checks name + workType + workerRole
+  // ✅ Validation (name + workTypes + workerRoles)
   const { error, validate } = useWorkerCategoryInputValidate(
     name,
-    [...workTypeList, ...updatedWorkTypeList],           // combined new + existing
-    [...workerRoleList, ...updateworkerRoleList],        // combined new + existing
+    [...workTypeList, ...updatedWorkTypeList],
+    [...workerRoleList, ...updateworkerRoleList],
   );
 
+  // ✅ Fetch existing data
   const fetchWorkerCategory = async () => {
     setLoading(true);
     try {
       const workerCategory = await workerCategoryService.getWorkerCategory(parseInt(id));
+
       setWorkerCategoryList(workerCategory);
+
       setName(workerCategory.name ?? workerCategory.workerCategoryName ?? "");
       setNotes(workerCategory.note ?? "");
       setIsActive(workerCategory.isActive);
+
       setUpdatedWorkTypeList(workerCategory.workTypes ?? []);
       setUpdateWorkerRoleList(workerCategory.workerRoles ?? []);
     } catch (error: any) {
-      const errorMsg = error?.response?.data?.[0]?.message || "Could not fetch worker category. Please try again";
+      const errorMsg =
+        error?.response?.data?.[0]?.message ||
+        "Could not fetch worker category. Please try again";
+
       toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchWorkerCategory(); }, []);
+  useEffect(() => {
+    fetchWorkerCategory();
+  }, []);
 
+  // ✅ Cancel
   const handleCancel = () => {
     if (redirectUrl) {
       navigate(redirectUrl);
@@ -191,25 +197,40 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     navigate(WorkerCategoriesUrls.list);
   };
 
+  // ✅ SUBMIT (🔥 FIXED HERE)
   const handleSubmission = async () => {
     if (validate()) {
       try {
         const workerCategory = {
-          workerCategoryName: name.trim(),
+          name: name.trim(), 
           note: notes.trim(),
           isActive,
+
+          workTypes: [...updatedWorkTypeList, ...workTypeList],
+          workerRoles: [...updateworkerRoleList, ...workerRoleList],
+
+          deletedWorkTypeIds: deletedWorkTypeList,
+          deletedWorkerRoleIds: deleteworkerRoleList,
         };
 
-        await workerCategoryService.updateWorkerCategory(parseInt(id), workerCategory);
+        await workerCategoryService.updateWorkerCategory(
+          parseInt(id),
+          workerCategory
+        );
+
         toast.success("Worker category updated successfully");
 
         if (redirectUrl) {
           navigate(`${redirectUrl}&workerCategoryId=${id}`);
           return;
         }
+
         navigate(WorkerCategoriesUrls.list);
       } catch (error: any) {
-        const errorMsg = error?.response?.data?.[0]?.message || "Could not update worker category. Please try again";
+        const errorMsg =
+          error?.response?.data?.[0]?.message ||
+          "Could not update worker category. Please try again";
+
         toast.error(errorMsg);
       }
     }
@@ -226,14 +247,16 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     handleCancel,
     handleSubmission,
     loading,
-    // WorkType
+
+    // ✅ WorkType
     workTypeList,
     setWorkTypeList,
     updatedWorkTypeList,
     setUpdatedWorkTypeList,
     deletedWorkTypeList,
     setDeletedWorkTypeList,
-    // WorkerRole
+
+    // ✅ WorkerRole
     workerRoleList,
     setWorkerRoleList,
     updateworkerRoleList,
