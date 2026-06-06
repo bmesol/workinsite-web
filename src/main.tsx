@@ -9,7 +9,8 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <HashRouter>
       <App />
-      <Toaster /> 
+      <Toaster position="top-center" />
+
     </HashRouter>
   </StrictMode>
 );

@@ -26,6 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
 
 const WorkerListPage = () => {
   const navigate = useNavigate();
@@ -75,38 +76,13 @@ const WorkerListPage = () => {
         </Actions>
       </Header>
 
-      <div className="flex justify-end items-center gap-2 mt-4">
-        {appliedFilters ? (
-          <div className="flex items-center gap-2 border border-border rounded-md px-3 py-2 text-sm text-foreground bg-background flex-1 md:flex-none md:w-auto">
-            <span className="truncate">{appliedFilters}</span>
-            <button
-              onClick={handleClearSearch}
-              className="text-muted-foreground hover:text-foreground shrink-0"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          // No filter — placeholder button
-          <button
-            onClick={() => setFilterOpen(true)}
-            className="flex items-center gap-2 border border-border rounded-md px-3 py-2 text-sm text-muted-foreground bg-background hover:border-ring transition-colors flex-1 md:flex-none md:min-w-48"
-          >
-            <SlidersHorizontal className="h-4 w-4 shrink-0" />
-            <span>Search Workers...</span>
-          </button>
-        )}
-
-        {/* Filter icon button — always visible */}
-        {appliedFilters && (
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setFilterOpen(true)}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-          </Button>
-        )}
+      <div className="flex justify-end ">
+        <SearchFilterBar
+  appliedFilters={appliedFilters}
+  placeholder="Search Workers..."
+  onFilterOpen={() => setFilterOpen(true)}
+  onClearSearch={handleClearSearch}
+/>
       </div>
 
       {/* Search Loading */}

@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Actions, Header } from "@/shared/components/Header/Header";
-import { Input } from "@/shared/components/ui/input";
+
 import { Button } from "@/shared/components/ui/button";
-import { Search } from "lucide-react";
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useWorkerCategoryList } from "./useWorkerCategoryList";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
 import { WorkerCategoriesUrls } from "../../utils/urls";
@@ -55,20 +55,18 @@ const WorkerCategoryListPage = () => {
       </Header>
 
       {/* Search Bar */}
-      <div className="flex justify-end mt-4 mb-4">
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search worker category..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-      </div>
+   <div className="flex justify-end mt-4 mb-4">
+  <div className="w-full md:w-3/12">
+    <SearchBar
+      searchText={searchText}
+      setSearchText={setSearchText}
+      searchCategory="Worker Category"
+    />
+  </div>
+</div>
 
       {/* List */}
-      <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {filteredWorkerCategoryList.length === 0 ? (
           <p className="text-center text-gray-500 text-sm mt-10">
             No Worker Category found
@@ -97,27 +95,29 @@ const WorkerCategoryListPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-base">Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle className="text-base">
+              Confirm Delete
+            </AlertDialogTitle>
             <AlertDialogDescription className="test-sm">
               Are you sure you want to delete this worker category?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-  <AlertDialogCancel asChild>
-    <Button variant="outline" onClick={() => setDeleteId(null)}>
-      Cancel
-    </Button>
-  </AlertDialogCancel>
+            <AlertDialogCancel asChild>
+              <Button variant="outline" onClick={() => setDeleteId(null)}>
+                Cancel
+              </Button>
+            </AlertDialogCancel>
 
-  <AlertDialogAction asChild>
-    <Button
-      variant="destructive"
-      onClick={() => deleteId && handleWorkerCategoryDelete(deleteId)}
-    >
-      Delete
-    </Button>
-  </AlertDialogAction>
-</AlertDialogFooter>
+            <AlertDialogAction asChild>
+              <Button
+                variant="destructive"
+                onClick={() => deleteId && handleWorkerCategoryDelete(deleteId)}
+              >
+                Delete
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>

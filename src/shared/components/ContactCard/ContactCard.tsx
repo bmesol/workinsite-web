@@ -18,6 +18,7 @@ const ContactCard = (props: ContactCardProps) => {
     workerRole,
     onDelete,
     onPress,
+    subDetails,
   } = props;
 
   const initials = (name ?? "")
@@ -55,6 +56,13 @@ const ContactCard = (props: ContactCardProps) => {
               {displayName ?? name}
             </span>
           )}
+
+          {subDetails?.map((detail, index) => (
+            <div key={index} className="flex items-center gap-1">
+              <detail.icon className="h-3 w-3 text-black shrink-0" />
+              <span className="text-sm text-black truncate">{detail.text}</span>
+            </div>
+          ))}
 
           {phone && (
             <div
@@ -112,7 +120,7 @@ const ContactCard = (props: ContactCardProps) => {
           onDelete(e);
         }}
       >
-        <Trash2 className="h-5 w-5 text-destructive" />
+       <Trash2 className="h-5 w-5" style={{ color: 'var(--danger-color)' }} />
       </div>
     </Card>
   );

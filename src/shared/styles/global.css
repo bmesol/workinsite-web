@@ -99,7 +99,6 @@
 
   /* ✅ Disabled border */
   --disabled-border: #E5E5EA;
-
   --table-header-bg: #f8fafc;
 }
 
@@ -121,9 +120,8 @@
 }
 
 input::placeholder {
-  color: #9ca3af;
+  color: var(--gray-color); 
 }
-
 /* ================= BASE LAYER ================= */
 @layer base {
   *,
@@ -193,4 +191,12 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.date-picker-btn {
+  color: var(--gray-color) !important;
+}
+
+.date-picker-btn.date-selected {
+  color: var(--foreground) !important;
 }

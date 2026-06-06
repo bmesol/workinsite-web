@@ -48,7 +48,7 @@ const WorkRateAbstractEditPage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-10">
+    <div className="w-full min-h-screen px-4 pb-10">
       <Header title="Edit Work Rate Abstract" />
 
       <Card className="mt-4">

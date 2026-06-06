@@ -44,7 +44,6 @@ const WorkerCategoryCreationPage = () => {
       <Header title="Create Worker Category" />
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
-
           {/* Worker Category Name */}
           <NameField
             label="Worker Category Name"
@@ -56,17 +55,16 @@ const WorkerCategoryCreationPage = () => {
           />
 
           {/* Work Type Section */}
-<div className="flex flex-col gap-1">
-  <FormActionButton
-    heading="Work Type"
-    label="Add"
-    onClick={() => setWorkTypeDialogOpen(true)}
-    required
-    isColsTwo={true}  // ✅ add — full width
-    errorMessage={error.workTypeList}
-  />
-  
-</div>
+          <div className="flex flex-col gap-1">
+            <FormActionButton
+              heading="Work Type"
+              label="Add"
+              onClick={() => setWorkTypeDialogOpen(true)}
+              required
+              isColsTwo={true} // ✅ add — full width
+              errorMessage={error.workTypeList}
+            />
+          </div>
 
           {/* Work Type List */}
           <WorkTypeList
@@ -75,18 +73,16 @@ const WorkerCategoryCreationPage = () => {
           />
 
           {/* Worker Role Section */}
-<div className="flex flex-col gap-1">
-  <FormActionButton
-    heading="Worker Role"
-    label="Add"
-    onClick={() => setWorkerRoleDialogOpen(true)}
-    required
-    isColsTwo={true}  // ✅ add — full width
-    errorMessage={error.workerRoleList}
-    
-  />
-
-</div>
+          <div className="flex flex-col gap-1">
+            <FormActionButton
+              heading="Worker Role"
+              label="Add"
+              onClick={() => setWorkerRoleDialogOpen(true)}
+              required
+              isColsTwo={true} // ✅ add — full width
+              errorMessage={error.workerRoleList}
+            />
+          </div>
           {/* Worker Role List */}
           <WorkerRoleList
             workerRoleList={workerRoleList}
@@ -101,7 +97,10 @@ const WorkerCategoryCreationPage = () => {
             placeholder="Enter your notes"
           />
 
-          <FormSubmissionButtons onCancel={handleCancel} onSave={handleSubmission} />
+          <FormSubmissionButtons
+            onCancel={handleCancel}
+            onSave={handleSubmission}
+          />
         </div>
       </Card>
 
@@ -120,7 +119,10 @@ const WorkerCategoryCreationPage = () => {
       </Dialog>
 
       {/* Worker Role Dialog */}
-      <Dialog open={workerRoleDialogOpen} onOpenChange={setWorkerRoleDialogOpen}>
+      <Dialog
+        open={workerRoleDialogOpen}
+        onOpenChange={setWorkerRoleDialogOpen}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create Worker Role</DialogTitle>
@@ -132,7 +134,6 @@ const WorkerCategoryCreationPage = () => {
           />
         </DialogContent>
       </Dialog>
-
     </div>
   );
 };

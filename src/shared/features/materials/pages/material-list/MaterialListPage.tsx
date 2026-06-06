@@ -1,126 +1,158 @@
-// import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Header, Actions } from "@/shared/components/Header/Header";
+import { Button } from "@/shared/components/ui/button";
+import MaterialCard from "@/shared/components/MaterialCard/MaterialCard";
+import { GetStartedCard } from "@/shared/components/GetStartedCard/GetStartedCard";
+import { useMaterialList } from "./useMaterialList";
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/shared/components/ui/alert-dialog";
 
-// import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
-// import Loader from "@/components/Loader";
-// import { Header } from "@/shared/components/Header/Header";
-// import MaterialCard from "@/shared/components/MaterialCard/MaterialCard";
-// import ToastNotification from "@/components/ToastNotification";
-// import GetStartedCard from "@/components/GetStartedCard";
+const MaterialListScreen = () => {
+  const navigate = useNavigate();
 
-// import { useMaterialList } from "./useMaterialList";
-// import { useLanguage } from "@/context/LanguageContext";
+  const {
+    materialDetails,
+  fetchMaterial,
+  handleMaterialSelect,
+  handleMaterialDelete,
+  confirmDelete,
+  loading,
+  searchText,
+  setSearchText,
+  deleteId,
+  setDeleteId,
+  } = useMaterialList();
 
-// export default function MaterialListScreen() {
-//   const navigate = useNavigate();
-//   const { t } = useLanguage();
 
-//   const [refreshing, setRefreshing] = useState(false);
+  // ✅ Filter
+  const filteredMaterialList = materialDetails.filter((item: any) =>
+    item.name.toLowerCase().includes(searchText.trim().toLowerCase()),
+  );
 
-//   const {
-//     materialDetails,
-//     fetchMaterial,
-//     handleMaterialDelete,
-//     handleMaterialSelect,
-//     loading,
-//     searchText,
-//     setSearchText,
-//   } = useMaterialList();
+  // ✅ Initial load
+  useEffect(() => {
+    setSearchText("");
+    fetchMaterial("");
+  }, []);
 
-//   // Filter
-//   const filteredMaterialList = materialDetails.filter((item: any) =>
-//     item.name.toLowerCase().includes(searchText.trim().toLowerCase())
-//   );
+  // ✅ Refresh (same pattern as worker)
 
-//   // Refresh (manual)
-//   const handleRefresh = async () => {
-//     setRefreshing(true);
-//     await fetchMaterial(searchText);
-//     setRefreshing(false);
-//   };
 
-//   // Reset search on mount (like useFocusEffect)
-//   useEffect(() => {
-//     setSearchText("");
-//   }, []);
+  // ✅ Loading UI (COMMON STYLE like Worker page)
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground text-sm">Loading...</p>
+      </div>
+    );
+  }
 
-//   const handlePress = () => {
-//     navigate("/material-create");
-//   };
+  // ✅ Empty state
+  if (!materialDetails.length) {
+    return (
+      <GetStartedCard
+        imgSrc="/images/empty.png"
+        buttonClick="/material-create"
+        buttonLabel="Create Materials"
+      >
+        Create your first material to get started.
+      </GetStartedCard>
+    );
+  }
 
-//   const handleBack = () => {
-//     navigate("/");
-//   };
+  return (
+    <div className="min-h-screen w-full px-4 py-6">
+      {/* ✅ Header */}
+      <Header title="Materials">
+        <Actions>
+          <Button onClick={() => navigate("/materials/create")}>
+            New Material
+          </Button>
+        </Actions>
+      </Header>
 
-//   if (loading && !refreshing) {
-//     return <Loader />;
-//   }
+      {/* ✅ Search + Refresh */}
 
-//   if (!materialDetails.length) {
-//     return (
-//       <GetStartedCard
-//         buttonClick="/material-create"
-//         buttonLabel={t("Create Materials")}
-//         permissionKey="Material"
-//       >
-//         Dive into the heart of construction site management...
-//       </GetStartedCard>
-//     );
-//   }
+      <div className="flex justify-end mt-4 mb-4">
+        <div className="w-full md:w-3/12">
+          <SearchBar
+            searchText={searchText}
+            setSearchText={setSearchText}
+            searchCategory="materials"
+            allowAllCharacters={true}
+          />
+        </div>
+      </div>
 
-//   return (
-//     <div className="flex flex-col h-full">
-      
-//       {/* Toast */}
-//       <div className="z-50">
-//         <ToastNotification />
-//       </div>
+      {/* ✅ List */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
+        {filteredMaterialList.length === 0 ? (
+          <div className="col-span-full text-center text-muted-foreground">
+            No materials found
+          </div>
+        ) : (
+          filteredMaterialList.map((item: any) => (
+            <div
+              key={item.id}
+              className="cursor-pointer"
+              onClick={() => handleMaterialSelect(item.id)}
+            >
+              <MaterialCard
+                material={item}
+                unit={item.unit?.name}
+                hsnCode={item.hsnCode}
+                onDelete={() => confirmDelete(item.id)}
+                onPress={() => handleMaterialSelect(item.id)}
+                permissionKey="Material"
+              />
+            </div>
+          ))
+        )}
+      </div>
+      <AlertDialog
+  open={!!deleteId}
+  onOpenChange={(val) => !val && setDeleteId(null)}
+>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle className="text-base">
+        Confirm Delete
+      </AlertDialogTitle>
+      <AlertDialogDescription className="text-sm">
+        Are you sure you want to delete this material?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
 
-//       {/* Header */}
-//       <Header
-//         title={t("Material List")}
-//         onBackPress={handleBack}
-//         handleCreate={handlePress}
-//         permissionKey="Material"
-//       />
+    <AlertDialogFooter>
+      <AlertDialogCancel asChild>
+        <Button variant="outline" onClick={() => setDeleteId(null)}>
+          Cancel
+        </Button>
+      </AlertDialogCancel>
 
-//       {/* Search + Refresh */}
-//       <div className="p-4 flex gap-2">
-//         <SearchBar
-//           searchText={searchText}
-//           setSearchText={setSearchText}
-//         />
+     <AlertDialogAction asChild>
+  <Button
+    variant="destructive"
+    onClick={() => deleteId && handleMaterialDelete(deleteId)}
+  >
+    Delete
+  </Button>
+</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+    </div>
+  );
+};
 
-//         <button
-//           onClick={handleRefresh}
-//           className="px-4 py-2 bg-primary text-white rounded-md"
-//         >
-//           Refresh
-//         </button>
-//       </div>
-
-//       {/* List */}
-//       <div className="flex-1 overflow-y-auto px-4 pb-6">
-//         {filteredMaterialList.length === 0 ? (
-//           <p className="text-center text-gray-500 mt-10">
-//             {t("No materials found")}
-//           </p>
-//         ) : (
-//           <div className="space-y-3">
-//             {filteredMaterialList.map((item: any) => (
-//               <MaterialCard
-//                 key={item.id}
-//                 material={item}
-//                 unit={item.unit?.name}
-//                 hsnCode={item.hsnCode}
-//                 onDelete={() => handleMaterialDelete(item.id)}
-//                 onPress={() => handleMaterialSelect(item.id)}
-//                 permissionKey="Material"
-//               />
-//             ))}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
+export default MaterialListScreen;

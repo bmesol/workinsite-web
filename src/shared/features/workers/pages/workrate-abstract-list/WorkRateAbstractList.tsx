@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/shared/components/Header/Header";
-import { Input } from "@/shared/components/ui/input";
+
 import { Button } from "@/shared/components/ui/button";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
 import { WorkRateAbstractUrls } from "../../utils/urls";
 import { useWorkRateAbstractList } from "./useWorkRateAbstractList"; 
 import type { WorkRateAbstractProps } from "../../DTOs/WorkRateAbstract";
-import { Search } from "lucide-react";
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,19 +55,17 @@ const WorkRateAbstractListPage = () => {
       </Header>
 
       {/* ✅ Search bar — same style as WorkerCategoryListPage */}
-      <div className="flex justify-end mt-4 mb-4">
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search work rate abstract..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-      </div>
+     <div className="flex justify-end mt-4 mb-4">
+  <div className="w-full md:w-3/12">
+    <SearchBar
+      searchText={searchText}
+      setSearchText={setSearchText}
+      searchCategory="Work Rate Abstract"
+    />
+  </div>
+</div>
 
-      <div className="flex flex-col gap-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {filteredList.length === 0 ? (
           <p className="text-center text-gray-500 text-sm mt-10">
             No Work Rate Abstract found
