@@ -7,10 +7,11 @@ import { AttendanceUrls } from '../../utils/urls';
 import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
 import workerIllustration from "@/assets/images/worker-creation-illustration.png";
 import { useNavigate } from 'react-router-dom';
-import { SlidersHorizontal, X, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';  // ✅ remove SlidersHorizontal, X
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useState } from 'react';
 import { AttendanceCard } from '@/shared/components/AttendanceCard/AttendanceCard';
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';  // ✅ add
 import {
   Dialog,
   DialogContent,
@@ -40,15 +41,11 @@ const AttendanceListPage = () => {
     paginationLoading,
     hasMore,
     appliedFilters,
-    date,
-    setDate,
-    siteId,
-    setSiteId,
-    wageTypeId,
-    setWageTypeId,
+    date, setDate,
+    siteId, setSiteId,
+    wageTypeId, setWageTypeId,
     workTypeId,
-    workerId,
-    setWorkerId,
+    workerId, setWorkerId,
     fetchSites,
     fetchWageTypes,
     fetchWorkTypes,
@@ -80,8 +77,7 @@ const AttendanceListPage = () => {
     workerId.value
   );
 
-  // Loading state
-    if (loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-gray-500 text-sm">Loading...</p>
@@ -89,11 +85,9 @@ const AttendanceListPage = () => {
     );
   }
 
-  // Empty state
   if (!attendance.length && !appliedFilters) {
     return (
       <div className="min-h-screen w-full px-4 py-6 pb-10">
-        
         <GetStartedCard
           imgSrc={workerIllustration}
           buttonLabel="Create Attendance"
@@ -109,7 +103,7 @@ const AttendanceListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
-      {/* Header */}
+      {/* ── Header ── */}
       <Header title="Attendance List">
         {editable && (
           <Actions>
@@ -118,41 +112,16 @@ const AttendanceListPage = () => {
         )}
       </Header>
 
-      {/* Search Filter Bar */}
-      <div className="flex justify-end items-center gap-2 mt-4">
-        {appliedFilters ? (
-          <div className="flex items-center gap-2 border border-border rounded-md px-3 py-2 text-sm text-foreground bg-background flex-1 md:flex-none md:w-auto">
-            <span className="truncate">{appliedFilters}</span>
-            <button
-              onClick={handleClearSearch}
-              className="text-muted-foreground hover:text-foreground shrink-0"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setFilterOpen(true)}
-            className="flex items-center gap-2 border border-border rounded-md px-3 py-2 text-sm text-muted-foreground bg-background hover:border-ring transition-colors flex-1 md:flex-none md:min-w-48"
-          >
-            <SlidersHorizontal className="h-4 w-4 shrink-0" />
-            <span>Search Attendance...</span>
-          </button>
-        )}
+      {/* ── Search Filter Bar ── */}
+      <SearchFilterBar
+        appliedFilters={appliedFilters}
+        placeholder="Search Attendance..."
+        onFilterOpen={() => setFilterOpen(true)}
+        onClearSearch={handleClearSearch}
+      />
 
-        {appliedFilters && (
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setFilterOpen(true)}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-
-      {/* ✅ Attendance List — AttendanceCard */}
-     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      {/* ── Attendance List ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         {attendance.length === 0 ? (
           <p className="text-center text-sm text-gray-500 mt-10">
             No Attendance found
@@ -174,7 +143,7 @@ const AttendanceListPage = () => {
         )}
       </div>
 
-      {/* View More Button */}
+      {/* ── View More ── */}
       {hasMore && attendance.length > 0 && (
         <div className="flex justify-end mt-4">
           {paginationLoading ? (
@@ -191,9 +160,9 @@ const AttendanceListPage = () => {
         </div>
       )}
 
-      {/* Filter Dialog */}
+      {/* ── Filter Dialog ── */}
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
             <DialogTitle>Attendance Search</DialogTitle>
           </DialogHeader>
@@ -262,7 +231,7 @@ const AttendanceListPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirm Dialog */}
+      {/* ── Delete Confirm Dialog ── */}
       <AlertDialog open={deleteConfirmId !== null}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -284,7 +253,7 @@ const AttendanceListPage = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Work Type Change Confirm Dialog */}
+      {/* ── Work Type Change Confirm Dialog ── */}
       <AlertDialog open={isWorkTypeChangeDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

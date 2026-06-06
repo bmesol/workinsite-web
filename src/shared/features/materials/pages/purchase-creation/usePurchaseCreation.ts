@@ -136,36 +136,36 @@ export const usePurchaseCreation = () => {
     updateTotals(updatedItems);
   };
 
-  const updateTotals = (materials: any[]) => {
-    if (materials.length === 0) {
-      setTotalAmount('');
-      setAdditionalCharges('');
-      setDiscount('');
-      return;
-    }
+ const updateTotals = (materials: any[]) => {
+  if (materials.length === 0) {
+    setTotalAmount('');
+    setAdditionalCharges('');
+    setDiscount('');
+    return;
+  }
 
-    const baseTotal = materials.reduce(
-      (sum, item) => sum + (parseFloat(item.quantity) || 0) * (parseFloat(item.rate) || 0),
-      0,
-    );
+  const baseTotal = materials.reduce(
+    (sum, item) =>
+      sum + (parseFloat(item.receivedQuantity) || 0) * (parseFloat(item.rate) || 0), // ✅ receivedQuantity
+    0,
+  );
 
-    const totalAdditionalCharges = materials.reduce(
-      (sum, item) => sum + (parseFloat(item.additionalCharges) || 0),
-      0,
-    );
+  const totalAdditionalCharges = materials.reduce(
+    (sum, item) => sum + (parseFloat(item.additionalCharges) || 0),
+    0,
+  );
 
-    const totalDiscounts = materials.reduce(
-      (sum, item) => sum + (parseFloat(item.discount) || 0),
-      0,
-    );
+  const totalDiscounts = materials.reduce(
+    (sum, item) => sum + (parseFloat(item.discount) || 0),
+    0,
+  );
 
-    const finalTotal = baseTotal + totalAdditionalCharges - totalDiscounts;
+  const finalTotal = baseTotal + totalAdditionalCharges - totalDiscounts;
 
-    setTotalAmount(finalTotal.toFixed(2));
-    setAdditionalCharges(totalAdditionalCharges.toFixed(2));
-    setDiscount(totalDiscounts.toFixed(2));
-  };
-
+  setTotalAmount(finalTotal.toFixed(2));
+  setAdditionalCharges(totalAdditionalCharges.toFixed(2));
+  setDiscount(totalDiscounts.toFixed(2));
+};
   useEffect(() => {
     updateTotals(purchaseMaterials);
   }, [purchaseMaterials]);

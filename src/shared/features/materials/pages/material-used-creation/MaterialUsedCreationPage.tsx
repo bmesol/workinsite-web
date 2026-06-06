@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { Header, Actions } from '@/shared/components/Header/Header';
+import { Header } from '@/shared/components/Header/Header';  // ✅ remove Actions
 import { Button } from '@/shared/components/ui/button';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
+import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';  // ✅ add
 import {
   AlertDialog,
   AlertDialogContent,
@@ -46,7 +47,6 @@ const MaterialUsedCreationPage = () => {
     resetFormFields,
   } = useMaterialUsedCreation();
 
-  // ── Availability badge ──
   const renderAvailabilityBadge = () => {
     if (!materialId || availableQuantity === null) return null;
 
@@ -72,106 +72,103 @@ const MaterialUsedCreationPage = () => {
   return (
     <div className="w-full min-h-screen px-4 pb-10">
 
-      {/* Header */}
-      <Header title="Create Material Used">
-        <Actions>
-          <Button variant="outline" onClick={handleBack}>
-            Back
-          </Button>
-        </Actions>
-      </Header>
+      {/* ── Header ── */}
+      <Header title="Create Material Used" />  {/* ✅ remove Actions/Back button */}
 
       <Card className="mt-4 p-6">
+        <div className="flex flex-col gap-4">
 
-        {/* Date */}
-        <DatePicker
-          label="Date"
-          required
-          date={date}
-          onDateChange={setDate}
-          errorMessage={error.date}
-          defaultDate
-        />
-
-        {/* Site */}
-        <ComboboxField
-          id="site"
-          label="Site"
-          required
-          items={siteDetails}
-          selectedValue={siteId}
-          onValueChange={setSiteId}
-          onSearch={fetchSites}
-          error={error.siteId}
-        />
-
-        {/* Material — with loading state */}
-        {isFetchingMaterials ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Loading available materials…</span>
-          </div>
-        ) : (
-          <ComboboxField
-            id="material"
-            label="Material"
+          {/* ── Date ── */}
+          <DatePicker
+            label="Date"
             required
-            items={materialDetails}
-            selectedValue={materialId}
-            onValueChange={setMaterialId}
-            onSearch={fetchMaterials}
-            error={error.materialId}
-            disabled={!siteId || materialDetails.length === 0}
+            date={date}
+            onDateChange={setDate}
+            errorMessage={error.date}
+            defaultDate
           />
-        )}
 
-        {/* Quantity */}
-        <NameField
-          label="Quantity"
-          required
-          inputValue={quantity}
-          setInputValue={setQuantity}
-          placeholder={
-            availableQuantity !== null
-              ? `Max: ${availableQuantity}`
-              : 'Enter Quantity'
-          }
-          errorMessage={error.quantity}
-          isDisabled={!materialId}
-          regex="^[0-9]*\.?[0-9]*$"
-        />
+          {/* ── Site ── */}
+          <ComboboxField
+            id="site"
+            label="Site"
+            required
+            items={siteDetails}
+            selectedValue={siteId}
+            onValueChange={setSiteId}
+            onSearch={fetchSites}
+            error={error.siteId}
+          />
 
-        {/* Availability badge */}
-        {renderAvailabilityBadge()}
+          {/* ── Material ── */}
+          {isFetchingMaterials ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Loading available materials…</span>
+            </div>
+          ) : (
+            <ComboboxField
+              id="material"
+              label="Material"
+              required
+              items={materialDetails}
+              selectedValue={materialId}
+              onValueChange={setMaterialId}
+              onSearch={fetchMaterials}
+              error={error.materialId}
+              disabled={!siteId || materialDetails.length === 0}
+            />
+          )}
 
-        {/* Work Mode */}
-        <ComboboxField
-          id="workMode"
-          label="Work Mode"
-          required
-          items={workModeDetails}
-          selectedValue={workModeId}
-          onValueChange={setWorkModeId}
-          onSearch={fetchWorkModes}
-          error={error.workModeId}
-        />
+          {/* ── Quantity ── */}
+          <NameField
+            label="Quantity"
+            required
+            inputValue={quantity}
+            setInputValue={setQuantity}
+            placeholder={
+              availableQuantity !== null
+                ? `Max: ${availableQuantity}`
+                : 'Enter Quantity'
+            }
+            errorMessage={error.quantity}
+            isDisabled={!materialId}
+            regex="^[0-9]*\.?[0-9]*$"
+          />
 
-        {/* Notes */}
-        <TextareaField
-          label="Notes"
-          inputValue={notes}
-          setInputValue={setNotes}
-          placeholder="Enter your notes"
-        />
+          {/* ── Availability Badge ── */}
+          {renderAvailabilityBadge()}
 
-        {/* Save */}
-        <Button onClick={handleSubmission} className="w-full">
-          Save
-        </Button>
+          {/* ── Work Mode ── */}
+          <ComboboxField
+            id="workMode"
+            label="Work Mode"
+            required
+            items={workModeDetails}
+            selectedValue={workModeId}
+            onValueChange={setWorkModeId}
+            onSearch={fetchWorkModes}
+            error={error.workModeId}
+          />
 
+          {/* ── Notes ── */}
+          <TextareaField
+            label="Notes"
+            inputValue={notes}
+            setInputValue={setNotes}
+            placeholder="Enter your notes"
+          />
+
+          {/* ── Save / Cancel ── */}
+          <FormSubmissionButtons
+            onSave={handleSubmission}
+            onCancel={handleBack}  // ✅ reuse handleBack
+          />
+
+        </div>
       </Card>
 
-      {/* Unsaved Changes Dialog */}
+      {/* ── Unsaved Changes Dialog ── */}
       <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

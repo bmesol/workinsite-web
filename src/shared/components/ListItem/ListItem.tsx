@@ -54,7 +54,7 @@ const ListItem = ({ label, sublabel, isEditing = false, actions = [] }: ListItem
               onClick={action.onClick}
               className="h-8 w-8"
             >
-              <Trash2 className="h-4 w-4 text-destructive" />
+              <Trash2 className="h-4 w-4 text-destructive" style={{ color: 'var(--danger-color)' }}/>
             </Button>
           )
         )}

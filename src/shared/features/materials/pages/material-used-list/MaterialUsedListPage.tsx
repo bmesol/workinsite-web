@@ -153,7 +153,7 @@ const MaterialUsedListPage = () => {
 
       {/* ── Filter Dialog ── */}
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
             <DialogTitle>Material Used Search</DialogTitle>
           </DialogHeader>

@@ -139,7 +139,7 @@ const PurchaseListPage = () => {
 
       {/* Filter Dialog — matches WorkerListPage pattern */}
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
             <DialogTitle>Purchase Search</DialogTitle>
           </DialogHeader>

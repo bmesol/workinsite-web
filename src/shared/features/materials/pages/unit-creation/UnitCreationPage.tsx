@@ -43,22 +43,22 @@ const UnitCreationPage = () => {
   } = useUnitCreation();
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-10">
+    <div className="min-h-screen w-full px-4  pb-10">
       {/* Header */}
       <Header title="Create Unit" />
 
-      <Card className="mt-4">
+      <Card className="mt-2">
         <CardContent className="pt-6 flex flex-col gap-4">
           {/* Input */}
-         <NameField
-  label="Unit"
-  inputValue={name}
-  setInputValue={setName}
-  errorMessage={error.name}
-  placeholder="Enter unit"
-  required
-  isDisabled={!editable}
-/>
+          <NameField
+            label="Unit"
+            inputValue={name}
+            setInputValue={setName}
+            errorMessage={error.name}
+            placeholder="Enter unit"
+            required
+            isDisabled={!editable}
+          />
           {/* Save / Update + Cancel Buttons */}
           <div className="flex justify-end gap-2">
             {isEditing && (
@@ -96,7 +96,7 @@ const UnitCreationPage = () => {
           ) : (
             <UnitList
               unitDetails={unitDetails}
-              handleUnitDelete={confirmDelete} 
+              handleUnitDelete={confirmDelete}
               handleUnitEdit={setEditingUnit}
               editingUnitId={editingUnitId}
             />

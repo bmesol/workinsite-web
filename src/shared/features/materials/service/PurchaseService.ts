@@ -44,6 +44,15 @@ const useMaterialPurchaseService = () => {
     });
   };
 
+  const getMinimumQuantity = async (
+  purchaseMaterialId: number
+): Promise<{ minimumAllowedQuantity: string }> => {
+  const response = await apiHelper.get(
+    `purchases/purchase-materials/${purchaseMaterialId}/minimum-quantity`, 
+  );
+  return response.data;
+};
+
   const deleteMaterialPurchase = async (id: number) => {
     await apiHelper.delete(`purchases/${id}`);
   };
@@ -54,6 +63,7 @@ const useMaterialPurchaseService = () => {
     createMaterialPurchase,
     updateMaterialPurchase,
     deleteMaterialPurchase,
+    getMinimumQuantity,
   };
 };
 

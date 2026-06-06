@@ -4,18 +4,18 @@ import type { Material } from '../../DTOs/MaterialProps';
 import { ReceivedQualityTypes } from '../../DTOs/PurchaseProps';
 import { usePurchaseMaterialInputValidate } from '../../components/InputValidate/PurchaseMaterialInputValidate';
 import { useMaterialService } from '../../service/MaterialService';
+import { useMaterialPurchaseService } from '../../service/PurchaseService'; // ✅ add
 import type {
   PurchaseMaterialCreationListProps,
   PurchaseMaterialUpdationListProps,
 } from '../../DTOs/PurchaseMaterialProps';
 
-
 export type UploadedImage = {
   id?: number;
-  uri: string;       // On web, this will be a base64 data URL or object URL
+  uri: string;
   name?: string;
   type?: string;
-  file?: File;       // Web-only: keep original File reference for upload
+  file?: File;
 };
 
 type ShowImage = {
@@ -31,11 +31,11 @@ type RemovedImages = {
 
 interface PurchaseMaterialsEditFormProps {
   newPurchaseMaterials: PurchaseMaterialCreationListProps[];
-  setNewPurchaseMaterials: React.Dispatch<
+  setNewPurchaseMaterials: React.Dispatch <
     React.SetStateAction<PurchaseMaterialCreationListProps[]>
   >;
   updatedPurchaseMaterials?: PurchaseMaterialUpdationListProps[];
-  setUpdatedPurchaseMaterials?: React.Dispatch<
+  setUpdatedPurchaseMaterials?: React.Dispatch <
     React.SetStateAction<PurchaseMaterialUpdationListProps[]>
   >;
   selectedItem: {
@@ -45,13 +45,12 @@ interface PurchaseMaterialsEditFormProps {
       | PurchaseMaterialUpdationListProps;
   };
   removedPurchaseMaterialIds?: number[];
-  setRemovedPurchaseMaterialIds?: React.Dispatch<
+  setRemovedPurchaseMaterialIds?: React.Dispatch <
     React.SetStateAction<number[]>
   >;
   closeModal: () => void;
 }
 
-// ─── Web image compression (replaces ImageResizer) ───────────────────────────
 const compressImageToWebP = (file: File): Promise<{ uri: string; name: string; type: string; file: File }> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -106,8 +105,6 @@ const compressImageToWebP = (file: File): Promise<{ uri: string; name: string; t
   });
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 export const usePurchaseMaterialsEdit = ({
   newPurchaseMaterials,
   setNewPurchaseMaterials,
@@ -125,33 +122,60 @@ export const usePurchaseMaterialsEdit = ({
   const [discount, setDiscount] = useState(v.discount);
   const [receivedDate, setReceivedDate] = useState(v.receivedDate);
   const [receivedQuantity, setReceivedQuantity] = useState(v.receivedQuantity);
- const [receivedQuality, setReceivedQuality] = useState<ReceivedQualityTypes>(
-  (v.receivedQuality as ReceivedQualityTypes) ?? ReceivedQualityTypes.GOOD
-);
-
+  const [receivedQuality, setReceivedQuality] = useState<ReceivedQualityTypes>(
+    (v.receivedQuality as ReceivedQualityTypes) ?? ReceivedQualityTypes.GOOD
+  );
   const [notes, setNotes] = useState(v.note);
   const [materialList, setMaterialList] = useState<Material[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [showImage, setShowImage] = useState<ShowImage[]>([]);
   const [removedImages, setRemovedImages] = useState<RemovedImages[]>([]);
-
-  // Web: replace RN bottom sheet ref with a simple boolean modal state
   const [isImageSheetOpen, setIsImageSheetOpen] = useState(false);
 
-  // Web: hidden file input ref (replaces launchImageLibrary)
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const materialService = useMaterialService();
+  const purchaseService = useMaterialPurchaseService(); // ✅ add
 
   const { error, validate, setError, initialError } =
     usePurchaseMaterialInputValidate({
-        materialId,
-    rate,
-    receivedDate,
-    receivedQuantity,
-    receivedQuality,
-    minQuantity,
+      materialId,
+      rate,
+      receivedDate,
+      receivedQuantity,
+      receivedQuality,
+      minQuantity,
     });
+
+  // ✅ add fetchMinQuantity
+  const fetchMinQuantity = async (purchaseMaterialId: number) => {
+    const result = await purchaseService.getMinimumQuantity(purchaseMaterialId);
+    if (!result) return;
+    const fetchedMin = parseFloat(result.minimumAllowedQuantity);
+    setMinQuantity(fetchedMin);
+  };
+
+  const validateQuantity = (value: string, currentMin: number) => {
+    const parsed = parseFloat(value);
+    if (!value.trim() || isNaN(parsed) || parsed <= 0) {
+      setError(prev => ({ ...prev, receivedQuantity: 'Received quantity is required' }));
+    } else if (currentMin > 0 && parsed < currentMin) {
+      setError(prev => ({ ...prev, receivedQuantity: `Value must be ${currentMin} or greater` }));
+    } else {
+      setError(prev => ({ ...prev, receivedQuantity: '' }));
+    }
+  };
+
+  const handleReceivedQuantityChange = (value: string) => {
+    setReceivedQuantity(value);
+    validateQuantity(value, minQuantity);
+  };
+
+  // ✅ add useEffect for minQuantity
+  useEffect(() => {
+    if (minQuantity > 0 && receivedQuantity) {
+      validateQuantity(receivedQuantity, minQuantity);
+    }
+  }, [minQuantity]);
 
   const fetchMaterials = async (searchString: string = '') => {
     const materials = await materialService.getMaterials(searchString);
@@ -159,32 +183,15 @@ export const usePurchaseMaterialsEdit = ({
     setMaterialList(searchString ? materials.slice(0, 3) : materials);
   };
 
-  const validateQuantity = (value: string, currentMin: number) => {
-  const parsed = parseFloat(value);
-  if (!value.trim() || isNaN(parsed) || parsed <= 0) {
-    setError(prev => ({ ...prev, receivedQuantity: 'Received quantity is required' }));
-  } else if (currentMin > 0 && parsed < currentMin) {
-    setError(prev => ({ ...prev, receivedQuantity: `Value must be ${currentMin} or greater` }));
-  } else {
-    setError(prev => ({ ...prev, receivedQuantity: '' }));
-  }
-};
-
-
-const handleReceivedQuantityChange = (value: string) => {
-  setReceivedQuantity(value);
-  validateQuantity(value, minQuantity);
-};
-
   const materialDetails = materialList.map(item => ({
     label: `${item.name} [${item.unit.name}]`,
     value: item.id.toString(),
   }));
 
-const ReceivedQualityItems = [
-  { label: 'Good', value: ReceivedQualityTypes.GOOD },
-  { label: 'Damaged', value: ReceivedQualityTypes.DAMAGED },
-];
+  const ReceivedQualityItems = [
+    { label: 'Good', value: ReceivedQualityTypes.GOOD },
+    { label: 'Damaged', value: ReceivedQualityTypes.DAMAGED },
+  ];
 
   useEffect(() => {
     if (!selectedItem || !v) return;
@@ -232,16 +239,21 @@ const ReceivedQualityItems = [
     if (v.material && !materialList.some(m => m.id === v.material.id)) {
       setMaterialList(prev => [v.material, ...prev]);
     }
+
+    // ✅ add fetchMinQuantity call
+    if ('purchaseMaterialId' in v && v.purchaseMaterialId) {
+      fetchMinQuantity(v.purchaseMaterialId);
+    } else {
+      setMinQuantity(0);
+    }
   }, [selectedItem]);
 
-  // ─── Image sheet (replaces RN bottom sheet) ────────────────────────────────
   const handleImageSheetOpen = () => setIsImageSheetOpen(true);
   const handleImageSheetClose = () => setIsImageSheetOpen(false);
 
-  // ─── File picker (replaces launchImageLibrary) ─────────────────────────────
   const handleImageUpload = () => {
     handleImageSheetClose();
-    fileInputRef.current?.click(); // Programmatically open file picker
+    fileInputRef.current?.click();
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -250,7 +262,6 @@ const ReceivedQualityItems = [
       toast.info('No image selected.');
       return;
     }
-
     try {
       const compressed = await Promise.all(
         files.map(file => compressImageToWebP(file)),
@@ -260,22 +271,18 @@ const ReceivedQualityItems = [
       toast.error('An error occurred while processing images.');
       console.error(err);
     }
-
-    // Reset input so the same file can be re-selected if needed
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // ─── Payload helpers ───────────────────────────────────────────────────────
   const prepareImagesForPayload = (images: UploadedImage[]) => {
     return images.map(image => ({
       name: image.name || 'image.webp',
       type: image.type || 'image/webp',
       uri: image.uri,
-      file: image.file,   // include File object for multipart/form-data uploads
+      file: image.file,
     }));
   };
 
-  // ─── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = () => {
     if (!validate()) return;
 
@@ -367,7 +374,7 @@ const ReceivedQualityItems = [
   return {
     materialId,
     setMaterialId,
-    handleReceivedQuantityChange,  
+    handleReceivedQuantityChange,
     rate,
     setRate,
     additionalCharges,
@@ -389,9 +396,9 @@ const ReceivedQualityItems = [
     uploadedImages,
     setUploadedImages,
     handleImageUpload,
-    handleFileChange,     // Web: attach to hidden <input type="file" />
-    fileInputRef,         // Web: ref for hidden file input
-    isImageSheetOpen,     // Web: replaces imageSheetRef bottom sheet
+    handleFileChange,
+    fileInputRef,
+    isImageSheetOpen,
     handleImageSheetOpen,
     handleImageSheetClose,
     handleSubmit,
@@ -400,5 +407,6 @@ const ReceivedQualityItems = [
     setShowImage,
     removedImages,
     setRemovedImages,
+    minQuantity, // ✅ add
   };
 };

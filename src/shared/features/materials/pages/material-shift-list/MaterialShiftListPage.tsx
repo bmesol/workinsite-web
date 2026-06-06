@@ -151,7 +151,7 @@ const MaterialShiftListPage = () => {
 
       {/* ── Filter Dialog ── */}
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
             <DialogTitle>Material Shift Search</DialogTitle>
           </DialogHeader>

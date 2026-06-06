@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@/shared/components/ui/button";
-import { Label } from "@/shared/components/ui/label";
 import { SelectField } from "@/shared/components/FormFields/SelectField";
 
 import {
@@ -48,7 +47,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
   const {
     materialId,
     setMaterialId,
-   handleReceivedQuantityChange,  
+    handleReceivedQuantityChange,
     rate,
     setRate,
     additionalCharges,
@@ -80,32 +79,55 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
     setShowImage,
     removedImages,
     setRemovedImages,
+    minQuantity,
   } = usePurchaseMaterialsEdit(props);
+
+  const MinQuantityBadge = () => {
+    if (!minQuantity || minQuantity <= 0) return null;
+
+    const entered = parseFloat(receivedQuantity);
+    const isBelow = !isNaN(entered) && entered < minQuantity;
+
+    return (
+      <div
+        className={`self-start px-2.5 py-1 rounded-md border text-xs font-medium -mt-2 ${
+          isBelow
+            ? "bg-red-50 border-red-200 text-red-600"
+            : "bg-blue-50 border-blue-200 text-blue-700"
+        }`}
+      >
+        {isBelow
+          ? `⚠  Value must be ${minQuantity} or greater`
+          : `✓  Minimum allowed: ${minQuantity}`}
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto px-4 py-2 pr-3">
       {/* ── Material ── */}
-    <ComboboxField
-  id="material"
-  label="Material"
-  required
-  items={materialDetails}
-  selectedValue={materialId}
-  onValueChange={setMaterialId}
-  onSearch={fetchMaterials}
-  error={error.materialId}
-/>
+      <ComboboxField
+        id="material"
+        label="Material"
+        required
+        items={materialDetails}
+        selectedValue={materialId}
+        onValueChange={setMaterialId}
+        onSearch={fetchMaterials}
+        error={error.materialId}
+      />
 
       {/* ── Quantity ── */}
-  <NameField
-  label="Received Quantity"
-  required
-  inputValue={receivedQuantity}
-  setInputValue={handleReceivedQuantityChange}  // ✅ changed from setReceivedQuantity
-  placeholder="Enter Received Quantity"
-  errorMessage={error.receivedQuantity}
-  regex="^[0-9]*\.?[0-9]*$"  // ✅ allow decimals like RN
-/>
+      <NameField
+        label="Received Quantity"
+        required
+        inputValue={receivedQuantity}
+        setInputValue={handleReceivedQuantityChange}
+        placeholder="Enter Received Quantity"
+        errorMessage={error.receivedQuantity}
+        regex="^[0-9]*\.?[0-9]*$"
+      />
+      <MinQuantityBadge />
 
       {/* ── Rate ── */}
       <NameField
@@ -135,15 +157,15 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
       />
 
       {/* ── Received Quality ── */}
-     <SelectField
-  label="Received Quality"
-  required
-  items={ReceivedQualityItems}
-  selectedValue={receivedQuality}
-  onValueChange={(val) => setReceivedQuality(val as ReceivedQualityTypes)}
-  placeholder="Select Quality"
-  errorMessage={error.receivedQuality}
-/>
+      <SelectField
+        label="Received Quality"
+        required
+        items={ReceivedQualityItems}
+        selectedValue={receivedQuality}
+        onValueChange={(val) => setReceivedQuality(val as ReceivedQualityTypes)}
+        placeholder="Select Quality"
+        errorMessage={error.receivedQuality}
+      />
 
       {/* ── Received Date ── */}
       <DatePicker
@@ -154,9 +176,6 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         errorMessage={error.receivedDate}
         defaultDate
       />
-
-   
-      
 
       {/* ── Notes ── */}
       <TextareaField

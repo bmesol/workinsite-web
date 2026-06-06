@@ -6,6 +6,7 @@ const FormSubmissionButtons = (props: {
   onSave: () => void;
   onCancel: () => void;
   className?: string;
+  disabled?: boolean;
 }) => {
   return (
     <FormInput className={props.className}>
@@ -21,6 +22,7 @@ const FormSubmissionButtons = (props: {
           variant="default"
           className="cursor-pointer"
           onClick={() => props.onSave()}
+          disabled={props.disabled} 
         >
           {props.label || "Save"}
         </Button>

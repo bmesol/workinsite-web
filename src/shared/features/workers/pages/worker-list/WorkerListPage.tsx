@@ -128,7 +128,7 @@ const WorkerListPage = () => {
       </div>
 
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
             <DialogTitle>Worker Search</DialogTitle>
           </DialogHeader>

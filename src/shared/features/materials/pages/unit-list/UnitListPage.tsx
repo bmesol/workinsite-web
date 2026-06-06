@@ -1,7 +1,5 @@
-import { Pencil, Trash2 } from "lucide-react";
 import type { UnitListProps } from "../../DTOs/UnitDetails";
 import { usePermission } from "@/shared/hooks/usePermission";
-import { Button } from "@/shared/components/ui/button";
 import { ListItem } from "@/shared/components/ListItem/ListItem";
 
 const UnitList = ({

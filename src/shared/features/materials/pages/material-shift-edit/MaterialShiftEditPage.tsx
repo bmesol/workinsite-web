@@ -6,7 +6,8 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
-import { Header, Actions } from '@/shared/components/Header/Header';
+import { Header } from '@/shared/components/Header/Header';  // ✅ remove Actions
+import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';  // ✅ add
 import {
   AlertDialog,
   AlertDialogContent,
@@ -56,7 +57,6 @@ export const MaterialShiftEditPage = () => {
     initialError,
   } = useMaterialShiftEdit(id);
 
-  // ─── Quantity badge ───────────────────────────────────────────────────────
   const QuantityBadge = () => {
     if (!materialId || maximumAllowedQuantity === null) return null;
 
@@ -92,13 +92,7 @@ export const MaterialShiftEditPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Edit Material Shift">
-        <Actions>
-          <Button variant="outline" onClick={handleBack}>
-            Back
-          </Button>
-        </Actions>
-      </Header>
+      <Header title="Edit Material Shift" />  {/* ✅ remove Actions/Back button */}
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -126,7 +120,7 @@ export const MaterialShiftEditPage = () => {
             disabled={!editable}
           />
 
-          {/* ── Material (with loading state) ── */}
+          {/* ── Material ── */}
           {isFetchingMaterials ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
               <Loader2 className="animate-spin h-4 w-4 text-blue-600" />
@@ -162,7 +156,7 @@ export const MaterialShiftEditPage = () => {
             isDisabled={!editable}
           />
 
-          {/* ── Quantity badge ── */}
+          {/* ── Quantity Badge ── */}
           <QuantityBadge />
 
           {/* ── Target Site ── */}
@@ -187,14 +181,12 @@ export const MaterialShiftEditPage = () => {
             isDisabled={!editable}
           />
 
-          {/* ── Save ── */}
-          <Button
-            onClick={handleSubmission}
+          {/* ── Save / Cancel ── */}
+          <FormSubmissionButtons
+            onSave={handleSubmission}
+            onCancel={handleBack}        // ✅ reuse handleBack
             disabled={!editable}
-            className="w-full"
-          >
-            Save
-          </Button>
+          />
 
         </div>
       </Card>
