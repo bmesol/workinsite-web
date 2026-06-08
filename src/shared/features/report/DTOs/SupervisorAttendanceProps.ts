@@ -1,0 +1,37 @@
+import type { User } from '@/shared/features/users/DTOs/User';
+
+export type CurrentLocation = {
+    lat: number;
+    lng: number;
+    address: string;
+};
+
+export type SupervisorAttendance = {
+    id: number;
+    date: string;
+    supervisor: User[];
+    currentLocation: CurrentLocation;
+};
+
+export type SupervisorAttendanceCreationRequest = {
+    date: string;
+    supervisorId: number;
+    currentLocation: CurrentLocation;
+};
+
+export type SupervisorAttendanceListResponse = {
+    totalCount: number;
+    pageNumber: number;
+    pageSize: number;
+    totalPages: number;
+    items: SupervisorAttendance[];
+};
+
+export type SupervisorAttendanceListParams = {
+    SupervisorId?: number;
+    FromDate?: string;   // changed from Date
+    ToDate?: string;     // new
+    PageNumber?: number;
+    PageSize?: number;
+    IgnorePagination?: boolean;
+};

@@ -96,12 +96,14 @@ const MenuItems: Record<string, MenuItem> = {
       { label: "Worker Transaction", href: "/transactions/worker" },
     ],
   },
-  "/reports": {
+ "/reports": {
     label: "Reports",
     icon: FileText,
     allowedUserRoles: ALL_USERS,
     children: [
       { label: "Worker Report", href: "/reports/worker" },
+      { label: "Supervisor Attendance", href: "/reports/supervisor-attendance" },  // ✅ add
+      { label: "Available Material Report", href: "/reports/available-material" },  // ✅ add
     ],
   },
 };

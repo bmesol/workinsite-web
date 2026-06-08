@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react";
 import { WorkerReportUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
-import { Sheet, SheetContent } from "@/shared/components/ui/sheet";
 import { Button } from "@/shared/components/ui/button";
-import { Skeleton } from "@/shared/components/ui/skeleton";
-import { Users, SlidersHorizontal, X } from "lucide-react";
+import { Users } from "lucide-react";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { Header, Actions } from "@/shared/components/Header/Header";
+import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
 import { StatsBar } from "../../components/StatsBar/StatsBar";
 import { WorkerReportCard } from "../../components/WorkerReportCard/WorkerReportCard";
 import { DateFilter } from "../../components/DateFilter/DateFilter";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useWorkerReport } from "./useWorkerReport";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/components/ui/alert-dialog";
+import { X } from "lucide-react";
 
 function CardSkeleton() {
   return (
@@ -75,32 +85,20 @@ export default function WorkerReportPage() {
   }, [workerSearch]);
 
   return (
-    <div className="min-h-screen w-full  py-6 ">
-      {/* ── Header ── */}
+    <div className="min-h-screen w-full py-6">
+
+      {/* ── Header + SearchFilterBar ── */}
       <div className="px-4">
         <Header title="Worker Report">
           <Actions>
-            {appliedFilters && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleClearFilters}
-                className="text-red-500 hover:text-red-600"
-              >
-                <X size={14} className="mr-1" /> Clear
-              </Button>
-            )}
-           
-            <Button onClick={() => setFilterOpen(true)}>
-              <SlidersHorizontal size={14} className="mr-1" /> Filter
-            </Button>
+            <SearchFilterBar
+              appliedFilters={appliedFilters}
+              placeholder="Search Worker Report..."
+              onFilterOpen={() => setFilterOpen(true)}
+              onClearSearch={handleClearFilters}
+            />
           </Actions>
         </Header>
-        {appliedFilters && (
-          <p className="text-xs text-slate-500 truncate max-w-[220px] pb-2">
-            {appliedFilters}
-          </p>
-        )}
       </div>
 
       {/* ── Stats ── */}
@@ -151,25 +149,26 @@ export default function WorkerReportPage() {
         )}
       </div>
 
-      {/* ── Filter Sheet ── */}
-      <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
-        <SheetContent
-          side="right"
-          className="w-full sm:w-[400px] overflow-y-auto [&>button:first-child]:hidden px-4"
-        >
-          <Header title="Filter Worker Reports">
-            <Actions>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setFilterOpen(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </Actions>
-          </Header>
-          <div className="space-y-5 mt-6">
-            {/* Site */}
+      {/* ── Filter AlertDialog ── */}
+      <AlertDialog open={filterOpen} onOpenChange={setFilterOpen}>
+        <AlertDialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)] flex flex-col max-h-[80vh]">
+
+          {/* Header + Close icon */}
+          <AlertDialogHeader className="relative">
+            <AlertDialogTitle>Filter Worker Reports</AlertDialogTitle>
+            <AlertDialogDescription className="sr-only">
+              Filter by site, worker and date
+            </AlertDialogDescription>
+            <button
+              onClick={() => setFilterOpen(false)}
+              className="absolute top-0 right-0 p-1 rounded hover:bg-gray-100 transition-colors"
+            >
+              <X className="h-4 w-4 text-gray-500" />
+            </button>
+          </AlertDialogHeader>
+
+          {/* Scrollable content */}
+          <div className="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
             <ComboboxField
               id="site"
               label="Site"
@@ -182,7 +181,6 @@ export default function WorkerReportPage() {
               onSearch={(val) => setSiteSearch(val)}
             />
 
-            {/* Worker */}
             <ComboboxField
               id="worker"
               label="Worker"
@@ -195,7 +193,6 @@ export default function WorkerReportPage() {
               onSearch={(val) => setWorkerSearch(val)}
             />
 
-            {/* Date Filter */}
             <DateFilter
               selectedOption={selectedOption}
               dateRange={dateRange}
@@ -203,16 +200,22 @@ export default function WorkerReportPage() {
               onOptionChange={handleDateOptionChange}
               errors={errors}
             />
-
-            <Button
-              className="w-full h-12 text-base font-semibold transition-all duration-200 cursor-pointer hover:shadow-lg active:translate-y-0 active:shadow-md"
-              onClick={handleSearch}
-            >
-              Search
-            </Button>
           </div>
-        </SheetContent>
-      </Sheet>
+
+          <AlertDialogFooter className="pt-2">
+            <AlertDialogAction asChild>
+              <Button
+                className="w-full h-12 text-base font-semibold"
+                onClick={handleSearch}
+              >
+                Search
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+
+        </AlertDialogContent>
+      </AlertDialog>
+
     </div>
   );
 }

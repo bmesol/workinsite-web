@@ -52,7 +52,7 @@ const ComboboxField = ({
       <Label
         htmlFor={id}
         className="text-base font-medium flex items-center gap-0.5"
-        style={{ color: 'var(--foreground)' }}
+        style={{ color: "var(--foreground)" }}
       >
         {label}
         {required && (
@@ -69,31 +69,31 @@ const ComboboxField = ({
         }}
       >
         <PopoverTrigger asChild>
-<Button
-  id={id}
-  variant="outline"
-  role="combobox"
-  aria-expanded={open}
-  disabled={disabled}
-  className={cn(
-    "w-full justify-between font-normal text-sm bg-white dark:bg-background",
-    disabled && "opacity-50 cursor-not-allowed",
-  )}
-  style={{
-    fontFamily: 'Outfit, sans-serif',
-    fontSize: 'var(--font-sm)',
-     color: selectedLabel ? 'var(--foreground)' : 'var(--gray-color)'// ✅ exact match with input::placeholder
-  }}
->
-  {selectedLabel ?? `Select ${label.toLowerCase()}...`}
-  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-</Button>
+          <Button
+            id={id}
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            disabled={disabled}
+            className={cn(
+              "w-full justify-between font-normal text-sm bg-white dark:bg-background",
+              disabled && "opacity-50 cursor-not-allowed",
+            )}
+            style={{
+              fontFamily: "Outfit, sans-serif",
+              fontSize: "var(--font-sm)",
+              color: selectedLabel ? "var(--foreground)" : "var(--gray-color)",
+            }}
+          >
+            {selectedLabel ?? `Select ${label.toLowerCase()}...`}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
         </PopoverTrigger>
 
         <PopoverContent
-  className="w-full p-0 bg-white dark:bg-background"  // ✅ same fix
-  align="start"
->
+          className="w-full p-0 bg-white dark:bg-background"
+          align="start"
+        >
           <Command shouldFilter={false}>
             <CommandInput
               placeholder={`Search ${label.toLowerCase()}...`}

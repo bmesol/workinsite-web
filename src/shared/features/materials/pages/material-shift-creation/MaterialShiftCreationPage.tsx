@@ -6,8 +6,8 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
-import { Header } from '@/shared/components/Header/Header';  // ✅ remove Actions
-import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';  // ✅ add
+import { Header } from '@/shared/components/Header/Header';  
+import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';  
 import {
   AlertDialog,
   AlertDialogContent,
@@ -75,7 +75,7 @@ const MaterialShiftCreationPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Create Material Shift" />  {/* ✅ remove Actions/Back button */}
+      <Header title="Create Material Shift" />  
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -164,7 +164,7 @@ const MaterialShiftCreationPage = () => {
           {/* ── Save / Cancel ── */}
           <FormSubmissionButtons
             onSave={handleSubmission}
-            onCancel={handleBack}  // ✅ reuse existing handleBack
+            onCancel={handleBack}  
           />
 
         </div>

@@ -1,8 +1,18 @@
-const basePath = "reports/worker";
+const workerReportBasePath = "reports/worker";
+const supervisorAttendanceBasePath = "reports/supervisor-attendance";
+const availableMaterialReportBasePath = "reports/available-material";
 
 const WorkerReportUrls = {
-  list: `/${basePath}`,
-  details: (workerId: number) => `/${basePath}/${workerId}`,
+  list: `/${workerReportBasePath}`,
+  details: (workerId: number) => `/${workerReportBasePath}/${workerId}`,
 };
 
-export { WorkerReportUrls };
+const AvailableMaterialReportUrls = {
+  list: `/${availableMaterialReportBasePath}`,
+};
+
+const SupervisorAttendanceUrls = {
+  list: `/${supervisorAttendanceBasePath}`,
+};
+
+export { WorkerReportUrls, AvailableMaterialReportUrls, SupervisorAttendanceUrls };

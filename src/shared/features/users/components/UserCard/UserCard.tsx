@@ -41,11 +41,12 @@ const UserCard = (props: UserCardProps) => {
 
       {/* User Info */}
       <div className="flex flex-col min-w-0 gap-1">
-        <span className="font-semibold text-sm text-black">{name}</span>
+        {/* Name — matches ContactCard: font-semibold text-base */}
+        <span className="font-semibold text-base text-black">{name}</span>
 
         <div className="flex items-center gap-1">
           <Briefcase className="h-3 w-3 text-black" />
-          <span className="text-xs text-black">{role}</span>
+          <span className="text-sm text-black">{role}</span>
         </div>
 
         <div
@@ -55,7 +56,7 @@ const UserCard = (props: UserCardProps) => {
           <Phone className="h-3 w-3 text-black" />
           <a
             href={`tel:${phoneNumber}`}
-            className="text-xs text-black hover:underline"
+            className="text-sm text-black hover:underline"
           >
             {phoneNumber}
           </a>

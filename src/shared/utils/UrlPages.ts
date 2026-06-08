@@ -44,6 +44,8 @@ import { MaterialUsedEditPage } from "../features/materials/pages/material-used-
 import MaterialShiftListPage from "../features/materials/pages/material-shift-list/MaterialShiftListPage";
 import { MaterialShiftCreationPage } from "../features/materials/pages/material-shift-creation/MaterialShiftCreationPage";
 import { MaterialShiftEditPage } from "../features/materials/pages/material-shift-edit/MaterialShiftEditPage";
+import SupervisorAttendanceListPage from "../features/report/pages/supervisor-attendance-list/SupervisorAttendanceListPage";
+import AvailableMaterialReportPage from "../features/report/pages/available-material-report/AvailableMaterialReportPage";
 
 
 const UrlPages = {
@@ -65,6 +67,8 @@ const UrlPages = {
   "/suppliers/:id/edit":               { page: SupplierEditPage,               allowedUserRoles: ALL_USERS },
   "/reports/worker":                   { page: WorkerReportPage,               allowedUserRoles: ALL_USERS },
   "/reports/worker/:workerId":         { page: WorkerReportDetailsPage,        allowedUserRoles: ALL_USERS },
+  "/reports/supervisor-attendance": { page: SupervisorAttendanceListPage, allowedUserRoles: ALL_USERS },
+  "/reports/available-material": { page: AvailableMaterialReportPage, allowedUserRoles: ALL_USERS }, // Placeholder, replace with actual AvailableMaterialReportPage when implemented
   "/workers":                          { page: WorkerListPage,                 allowedUserRoles: ALL_USERS },
   "/workers/create":                   { page: WorkerCreationPage,             allowedUserRoles: ALL_USERS },
   "/workers/:id/edit":                 { page: WorkerEditPage,                 allowedUserRoles: ALL_USERS },
