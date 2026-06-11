@@ -46,10 +46,14 @@ import { MaterialShiftCreationPage } from "../features/materials/pages/material-
 import { MaterialShiftEditPage } from "../features/materials/pages/material-shift-edit/MaterialShiftEditPage";
 import SupervisorAttendanceListPage from "../features/report/pages/supervisor-attendance-list/SupervisorAttendanceListPage";
 import AvailableMaterialReportPage from "../features/report/pages/available-material-report/AvailableMaterialReportPage";
+import RolesPage from "@/shared/features/rolesandrights/pages/role/RolePage";
+import PageRolePage from "@/shared/features/rolesandrights/pages/page-role/PageRole";
 
 
 const UrlPages = {
   "/profile":                          { page: UserProfilePage,                allowedUserRoles: ALL_USERS },
+  "/roles-rights":                     { page: RolesPage,                      allowedUserRoles: ALL_USERS },
+  "/roles-rights/:id":                 { page: PageRolePage,                   allowedUserRoles: ALL_USERS },
   "/users":                            { page: UserListPage,                   allowedUserRoles: ALL_USERS },
   "/users/create":                     { page: UserCreationPage,               allowedUserRoles: ALL_USERS },
   "/users/:id/edit":                   { page: UserEditPage,                   allowedUserRoles: ALL_USERS },
@@ -67,8 +71,8 @@ const UrlPages = {
   "/suppliers/:id/edit":               { page: SupplierEditPage,               allowedUserRoles: ALL_USERS },
   "/reports/worker":                   { page: WorkerReportPage,               allowedUserRoles: ALL_USERS },
   "/reports/worker/:workerId":         { page: WorkerReportDetailsPage,        allowedUserRoles: ALL_USERS },
-  "/reports/supervisor-attendance": { page: SupervisorAttendanceListPage, allowedUserRoles: ALL_USERS },
-  "/reports/available-material": { page: AvailableMaterialReportPage, allowedUserRoles: ALL_USERS }, // Placeholder, replace with actual AvailableMaterialReportPage when implemented
+  "/reports/supervisor-attendance":    { page: SupervisorAttendanceListPage,   allowedUserRoles: ALL_USERS },
+  "/reports/available-material":       { page: AvailableMaterialReportPage,    allowedUserRoles: ALL_USERS }, 
   "/workers":                          { page: WorkerListPage,                 allowedUserRoles: ALL_USERS },
   "/workers/create":                   { page: WorkerCreationPage,             allowedUserRoles: ALL_USERS },
   "/workers/:id/edit":                 { page: WorkerEditPage,                 allowedUserRoles: ALL_USERS },
@@ -78,15 +82,15 @@ const UrlPages = {
   "/work-rate-abstracts":              { page: WorkRateAbstractListPage,       allowedUserRoles: ALL_USERS },
   "/work-rate-abstracts/create":       { page: WorkRateAbstractCreationPage,   allowedUserRoles: ALL_USERS },
   "/work-rate-abstracts/:id/edit":     { page: WorkRateAbstractEditPage,       allowedUserRoles: ALL_USERS },
-  "/work-modes":                       { page: WorkModeCreationPage,               allowedUserRoles: ALL_USERS }, 
- "/workers/shift":                    { page: ShiftCreationPage,              allowedUserRoles: ALL_USERS },
- "/attendance":                       { page: AttendanceListPage,             allowedUserRoles: ALL_USERS },
+  "/work-modes":                       { page: WorkModeCreationPage,           allowedUserRoles: ALL_USERS }, 
+  "/workers/shift":                    { page: ShiftCreationPage,              allowedUserRoles: ALL_USERS },
+  "/attendance":                       { page: AttendanceListPage,             allowedUserRoles: ALL_USERS },
   "/attendance/create":                { page: AttendanceCreationPage,         allowedUserRoles: ALL_USERS },
   "/attendance/:id/edit":              { page: AttendanceEditPage,             allowedUserRoles: ALL_USERS },
   "/materials/unit":                   { page: UnitCreationPage,               allowedUserRoles: ALL_USERS }, 
   "/materials":                        { page: MaterialListPage,               allowedUserRoles: ALL_USERS },
-"/materials/create": { page: MaterialCreationPage, allowedUserRoles: ALL_USERS },
-"/materials/:id/edit": { page: MaterialEditPage, allowedUserRoles: ALL_USERS },
+  "/materials/create":                 { page: MaterialCreationPage,           allowedUserRoles: ALL_USERS },
+  "/materials/:id/edit":               { page: MaterialEditPage, allowedUserRoles: ALL_USERS },
 "/materials/purchase":          { page: PurchaseListPage,       allowedUserRoles: ALL_USERS },
 "/materials/purchase/create":   { page: PurchaseCreationPage,   allowedUserRoles: ALL_USERS },
 "/materials/purchase/:id/edit": { page: PurchaseEditPage,       allowedUserRoles: ALL_USERS },

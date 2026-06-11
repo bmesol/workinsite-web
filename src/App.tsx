@@ -8,6 +8,7 @@ import { EnsureUnauthenticatedRoute } from "@/shared/components/routehandlers/En
 import { SiteListPage } from "@/shared/features/sites/pages/site-list/SiteListPage";
 import { UrlPages } from "@/shared/utils/UrlPages";
 import { NotFoundPage } from "./NotFoundPage";
+import SupervisorDashboard from "@/shared/features/dashboard/pages/supervisor-dashboard/SupervisorDashboardPage";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
       {/* Private routes */}
       <Route element={<PrivateRoute />}>
         <Route path="/sitelist" element={<SiteListPage />} />
+        <Route path="/dashboard" element={<SupervisorDashboard />} />
         {Object.entries(UrlPages).map(([path, item]) => {
           const Component = item.page;
           return <Route key={path} path={path} element={<Component />} />;

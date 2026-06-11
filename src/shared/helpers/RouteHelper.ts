@@ -1,11 +1,14 @@
-const UserRoles = {
-  ADMIN: 1,
-  ENGINEER: 2,
-  SUPERVISOR: 3,
-};
+import { ROLE_IDS } from '@/shared/features/rolesandrights/DTOs/DTOs';
 
-const ADMIN_USERS = [UserRoles.ADMIN, UserRoles.ENGINEER];
+const ADMIN_USERS = [ROLE_IDS.SUPER_ADMIN, ROLE_IDS.ADMIN];
 
-const ALL_USERS = [UserRoles.ADMIN, UserRoles.ENGINEER, UserRoles.SUPERVISOR];
+const ALL_USERS = [
+  ROLE_IDS.SUPER_ADMIN,
+  ROLE_IDS.ADMIN,
+  ROLE_IDS.ENGINEER,
+  ROLE_IDS.SUPERVISOR,
+];
 
-export { ADMIN_USERS, ALL_USERS };
+const SUPERVISOR_ONLY = [ROLE_IDS.SUPERVISOR];
+
+export { ADMIN_USERS, ALL_USERS, SUPERVISOR_ONLY };

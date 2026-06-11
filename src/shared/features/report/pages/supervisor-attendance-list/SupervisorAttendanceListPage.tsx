@@ -1,4 +1,4 @@
-import { Header } from '@/shared/components/Header/Header';
+import { Header, Actions } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
@@ -65,15 +65,16 @@ const SupervisorAttendanceListPage = () => {
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Supervisor Attendance" />
-
-      {/* ── Search Filter Bar ── */}
-      <SearchFilterBar
-        appliedFilters={appliedFilters}
-        placeholder="Search Supervisor Attendance..."
-        onFilterOpen={() => setFilterOpen(true)}
-        onClearSearch={handleClearSearch}
-      />
+       <Header title="Supervisor Attendance">
+        <Actions>
+          <SearchFilterBar
+            appliedFilters={appliedFilters}
+            placeholder="Search Supervisor Attendance..."
+            onFilterOpen={() => setFilterOpen(true)}
+            onClearSearch={handleClearSearch}
+          />
+        </Actions>
+      </Header>
 
       {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">

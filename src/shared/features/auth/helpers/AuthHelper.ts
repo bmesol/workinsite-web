@@ -6,7 +6,6 @@ type DecodedToken = {
   role: string;
 };
 
-// ✅ Added PageRight and pageRights to UserProfile
 export type PageRight = {
   name: string;
   roleLevel: number; // 0 = NONE, 1 = VIEW, 2 = EDIT
@@ -21,13 +20,14 @@ export type UserProfile = {
     id: number;
     name: string;
   };
-  pageRights?: PageRight[]; // ✅ added — for PermissionHelper to work
+  pageRights?: PageRight[]; 
 };
 
 const ROLE_MAP: Record<number, string> = {
-  1: "Admin",
-  2: "Engineer",
-  3: "Supervisor",
+  1: "Super Admin",
+  2: "Admin",
+  3: "Engineer",
+  4: "Supervisor",
 };
 
 const AuthHelper = {
