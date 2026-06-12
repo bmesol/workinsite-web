@@ -48,7 +48,12 @@ import SupervisorAttendanceListPage from "../features/report/pages/supervisor-at
 import AvailableMaterialReportPage from "../features/report/pages/available-material-report/AvailableMaterialReportPage";
 import RolesPage from "@/shared/features/rolesandrights/pages/role/RolePage";
 import PageRolePage from "@/shared/features/rolesandrights/pages/page-role/PageRole";
-
+import CuringTypeListPage from "../features/curing/pages/curing-type-list/CuringTypeListPage";
+import { CuringTypeCreationPage } from "../features/curing/pages/curing-type-create/CuringTypeCreatePage";
+import { CuringTypeEditPage } from "../features/curing/pages/curing-type-edit/CuringTypeEditPage";
+import  CuringListPage  from "@/shared/features/curing/pages/curing-list/CuringListPage";
+import { CuringCreationPage } from "../features/curing/pages/curing-creation/CuringCreationPage";
+import { CuringEditPage } from "../features/curing/pages/curing-edit/CuringEditPage";
 
 const UrlPages = {
   "/profile":                          { page: UserProfilePage,                allowedUserRoles: ALL_USERS },
@@ -69,6 +74,12 @@ const UrlPages = {
   "/suppliers":                        { page: SupplierListPage,               allowedUserRoles: ALL_USERS },
   "/suppliers/create":                 { page: SupplierCreationPage,           allowedUserRoles: ALL_USERS },
   "/suppliers/:id/edit":               { page: SupplierEditPage,               allowedUserRoles: ALL_USERS },
+  "/curing":              { page: CuringListPage,         allowedUserRoles: ALL_USERS },
+"/curing/create":       { page: CuringCreationPage,     allowedUserRoles: ALL_USERS },
+"/curing/:id/edit":     { page: CuringEditPage,         allowedUserRoles: ALL_USERS },
+  "/curing/types":                     { page: CuringTypeListPage,             allowedUserRoles: ALL_USERS },
+  "/curing/types/create":              { page: CuringTypeCreationPage, allowedUserRoles: ALL_USERS },
+  "/curing/types/:id/edit":            { page: CuringTypeEditPage,   allowedUserRoles: ALL_USERS },
   "/reports/worker":                   { page: WorkerReportPage,               allowedUserRoles: ALL_USERS },
   "/reports/worker/:workerId":         { page: WorkerReportDetailsPage,        allowedUserRoles: ALL_USERS },
   "/reports/supervisor-attendance":    { page: SupervisorAttendanceListPage,   allowedUserRoles: ALL_USERS },
@@ -90,7 +101,7 @@ const UrlPages = {
   "/materials/unit":                   { page: UnitCreationPage,               allowedUserRoles: ALL_USERS }, 
   "/materials":                        { page: MaterialListPage,               allowedUserRoles: ALL_USERS },
   "/materials/create":                 { page: MaterialCreationPage,           allowedUserRoles: ALL_USERS },
-  "/materials/:id/edit":               { page: MaterialEditPage, allowedUserRoles: ALL_USERS },
+  "/materials/:id/edit":               { page: MaterialEditPage,               allowedUserRoles: ALL_USERS },
 "/materials/purchase":          { page: PurchaseListPage,       allowedUserRoles: ALL_USERS },
 "/materials/purchase/create":   { page: PurchaseCreationPage,   allowedUserRoles: ALL_USERS },
 "/materials/purchase/:id/edit": { page: PurchaseEditPage,       allowedUserRoles: ALL_USERS },

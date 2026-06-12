@@ -126,6 +126,7 @@ import {
   ShieldCheck,
   ClipboardList,
   LayoutDashboard,
+  Droplet
 } from "lucide-react";
 import { ADMIN_USERS, ALL_USERS, SUPERVISOR_ONLY } from "@/shared/helpers/RouteHelper";
 
@@ -201,6 +202,15 @@ const MenuItems: Record<string, MenuItem> = {
       { label: "Material Shift", href: "/materials/shift" },
     ],
   },
+  "/curing": {
+  label: "Curing",
+  icon: Droplet,  
+  allowedUserRoles: ALL_USERS,
+  children: [
+    { label: "Curing",       href: "/curing" },
+    { label: "Curing Types", href: "/curing/types" },
+  ],
+},
   "/attendance": {
     label: "Attendance",
     icon: CalendarCheck,
