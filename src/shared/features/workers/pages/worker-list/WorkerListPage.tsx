@@ -62,8 +62,7 @@ const WorkerListPage = () => {
     );
   }
 
-  if (!workerDetails.length && !appliedFilters)
-    return <WorkerGetStartedPage />;
+  if (!workerDetails.length && !appliedFilters) return <WorkerGetStartedPage />;
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
@@ -78,11 +77,11 @@ const WorkerListPage = () => {
 
       <div className="flex justify-end ">
         <SearchFilterBar
-  appliedFilters={appliedFilters}
-  placeholder="Search Workers..."
-  onFilterOpen={() => setFilterOpen(true)}
-  onClearSearch={handleClearSearch}
-/>
+          appliedFilters={appliedFilters}
+          placeholder="Search Workers..."
+          onFilterOpen={() => setFilterOpen(true)}
+          onClearSearch={handleClearSearch}
+        />
       </div>
 
       {/* Search Loading */}
@@ -101,10 +100,10 @@ const WorkerListPage = () => {
         ) : (
           workerDetails.map((worker) => {
             const phone = worker.contact.contactDetails.find(
-              (item) => item.contactType === ContactTypes.PHONE
+              (item) => item.contactType === ContactTypes.PHONE,
             )?.value;
             const email = worker.contact.contactDetails.find(
-              (item) => item.contactType === ContactTypes.EMAIL
+              (item) => item.contactType === ContactTypes.EMAIL,
             )?.value;
             return (
               <div
@@ -156,7 +155,7 @@ const WorkerListPage = () => {
               selectedValue={workerCategory?.value}
               onValueChange={(val) => {
                 const selected = workerCategoryDetails.find(
-                  (c) => c.value === val
+                  (c) => c.value === val,
                 );
                 setWorkerCategory({
                   value: val,

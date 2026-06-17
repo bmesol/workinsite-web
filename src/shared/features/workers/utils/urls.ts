@@ -2,7 +2,7 @@ const workersBasePath = "workers";
 const workerCategoriesBasePath = "worker-categories";
 const workRateAbstractBasePath = "work-rate-abstracts";
 const workModeBasePath = "work-modes";
-const shiftBasePath = "workers/shift"; // ✅ added
+const shiftBasePath = "workers/shift";
 
 const WorkersUrls = {
   list: `/${workersBasePath}`,

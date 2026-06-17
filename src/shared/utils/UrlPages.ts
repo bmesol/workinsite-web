@@ -54,6 +54,15 @@ import { CuringTypeEditPage } from "../features/curing/pages/curing-type-edit/Cu
 import  CuringListPage  from "@/shared/features/curing/pages/curing-list/CuringListPage";
 import { CuringCreationPage } from "../features/curing/pages/curing-creation/CuringCreationPage";
 import { CuringEditPage } from "../features/curing/pages/curing-edit/CuringEditPage";
+import  ClientTransactionListPage from "@/shared/features/transaction/pages/client-transaction-list/ClientTransactionListPage";
+import ClientTransactionCreationPage from "@/shared/features/transaction/pages/client-transaction-creation/ClientTransactionCreationPage";
+import ClientTransactionEditPage from "../features/transaction/pages/client-transaction-edit/ClientTransactionEditPage";
+import SupplierTransactionListPage from "../features/transaction/pages/supplier-transaction-list/SupplierTransactionListPage";
+import SupplierTransactionCreationPage from "../features/transaction/pages/supplier-transaction-creation/SupplierTransactionCreationPage";
+import SupplierTransactionEditPage from "../features/transaction/pages/supplier-transaction-edit/SupplierTransactionEditPage";
+import WorkerTransactionListPage from "../features/transaction/pages/worker-transaction-list/WorkerTransactionListPage";
+import WorkerTransactionCreationPage from "../features/transaction/pages/worker-transaction-creation/WorkerTransactionCreationPage";
+import WorkerTransactionEditPage from "../features/transaction/pages/worker-transaction-edit/WorkerTransactionEditPage";
 
 const UrlPages = {
   "/profile":                          { page: UserProfilePage,                allowedUserRoles: ALL_USERS },
@@ -74,12 +83,12 @@ const UrlPages = {
   "/suppliers":                        { page: SupplierListPage,               allowedUserRoles: ALL_USERS },
   "/suppliers/create":                 { page: SupplierCreationPage,           allowedUserRoles: ALL_USERS },
   "/suppliers/:id/edit":               { page: SupplierEditPage,               allowedUserRoles: ALL_USERS },
-  "/curing":              { page: CuringListPage,         allowedUserRoles: ALL_USERS },
-"/curing/create":       { page: CuringCreationPage,     allowedUserRoles: ALL_USERS },
-"/curing/:id/edit":     { page: CuringEditPage,         allowedUserRoles: ALL_USERS },
+  "/curing":                           { page: CuringListPage,                 allowedUserRoles: ALL_USERS },
+  "/curing/create":                    { page: CuringCreationPage,             allowedUserRoles: ALL_USERS },
+  "/curing/:id/edit":                  { page: CuringEditPage,                 allowedUserRoles: ALL_USERS },
   "/curing/types":                     { page: CuringTypeListPage,             allowedUserRoles: ALL_USERS },
-  "/curing/types/create":              { page: CuringTypeCreationPage, allowedUserRoles: ALL_USERS },
-  "/curing/types/:id/edit":            { page: CuringTypeEditPage,   allowedUserRoles: ALL_USERS },
+  "/curing/types/create":              { page: CuringTypeCreationPage,         allowedUserRoles: ALL_USERS },
+  "/curing/types/:id/edit":            { page: CuringTypeEditPage,             allowedUserRoles: ALL_USERS },
   "/reports/worker":                   { page: WorkerReportPage,               allowedUserRoles: ALL_USERS },
   "/reports/worker/:workerId":         { page: WorkerReportDetailsPage,        allowedUserRoles: ALL_USERS },
   "/reports/supervisor-attendance":    { page: SupervisorAttendanceListPage,   allowedUserRoles: ALL_USERS },
@@ -102,15 +111,24 @@ const UrlPages = {
   "/materials":                        { page: MaterialListPage,               allowedUserRoles: ALL_USERS },
   "/materials/create":                 { page: MaterialCreationPage,           allowedUserRoles: ALL_USERS },
   "/materials/:id/edit":               { page: MaterialEditPage,               allowedUserRoles: ALL_USERS },
-"/materials/purchase":          { page: PurchaseListPage,       allowedUserRoles: ALL_USERS },
-"/materials/purchase/create":   { page: PurchaseCreationPage,   allowedUserRoles: ALL_USERS },
-"/materials/purchase/:id/edit": { page: PurchaseEditPage,       allowedUserRoles: ALL_USERS },
-"/materials/used":          { page: MaterialUsedListPage,       allowedUserRoles: ALL_USERS },
-"/materials/used/create":   { page: MaterialUsedCreationPage,   allowedUserRoles: ALL_USERS },
-"/materials/used/:id/edit": { page: MaterialUsedEditPage,       allowedUserRoles: ALL_USERS },
-"/materials/shift":          { page: MaterialShiftListPage,     allowedUserRoles: ALL_USERS },
-"/materials/shift/create":   { page: MaterialShiftCreationPage, allowedUserRoles: ALL_USERS },
-"/materials/shift/:id/edit": { page: MaterialShiftEditPage,     allowedUserRoles: ALL_USERS },
+  "/materials/purchase":               { page: PurchaseListPage,               allowedUserRoles: ALL_USERS },
+  "/materials/purchase/create":        { page: PurchaseCreationPage,           allowedUserRoles: ALL_USERS },
+  "/materials/purchase/:id/edit":      { page: PurchaseEditPage,               allowedUserRoles: ALL_USERS },
+  "/materials/used":                   { page: MaterialUsedListPage,           allowedUserRoles: ALL_USERS },
+  "/materials/used/create":            { page: MaterialUsedCreationPage,       allowedUserRoles: ALL_USERS },
+  "/materials/used/:id/edit":          { page: MaterialUsedEditPage,           allowedUserRoles: ALL_USERS },
+  "/materials/shift":                  { page: MaterialShiftListPage,          allowedUserRoles: ALL_USERS },
+  "/materials/shift/create":           { page: MaterialShiftCreationPage,      allowedUserRoles: ALL_USERS },
+  "/materials/shift/:id/edit":         { page: MaterialShiftEditPage,          allowedUserRoles: ALL_USERS },
+  "/transactions/client":              { page: ClientTransactionListPage,      allowedUserRoles: ALL_USERS },
+  "/transactions/client/create":       { page: ClientTransactionCreationPage,  allowedUserRoles: ALL_USERS },
+  "/transactions/client/:id/edit":     { page: ClientTransactionEditPage,      allowedUserRoles: ALL_USERS },
+  "/transactions/supplier":            { page: SupplierTransactionListPage,    allowedUserRoles: ALL_USERS },
+  "/transactions/supplier/create":     { page: SupplierTransactionCreationPage, allowedUserRoles: ALL_USERS },
+  "/transactions/supplier/:id/edit":   { page: SupplierTransactionEditPage,     allowedUserRoles: ALL_USERS },
+  "/transactions/worker":            { page: WorkerTransactionListPage,      allowedUserRoles: ALL_USERS },
+  "/transactions/worker/create":     { page: WorkerTransactionCreationPage,  allowedUserRoles: ALL_USERS },
+  "/transactions/worker/:id/edit":   { page: WorkerTransactionEditPage,      allowedUserRoles: ALL_USERS },
 };
 
 const BaseUrls = {
