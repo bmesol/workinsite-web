@@ -63,6 +63,9 @@ import SupplierTransactionEditPage from "../features/transaction/pages/supplier-
 import WorkerTransactionListPage from "../features/transaction/pages/worker-transaction-list/WorkerTransactionListPage";
 import WorkerTransactionCreationPage from "../features/transaction/pages/worker-transaction-creation/WorkerTransactionCreationPage";
 import WorkerTransactionEditPage from "../features/transaction/pages/worker-transaction-edit/WorkerTransactionEditPage";
+import { TaskListPage } from "../features/task/pages/task-list/TaskListPage";
+import { TaskCreationPage } from "../features/task/pages/task-create/TaskCreationPage";
+import { TaskEditPage } from "../features/task/pages/task-edit/TaskEditPage"
 
 const UrlPages = {
   "/profile":                          { page: UserProfilePage,                allowedUserRoles: ALL_USERS },
@@ -129,6 +132,9 @@ const UrlPages = {
   "/transactions/worker":            { page: WorkerTransactionListPage,      allowedUserRoles: ALL_USERS },
   "/transactions/worker/create":     { page: WorkerTransactionCreationPage,  allowedUserRoles: ALL_USERS },
   "/transactions/worker/:id/edit":   { page: WorkerTransactionEditPage,      allowedUserRoles: ALL_USERS },
+  "/task":              { page: TaskListPage,       allowedUserRoles: ALL_USERS },
+"/task/create":       { page: TaskCreationPage,   allowedUserRoles: ALL_USERS },
+"/task/:id/edit":     { page: TaskEditPage,        allowedUserRoles: ALL_USERS },
 };
 
 const BaseUrls = {

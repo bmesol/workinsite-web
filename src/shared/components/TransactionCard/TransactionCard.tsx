@@ -31,7 +31,9 @@ const paymentMethodColors: Record<string, string> = {
 const paymentMethodIcons: Record<string, React.ReactNode> = {
   [PaymentMethodEnum.CASH]: <Banknote className="h-3.5 w-3.5 shrink-0" />,
   [PaymentMethodEnum.CHEQUE]: <CreditCard className="h-3.5 w-3.5 shrink-0" />,
-  [PaymentMethodEnum.BANK_TRANSFER]: <Landmark className="h-3.5 w-3.5 shrink-0" />,
+  [PaymentMethodEnum.BANK_TRANSFER]: (
+    <Landmark className="h-3.5 w-3.5 shrink-0" />
+  ),
   [PaymentMethodEnum.UPI]: <Smartphone className="h-3.5 w-3.5 shrink-0" />,
 };
 
@@ -50,7 +52,7 @@ const TransactionCard: React.FC<Props> = ({
 
   return (
     <Card
-      className="w-full flex flex-col gap-2 p-4 cursor-pointer hover:shadow-sm transition-shadow"
+      className="w-full flex flex-col gap-1.5 p-4 cursor-pointer hover:shadow-sm transition-shadow"
       onClick={() => onPress(id)}
     >
       {/* ── Top Row: Name + Delete ── */}
@@ -59,7 +61,7 @@ const TransactionCard: React.FC<Props> = ({
           {name}
         </span>
         <div
-          className="shrink-0 p-2 rounded-md hover:bg-destructive/10 transition-colors"
+          className="shrink-0  rounded-md hover:bg-destructive/10 transition-colors"
           onClick={(e: React.MouseEvent) => {
             e.stopPropagation();
             if (hasPermission) onDelete(id);
@@ -84,9 +86,12 @@ const TransactionCard: React.FC<Props> = ({
 
       {/* ── Bottom Row: Amount + Payment Method ── */}
       <div className="flex items-center justify-between">
-      <span className="text-sm font-semibold" style={{ color: 'var(--success-color)' }}>
-  ₹{parseFloat(amount).toLocaleString('en-IN')}
-</span>
+        <span
+          className="text-sm font-semibold"
+          style={{ color: "var(--success-color)" }}
+        >
+          ₹{parseFloat(amount).toLocaleString("en-IN")}
+        </span>
 
         <div
           className="flex items-center gap-1"

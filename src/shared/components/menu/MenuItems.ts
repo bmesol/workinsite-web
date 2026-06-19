@@ -112,6 +112,7 @@
 
 
 import type { ElementType } from "react";
+import { ROLE_IDS } from '@/shared/features/rolesandrights/DTOs/DTOs';
 import {
   Users,
   Contact,
@@ -202,12 +203,12 @@ const MenuItems: Record<string, MenuItem> = {
       { label: "Material Shift", href: "/materials/shift" },
     ],
   },
-  "/curing": {
+ "/curing": {
   label: "Curing",
-  icon: Droplet,  
-  allowedUserRoles: ALL_USERS,
+  icon: Droplet,
+  allowedUserRoles: [ROLE_IDS.SUPER_ADMIN, ROLE_IDS.ADMIN, ROLE_IDS.ENGINEER], // ALL_USERS → இது மாத்து
   children: [
-    { label: "Curing",       href: "/curing" },
+    { label: "Curing", href: "/curing" },
     { label: "Curing Types", href: "/curing/types" },
   ],
 },
@@ -236,11 +237,11 @@ const MenuItems: Record<string, MenuItem> = {
       { label: "Available Material Report", href: "/reports/available-material" },
     ],
   },
-  "/task": {
-    label: "Task",
-    icon: ClipboardList,
-    allowedUserRoles: SUPERVISOR_ONLY,
-  },
+"/task": {
+  label: "Task",
+  icon: ClipboardList,
+  allowedUserRoles: [ROLE_IDS.SUPERVISOR, ROLE_IDS.ENGINEER, ROLE_IDS.ADMIN, ROLE_IDS.SUPER_ADMIN], // SUPERVISOR_ONLY → இது மாத்து
+},
 };
 
 export { MenuItems };
