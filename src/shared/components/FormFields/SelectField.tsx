@@ -49,9 +49,9 @@ const SelectField: React.FC<SelectFieldProps> = ({
 
       {/* Label */}
       {label && (
-        <Label className="text-base font-medium">
+        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-500 text-base leading-none">*</span>}
         </Label>
       )}
 

@@ -72,11 +72,10 @@ export const useSignInForm = () => {
       const user = await userService.getProfile();
       AuthHelper.setUserProfile(user);
 
-      // ✅ Role based navigation
       if (user.role.id === ROLE_IDS.SUPERVISOR) {
-        navigate("/dashboard");   // Supervisor → Dashboard
+        navigate("/dashboard");
       } else {
-        navigate("/sitelist");    // Admin / Engineer → Sitelist
+        navigate("/engineer-dashboard");
       }
     } catch (err) {
       alert("Invalid phone number or PIN");

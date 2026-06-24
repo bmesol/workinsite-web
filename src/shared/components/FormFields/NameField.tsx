@@ -23,7 +23,7 @@ const NameField = (props: InputPropTypes) => {
     const value = e.target.value;
 
     if (value.startsWith(" ")) return;
-    if (regex && value !== "" && !new RegExp(regex).test(value)) return; // ✅ empty string always pass
+    if (regex && value !== "" && !new RegExp(regex).test(value)) return; 
     if (value.length > length) return;
     handleInputChange(value);
   };

@@ -23,7 +23,9 @@ const SearchFilterBar = ({
       {appliedFilters ? (
         <div
           className={cn(
-            'flex items-center gap-2 border rounded-md px-3 py-2.5 bg-background transition-colors flex-1 md:flex-none md:w-auto',
+            // h-9 matches shadcn's default input/button/select height (36px)
+            // replacing py-2.5 which gave a different height
+            'flex items-center gap-2 border rounded-md px-3 h-9 bg-background transition-colors flex-1 md:flex-none md:w-auto',
             focused ? 'border-ring' : 'border-border',
           )}
         >
@@ -55,7 +57,8 @@ const SearchFilterBar = ({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className={cn(
-            'flex items-center gap-2 border rounded-md px-3 py-2.5 bg-background transition-colors flex-1 md:flex-none md:min-w-48',
+            // h-9 here too — consistent with the applied-filters state and shadcn components
+            'flex items-center gap-2 border rounded-md px-3 h-9 bg-background transition-colors flex-1 md:flex-none md:min-w-48',
             focused ? 'border-ring' : 'border-border',
           )}
         >
