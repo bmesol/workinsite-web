@@ -34,21 +34,35 @@ const SupervisorAttendanceCard: React.FC<Props> = ({
 
         {/* Name + Role */}
         <div className="flex flex-col min-w-0">
-          <span
-            className="text-sm font-semibold truncate"
-            style={{ color: 'var(--foreground)' }}
-          >
-            {supervisorName}
-          </span>
-          <span
-            className="text-xs font-semibold px-2 py-0.5 rounded-full self-start mt-1"
-            style={{
-              backgroundColor: 'var(--primary)',
-              color: 'var(--secondary)',
-            }}
-          >
-            {supervisorRole}
-          </span>
+          {/* Only render name if non-empty */}
+          {supervisorName ? (
+            <span
+              className="text-sm font-semibold truncate"
+              style={{ color: 'var(--foreground)' }}
+            >
+              {supervisorName}
+            </span>
+          ) : (
+            <span
+              className="text-sm font-semibold truncate"
+              style={{ color: 'var(--gray-color)' }}
+            >
+              Unknown Supervisor
+            </span>
+          )}
+
+          {/* Only render role badge if non-empty */}
+          {supervisorRole && (
+            <span
+              className="text-xs font-semibold px-2 py-0.5 rounded-full self-start mt-1"
+              style={{
+                backgroundColor: 'var(--primary)',
+                color: 'var(--secondary)',
+              }}
+            >
+              {supervisorRole}
+            </span>
+          )}
         </div>
       </div>
 

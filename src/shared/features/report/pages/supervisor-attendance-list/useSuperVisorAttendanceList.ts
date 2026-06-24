@@ -2,9 +2,17 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupervisorAttendanceService } from '../../service/SupervisorAttendanceService';
 import { useUserService } from '@/shared/features/users/services/UserService';
-import { formatStringToDate, getWeekRange } from '@/shared/features/attendance/utils/functions';
+import { getWeekRange } from '../../utils/DateUtils';
 import type { SupervisorAttendance } from '../../DTOs/SupervisorAttendanceProps';
 import { useSupervisorAttendanceInputValidate } from '../../components/InputValidate/SupervisorAttendanceInputValidate';
+
+
+function ddmmyyyyToDate(ddmmyyyy: string): Date | null {
+  if (!ddmmyyyy) return null;
+  const [d, m, y] = ddmmyyyy.split('-').map(Number);
+  if (!d || !m || !y) return null;
+  return new Date(y, m - 1, d);
+}
 
 const PAGE_SIZE = 10;
 
@@ -24,21 +32,31 @@ export function useSupervisorAttendanceList() {
   const [supervisorList, setSupervisorList] = useState<any[]>([]);
   const [appliedFilters, setAppliedFilters] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState <
+  const [selectedOption, setSelectedOption] = useState<
     'lastWeek' | 'currentWeek' | 'custom'
   >('currentWeek');
+
+  // ✅ Now returns dd-mm-yyyy, consistent with toInputDate / fromInputDate
   const [dateRange, setDateRange] = useState(getWeekRange('currentWeek'));
 
   const { validate, error, initialError, setError } =
     useSupervisorAttendanceInputValidate({
-      fromDate: formatStringToDate(dateRange.from),
-      toDate: formatStringToDate(dateRange.to),
+      fromDate: ddmmyyyyToDate(dateRange.from),
+      toDate:   ddmmyyyyToDate(dateRange.to),
     });
 
   const isFiltered = useMemo(
     () => supervisor.value || dateRange.from || dateRange.to,
     [supervisor, dateRange],
   );
+
+  // ✅ Updates both the label AND the dateRange when switching presets
+  const handleOptionChange = (opt: 'lastWeek' | 'currentWeek' | 'custom') => {
+    setSelectedOption(opt);
+    if (opt !== 'custom') {
+      setDateRange(getWeekRange(opt)); // dd-mm-yyyy from DateUtils
+    }
+  };
 
   const fetchAttendances = async (reset = false, override?: any) => {
     if (!reset && !hasMore) return;
@@ -52,7 +70,7 @@ export function useSupervisorAttendanceList() {
             ? overrideObj.SupervisorId
             : supervisor.value ? Number(supervisor.value) : undefined,
         FromDate: 'FromDate' in overrideObj ? overrideObj.FromDate : dateRange.from,
-        ToDate: 'ToDate' in overrideObj ? overrideObj.ToDate : dateRange.to,
+        ToDate:   'ToDate'   in overrideObj ? overrideObj.ToDate   : dateRange.to,
         PageNumber: reset ? 1 : pageNumber,
         PageSize: PAGE_SIZE,
       };
@@ -95,7 +113,7 @@ export function useSupervisorAttendanceList() {
   }));
 
   const handleClearSearch = () => {
-    const week = getWeekRange('currentWeek');
+    const week = getWeekRange('currentWeek'); // dd-mm-yyyy
     setSupervisor({ name: '', value: '' });
     setDateRange(week);
     setSelectedOption('currentWeek');
@@ -104,7 +122,7 @@ export function useSupervisorAttendanceList() {
     fetchAttendances(true, {
       SupervisorId: undefined,
       FromDate: week.from,
-      ToDate: week.to,
+      ToDate:   week.to,
     });
   };
 
@@ -146,7 +164,7 @@ export function useSupervisorAttendanceList() {
     dateRange,
     setDateRange,
     selectedOption,
-    setSelectedOption,
+    handleOptionChange,
     error,
     supervisorDetails,
     fetchSupervisors,

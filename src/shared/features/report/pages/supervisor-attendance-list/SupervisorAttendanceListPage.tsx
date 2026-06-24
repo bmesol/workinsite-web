@@ -42,7 +42,7 @@ const SupervisorAttendanceListPage = () => {
     dateRange,
     setDateRange,
     selectedOption,
-    setSelectedOption,
+    handleOptionChange,
     error,
     supervisorDetails,
     fetchSupervisors,
@@ -65,7 +65,7 @@ const SupervisorAttendanceListPage = () => {
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
       {/* ── Header ── */}
-       <Header title="Supervisor Attendance">
+      <Header title="Supervisor Attendance">
         <Actions>
           <SearchFilterBar
             appliedFilters={appliedFilters}
@@ -91,15 +91,12 @@ const SupervisorAttendanceListPage = () => {
                 date={item.date}
                 address={item.currentLocation?.address ?? ''}
               />
-              {/* ── Delete Button ── */}
               <button
+                type="button"
                 onClick={() => setDeleteId(item.id)}
                 className="absolute top-3 right-3 p-1.5 rounded-md hover:bg-red-50 transition-colors"
               >
-                <Trash2
-                  className="w-4 h-4"
-                  style={{ color: 'var(--danger-color)' }}
-                />
+                <Trash2 className="w-4 h-4" style={{ color: 'var(--danger-color)' }} />
               </button>
             </div>
           ))
@@ -110,11 +107,7 @@ const SupervisorAttendanceListPage = () => {
       {hasMore && (
         <div className="flex justify-end mt-4">
           {paginationLoading ? (
-            <Loader2
-              className="animate-spin"
-              size={24}
-              style={{ color: 'var(--secondary)' }}
-            />
+            <Loader2 className="animate-spin" size={24} style={{ color: 'var(--secondary)' }} />
           ) : (
             <Button variant="outline" onClick={() => fetchAttendances()}>
               View More
@@ -145,13 +138,11 @@ const SupervisorAttendanceListPage = () => {
               selectedOption={selectedOption}
               dateRange={dateRange}
               setDateRange={setDateRange}
-              onOptionChange={(opt) => setSelectedOption(opt)}
-              errors={{
-                fromDate: error.fromDate,
-                toDate: error.toDate,
-              }}
+              onOptionChange={handleOptionChange}
+              errors={{ fromDate: error.fromDate, toDate: error.toDate }}
             />
             <Button
+              type="button"
               onClick={handleSearch}
               disabled={!isFiltered}
               className="w-full"
@@ -163,10 +154,7 @@ const SupervisorAttendanceListPage = () => {
       </Dialog>
 
       {/* ── Delete Confirm Dialog ── */}
-      <AlertDialog
-        open={!!deleteId}
-        onOpenChange={(val) => !val && setDeleteId(null)}
-      >
+      <AlertDialog open={!!deleteId} onOpenChange={(val) => !val && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
@@ -175,9 +163,7 @@ const SupervisorAttendanceListPage = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteId(null)}>
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setDeleteId(null)}>Cancel</AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
                 variant="destructive"
