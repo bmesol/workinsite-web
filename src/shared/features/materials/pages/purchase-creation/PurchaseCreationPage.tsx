@@ -28,10 +28,12 @@ import PurchaseMaterialsCreationScreen from "../purchase-material-creation/Purch
 import PurchaseMaterialsList from "../purchase-material-list/PurchaseMaterialListPage";
 import PurchasePhoto from "../purchase-photo/PurchasePhoto";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const PurchaseCreationPage = () => {
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [addMaterialOpen, setAddMaterialOpen] = useState(false);
+  const { t } = useLanguage();
 
   const {
     billNumber,
@@ -77,7 +79,7 @@ const PurchaseCreationPage = () => {
   return (
     <div className="w-full min-h-screen px-4 pb-10">
       {/* Header */}
-      <Header title="Create Purchase" />
+      <Header title={t('Create Purchase')} />
 
       {/* Form Card */}
       <Card className="mt-4 p-6">
@@ -86,15 +88,15 @@ const PurchaseCreationPage = () => {
     {/* Row 1: Bill Number + Date */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <NameField
-        label="Bill Number"
+        label={t('Bill Number')}
         inputValue={billNumber}
         setInputValue={setBillNumber}
-        placeholder="Enter bill number"
+        placeholder={t('Enter bill number')}
         required={true}
         errorMessage={error.billNumber}
       />
       <DatePicker
-        label="Date"
+        label={t('Date')}
         date={date}
         onDateChange={setDate}
         errorMessage={error.date}
@@ -107,7 +109,7 @@ const PurchaseCreationPage = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <ComboboxField
         id="site"
-        label="Site"
+        label={t('Site')}
         items={siteDetails}
         selectedValue={siteId}
         onValueChange={setSiteId}
@@ -117,7 +119,7 @@ const PurchaseCreationPage = () => {
       />
       <ComboboxField
         id="supplier"
-        label="Supplier"
+        label={t('Supplier')}
         items={supplierDetails}
         selectedValue={supplierId}
         onValueChange={setSupplierId}
@@ -130,7 +132,7 @@ const PurchaseCreationPage = () => {
     {/* Purchase Materials - full width */}
     <FormActionButton
       heading="Purchase Material"
-      label="Add"
+      label={t('Add')}
       onClick={() => setAddMaterialOpen(true)}
       isColsTwo={true}
     />
@@ -142,19 +144,19 @@ const PurchaseCreationPage = () => {
     {/* Row 3: Total Amount + GST */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <NameField
-        label="Total Amount"
+        label={t('Total Amount')}
         inputValue={totalAmount}
         setInputValue={setTotalAmount}
-        placeholder="Enter total amount"
+        placeholder={t('Enter total amount')}
         required={true}
         errorMessage={error.totalAmount}
         isDisabled={true}
       />
       <NameField
-        label="GST"
+        label={t('GST')}
         inputValue={gst}
         setInputValue={setGst}
-        placeholder="Enter GST"
+        placeholder={t('Enter GST')}
         required={true}
         errorMessage={error.gst}
       />
@@ -163,27 +165,27 @@ const PurchaseCreationPage = () => {
     {/* Row 4: Additional Charges + Discount */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <NameField
-        label="Additional Charges"
+        label={t('Additional Charges')}
         inputValue={additionalCharges}
         setInputValue={setAdditionalCharges}
-        placeholder="Enter additional charges"
+        placeholder={t('Enter additional charges')}
         isDisabled={true}
       />
       <NameField
-        label="Discount"
+        label={t('Discount')}
         inputValue={discount}
         setInputValue={setDiscount}
-        placeholder="Enter discount"
+        placeholder={t('Enter discount')}
         isDisabled={true}
       />
     </div>
 
     {/* Notes - full width */}
     <TextareaField
-      label="Notes"
+      label={t('Notes')}
       inputValue={notes}
       setInputValue={setNotes}
-      placeholder="Enter your notes"
+      placeholder={t('Enter your notes')}
     />
 
     {/* Purchase Photos - full width */}
@@ -191,7 +193,7 @@ const PurchaseCreationPage = () => {
 
     {/* Image Upload - full width */}
     <div className="flex flex-col gap-1.5">
-      <label className="text-base font-medium">Upload Images</label>
+      <label className="text-base font-medium">{t('Upload Images')}</label>
       <input
         type="file"
         accept="image/*"
@@ -213,7 +215,7 @@ const PurchaseCreationPage = () => {
       <Dialog open={addMaterialOpen} onOpenChange={setAddMaterialOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Add Purchase Material</DialogTitle>
+            <DialogTitle>{t('Add Purchase Material')}</DialogTitle>
           </DialogHeader>
           <PurchaseMaterialsCreationScreen
             purchaseMaterials={purchaseMaterials}
@@ -240,7 +242,7 @@ const PurchaseCreationPage = () => {
                 handleSaveAndExit();
               }}
             >
-              Save
+              {t('Save')}
             </Button>
             <Button
               variant="destructive"
@@ -249,10 +251,10 @@ const PurchaseCreationPage = () => {
                 handleConfirmExit();
               }}
             >
-              Exit Without Saving
+              {t('Exit Without Saving')}
             </Button>
             <AlertDialogCancel onClick={() => setShowExitDialog(false)}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>

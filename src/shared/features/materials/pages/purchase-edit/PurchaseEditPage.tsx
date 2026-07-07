@@ -31,12 +31,14 @@ import { PurchaseUrls } from "../../utils/urls";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { Card } from "@/shared/components/ui/card";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const PurchaseEditScreen = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEdit } = usePermission();
   const editable = canEdit("Purchase");
+  const { t } = useLanguage();
 
   const [addMaterialOpen, setAddMaterialOpen] = useState(false);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
@@ -104,17 +106,17 @@ const PurchaseEditScreen = () => {
   return (
     <div className="w-full min-h-screen px-4 pb-10">
       {/* Header */}
-      <Header title="Edit Purchase" />
+      <Header title={t('Edit Purchase')} />
 
       {purchaseDetails && (
         <Card className="mt-4 p-6">
           {/* Bill Number */}
           <NameField
-            label="Bill Number"
+            label={t('Bill Number')}
             required
             inputValue={billNumber}
             setInputValue={setBillNumber}
-            placeholder="Enter bill number"
+            placeholder={t('Enter bill number')}
             errorMessage={error.billNumber}
             isDisabled={!editable}
           />
@@ -122,7 +124,7 @@ const PurchaseEditScreen = () => {
           {/* Site */}
           <ComboboxField
             id="site"
-            label="Site"
+            label={t('Site')}
             required
             items={siteDetails}
             selectedValue={siteId}
@@ -135,7 +137,7 @@ const PurchaseEditScreen = () => {
           {/* Supplier */}
           <ComboboxField
             id="supplier"
-            label="Supplier"
+            label={t('Supplier')}
             required
             items={supplierDetails}
             selectedValue={supplierId}
@@ -147,7 +149,7 @@ const PurchaseEditScreen = () => {
 
           {/* Date */}
           <DatePicker
-            label="Date"
+            label={t('Date')}
             required
             date={date}
             onDateChange={setDate}
@@ -158,7 +160,7 @@ const PurchaseEditScreen = () => {
           {/* Add Purchase Material Button */}
           <FormActionButton
             heading="Purchase Material"
-            label="Add"
+            label={t('Add')}
             onClick={() => setAddMaterialOpen(true)}
             isAddDisabled={!editable}
             isColsTwo={true}
@@ -175,11 +177,11 @@ const PurchaseEditScreen = () => {
 
           {/* Total Amount — read only */}
           <NameField
-            label="Total Amount"
+            label={t('Total Amount')}
             required
             inputValue={totalAmount}
             setInputValue={setTotalAmount}
-            placeholder="Enter total amount"
+            placeholder={t('Enter total amount')}
             errorMessage={error.totalAmount}
             isDisabled={true}
             regex="^[0-9]*\.?[0-9]*$"
@@ -187,41 +189,41 @@ const PurchaseEditScreen = () => {
 
           {/* GST */}
           <NameField
-            label="GST"
+            label={t('GST')}
             required
             inputValue={gst}
             setInputValue={setGst}
-            placeholder="Enter GST"
+            placeholder={t('Enter GST')}
             errorMessage={error.gst}
             isDisabled={!editable}
           />
 
           {/* Additional Charges — read only */}
           <NameField
-            label="Additional Charges"
+            label={t('Additional Charges')}
             inputValue={additionalCharges}
             setInputValue={setAdditionalCharges}
-            placeholder="Enter additional charges"
+            placeholder={t('Enter additional charges')}
             isDisabled={true}
             regex="^[0-9]*\.?[0-9]*$"
           />
 
           {/* Discount — read only */}
           <NameField
-            label="Discount"
+            label={t('Discount')}
             inputValue={discount}
             setInputValue={setDiscount}
-            placeholder="Enter discount"
+            placeholder={t('Enter discount')}
             isDisabled={true}
             regex="^[0-9]*\.?[0-9]*$"
           />
 
           {/* Notes */}
           <TextareaField
-            label="Notes"
+            label={t('Notes')}
             inputValue={notes && notes !== "null" ? notes : ""}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t('Enter your notes')}
             isDisabled={!editable}
           />
 
@@ -237,7 +239,7 @@ const PurchaseEditScreen = () => {
 
           {/* Image Upload */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-base font-medium">Upload Images</label>
+            <label className="text-base font-medium">{t('Upload Images')}</label>
             <input
               type="file"
               accept="image/*"
@@ -260,7 +262,7 @@ const PurchaseEditScreen = () => {
       <Dialog open={addMaterialOpen} onOpenChange={setAddMaterialOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Add Purchase Material</DialogTitle>
+            <DialogTitle>{t('Add Purchase Material')}</DialogTitle>
           </DialogHeader>
           <PurchaseMaterialsCreationScreen
             purchaseMaterials={newPurchaseMaterials}
@@ -292,7 +294,7 @@ const PurchaseEditScreen = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t('Save')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -8,10 +8,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shared/components/ui/select"; 
+} from "@/shared/components/ui/select";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ContactEditForm = (props: ContactEditFormProps & { onClose?: () => void }) => {
   const { onClose } = props;
+  const { t } = useLanguage();
   const { contactType, contactItems, input, setInput, error, handleUpdate } = useContactEditForm(props, onClose);
 
   return (
@@ -39,7 +41,7 @@ const ContactEditForm = (props: ContactEditFormProps & { onClose?: () => void })
 
       {/* Buttons */}
       <FormSubmissionButtons
-        label="Update"
+        label={t('Update')}
         onCancel={() => onClose?.()}
         onSave={handleUpdate}
       />

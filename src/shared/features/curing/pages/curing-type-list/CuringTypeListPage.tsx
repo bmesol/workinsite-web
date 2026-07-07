@@ -16,11 +16,13 @@ import {
   AlertDialogAction,
 } from '@/shared/components/ui/alert-dialog';
 import { useCuringTypeList } from './useCuringTypeList';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { CuringTypeUrls } from '../../utils/urls';
 import curingImage from '@/assets/images/client-creation-illustration.png';
 
 const CuringTypeListPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     curingTypeList,
@@ -45,7 +47,7 @@ const CuringTypeListPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -55,7 +57,7 @@ const CuringTypeListPage = () => {
       <GetStartedCard
         imgSrc={curingImage}
         buttonClick={CuringTypeUrls.create}
-        buttonLabel="New Curing Type"
+        buttonLabel={t('New Curing Type')}
       >
         Start adding curing types to categorize your curing activities.
       </GetStartedCard>
@@ -65,32 +67,29 @@ const CuringTypeListPage = () => {
   return (
     <div className="w-full min-h-screen px-4 pb-10">
 
-      {/* ── Header ── */}
-      <Header title="Curing Type List">
+      <Header title={t('Curing Type List')}>
         <Actions>
           <Button onClick={() => navigate(CuringTypeUrls.create)}>
-            New Curing Type
+            {t('New Curing Type')}
           </Button>
         </Actions>
       </Header>
 
-      {/* ── Search ── */}
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
           <SearchBar
             searchText={searchText}
             setSearchText={setSearchText}
-            searchCategory="curing types"
+            searchCategory={t('Search Curing Types')}
             allowAllCharacters
           />
         </div>
       </div>
 
-      {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         {filteredList.length === 0 ? (
           <p className="col-span-full text-center text-muted-foreground mt-10">
-            No curing types found
+            {t('No curing types found')}
           </p>
         ) : (
           filteredList.map(item => (
@@ -105,22 +104,21 @@ const CuringTypeListPage = () => {
         )}
       </div>
 
-      {/* ── Delete Dialog ── */}
       <AlertDialog
         open={!!deleteId}
         onOpenChange={val => !val && setDeleteId(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this curing type?
+              {t('Are you sure you want to delete this curing type?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
@@ -128,7 +126,7 @@ const CuringTypeListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleCuringTypeDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

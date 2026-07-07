@@ -18,10 +18,12 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { NameField } from "@/shared/components/FormFields/NameField";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const UnitCreationPage = () => {
   const { canEdit } = usePermission();
   const editable = canEdit("Unit");
+  const { t } = useLanguage();
 
   const {
     name,
@@ -45,13 +47,13 @@ const UnitCreationPage = () => {
   return (
     <div className="min-h-screen w-full px-4  pb-10">
       {/* Header */}
-      <Header title="Create Unit" />
+      <Header title={t('Create Unit')} />
 
       <Card className="mt-2">
         <CardContent className="pt-6 flex flex-col gap-4">
           {/* Input */}
           <NameField
-            label="Unit"
+            label={t('Unit')}
             inputValue={name}
             setInputValue={setName}
             errorMessage={error.name}
@@ -69,7 +71,7 @@ const UnitCreationPage = () => {
                 onClick={resetFormFields}
                 disabled={!editable}
               >
-                Cancel
+                {t('Cancel')}
               </Button>
             )}
             <Button
@@ -77,12 +79,12 @@ const UnitCreationPage = () => {
               onClick={isEditing ? handleUnitUpdate : handleSubmission}
               disabled={!editable}
             >
-              {isEditing ? "Update" : "Save"}
+              {isEditing ? t('Update') : t('Save')}
             </Button>
           </div>
 
           {/* Unit List Title */}
-          <p className="text-base font-medium text-foreground">Unit List</p>
+          <p className="text-base font-medium text-foreground">{t('Unit List')}</p>
 
           {/* Loader / List */}
           {loading ? (
@@ -121,7 +123,7 @@ const UnitCreationPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

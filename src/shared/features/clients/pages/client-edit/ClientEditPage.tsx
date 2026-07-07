@@ -36,10 +36,12 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import { Phone, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/shared/components/lib/utils";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientEditPage = () => {
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
+  const { t } = useLanguage();
 
   const [isKycOpen, setIsKycOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -81,7 +83,7 @@ const ClientEditPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Edit Client" />
+      <Header title={t('Edit Client')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -99,7 +101,7 @@ const ClientEditPage = () => {
                   <PopoverTrigger asChild>
                     <div className="flex flex-col gap-1 cursor-pointer">
                       <label className="text-base font-medium ">
-                        Contact <span className="text-red-500">*</span>
+                        {t('Contact')} <span className="text-red-500">*</span>
                       </label>
                       <div className="flex items-center justify-between w-full border rounded-md px-3 py-2">
                         <span className="text-sm text-black">
@@ -116,7 +118,7 @@ const ClientEditPage = () => {
                   <PopoverContent className="w-full p-0 z-[9999]">
                     <Command>
                       <CommandInput
-                        placeholder="Search contact..."
+                        placeholder={t('Search contact')}
                         onValueChange={(val) => fetchContacts(val)}
                       />
                       <CommandList>
@@ -158,69 +160,78 @@ const ClientEditPage = () => {
             )}
           </div>
 
-          {/* Contact Details */}
-          {contact.id ? (
-            <>
+          {/* Contact Details + KYC side by side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Contact Details */}
+            <div className="flex flex-col gap-3">
+              {contact.id ? (
+                <>
+                  <FormActionButton
+                    heading={t('Contact detail')}
+                    label={t('Edit')}
+                    onClick={handleContactEdit}
+                    isColsTwo
+                  />
+
+                  {contact.phone && (
+                    <div className="flex items-center gap-2 ml-1">
+                      <Phone className="h-4 w-4 text-black" />
+                      <a
+                        href={`tel:${contact.phone}`}
+                        className="text-sm text-black hover:underline"
+                      >
+                        {contact.phone}
+                      </a>
+                    </div>
+                  )}
+
+                  <ContactTypes
+                    contactList={primaryContactDetails}
+                    showEditDeleteButtons={false}
+                  />
+
+                  {hasMoreDetails && (
+                    <button
+                      className="text-sm text-secondary underline text-left ml-3"
+                      onClick={() => setIsContactOpen(true)}
+                    >
+                      {t('More details...')}
+                    </button>
+                  )}
+                </>
+              ) : null}
+            </div>
+
+            {/* KYC */}
+            <div className="flex flex-col gap-3">
               <FormActionButton
-                heading="Contact detail"
-                label="Edit"
-                onClick={handleContactEdit}
+                heading={t('KYC')}
+                label={t('Add')}
+                onClick={() => setIsKycOpen(true)}
+                isAddDisabled={isAddDisabled}
+                isColsTwo
               />
-
-              {/* Show phone directly from contact */}
-              {contact.phone && (
-                <div className="flex items-center gap-2 ml-1">
-                  <Phone className="h-4 w-4 text-black" />
-                  <a
-                    href={`tel:${contact.phone}`}
-                    className="text-sm text-black hover:underline"
-                  >
-                    {contact.phone}
-                  </a>
-                </div>
-              )}
-
-              <ContactTypes
-                contactList={primaryContactDetails}
-                showEditDeleteButtons={false}
+              <KycTypes
+                details={{ kycDetails: clientDetails.kycDetails }}
+                setDetails={(updated) =>
+                  setClientDetails((prev) => ({
+                    ...prev,
+                    kycDetails: updated.kycDetails,
+                  }))
+                }
               />
+            </div>
+          </div>
 
-              {hasMoreDetails && (
-                <button
-                  className="text-sm text-secondary underline text-left ml-3"
-                  onClick={() => setIsContactOpen(true)}
-                >
-                  More details...
-                </button>
-              )}
-            </>
-          ) : null}
           {/* Notes */}
           {notes !== undefined && (
             <TextareaField
-              label="Notes"
+              label={t('Notes')}
               inputValue={`${notes ? notes : ""}`}
               setInputValue={setNotes}
-              placeholder="Enter your notes"
+              placeholder={t('Enter your notes')}
             />
           )}
-
-          {/* KYC */}
-          <FormActionButton
-            heading="KYC"
-            label="Add"
-            onClick={() => setIsKycOpen(true)}
-            isAddDisabled={isAddDisabled}
-          />
-          <KycTypes
-            details={{ kycDetails: clientDetails.kycDetails }}
-            setDetails={(updated) =>
-              setClientDetails((prev) => ({
-                ...prev,
-                kycDetails: updated.kycDetails,
-              }))
-            }
-          />
 
           {/* Submit */}
           <FormSubmissionButtons
@@ -234,7 +245,7 @@ const ClientEditPage = () => {
       <Dialog open={isKycOpen} onOpenChange={setIsKycOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>KYC Type</DialogTitle>
+            <DialogTitle>{t('KYC Type')}</DialogTitle>
           </DialogHeader>
           <KycCreateForm
             details={{ kycDetails: clientDetails.kycDetails }}

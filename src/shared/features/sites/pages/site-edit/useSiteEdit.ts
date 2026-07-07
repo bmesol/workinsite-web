@@ -1,5 +1,7 @@
 import { useContactValidate } from "../../../clients/components/ContactValidate/ContactValidate";
 import { useSiteInputValidate } from "../../components/InputValidate/SiteInputValidate";
+import { useWageTypeService } from "@/shared/features/sites/service/WageTypeService";
+import type { WageType } from "@/shared/features/workers/DTOs/WorkerProps";
 import { useContactService } from "@/shared/features/contacts/service/ContactService";
 import { useClientService } from "@/shared/features/clients/service/ClientService";
 import type { Contact } from "../../../contacts/DTOs/ContactProps";
@@ -52,6 +54,8 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
   const [wageTypeId, setWageTypeId] = useState("");
+  const wageTypeService = useWageTypeService();
+  const [wageTypeList, setWageTypeList] = useState<WageType[]>([]);
 
   const [siteDetails, setSiteDetails] = useState<Site>();
 
@@ -69,6 +73,7 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
         setSupervisorIds(siteData.supervisors?.map((supervisor) => supervisor.id) ?? []);
       if (!newStatus) setStatus(siteData.status);
       setWageTypeId(siteData.wageType.id.toString());
+      setWageTypeList([siteData.wageType]);
     } finally {
       setLoading(false); 
     }
@@ -89,6 +94,12 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
     }
   };
 
+  const fetchWageTypes = async (searchString: string = "") => {
+  const wageTypes = await wageTypeService.getWageTypes(searchString);
+  if (!wageTypes) return;
+  setWageTypeList(searchString ? wageTypes.slice(0, 3) : wageTypes);
+};
+
   useEffect(() => {
     const fetchClientById = async () => {
       if (clientId) {
@@ -99,6 +110,8 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
     };
     fetchClientById();
   }, [clientId]);
+
+  
 
   const fetchContacts = async (searchString: string = "") => {
     if (searchString) {
@@ -123,11 +136,12 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
     fetchContactById();
   }, [contactId]);
 
-  const { error, validate } = useSiteInputValidate({ name, clientId, googleLocation, contactId });
+ const { error, validate } = useSiteInputValidate({ name, clientId, googleLocation, contactId, wageTypeId }); // 👈
   const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact);
 
   const clientDetails = clientList.map((item) => ({ label: item.name, value: item.id.toString() }));
   const contactDetails = contactList.map((item) => ({ label: item.name, value: item.id.toString() }));
+  const wageTypeDetails = wageTypeList.map((item) => ({ label: item.name, value: item.id.toString() })); // 👈
 const siteStatus = [
   { label: "Yet To Start", value: SiteStatus.YET_TO_START },
   { label: "Working", value: SiteStatus.WORKING },
@@ -146,6 +160,7 @@ const siteStatus = [
     contactId,
     supervisorIds: `[${supervisorIds.toString()}]`,
     status,
+    wageTypeId,
   });
 
   const handleClientCreate = (searchString: string) => {
@@ -232,6 +247,10 @@ const siteStatus = [
     redirectUrl,
     redirectParams,
     siteDetails,
+      wageTypeId,      
+  setWageTypeId,   
+  wageTypeDetails, 
+  fetchWageTypes,   
   };
 };
 

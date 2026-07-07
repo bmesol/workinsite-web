@@ -3,8 +3,10 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import type { InputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const GstNumberField = (props: InputPropTypes) => {
+  const { t } = useLanguage();
   const { label, errorMessage, isDisabled, placeholder, required = false } = props;
   const { inputValue, handleInputChange } = useInputField(props);
 
@@ -25,7 +27,7 @@ const GstNumberField = (props: InputPropTypes) => {
       <Input
         value={inputValue}
         onChange={handleChange}
-        placeholder={placeholder || "Enter GST number"}
+        placeholder={placeholder || t("Enter GST number")}
         disabled={isDisabled}
         className="w-full"
       />

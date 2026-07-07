@@ -20,9 +20,11 @@ import {
 import { useClientTransactionCreation } from './useClientTransactionCreation';
 import PaymentMethodSelector from '../../components/PaymentMethodSelector/PaymentMethodSelector';
 import { ClientTransactionUrls } from '../../utils/urls';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientTransactionCreationPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     handleBack,
@@ -45,7 +47,7 @@ const ClientTransactionCreationPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Create Client Transaction" />
+      <Header title={t('Create Client Transaction')} />
 
  <Card className="mt-4 p-6">
   <div className="flex flex-col gap-4">
@@ -54,7 +56,7 @@ const ClientTransactionCreationPage = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <ComboboxField
         id="client"
-        label="Client"
+        label={t('Client')}
         items={clientDetails}
         selectedValue={clientId}
         onValueChange={setClientId}
@@ -63,7 +65,7 @@ const ClientTransactionCreationPage = () => {
         error={error.clientId}
       />
       <DatePicker
-        label="Date"
+        label={t('Date')}
         date={date}
         onDateChange={setDate}
         required
@@ -74,10 +76,10 @@ const ClientTransactionCreationPage = () => {
 
     {/* Row 2: Amount — full width */}
     <NameField
-      label="Amount"
+      label={t('Amount')}
       inputValue={amount}
       setInputValue={setAmount}
-      placeholder="Enter Amount"
+      placeholder={t('Enter Amount')}
       required
       regex="^[0-9]*(\.[0-9]*)?$"
       length={10}
@@ -96,10 +98,10 @@ const ClientTransactionCreationPage = () => {
 
     {/* Row 4: Remark — full width */}
     <TextareaField
-      label="Remark"
+      label={t('Remark')}
       inputValue={remark}
       setInputValue={setRemark}
-      placeholder="Enter Remark"
+      placeholder={t('Enter Remark')}
     />
 
     {/* Save / Cancel */}
@@ -136,7 +138,7 @@ const ClientTransactionCreationPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t('Save')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

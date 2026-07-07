@@ -20,9 +20,11 @@ import {
 import { useSupplierTransactionCreation } from './useSupplierTransactionCreation';
 import PaymentMethodSelector from '../../components/PaymentMethodSelector/PaymentMethodSelector';
 import { SupplierTransactionUrls } from '../../utils/urls';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const SupplierTransactionCreationPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     handleBack,
@@ -45,7 +47,7 @@ const SupplierTransactionCreationPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Create Supplier Transaction" />
+      <Header title={t('Create Supplier Transaction')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -53,7 +55,7 @@ const SupplierTransactionCreationPage = () => {
           {/* ── Supplier ── */}
           <ComboboxField
             id="supplier"
-            label="Supplier"
+            label={t('Supplier')}
             items={supplierDetails}
             selectedValue={supplierId}
             onValueChange={setSupplierId}
@@ -64,7 +66,7 @@ const SupplierTransactionCreationPage = () => {
 
           {/* ── Date ── */}
           <DatePicker
-            label="Date"
+            label={t('Date')}
             date={date}
             onDateChange={setDate}
             required
@@ -74,10 +76,10 @@ const SupplierTransactionCreationPage = () => {
 
           {/* ── Amount ── */}
           <NameField
-            label="Amount"
+            label={t('Amount')}
             inputValue={amount}
             setInputValue={setAmount}
-            placeholder="Enter Amount"
+            placeholder={t('Enter Amount')}
             required
             regex="^[0-9]*(\.[0-9]*)?$"
             length={10}
@@ -94,10 +96,10 @@ const SupplierTransactionCreationPage = () => {
 
           {/* ── Remark ── */}
           <TextareaField
-            label="Remark"
+            label={t('Remark')}
             inputValue={remark}
             setInputValue={setRemark}
-            placeholder="Enter Remark"
+            placeholder={t('Enter Remark')}
           />
 
           {/* ── Save / Cancel ── */}
@@ -134,7 +136,7 @@ const SupplierTransactionCreationPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t('Save')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

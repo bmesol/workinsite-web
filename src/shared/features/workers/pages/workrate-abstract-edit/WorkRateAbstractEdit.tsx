@@ -8,8 +8,10 @@ import { Label } from "@/shared/components/ui/label";
 import { useWorkRateAbstractEdit } from "./useWorkRateAbstractEdit";
 import { usePermission } from "@/shared/hooks/usePermission";
 import { useParams } from "react-router-dom";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkRateAbstractEditPage = () => {
+  const { t } = useLanguage();
   const { id } = useParams<string>();
   const { canEdit } = usePermission();
   const editable = canEdit("Work Rate Abstract");
@@ -42,21 +44,21 @@ const WorkRateAbstractEditPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
       </div>
     );
   }
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Edit Work Rate Abstract" />
+      <Header title={t('Work Rate Abstract Edit')} />
 
       <Card className="mt-4">
         <CardContent className="flex flex-col gap-4 pt-4">
           {/* Site */}
           <ComboboxField
             id="site"
-            label="Site"
+            label={t('Site')}
             items={siteDetails}
             selectedValue={siteId}
             onValueChange={setSiteId}
@@ -69,7 +71,7 @@ const WorkRateAbstractEditPage = () => {
           {/* Work Type */}
           <ComboboxField
             id="workType"
-            label="Work Type"
+            label={t('Work Type')}
             items={workTypeDetails}
             selectedValue={workTypeId}
             onValueChange={setWorkTypeId}
@@ -82,11 +84,11 @@ const WorkRateAbstractEditPage = () => {
           {/* Total Rate */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-base font-medium">
-              Total Rate <span className="text-red-500">*</span>
+              {t('Total Rate')} <span className="text-red-500">*</span>
             </Label>
             <Input
               type="number"
-              placeholder="Enter Total Rate"
+              placeholder={t('Enter Total Rate')}
               value={totalRate}
               onChange={(e) => setTotalRate(e.target.value)}
               disabled={!editable}
@@ -99,11 +101,11 @@ const WorkRateAbstractEditPage = () => {
           {/* Total Quantity */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-base font-medium">
-              Total Quantity <span className="text-red-500">*</span>
+              {t('Total Quantity')} <span className="text-red-500">*</span>
             </Label>
             <Input
               type="number"
-              placeholder="Enter Total Quantity"
+              placeholder={t('Enter Total Quantity')}
               value={totalQuantity}
               onChange={(e) => setTotalQuantity(e.target.value)}
               disabled={!editable}
@@ -116,7 +118,7 @@ const WorkRateAbstractEditPage = () => {
           {/* Unit */}
           <ComboboxField
             id="unit"
-            label="Unit"
+            label={t('Unit')}
             items={unitDetails}
             selectedValue={unitId}
             onValueChange={setUnitId}
@@ -128,11 +130,11 @@ const WorkRateAbstractEditPage = () => {
 
           {/* Remark */}
           <TextareaField
-            label="Remark"
+            label={t('Remark')}
             inputValue={notes ?? ""}
             setInputValue={setNotes}
-            placeholder="Enter your Remark"
-            isDisabled={!editable} 
+            placeholder={t('Enter your Remark')}
+            isDisabled={!editable}
           />
 
           <FormSubmissionButtons

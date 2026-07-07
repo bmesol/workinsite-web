@@ -2,8 +2,10 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { Button } from "@/shared/components/ui/button";
 import type { WorkTypeCreateFormProps } from "../../DTOs/WorkTypeProps";
 import { useWorkType } from "./useWorkTypeCreateForm";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkTypeCreateForm = (props: WorkTypeCreateFormProps) => {
+  const { t } = useLanguage();
   const {
     workType,
     setWorkType,
@@ -14,14 +16,14 @@ const WorkTypeCreateForm = (props: WorkTypeCreateFormProps) => {
   return (
     <div className="flex flex-col gap-4">
       <NameField
-        label="Work Type"
+        label={t('Work Type')}
         inputValue={workType}
         setInputValue={setWorkType}
         errorMessage={error}
-        placeholder="Enter Work Type"
+        placeholder={t('Enter Work Type')}
         required={true}
       />
-      <Button onClick={handleAdd}>Add</Button>
+      <Button onClick={handleAdd}>{t('Add')}</Button>
     </div>
   );
 };

@@ -19,8 +19,10 @@ import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { NameField } from "@/shared/components/FormFields/NameField";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const SiteEditPage = () => {
+  const { t } = useLanguage();
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
   const [contactEditOpen, setContactEditOpen] = useState(false);
@@ -59,6 +61,10 @@ const SiteEditPage = () => {
     redirectUrl,
     redirectParams,
     siteDetails,
+     wageTypeId,     
+  setWageTypeId,   
+  wageTypeDetails,  
+  fetchWageTypes,
   } = useSiteEdit(id as string, queryString);
 
   const handleMoreDetails = () => {
@@ -77,25 +83,25 @@ const SiteEditPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Edit Site" />
+      <Header title={t("Edit Site")} />
 
       {siteDetails && (
         <Card className="mt-4">
-          <CardContent className="pt-6 flex flex-col gap-6">
+          <CardContent className=" flex flex-col gap-6">
             {/* Row 1: Name + Client */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <NameField
-    label="Name"
-    inputValue={name}
-    setInputValue={setName}
-    errorMessage={error.name}
-    placeholder="Enter site name"
-    required
-  />
+                label={t("Name")}
+                inputValue={name}
+                setInputValue={setName}
+                errorMessage={error.name}
+                placeholder={t("Enter site name")}
+                required
+              />
 
               <ComboboxField
                 id="client-combobox"
-                label="Client"
+                label={t("Client")}
                 items={clientDetails}
                 selectedValue={clientId}
                 onValueChange={handleClientChange}
@@ -106,37 +112,21 @@ const SiteEditPage = () => {
               />
             </div>
 
-            {/* Row 2: Location + Notes */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <GoogleLocation
-                  errorMessage={error.googleLocation}
-                  inputValue={googleLocation}
-                  setInputValue={setGoogleLocation}
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="notes" className="text-base font-medium">
-                  Notes
-                </Label>
-                <Textarea
-                  id="notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Enter your notes"
-                  rows={4}
-                />
-              </div>
-            </div>
-
-            {/* Row 3: Contact + Supervisors */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ComboboxField
+                id="wage-type-combobox"
+                label={t("Wage Type")}
+                items={wageTypeDetails}
+                selectedValue={wageTypeId}
+                onValueChange={setWageTypeId}
+                onSearch={fetchWageTypes}
+                error={error.wageType}
+                required
+              />
               <div className="flex flex-col gap-3">
                 <ComboboxField
                   id="contact-combobox"
-                  label="Contact"
+                  label={t("Contact")}
                   items={contactDetails}
                   selectedValue={contactId}
                   onValueChange={handleContactChange}
@@ -154,11 +144,39 @@ const SiteEditPage = () => {
                   />
                 )}
               </div>
+            </div>
 
+            {/* Row 2: Location + Notes */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <GoogleLocation
+                  errorMessage={error.googleLocation}
+                  inputValue={googleLocation}
+                  setInputValue={setGoogleLocation}
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="notes" className="text-base font-medium">
+                  {t("Notes")}
+                </Label>
+                <Textarea
+                  id="notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder={t("Enter your notes")}
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            {/* Row 3: Supervisors + Status */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
                 <FormActionButton
-                  heading="Supervisors"
-                  label="Add"
+                  heading={t("Supervisors")}
+                  label={t("Add")}
                   onClick={handleSupervisorsAdd}
                   isColsTwo={true}
                   required
@@ -170,16 +188,13 @@ const SiteEditPage = () => {
                   />
                 )}
               </div>
-            </div>
 
-            {/* Row 4: Status */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="text-base font-medium">Status</Label>
+                <Label className="text-base font-medium">{t("Status")}</Label>
                 <RadioGroup
                   value={status}
                   onValueChange={setStatus}
-                  className="flex flex-col gap-2"
+                  className="flex flex-col gap-2 md:flex-row md:flex-wrap md:gap-4"
                 >
                   {siteStatus.map((item) => (
                     <div key={item.value} className="flex items-center gap-2">

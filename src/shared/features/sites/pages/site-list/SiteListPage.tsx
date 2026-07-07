@@ -5,10 +5,12 @@ import { SiteCard } from "../../components/SiteCard/SiteCard";
 import { useNavigate } from "react-router-dom";
 import { SitesUrls } from "../../utils/urls";
 import { useSiteList } from "./useSiteList";
-import { SearchBar } from "@/shared/components/SearchBar/SearchBar"; 
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const SiteListPage = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
 
@@ -36,10 +38,10 @@ const SiteListPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
-      <Header title="Sites">
+      <Header title={t('Site List')}>
         <Actions>
           <Button onClick={() => navigate(SitesUrls.create)}>
-            Create Site
+            {t('Create Site')}
           </Button>
         </Actions>
       </Header>
@@ -49,8 +51,8 @@ const SiteListPage = () => {
         <div className="w-full md:w-3/12">
           <SearchBar
             searchText={searchValue}
-            setSearchText={setSearchValue} 
-            searchCategory="Sites"
+            setSearchText={setSearchValue}
+            searchCategory={t('Search sites')}
             allowAllCharacters={true}
           />
         </div>
@@ -58,12 +60,12 @@ const SiteListPage = () => {
 
       {/* Site Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
-        {!filteredSiteList.length ? ( 
+        {!filteredSiteList.length ? (
           <div className="col-span-2 my-4 text-center text-sm text-muted-foreground">
-            No sites found
+            {t('No sites found')}
           </div>
         ) : (
-          filteredSiteList.map((site) => (  
+          filteredSiteList.map((site) => (
             <div
               key={site.id}
               onClick={() => handleSiteSelect(site.id)}

@@ -3,6 +3,7 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { Button } from '@/shared/components/ui/button';
 import type { AttendanceSplit } from '../../DTOs/AttendanceProps';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 interface AttendanceSplitProps {
   attendanceSplit: AttendanceSplit[];
@@ -12,6 +13,7 @@ interface AttendanceSplitProps {
 }
 
 export const AttendanceSplitCreationPage = (props: AttendanceSplitProps) => {
+  const { t } = useLanguage();
   const {
     workerRoleDetails,
     shiftDetails,
@@ -33,7 +35,7 @@ export const AttendanceSplitCreationPage = (props: AttendanceSplitProps) => {
       {/* Worker Role */}
       <ComboboxField
         id="workerRole"
-        label="Worker Role"
+        label={t('Worker Role')}
         items={workerRoleDetails}
         selectedValue={workerRoleId.id.toString()}
         onValueChange={(val) => {
@@ -49,7 +51,7 @@ export const AttendanceSplitCreationPage = (props: AttendanceSplitProps) => {
       {/* Shift */}
       <ComboboxField
         id="shift"
-        label="Shift"
+        label={t('Shift')}
         items={shiftDetails}
         selectedValue={shiftId.id.toString()}
         onValueChange={(val) => {
@@ -63,10 +65,10 @@ export const AttendanceSplitCreationPage = (props: AttendanceSplitProps) => {
 
       {/* No Of Persons */}
       <NameField
-        label="No Of Persons"
+        label={t('No Of Persons')}
         inputValue={noOfPersons}
         setInputValue={setNoOfPersons}
-        placeholder="Enter No Of Persons"
+        placeholder={t('Enter No Of Persons')}
         errorMessage={error.noOfPersons}
         required
       />
@@ -74,7 +76,7 @@ export const AttendanceSplitCreationPage = (props: AttendanceSplitProps) => {
       {/* Add Button */}
       <div className="flex justify-end">
         <Button type="button" className="w-24" onClick={handleSubmit}>
-          Add
+          {t('Add')}
         </Button>
       </div>
 

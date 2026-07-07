@@ -15,10 +15,12 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 
 
 export const ForgetPinPage = () => {
+ const { t } = useLanguage();
  const navigate = useNavigate();
 const [phone, setPhone] = useState("");
 const [error, setError] = useState("");
@@ -59,11 +61,11 @@ const handleSendOtp = () => {
         <form>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="Phone Number">Phone Number</Label>
+              <Label htmlFor="Phone Number">{t('Phone Number')}</Label>
               <Input
                 value={phone}
                onChange={(e) => setPhone(e.target.value)}
-               placeholder="Enter phone number"
+               placeholder={t('Enter phone number')}
               />
             </div>
            </div>
@@ -71,7 +73,7 @@ const handleSendOtp = () => {
         </form>
          <CardAction>
            <Link to="/" className="md-unit underline">
-             Sign in
+             {t('Sign in')}
             </Link>
         </CardAction> 
       </CardContent>

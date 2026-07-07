@@ -24,22 +24,24 @@ import {
 import RoleCard from '../../components/RoleCard/RoleCard';
 import { useRolesScreen } from './useRole';
 import type { Roles } from '../../DTOs/DTOs';
+import { useLanguage } from '@/shared/hooks/useLanguageContext'; // ✅ ADD
 
 // ── Empty State ──
-const EmptyState = () => (
+const EmptyState = ({ t }: { t: (key: string) => string }) => (
   <div className="flex flex-col items-center justify-center py-16 gap-3">
     <Shield className="w-12 h-12" style={{ color: '#9CA3AF' }} />
     <p className="text-base font-bold" style={{ color: 'var(--foreground)' }}>
-      No Roles Yet
+      {t('No Roles Yet')}
     </p>
     <p className="text-sm text-center" style={{ color: '#9CA3AF' }}>
-      Create your first role to get started
+      {t('Create your first role to get started')}
     </p>
   </div>
 );
 
 const RolesPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage(); // ✅ ADD
 
   const {
     roles,
@@ -68,7 +70,7 @@ const RolesPage = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -77,7 +79,7 @@ const RolesPage = () => {
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Roles & Rights">
+      <Header title={t('Roles & Rights')}>
         {isSuperAdmin && (
           <Actions>
             <Button
@@ -86,7 +88,7 @@ const RolesPage = () => {
                 setIsSheetOpen(true);
               }}
             >
-              Create New Role
+              {t('Create New Role')}
             </Button>
           </Actions>
         )}
@@ -96,20 +98,14 @@ const RolesPage = () => {
 
         {/* ── Section Header ── */}
         <div className="flex items-center justify-between mb-4">
-          <span
-            className="text-base font-bold"
-            style={{ color: 'var(--foreground)' }}
-          >
-            Existing Roles
+          <span className="text-base font-bold" style={{ color: 'var(--foreground)' }}>
+            {t('Existing Roles')}
           </span>
           <div
             className="min-w-[40px] h-8 px-2 rounded-lg flex items-center justify-center"
             style={{ backgroundColor: 'var(--primary)' }}
           >
-            <span
-              className="text-sm font-semibold"
-              style={{ color: 'var(--secondary)' }}
-            >
+            <span className="text-sm font-semibold" style={{ color: 'var(--secondary)' }}>
               {roles.length}
             </span>
           </div>
@@ -130,7 +126,7 @@ const RolesPage = () => {
             ))}
           </div>
         ) : (
-          <EmptyState />
+          <EmptyState t={t} />
         )}
       </Card>
 
@@ -145,26 +141,26 @@ const RolesPage = () => {
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
             <DialogTitle>
-              {editId ? 'Edit Role' : 'Create New Role'}
+              {editId ? t('Edit Role') : t('Create New Role')}
             </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
             <NameField
-              label="Name"
+              label={t('Name')}
               inputValue={name}
               setInputValue={setName}
-              placeholder="Enter Role Name"
+              placeholder={t('Enter Role Name')}
               required
               length={50}
             />
             <TextareaField
-              label="Note"
+              label={t('Note')}
               inputValue={note}
               setInputValue={setNote}
-              placeholder="Enter Note (optional)"
+              placeholder={t('Enter Note (optional)')}
             />
             <Button onClick={handleSaveRole} className="w-full">
-              {editId ? 'Update Role' : 'Create Role'}
+              {editId ? t('Update Role') : t('Create Role')}
             </Button>
           </div>
         </DialogContent>
@@ -177,14 +173,14 @@ const RolesPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Role</AlertDialogTitle>
+            <AlertDialogTitle>{t('Delete Role')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this role?
+              {t('Are you sure you want to delete this role?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDeleteId(null)}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
@@ -193,7 +189,7 @@ const RolesPage = () => {
                   if (deleteId) handleDeleteRole(deleteId);
                 }}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

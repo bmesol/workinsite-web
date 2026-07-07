@@ -1,5 +1,6 @@
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
 import type { WorkerRole, WorkerRoles } from "../DTOs/WorkRoleProps";
+import type { GetWorkerRoleCostParams, WorkerRoleCost } from "../pages/workerrole-cost-edit/DTOs";
 
 interface GetWorkerRolesParams {
   WorkerRoleName?: string;
@@ -59,4 +60,26 @@ export const useWorkerRoleService = () => {
     deleteWorkerRole,
     getWorkerRoleUsage,
   };
+};
+
+export const useWorkerRoleCostService = () => {
+  const baseUrl = import.meta.env.VITE_WORKER_SERVICE_BASE_URL || "";
+  const apiHelper = useAPIHelper(baseUrl, true);
+
+  const getWorkerRoleCosts = async (params: GetWorkerRoleCostParams) => {
+    const query = new URLSearchParams();
+    if (params.WorkerCategoryId !== undefined)
+      query.append("WorkerCategoryId", params.WorkerCategoryId.toString());
+    if (params.WorkerId !== undefined)
+      query.append("WorkerId", params.WorkerId.toString());
+    const response = await apiHelper.get(`worker-role-costs?${query.toString()}`);
+    return response.data;
+  };
+
+  const createWorkerRoleCost = async (cost: WorkerRoleCost) => {
+    const response = await apiHelper.post("worker-role-costs", cost);
+    return response.data;
+  };
+
+  return { getWorkerRoleCosts, createWorkerRoleCost };
 };

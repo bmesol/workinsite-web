@@ -25,9 +25,11 @@ import {
 import { useClienTransactiontList } from './useClientTransactionList';
 import { ClientTransactionUrls } from '../../utils/urls';
 import clientTransactionImage from '@/assets/images/client-creation-illustration.png';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientTransactionListPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     client, setClient,
@@ -68,7 +70,7 @@ const ClientTransactionListPage = () => {
       <GetStartedCard
         imgSrc={clientTransactionImage}
         buttonClick={ClientTransactionUrls.create}
-        buttonLabel="New Client Transaction"
+        buttonLabel={t('New Client Transaction')}
       >
         Start by creating your client transactions to organize and manage your
         records efficiently.
@@ -80,9 +82,9 @@ const ClientTransactionListPage = () => {
     <div className="min-h-screen w-full px-4 py-6">
 
       {/* ── Header ── */}
-      <Header title="Client Transaction List">
+      <Header title={t('Client Transaction List')}>
         <Actions>
-          <Button onClick={handleCreate}>New Client Transaction</Button>
+          <Button onClick={handleCreate}>{t('New Client Transaction')}</Button>
         </Actions>
       </Header>
 
@@ -90,7 +92,7 @@ const ClientTransactionListPage = () => {
       <div className="flex justify-end">
         <SearchFilterBar
           appliedFilters={appliedFilters}
-          placeholder="Search Client Transaction..."
+          placeholder={t('Search client transaction')}
           onFilterOpen={() => setFilterOpen(true)}
           onClearSearch={handleClearSearch}
         />
@@ -127,7 +129,7 @@ const ClientTransactionListPage = () => {
             onClick={() => fetchTransactions()}
             disabled={paginationLoading}
           >
-            {paginationLoading ? 'Loading...' : 'View More'}
+            {paginationLoading ? 'Loading...' : t('View More')}
           </Button>
         </div>
       )}
@@ -136,12 +138,12 @@ const ClientTransactionListPage = () => {
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
-            <DialogTitle>Search</DialogTitle>
+            <DialogTitle>{t('Search')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
             <ComboboxField
               id="client"
-              label="Client"
+              label={t('Client')}
               items={clientDetails}
               selectedValue={client?.value ?? ''}
               onValueChange={val =>
@@ -170,7 +172,7 @@ const ClientTransactionListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              Search
+              {t('Search')}
             </Button>
           </div>
         </DialogContent>
@@ -193,7 +195,7 @@ const ClientTransactionListPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

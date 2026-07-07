@@ -1,5 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { PinField } from "../FormFields/PinField";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 interface PinFormProps {
   pin: string;
@@ -12,19 +13,20 @@ interface PinFormProps {
 }
 
 const PinForm = (props: PinFormProps) => {
+  const { t } = useLanguage();
   const { pin, setPin, confirmPin, setConfirmPin, error, onSave } = props;
 
   return (
     <div className="flex flex-col gap-4 ">
       <PinField
-        label="New Pin"
+        label={t('New Pin')}
         inputValue={pin}
         setInputValue={setPin}
         errorMessage={error.pin}
         required={true}
       />
       <PinField
-        label="Confirm Pin"
+        label={t('Confirm Pin')}
         inputValue={confirmPin}
         setInputValue={setConfirmPin}
         errorMessage={error.confirmPin}
@@ -35,7 +37,7 @@ const PinForm = (props: PinFormProps) => {
         className="w-full h-11 cursor-pointer"
         onClick={onSave}
       >
-        Save
+        {t('Save')}
       </Button>
     </div>
   );

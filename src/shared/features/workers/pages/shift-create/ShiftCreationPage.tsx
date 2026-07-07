@@ -15,8 +15,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ShiftCreationPage = () => {
+  const { t } = useLanguage();
   const { canEdit } = usePermission();
   const editable = canEdit("Shift");
 
@@ -54,7 +56,7 @@ const ShiftCreationPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
-      <Header title="Shift" />
+      <Header title={t('Shift')} />
 
       <Card className="mt-4">
         <CardContent className="flex flex-col gap-4 pt-4">
@@ -64,11 +66,11 @@ const ShiftCreationPage = () => {
 
             {/* Shift Name Input */}
             <NameField
-              label="Shift"
+              label={t('Shift')}
               inputValue={name}
               setInputValue={setName}
               errorMessage={error.name}
-              placeholder="Enter Shift"
+              placeholder={t('Enter Shift')}
               required
               isDisabled={!editable}
             />
@@ -82,7 +84,7 @@ const ShiftCreationPage = () => {
               placeholder="Enter Multiplier"
               required
               isDisabled={!editable || isFixedMultiplier}
-              regex="^[0-9.]*$" 
+              regex="^[0-9.]*$"
             />
 
             {/* Save / Update + Cancel Buttons — right-aligned, fixed width */}
@@ -95,7 +97,7 @@ const ShiftCreationPage = () => {
                   onClick={resetFormFields}
                   disabled={!editable}
                 >
-                  Cancel
+                  {t('Cancel')}
                 </Button>
               )}
               <Button
@@ -103,7 +105,7 @@ const ShiftCreationPage = () => {
                 className="w-24"
                 disabled={!editable}
               >
-                {isEditing ? "Update" : "Save"}
+                {isEditing ? t('Update') : t('Save')}
               </Button>
             </div>
 
@@ -112,7 +114,7 @@ const ShiftCreationPage = () => {
           {/* Shift List */}
           <div>
             <h2 className="text-base font-medium text-black mb-3">
-              Shift List
+              {t('Shift List')}
             </h2>
 
             {loading ? (
@@ -145,7 +147,7 @@ const ShiftCreationPage = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-destructive text-white hover:bg-destructive/90"

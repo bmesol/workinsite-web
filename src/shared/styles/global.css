@@ -200,3 +200,41 @@ body {
 .date-picker-btn.date-selected {
   color: var(--foreground) !important;
 }
+
+/* ================= TAMIL TYPOGRAPHY ================= */
+/*
+  Fixed font sizes applied globally whenever the app language is Tamil.
+  Labels  → 13px / weight 500
+  Headings → 17px / weight 700
+  Adjust the custom properties below to change values app-wide.
+*/
+[data-lang="ta"] {
+  --ta-label-size: 14px;
+  --ta-label-weight: 600;
+  --ta-heading-size: 17px;
+  --ta-heading-weight: 700;
+  --ta-button-size: 14px;
+  --ta-button-weight: 600;
+}
+
+/* Labels: <label> elements and label-like spans/text (e.g. FormActionButton heading) */
+[data-lang="ta"] label,
+[data-lang="ta"] .text-base.font-medium {
+  font-size: var(--ta-label-size);
+  font-weight: var(--ta-label-weight);
+}
+
+/* Headings: page titles, section headers */
+[data-lang="ta"] h1,
+[data-lang="ta"] h2,
+[data-lang="ta"] h3,
+[data-lang="ta"] h4 {
+  font-size: var(--ta-heading-size);
+  font-weight: var(--ta-heading-weight);
+}
+
+/* Buttons */
+[data-lang="ta"] button {
+  font-size: var(--ta-button-size);
+  font-weight: var(--ta-button-weight);
+}

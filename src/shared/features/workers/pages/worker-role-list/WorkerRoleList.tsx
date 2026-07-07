@@ -19,8 +19,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerRoleList = (props: WorkerRoleListProps) => {
+  const { t } = useLanguage();
   const {
     workerRoleList,
     setWorkerRoleList,
@@ -63,7 +65,7 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
         <div
           key={`${item.name}-${combinedIndex}`}
           className={`flex items-center justify-between px-3 py-2 rounded-md border text-sm ${
-            item.source === "new" ? "bg-green-100" : "bg-white"  
+            item.source === "new" ? "bg-green-100" : "bg-white"
           }`}
         >
           {/* Name */}
@@ -101,7 +103,7 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Worker Role</DialogTitle>
+            <DialogTitle>{t('Edit Worker Role')}</DialogTitle>
           </DialogHeader>
           {selectedItem && (
             <WorkerRoleEditForm
@@ -130,7 +132,7 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

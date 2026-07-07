@@ -3,6 +3,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Button } from '@/shared/components/ui/button';
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/shared/components/lib/utils';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 interface SelectItem {
   label: string;
@@ -25,11 +26,12 @@ const SelectField: React.FC<SelectFieldProps> = ({
   items,
   selectedValue,
   onValueChange,
-  placeholder = 'Select',
+  placeholder,
   isDisabled = false,
   required = false,
   errorMessage,
 }) => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -69,7 +71,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
           isOpen && 'border-primary',
         )}
       >
-        {selectedLabel ?? placeholder}
+        {selectedLabel ?? (placeholder ?? t('Select'))}
         {isOpen
           ? <ChevronUp className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           : <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

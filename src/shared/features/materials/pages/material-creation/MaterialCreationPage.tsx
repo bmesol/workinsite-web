@@ -15,9 +15,11 @@ import { Header } from '@/shared/components/Header/Header';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import { NameField } from '@/shared/components/FormFields/NameField';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const MaterialCreationPage = () => {
   const [showExitDialog, setShowExitDialog] = useState(false);
+  const { t } = useLanguage();
 
   const {
     name,
@@ -44,7 +46,7 @@ const MaterialCreationPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* Header */}
-      <Header title="Create Material" />
+      <Header title={t('Create Material')} />
 
       {/* Form Card */}
       <Card className="mt-4 p-6">
@@ -52,10 +54,10 @@ const MaterialCreationPage = () => {
 
           {/* Material Name */}
           <NameField
-            label="Material Name"
+            label={t('Material Name')}
             inputValue={name}
             setInputValue={setName}
-            placeholder="Enter material name"
+            placeholder={t('Enter material name')}
             required={true}
             errorMessage={error.name}
           />
@@ -63,7 +65,7 @@ const MaterialCreationPage = () => {
           {/* Unit Combobox */}
           <ComboboxField
             id="unit"
-            label="Unit"
+            label={t('Unit')}
             items={unitDetails}
             selectedValue={unitId}
             onValueChange={setUnitId}
@@ -74,10 +76,10 @@ const MaterialCreationPage = () => {
 
           {/* HSN Code */}
           <NameField
-            label="HSN Code"
+            label={t('HSN Code')}
             inputValue={hsnCode}
             setInputValue={setHsnCode}
-            placeholder="Enter HSN code"
+            placeholder={t('Enter HSN code')}
             length={15}
             regex="^[0-9]*$"
           />
@@ -107,7 +109,7 @@ const MaterialCreationPage = () => {
                 handleSaveAndExit();
               }}
             >
-              Save
+              {t('Save')}
             </Button>
             <Button
               variant="destructive"
@@ -116,10 +118,10 @@ const MaterialCreationPage = () => {
                 handleConfirmExit();
               }}
             >
-              Exit Without Saving
+              {t('Exit Without Saving')}
             </Button>
             <AlertDialogCancel onClick={() => setShowExitDialog(false)}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>

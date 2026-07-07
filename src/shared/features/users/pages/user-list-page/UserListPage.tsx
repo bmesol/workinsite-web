@@ -5,10 +5,13 @@ import { UserStatus } from "../../components/UserStatus/UserStatus";
 import { UserCard } from "@/shared/features/users/components/UserCard/UserCard";
 import { UsersUrls } from "../../utils/urls";
 import { useUserList } from "./useUserList";
-import { SearchBar } from "@/shared/components/SearchBar/SearchBar"; 
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
+import { useLanguage } from "@/shared/hooks/useLanguageContext"; 
 
 const UserListPage = () => {
+  const { t } = useLanguage(); 
+
   const {
     userList,
     fetchUser,
@@ -21,11 +24,10 @@ const UserListPage = () => {
 
   const [searchValue, setSearchValue] = useState("");
 
-  // ✅ Initial loader
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -35,39 +37,40 @@ const UserListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
 
-      {/* Header */}
-      <Header title="Users">
+      {/* ── Header ── */}
+      <Header title={t('User List')}>
         <Actions>
           <UserStatus />
-          <Button onClick={() => navigate(UsersUrls.create)}>Create User</Button>
+          <Button onClick={() => navigate(UsersUrls.create)}>
+            {t('Create User')}
+          </Button>
         </Actions>
       </Header>
 
-      {/* SearchBar ✅ */}
+      {/* ── SearchBar ── */}
       <div className="flex justify-end mb-4 mt-4">
         <div className="w-full md:w-3/12">
           <SearchBar
             searchText={searchValue}
             setSearchText={(val) => {
               setSearchValue(val);
-              fetchUser(val); // ✅ type பண்ண பண்ண search
+              fetchUser(val);
             }}
-            searchCategory="Users"
+            searchCategory={t('Search users')}
           />
-          {/* ✅ Search loading */}
           {searchLoading && (
             <p className="text-xs text-muted-foreground mt-1 text-right">
-              Searching...
+              {t('Searching...')}
             </p>
           )}
         </div>
       </div>
 
-      {/* User Grid */}
+      {/* ── User Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 w-full">
         {!userList.length ? (
           <div className="col-span-2 text-center text-sm text-muted-foreground my-4">
-            No users found
+            {t('No users found')}
           </div>
         ) : (
           userList.map((user) => (
@@ -86,6 +89,7 @@ const UserListPage = () => {
           ))
         )}
       </div>
+
     </div>
   );
 };

@@ -15,8 +15,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkModeCreationPage = () => {
+  const { t } = useLanguage();
   const { canEdit } = usePermission();
   const editable = canEdit("Work Mode");
 
@@ -49,7 +51,7 @@ const WorkModeCreationPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
-      <Header title="Work Mode" />
+      <Header title={t('Work Mode')} />
 
       <Card className="mt-4">
         <CardContent className="flex flex-col gap-4 pt-4">
@@ -57,11 +59,11 @@ const WorkModeCreationPage = () => {
           {/* Form with keyboard submit support */}
           <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
             <NameField
-              label="Work Mode"
+              label={t('Work Mode')}
               inputValue={name}
               setInputValue={setName}
               errorMessage={error.name}
-              placeholder="Enter work mode"
+              placeholder={t('Enter work mode')}
               required
               isDisabled={!editable}
             />
@@ -76,7 +78,7 @@ const WorkModeCreationPage = () => {
                   onClick={resetFormFields}
                   disabled={!editable}
                 >
-                  Cancel
+                  {t('Cancel')}
                 </Button>
               )}
               <Button
@@ -84,7 +86,7 @@ const WorkModeCreationPage = () => {
                 className="w-24"
                 disabled={!editable}
               >
-                {isEditing ? "Update" : "Save"}
+                {isEditing ? t('Update') : t('Save')}
               </Button>
             </div>
           </form>
@@ -92,7 +94,7 @@ const WorkModeCreationPage = () => {
           {/* Work Mode List */}
           <div>
             <h2 className="text-base font-medium text-black mb-3">
-              Work Mode List
+              {t('Work Mode List')}
             </h2>
 
             {loading ? (
@@ -123,7 +125,7 @@ const WorkModeCreationPage = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-destructive text-white hover:bg-destructive/90"

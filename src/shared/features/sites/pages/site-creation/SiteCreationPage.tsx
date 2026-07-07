@@ -5,6 +5,7 @@ import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmis
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Input } from "@/shared/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { GoogleLocation } from "@/shared/components/FormFields/GoogleLocation/GoogleLocation";
@@ -16,10 +17,12 @@ import { Header } from "@/shared/components/Header/Header";
 import { SitesUrls } from "../../utils/urls";
 import { useSiteCreation } from "./useSiteCreation";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 // ─── SiteCreationPage ─────────────────────────────────────────────────────────
 
 const SiteCreationPage = () => {
+  const { t } = useLanguage();
   const [queryString] = useSearchParams();
   const [contactEditOpen, setContactEditOpen] = useState(false);
   const [supervisorAddOpen, setSupervisorAddOpen] = useState(false);
@@ -50,8 +53,15 @@ const SiteCreationPage = () => {
     handleSubmission,
     supervisorIds,
     setSupervisorIds,
+    status,
+    setStatus,
+    siteStatus,
     redirectUrl,
     redirectParams,
+     wageTypeId,      
+  setWageTypeId,   
+  wageTypeDetails, 
+  fetchWageTypes,   
   } = useSiteCreation(queryString);
   const handleMoreDetails = () => {
     if (contact) setContactEditOpen(true);
@@ -61,21 +71,21 @@ const SiteCreationPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Create Site" />
+      <Header title={t('Create Site')} />
 
       <Card className="mt-4">
-        <CardContent className="pt-6 flex flex-col gap-6">
+        <CardContent className=" flex flex-col gap-6">
           {/* Row 1: Name + Client */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="site-name" className="text-base font-medium">
-                Name <span className="text-red-500">*</span>
+                {t('Name')} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="site-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Enter site name"
+                placeholder={t('Enter site name')}
               />
               {error.name && (
                 <p className="text-sm text-red-500">{error.name}</p>
@@ -84,7 +94,7 @@ const SiteCreationPage = () => {
 
             <ComboboxField
               id="client-combobox"
-              label="Client"
+              label={t('Client')}
               items={clientDetails}
               selectedValue={clientId}
               onValueChange={handleClientChange}
@@ -95,37 +105,21 @@ const SiteCreationPage = () => {
             />
           </div>
 
-          {/* Row 2: Location + Notes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <GoogleLocation
-                errorMessage={error.googleLocation}
-                inputValue={googleLocation}
-                setInputValue={setGoogleLocation}
-                required
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="notes" className="text-base font-medium">
-                Notes
-              </Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Enter your notes"
-                rows={4}
-              />
-            </div>
-          </div>
-
-          {/* Row 3: Contact + Supervisors */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-3">
+  <ComboboxField
+    id="wage-type-combobox"
+    label={t('Wage Type')}
+    items={wageTypeDetails}
+    selectedValue={wageTypeId}
+    onValueChange={setWageTypeId}
+    onSearch={fetchWageTypes}
+    error={error.wageType}
+    required
+  />
+  <div className="flex flex-col gap-3">
               <ComboboxField
                 id="contact-combobox"
-                label="Contact"
+                label={t('Contact')}
                 items={contactDetails}
                 selectedValue={contactId}
                 onValueChange={handleContactChange}
@@ -144,10 +138,39 @@ const SiteCreationPage = () => {
               )}
             </div>
 
+</div>
+
+          {/* Row 2: Location + Notes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <GoogleLocation
+                errorMessage={error.googleLocation}
+                inputValue={googleLocation}
+                setInputValue={setGoogleLocation}
+                required
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="notes" className="text-base font-medium">
+                {t('Notes')}
+              </Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder={t('Enter your notes')}
+                rows={4}
+              />
+            </div>
+          </div>
+
+          {/* Row 3: Supervisors + Status */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-3">
               <FormActionButton
-                heading="Supervisors"
-                label="Add"
+                heading={t('Supervisors')}
+                label={t('Add')}
                 onClick={handleSupervisorsAdd}
                 isColsTwo={true}
                 required
@@ -158,6 +181,30 @@ const SiteCreationPage = () => {
                   setSupervisorIds={setSupervisorIds}
                 />
               )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label className="text-base font-medium">{t('Status')}</Label>
+              <RadioGroup
+                value={status}
+                onValueChange={setStatus}
+                className="flex flex-col gap-2 md:flex-row md:flex-wrap md:gap-4"
+              >
+                {siteStatus.map((item) => (
+                  <div key={item.value} className="flex items-center gap-2">
+                    <RadioGroupItem
+                      value={item.value}
+                      id={`status-${item.value}`}
+                    />
+                    <Label
+                      htmlFor={`status-${item.value}`}
+                      className="font-sm cursor-pointer"
+                    >
+                      {item.label}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
             </div>
           </div>
 

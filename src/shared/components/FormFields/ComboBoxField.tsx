@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import {
   Command,
   CommandEmpty,
@@ -42,6 +43,7 @@ const ComboboxField = ({
   required,
   disabled = false,
 }: ComboboxFieldProps) => {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -85,7 +87,7 @@ const ComboboxField = ({
               color: selectedLabel ? "var(--foreground)" : "var(--gray-color)",
             }}
           >
-            {selectedLabel ?? `Select ${label.toLowerCase()}...`}
+            {selectedLabel ?? `${t('Select')}...`}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -96,7 +98,7 @@ const ComboboxField = ({
         >
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder={`Search ${label.toLowerCase()}...`}
+              placeholder={t('Search...')}
               value={searchValue}
               onValueChange={(val) => {
                 setSearchValue(val);
@@ -106,7 +108,7 @@ const ComboboxField = ({
             <CommandList>
               <CommandEmpty>
                 <span className="text-sm text-muted-foreground">
-                  No {label.toLowerCase()} found.
+                  {t('No items found.')}
                 </span>
               </CommandEmpty>
               <CommandGroup>
@@ -144,7 +146,7 @@ const ComboboxField = ({
                     }}
                   >
                     <Plus className="h-4 w-4" />
-                    Create new {label.toLowerCase()}
+                    {t('Create new')} {label.toLowerCase()}
                   </Button>
                 </div>
               )}

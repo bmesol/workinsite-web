@@ -21,11 +21,13 @@ import { useWorkerTransactionEdit } from './useWorkerTransactionEdit';
 import PaymentMethodSelector from '../../components/PaymentMethodSelector/PaymentMethodSelector';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { WorkerTransactionUrls } from '../../utils/urls';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerTransactionEditPage = () => {
   const navigate = useNavigate();
   const { canEdit } = usePermission();
   const editable = canEdit('Worker Transaction');
+  const { t } = useLanguage();
 
   const {
     handleBack,
@@ -57,7 +59,7 @@ const WorkerTransactionEditPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Edit Worker Transaction" />
+      <Header title={t('Edit Worker Transaction')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -65,7 +67,7 @@ const WorkerTransactionEditPage = () => {
           {/* ── Worker ── */}
           <ComboboxField
             id="worker"
-            label="Worker"
+            label={t('Worker')}
             items={workerDetails}
             selectedValue={workerId}
             onValueChange={setWorkerId}
@@ -77,7 +79,7 @@ const WorkerTransactionEditPage = () => {
 
           {/* ── Date ── */}
           <DatePicker
-            label="Date"
+            label={t('Date')}
             date={date}
             onDateChange={setDate}
             required
@@ -87,10 +89,10 @@ const WorkerTransactionEditPage = () => {
 
           {/* ── Amount ── */}
           <NameField
-            label="Amount"
+            label={t('Amount')}
             inputValue={amount}
             setInputValue={setAmount}
-            placeholder="Enter Amount"
+            placeholder={t('Enter Amount')}
             required
             regex="^[0-9]*(\.[0-9]*)?$"
             length={10}
@@ -109,10 +111,10 @@ const WorkerTransactionEditPage = () => {
 
           {/* ── Remark ── */}
           <TextareaField
-            label="Remark"
+            label={t('Remark')}
             inputValue={remark}
             setInputValue={setRemark}
-            placeholder="Enter Remark"
+            placeholder={t('Enter Remark')}
             isDisabled={!editable}
           />
 
@@ -151,7 +153,7 @@ const WorkerTransactionEditPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t('Save')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

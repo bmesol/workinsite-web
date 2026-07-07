@@ -2,8 +2,10 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { Button } from "@/shared/components/ui/button";
 import { useWorkerRoleCreateForm } from "./useWorkerRoleCreateForm";
 import type { WorkerRoleCreateFormProps } from "../../DTOs/WorkRoleProps";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerRoleCreateForm = (props: WorkerRoleCreateFormProps) => {
+  const { t } = useLanguage();
   const {
     name,
     setName,
@@ -20,39 +22,39 @@ const WorkerRoleCreateForm = (props: WorkerRoleCreateFormProps) => {
 
       {/* Worker Role Name */}
       <NameField
-        label="Worker Role"
+        label={t('Worker Role')}
         inputValue={name}
         setInputValue={setName}
         errorMessage={error.name}
-        placeholder="Enter Worker Role"
+        placeholder={t('Enter Worker Role')}
         required={true}
       />
 
       {/* Salary Per Shift */}
       <NameField
-        label="Salary Per Shift"
+        label={t('Salary Per Shift')}
         inputValue={salaryPerShift}
         setInputValue={setSalaryPerShift}
         errorMessage={error.salaryPerShift}
-        placeholder="Enter Salary Per Shift"
+        placeholder={t('Enter Salary Per Shift')}
         required={true}
-        regex="^[0-9]*\.?[0-9]*$"  
+        regex="^[0-9]*\.?[0-9]*$"
         length={10}
       />
 
       {/* Hours Per Shift */}
       <NameField
-        label="Hours Per Shift"
+        label={t('Hours Per Shift')}
         inputValue={hoursPerShift}
         setInputValue={setHoursPerShift}
         errorMessage={error.hoursPerShift}
-        placeholder="Enter Hours Per Shift"
+        placeholder={t('Enter Hours Per Shift')}
         required={true}
-        regex="^[0-9]*$"  
+        regex="^[0-9]*$"
         length={2}
       />
 
-      <Button onClick={handleAdd}>Add</Button>
+      <Button onClick={handleAdd}>{t('Add')}</Button>
     </div>
   );
 };

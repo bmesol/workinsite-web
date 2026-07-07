@@ -28,12 +28,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/shared/components/ui/alert-dialog';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceListPage = () => {
   const navigate = useNavigate();
   const { canEdit } = usePermission();
   const editable = canEdit('Attendance');
   const [filterOpen, setFilterOpen] = useState(false);
+  const { t } = useLanguage();
 
   const {
     attendance,
@@ -90,7 +92,7 @@ const AttendanceListPage = () => {
       <div className="min-h-screen w-full px-4 py-6 pb-10">
         <GetStartedCard
           imgSrc={workerIllustration}
-          buttonLabel="Create Attendance"
+          buttonLabel={t('Create Attendance')}
           buttonClick={AttendanceUrls.create}
         >
           Simplify attendance tracking for your construction team. Start by
@@ -104,7 +106,7 @@ const AttendanceListPage = () => {
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Attendance List">
+      <Header title={t('Attendance List')}>
         {editable && (
           <Actions>
             <Button onClick={handlePress}>New Attendance</Button>
@@ -115,7 +117,7 @@ const AttendanceListPage = () => {
       {/* ── Search Filter Bar ── */}
       <SearchFilterBar
         appliedFilters={appliedFilters}
-        placeholder="Search Attendance..."
+        placeholder={t('Search attendance')}
         onFilterOpen={() => setFilterOpen(true)}
         onClearSearch={handleClearSearch}
       />
@@ -154,7 +156,7 @@ const AttendanceListPage = () => {
               className="text-[var(--secondary)]"
               onClick={() => fetchAttendance()}
             >
-              View More
+              {t('View More')}
             </Button>
           )}
         </div>
@@ -170,11 +172,11 @@ const AttendanceListPage = () => {
             <DatePicker
               date={date}
               onDateChange={setDate}
-              label="Date"
+              label={t('Date')}
             />
             <ComboboxField
               id="site"
-              label="Site"
+              label={t('Site')}
               items={siteDetails}
               selectedValue={siteId.value}
               onValueChange={(val) => {
@@ -185,7 +187,7 @@ const AttendanceListPage = () => {
             />
             <ComboboxField
               id="wageType"
-              label="Wage Type"
+              label={t('Wage Type')}
               items={wageTypeDetails}
               selectedValue={wageTypeId.value}
               onValueChange={(val) => {
@@ -196,7 +198,7 @@ const AttendanceListPage = () => {
             />
             <ComboboxField
               id="workType"
-              label="Work Type"
+              label={t('Work Type')}
               items={workTypeDetails}
               selectedValue={workTypeId.value}
               onValueChange={(val) => {
@@ -207,7 +209,7 @@ const AttendanceListPage = () => {
             />
             <ComboboxField
               id="worker"
-              label="Worker"
+              label={t('Worker')}
               items={workerDetails}
               selectedValue={workerId.value}
               onValueChange={(val) => {
@@ -225,7 +227,7 @@ const AttendanceListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              Search
+              {t('Search')}
             </Button>
           </div>
         </DialogContent>
@@ -242,7 +244,7 @@ const AttendanceListPage = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-white hover:bg-destructive/90"
@@ -265,7 +267,7 @@ const AttendanceListPage = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={cancelWorkTypeChange}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmWorkTypeChange}

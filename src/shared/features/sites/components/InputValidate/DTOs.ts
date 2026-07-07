@@ -3,6 +3,7 @@ interface SiteInputValidateProps {
   clientId: string;
   googleLocation: string;
   contactId: string;
+  wageTypeId: string;
 }
 
 export type { SiteInputValidateProps };

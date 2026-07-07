@@ -18,6 +18,7 @@ interface SiteCreationRequest {
   note: string;
   contactId: number;
   supervisorIds: number[];
+  status: string;
 }
 
 interface SiteUpdationRequest extends SiteCreationRequest {

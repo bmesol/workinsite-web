@@ -29,6 +29,7 @@ import {
 import { useState } from 'react';
 import { useTaskEdit } from './useTaskEdit';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { TaskUrls } from '../../utils/urls';
 import SupervisorSelector from '../../components/SupervisorSelector/SupervisorSelector';
 import SelectedSupervisorCard from '@/shared/components/SelectedSupervisorCard/SelectedSupervisorCard';
@@ -41,6 +42,7 @@ export const TaskEditPage = () => {
   const navigate = useNavigate();
   const { canEdit } = usePermission();
   const editable = canEdit('Task');
+  const { t } = useLanguage();
 
   const [supervisorDialogOpen, setSupervisorDialogOpen] = useState(false);
 
@@ -87,7 +89,7 @@ export const TaskEditPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -96,16 +98,15 @@ export const TaskEditPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Edit Task" />
+      <Header title={t('Edit Task')} />
 
       <Card className="mt-4 p-6">
-        {/* ── Grid 2 columns ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           {/* Site */}
           <ComboboxField
             id="site"
-            label="Site"
+            label={t('Site')}
             items={siteDetails}
             selectedValue={siteId}
             onValueChange={handleSiteChange}
@@ -117,10 +118,10 @@ export const TaskEditPage = () => {
 
           {/* Task Name */}
           <TextareaField
-            label="Task Name"
+            label={t('Task Name')}
             inputValue={taskName}
             setInputValue={setTaskName}
-            placeholder="Enter your Task name"
+            placeholder={t('Enter your Task name')}
             required
             errorMessage={error.taskName}
             isDisabled={!editable}
@@ -128,7 +129,7 @@ export const TaskEditPage = () => {
 
           {/* Date */}
           <DatePicker
-            label="Date"
+            label={t('Date')}
             date={date}
             onDateChange={setDate}
             required
@@ -139,7 +140,7 @@ export const TaskEditPage = () => {
 
           {/* Priority */}
           <SelectField
-            label="Priority"
+            label={t('Priority')}
             items={priorityType}
             selectedValue={priority}
             onValueChange={(val) => setPriority(val as string)}
@@ -150,7 +151,7 @@ export const TaskEditPage = () => {
 
           {/* Status */}
           <SelectField
-            label="Status"
+            label={t('Status')}
             items={workflowStatus}
             selectedValue={status}
             onValueChange={(val) => setStatus(val as string)}
@@ -160,11 +161,11 @@ export const TaskEditPage = () => {
 
           {/* New Remark input */}
           <div className="flex flex-col gap-1.5">
-            <Label className="text-base font-medium">Remarks</Label>
+            <Label className="text-base font-medium">{t('Remarks')}</Label>
             <Textarea
               value={newRemark}
               onChange={e => setNewRemark(e.target.value)}
-              placeholder="Type your remark..."
+              placeholder={t('Type your remark...')}
               rows={3}
               disabled={!editable}
             />
@@ -175,8 +176,8 @@ export const TaskEditPage = () => {
         {siteId && (
           <div className="mt-4">
             <FormActionButton
-              heading="Assign Supervisor"
-              label="Select"
+              heading={t('Assign Supervisor')}
+              label={t('Select')}
               onClick={() => setSupervisorDialogOpen(true)}
               isColsTwo={true}
             />
@@ -216,7 +217,7 @@ export const TaskEditPage = () => {
             permissionKey="Task"
           />
           <UploadButton
-            text="Upload Images"
+            text={t('Upload Images')}
             onFilesSelected={(files) =>
               handleFileChange({ target: { files } } as unknown as React.ChangeEvent<HTMLInputElement>)
             }
@@ -235,8 +236,6 @@ export const TaskEditPage = () => {
         </div>
       </Card>
 
-   
-
       {/* ── Supervisor Dialog ── */}
       <Dialog
         open={supervisorDialogOpen}
@@ -244,7 +243,7 @@ export const TaskEditPage = () => {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Select Supervisor</DialogTitle>
+            <DialogTitle>{t('Select Supervisor')}</DialogTitle>
           </DialogHeader>
           <SupervisorSelector
             supervisorDetails={supervisorDetails}
@@ -262,9 +261,9 @@ export const TaskEditPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Do you want to save them before leaving?
+              {t('You have unsaved changes. Do you want to save them before leaving?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -276,7 +275,7 @@ export const TaskEditPage = () => {
                 navigate(TaskUrls.list);
               }}
             >
-              Exit without Saving
+              {t('Exit without Saving')}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
@@ -285,7 +284,7 @@ export const TaskEditPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t('Save')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

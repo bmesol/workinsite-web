@@ -1,9 +1,11 @@
 import { Button } from "@/shared/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { GetStartedCardProps } from "./DTOs";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const GetStartedCard = (props: GetStartedCardProps) => {
   const { imgSrc, buttonLabel, buttonClick, children } = props;
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   return (
@@ -15,7 +17,7 @@ const GetStartedCard = (props: GetStartedCardProps) => {
           <img src={imgSrc} alt="get started" className="w-auto max-h-60" />
 
           {/* Title */}
-          <h2 className="text-xl font-bold text-black">Get Started</h2>
+          <h2 className="text-xl font-bold text-black">{t("Get Started")}</h2>
 
           {/* Description */}
           <p className="text-muted-foreground">{children}</p>

@@ -27,6 +27,8 @@ import {
 } from "@/shared/components/ui/dialog";
 import { Switch } from "@/shared/components/ui/switch";
 import { Label } from "@/shared/components/ui/label";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
+
 const SupplierEditPage = () => {
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
@@ -34,6 +36,7 @@ const SupplierEditPage = () => {
   const [isBankAccountOpen, setIsBankAccountOpen] = useState(false);
   const [isUpiOpen, setIsUpiOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const { t } = useLanguage();
 
   const {
     name,
@@ -72,7 +75,7 @@ const SupplierEditPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Edit Supplier" />
+      <Header title={t('Edit Supplier')} />
 
       {/* Card */}
       <Card className="mt-4 p-6 bg-white">
@@ -87,7 +90,7 @@ const SupplierEditPage = () => {
           {(supplierDetails as Supplier).contact.id && (
             <ComboboxField
               id="contact"
-              label="Contact"
+              label={t('Contact')}
               items={contactDetails}
               selectedValue={contactId}
               onValueChange={handleContactChange}
@@ -104,8 +107,8 @@ const SupplierEditPage = () => {
   <>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormActionButton
-        heading="Contact detail"
-        label="Edit"
+        heading={t('Contact detail')}
+        label={t('Edit')}
         onClick={handleContactEdit}
         isColsTwo={true}
       />
@@ -122,7 +125,7 @@ const SupplierEditPage = () => {
           onClick={() => setIsContactOpen(true)}
           className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
         >
-          More details...
+          {t('More details...')}
         </button>
       </div>
     )}
@@ -131,10 +134,10 @@ const SupplierEditPage = () => {
         {/* Notes */}
         {notes !== undefined && (
           <TextareaField
-            label="Notes"
+            label={t('Notes')}
             inputValue={`${notes ? notes : ""}`}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t('Enter your notes')}
           />
         )}
 
@@ -143,8 +146,8 @@ const SupplierEditPage = () => {
           {/* KYC */}
           <div>
             <FormActionButton
-              heading="KYC"
-              label="Add"
+              heading={t('KYC')}
+              label={t('Add')}
               onClick={() => setIsKycOpen(true)}
               isAddDisabled={isKycAddDisabled}
               isColsTwo={true}
@@ -164,8 +167,8 @@ const SupplierEditPage = () => {
           {/* Bank Accounts */}
           <div>
             <FormActionButton
-              heading="Bank Accounts"
-              label="Add"
+              heading={t('Bank Accounts')}
+              label={t('Add')}
               onClick={() => setIsBankAccountOpen(true)}
               isAddDisabled={isBankAccountsAddDisabled}
               isColsTwo={true}
@@ -185,8 +188,8 @@ const SupplierEditPage = () => {
           {/* UPIs */}
           <div>
             <FormActionButton
-              heading="UPIs"
-              label="Add"
+              heading={t('UPIs')}
+              label={t('Add')}
               onClick={() => setIsUpiOpen(true)}
               isAddDisabled={isUpiAddDisabled}
               isColsTwo={true}
@@ -206,7 +209,7 @@ const SupplierEditPage = () => {
           {/* Is Active Toggle */}
           <div className="flex items-center gap-3">
             <Label className="text-base font-medium text-black">
-              Is Active
+              {t('Is Active')}
             </Label>
             <Switch checked={isActive} onCheckedChange={setIsActive} />
           </div>
@@ -225,7 +228,7 @@ const SupplierEditPage = () => {
       <Dialog open={isKycOpen} onOpenChange={setIsKycOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>KYC Type</DialogTitle>
+            <DialogTitle>{t('KYC Type')}</DialogTitle>
           </DialogHeader>
           <KycCreateForm
             details={{ kycDetails: supplierDetails.kycDetails }}
@@ -243,7 +246,7 @@ const SupplierEditPage = () => {
       <Dialog open={isBankAccountOpen} onOpenChange={setIsBankAccountOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Bank Account</DialogTitle>
+            <DialogTitle>{t('Bank Account')}</DialogTitle>
           </DialogHeader>
           <BankAccountCreateForm
             details={{ bankAccounts: supplierDetails.bankAccounts }}
@@ -262,7 +265,7 @@ const SupplierEditPage = () => {
       <Dialog open={isUpiOpen} onOpenChange={setIsUpiOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>UPI Type</DialogTitle>
+            <DialogTitle>{t('UPI Type')}</DialogTitle>
           </DialogHeader>
           <UpiCreateForm
             details={{ upiDetails: supplierDetails.upiDetails }}

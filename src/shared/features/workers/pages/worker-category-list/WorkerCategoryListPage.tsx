@@ -16,8 +16,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerCategoryListPage = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const {
     workerCategoryDetails,
@@ -46,10 +48,10 @@ const WorkerCategoryListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title="Worker Category List">
+      <Header title={t('Worker Category List')}>
         <Actions>
           <Button onClick={() => navigate(WorkerCategoriesUrls.create)}>
-            Create Worker Category
+            {t('Create Worker Category')}
           </Button>
         </Actions>
       </Header>
@@ -60,7 +62,7 @@ const WorkerCategoryListPage = () => {
     <SearchBar
       searchText={searchText}
       setSearchText={setSearchText}
-      searchCategory="Worker Category"
+      searchCategory={t('Worker Category')}
     />
   </div>
 </div>
@@ -76,8 +78,8 @@ const WorkerCategoryListPage = () => {
             <ContactCard
               key={workerCategory.id}
               name={workerCategory.name}
-              workType={`Work Type Count : ${workerCategory?.workTypes?.length ?? 0}`}
-              workerRole={`Worker Role Count : ${workerCategory?.workerRoles?.length ?? 0}`}
+              workType={`${t('Work Type Count')} : ${workerCategory?.workTypes?.length ?? 0}`}
+              workerRole={`${t('Worker Role Count')} : ${workerCategory?.workerRoles?.length ?? 0}`}
               onDelete={(e: React.MouseEvent) =>
                 confirmDelete(e, workerCategory.id)
               } // ← same as client pattern
@@ -105,7 +107,7 @@ const WorkerCategoryListPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
 

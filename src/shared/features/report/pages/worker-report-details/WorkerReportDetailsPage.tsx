@@ -12,6 +12,7 @@ import {
   HardHat,
 } from "lucide-react";
 import { useWorkerReportDetails } from "./useWorkerReportDetails";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { formatINR } from "../../utils/DateUtils";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { WorkerReportCard } from "../../components/WorkerReportCard/WorkerReportCard";
@@ -38,6 +39,7 @@ function DetailSkeleton() {
 
 export default function WorkerReportDetailsPage() {
   const { workerId } = useParams<{ workerId: string }>();
+  const { t } = useLanguage();
   const location = useLocation();
   const { fromDate, toDate, siteId } = location.state ?? {};
 

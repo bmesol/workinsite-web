@@ -15,11 +15,13 @@ import {
 } from "@/shared/components/ui/dialog";
 import { useContactEdit } from "./useContactEdit";
 import { useState } from "react";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ContactEditPage = () => {
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   const {
     name,
@@ -49,7 +51,7 @@ const ContactEditPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-5">
-      <Header title="Edit Contact" />
+      <Header title={t('Edit Contact')} />
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
           {name && (
@@ -63,7 +65,7 @@ const ContactEditPage = () => {
           )}
 
           <PhoneNumberField
-            label="Phone Number"
+            label={t('Phone Number')}
             inputValue={phone}
             setInputValue={setPhone}
             errorMessage={error.phone}
@@ -71,8 +73,8 @@ const ContactEditPage = () => {
             required={true}
           />
           <FormActionButton
-            heading="Additional Details"
-            label="Add"
+            heading={t('Additional Details')}
+            label={t('Add')}
             onClick={handleAdd}
             isAddDisabled={isAddDisabled}
           />
@@ -91,7 +93,7 @@ const ContactEditPage = () => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="border overflow-visible">
           <DialogHeader>
-            <DialogTitle>Additional Details</DialogTitle>
+            <DialogTitle>{t('Additional Details')}</DialogTitle>
           </DialogHeader>
           <ContactCreateForm
             contactList={contactList}

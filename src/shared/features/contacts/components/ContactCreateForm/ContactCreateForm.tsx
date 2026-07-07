@@ -11,9 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ContactCreateForm = (props: ContactListType & { onClose?: () => void }) => {
   const { onClose } = props;
+  const { t } = useLanguage();
   const { contactType, contactItems, input, setInput, error, handleSelectChange, handleAdd } = useContactCreateForm(props, onClose);
 
   return (
@@ -21,7 +23,7 @@ const ContactCreateForm = (props: ContactListType & { onClose?: () => void }) =>
       <FormInput errorMessage={error.select}>
         <Select onValueChange={handleSelectChange} value={contactType}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select contact type..." />
+            <SelectValue placeholder={t('Contact Type')} />
           </SelectTrigger>
           <SelectContent position="popper" sideOffset={4} className="z-[9999] bg-white">
             {contactItems.map((item) => (
@@ -41,8 +43,8 @@ const ContactCreateForm = (props: ContactListType & { onClose?: () => void }) =>
       />
 
      <FormSubmissionButtons
-  label="Add"
-  onCancel={() => onClose?.()}  
+  label={t('Add')}
+  onCancel={() => onClose?.()}
   onSave={handleAdd}
 />
     </div>

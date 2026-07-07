@@ -26,9 +26,11 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { PlusCircle, Upload, X } from "lucide-react";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceCreationPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t } = useLanguage();
 
   const {
     siteDetails,
@@ -87,7 +89,7 @@ const AttendanceCreationPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
-      <Header title="Create Attendance" />
+      <Header title={t('Create Attendance')} />
 
       <Card className="mt-4">
         <CardContent className="pt-4">
@@ -97,7 +99,7 @@ const AttendanceCreationPage = () => {
               date={date}
               onDateChange={setDate}
               errorMessage={error.date}
-              label="Date"
+              label={t('Date')}
               required
               defaultDate
             />
@@ -105,7 +107,7 @@ const AttendanceCreationPage = () => {
             {/* Site */}
             <ComboboxField
               id="site"
-              label="Site"
+              label={t('Site')}
               items={siteDetails}
               selectedValue={siteId}
               onValueChange={setSiteId}
@@ -117,7 +119,7 @@ const AttendanceCreationPage = () => {
             {/* Wage Type */}
             <ComboboxField
               id="wageType"
-              label="Wage Type"
+              label={t('Wage Type')}
               items={wageTypeDetails}
               selectedValue={wageTypeId}
               onValueChange={setWageTypeId}
@@ -129,7 +131,7 @@ const AttendanceCreationPage = () => {
             {/* Work Type */}
             <ComboboxField
               id="workType"
-              label="Work Type"
+              label={t('Work Type')}
               items={workTypeDetails}
               selectedValue={workType.id.toString()}
               onValueChange={(val) => {
@@ -145,7 +147,7 @@ const AttendanceCreationPage = () => {
             {/* Worker */}
             <ComboboxField
               id="worker"
-              label="Worker"
+              label={t('Worker')}
               items={workerDetails}
               selectedValue={workerId}
               onValueChange={setWorkerId}
@@ -157,10 +159,10 @@ const AttendanceCreationPage = () => {
 
             {/* Worked Quantity */}
             <NameField
-              label="Worked Quantity"
+              label={t('Worked Quantity')}
               inputValue={workedQuantity}
               setInputValue={setWorkedQuantity}
-              placeholder="Enter Worked Quantity"
+              placeholder={t('Enter Worked Quantity')}
               errorMessage={error.workedQuantity}
               required
               regex="^[0-9.]*$"
@@ -168,7 +170,7 @@ const AttendanceCreationPage = () => {
             {/* Unit */}
             <ComboboxField
               id="unit"
-              label="Unit"
+              label={t('Unit')}
               items={unitDetails}
               selectedValue={unitId}
               onValueChange={setUnitId}
@@ -180,7 +182,7 @@ const AttendanceCreationPage = () => {
             {/* Work Mode */}
             <ComboboxField
               id="workMode"
-              label="Work Mode"
+              label={t('Work Mode')}
               items={workModeDetails}
               selectedValue={workModeId}
               onValueChange={setWorkModeId}
@@ -197,7 +199,7 @@ const AttendanceCreationPage = () => {
                 className="flex items-center gap-2 text-sm font-medium text-[var(--secondary)] hover:opacity-80 w-fit"
               >
                 <PlusCircle size={18} />
-                Attendance Split
+                {t('Attendance Split')}
               </button>
               {error.attendanceSplit && (
                 <p className="text-xs text-destructive">
@@ -243,7 +245,7 @@ const AttendanceCreationPage = () => {
               className="flex items-center gap-2 text-sm font-medium text-[var(--secondary)] hover:opacity-80 w-fit"
             >
               <Upload size={18} />
-              Upload Images
+              {t('Upload Images')}
             </button>
             <input
               ref={fileInputRef}
@@ -256,8 +258,8 @@ const AttendanceCreationPage = () => {
 
             {/* Notes */}
             <TextareaField
-              label="Notes"
-              placeholder="Enter your Notes"
+              label={t('Notes')}
+              placeholder={t('Enter your Notes')}
               inputValue={notes}
               setInputValue={setNotes}
             />
@@ -265,7 +267,7 @@ const AttendanceCreationPage = () => {
             {/* Save Button */}
             <div className="flex justify-end">
               <Button type="submit" className="w-24">
-                Save
+                {t('Save')}
               </Button>
             </div>
           </form>
@@ -276,7 +278,7 @@ const AttendanceCreationPage = () => {
       <Dialog open={isSplitDialogOpen} onOpenChange={setIsSplitDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Attendance Split</DialogTitle>
+            <DialogTitle>{t('Attendance Split')}</DialogTitle>
           </DialogHeader>
           <AttendanceSplitCreationPage
             workerCategoryId={workType?.workerCategory?.id}
@@ -298,7 +300,7 @@ const AttendanceCreationPage = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-white hover:bg-destructive/90"
@@ -322,7 +324,7 @@ const AttendanceCreationPage = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={cancelWorkTypeChange}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmWorkTypeChange}

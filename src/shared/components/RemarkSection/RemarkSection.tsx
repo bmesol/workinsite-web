@@ -1,6 +1,7 @@
 import { Label } from '@/shared/components/ui/label';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { cn } from '@/shared/components/lib/utils';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 interface Remark {
   id: number;
@@ -23,11 +24,12 @@ const RemarkSection: React.FC<Props> = ({
   setNewRemark,
   taskCreatorId,
 }) => {
+  const { t } = useLanguage();
   const isLeft = (item: Remark) => item.createdBy === taskCreatorId;
 
   return (
     <div className="flex flex-col gap-3">
-      <Label className="text-base font-bold">Remark</Label>
+      <Label className="text-base font-bold">{t("Remark")}</Label>
 
       {/* Chat List */}
       <div className="flex flex-col gap-4">

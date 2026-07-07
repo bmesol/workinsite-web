@@ -6,9 +6,10 @@ import type { Contact } from "../../../contacts/DTOs/ContactProps";
 import { ContactsUrls } from "../../../contacts/utils/urls";
 import { useSiteService } from "@/shared/features/sites/service/SiteService";
 import { useWageTypeService } from "@/shared/features/sites/service/WageTypeService";
-import type { WageType } from "@/shared/features/workers/DTOs/WorkerProps"; 
+import type { WageType } from "@/shared/features/workers/DTOs/WorkerProps";
 import type { Client } from "../../../clients/DTOs/ClientProps";
 import { ClientsUrls } from "../../../clients/utils/urls";
+import { SiteStatus } from "../../DTOs/SiteProps";
 import { useNavigate } from "react-router-dom";
 import { SitesUrls } from "../../utils/urls";
 import { toast } from "sonner";
@@ -30,6 +31,7 @@ const useSiteCreation = (queryString: URLSearchParams) => {
   const [notes, setNotes] = useState(getQueryParam("notes"));
   const [contactId, setContactId] = useState(getQueryParam("contactId"));
   const [supervisorIds, setSupervisorIds] = useState<number[]>(JSON.parse(initialSupervisorIds));
+  const [status, setStatus] = useState(getQueryParam("status") || SiteStatus.YET_TO_START);
   const [wageTypeId, setWageTypeId] = useState(getQueryParam("wageTypeId")); // 👈
   const [wageTypeList, setWageTypeList] = useState<WageType[]>([]);           // 👈
 
@@ -108,6 +110,13 @@ const useSiteCreation = (queryString: URLSearchParams) => {
   const contactDetails = contactList.map((item) => ({ label: item.name, value: item.id.toString() }));
   const wageTypeDetails = wageTypeList.map((item) => ({ label: item.name, value: item.id.toString() })); // 👈
 
+  const siteStatus = [
+    { label: "Yet To Start", value: SiteStatus.YET_TO_START },
+    { label: "Working", value: SiteStatus.WORKING },
+    { label: "Hold", value: SiteStatus.HOLD },
+    { label: "Completed", value: SiteStatus.COMPLETED },
+  ];
+
   const handleClientChange = (value: string) => setClientId(value);
   const handleContactChange = (value: string) => setContactId(value);
 
@@ -119,7 +128,8 @@ const useSiteCreation = (queryString: URLSearchParams) => {
     notes,
     contactId,
     supervisorIds: `[${supervisorIds.toString()}]`,
-    wageTypeId, 
+    status,
+    wageTypeId,
   });
 
   const handleClientCreate = (searchString: string) => {
@@ -159,6 +169,7 @@ const useSiteCreation = (queryString: URLSearchParams) => {
           note: notes,
           contactId: parseInt(contactId),
           supervisorIds,
+          status,
           wageTypeId: parseInt(wageTypeId), // 👈
         };
         await siteService.createSite(site);
@@ -193,6 +204,9 @@ const useSiteCreation = (queryString: URLSearchParams) => {
     handleSubmission,
     supervisorIds,
     setSupervisorIds,
+    status,
+    setStatus,
+    siteStatus,
     redirectUrl,
     redirectParams,
     wageTypeId,       // 👈

@@ -9,8 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const KycEditForm = (props: KycEditFormProps) => {
+  const { t } = useLanguage();
   const { onClose } = props;
   const { kycType, kycItems, input, setInput, error, handleUpdate } = useKycEditForm(props);
 
@@ -37,7 +39,7 @@ const KycEditForm = (props: KycEditFormProps) => {
       />
 
       <FormSubmissionButtons
-        label="Update"
+        label={t('Update')}
         onCancel={onClose!}
         onSave={handleUpdate}
       />

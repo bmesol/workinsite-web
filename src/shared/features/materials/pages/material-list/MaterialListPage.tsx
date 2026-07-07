@@ -16,23 +16,24 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const MaterialListScreen = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     materialDetails,
-  fetchMaterial,
-  handleMaterialSelect,
-  handleMaterialDelete,
-  confirmDelete,
-  loading,
-  searchText,
-  setSearchText,
-  deleteId,
-  setDeleteId,
+    fetchMaterial,
+    handleMaterialSelect,
+    handleMaterialDelete,
+    confirmDelete,
+    loading,
+    searchText,
+    setSearchText,
+    deleteId,
+    setDeleteId,
   } = useMaterialList();
-
 
   // ✅ Filter
   const filteredMaterialList = materialDetails.filter((item: any) =>
@@ -45,10 +46,6 @@ const MaterialListScreen = () => {
     fetchMaterial("");
   }, []);
 
-  // ✅ Refresh (same pattern as worker)
-
-
-  // ✅ Loading UI (COMMON STYLE like Worker page)
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -57,13 +54,12 @@ const MaterialListScreen = () => {
     );
   }
 
-  // ✅ Empty state
   if (!materialDetails.length) {
     return (
       <GetStartedCard
         imgSrc="/images/empty.png"
         buttonClick="/material-create"
-        buttonLabel="Create Materials"
+        buttonLabel={t("Create Materials")}
       >
         Create your first material to get started.
       </GetStartedCard>
@@ -73,7 +69,7 @@ const MaterialListScreen = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* ✅ Header */}
-      <Header title="Materials">
+      <Header title={t("Materials")}>
         <Actions>
           <Button onClick={() => navigate("/materials/create")}>
             New Material
@@ -88,7 +84,7 @@ const MaterialListScreen = () => {
           <SearchBar
             searchText={searchText}
             setSearchText={setSearchText}
-            searchCategory="materials"
+            placeholder={t('Search materials')}
             allowAllCharacters={true}
           />
         </div>
@@ -98,7 +94,7 @@ const MaterialListScreen = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
         {filteredMaterialList.length === 0 ? (
           <div className="col-span-full text-center text-muted-foreground">
-            No materials found
+            {t("No materials found")}
           </div>
         ) : (
           filteredMaterialList.map((item: any) => (
@@ -120,37 +116,37 @@ const MaterialListScreen = () => {
         )}
       </div>
       <AlertDialog
-  open={!!deleteId}
-  onOpenChange={(val) => !val && setDeleteId(null)}
->
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle className="text-base">
-        Confirm Delete
-      </AlertDialogTitle>
-      <AlertDialogDescription className="text-sm">
-        Are you sure you want to delete this material?
-      </AlertDialogDescription>
-    </AlertDialogHeader>
+        open={!!deleteId}
+        onOpenChange={(val) => !val && setDeleteId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-base">
+              Confirm Delete
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
+              Are you sure you want to delete this material?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
 
-    <AlertDialogFooter>
-      <AlertDialogCancel asChild>
-        <Button variant="outline" onClick={() => setDeleteId(null)}>
-          Cancel
-        </Button>
-      </AlertDialogCancel>
+          <AlertDialogFooter>
+            <AlertDialogCancel asChild>
+              <Button variant="outline" onClick={() => setDeleteId(null)}>
+                {t("Cancel")}
+              </Button>
+            </AlertDialogCancel>
 
-     <AlertDialogAction asChild>
-  <Button
-    variant="destructive"
-    onClick={() => deleteId && handleMaterialDelete(deleteId)}
-  >
-    Delete
-  </Button>
-</AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog>
+            <AlertDialogAction asChild>
+              <Button
+                variant="destructive"
+                onClick={() => deleteId && handleMaterialDelete(deleteId)}
+              >
+                Delete
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -28,10 +28,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 type DialogType = "kyc" | "bankAccount" | "upi" | "contactEdit" | null;
 
 const WorkerEditPage = () => {
+  const { t } = useLanguage();
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
   const [activeDialog, setActiveDialog] = useState<DialogType>(null);
@@ -74,19 +76,21 @@ const WorkerEditPage = () => {
     workerCategory,
     primaryContactDetails,
     hasMoreDetails,
+    workerRoleCost,
+    handleWorkerRoleCostEdit,
   } = useWorkerEdit(id as string, queryString);
 
   if (loading) {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <p className="text-gray-500 text-sm">Loading...</p>
-    </div>
-  );
-}
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 text-sm">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Edit Worker" />
+      <Header title={t("Edit Worker")} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -111,7 +115,7 @@ const WorkerEditPage = () => {
             {(workerDetails as Worker).contact?.id && (
               <ComboboxField
                 id="contact"
-                label="Contact"
+                label={t("Contact")}
                 items={contactDetails}
                 selectedValue={contactId}
                 onValueChange={handleContactChange}
@@ -124,14 +128,14 @@ const WorkerEditPage = () => {
             {(workerDetails as Worker).workerCategory?.id && (
               <ComboboxField
                 id="workerCategory"
-                label="Worker Category"
+                label={t("Worker Category")}
                 items={workerCategoryDetails}
                 selectedValue={workerCategoryId}
                 onValueChange={handleWorkerCategoryChange}
                 onSearch={fetchWorkerCategories}
-                onCreate={handleWorkerCategoryCreate}
                 error={error.workerCategoryId}
                 required
+                disabled
               />
             )}
           </div>
@@ -142,8 +146,8 @@ const WorkerEditPage = () => {
               {contactId && (
                 <div>
                   <FormActionButton
-                    heading="Contact detail"
-                    label="Edit"
+                    heading={t("Contact detail")}
+                    label={t("Edit")}
                     onClick={handleContactEdit}
                     isColsTwo={true}
                   />
@@ -158,7 +162,7 @@ const WorkerEditPage = () => {
                       onClick={() => setActiveDialog("contactEdit")}
                       className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
                     >
-                      More details...
+                      {t("More details...")}
                     </button>
                   )}
                 </div>
@@ -166,8 +170,8 @@ const WorkerEditPage = () => {
               {workerCategoryId && (
                 <div>
                   <FormActionButton
-                    heading="Worker Category detail"
-                    label="Edit"
+                    heading={t("Worker Category detail")}
+                    label={t("Edit")}
                     onClick={handleWorkerCategoryEdit}
                     isColsTwo={true}
                   />
@@ -178,17 +182,26 @@ const WorkerEditPage = () => {
               )}
             </div>
           )}
-
-          {workerDetails.gender && (
-            <RadioField
-              label="Gender"
-              items={genderItems}
-              inputValue={gender}
-              setInputValue={(v) => setGender(v as GenderTypes)}
-              errorMessage={error.gender}
-              required={true}
-            />
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {workerRoleCost && workerRoleCost.length > 0 && (
+              <FormActionButton
+                heading={t("Worker Role Cost")}
+                label={t("Edit")}
+                onClick={handleWorkerRoleCostEdit}
+                isColsTwo={true}
+              />
+            )}
+            {workerDetails.gender && (
+              <RadioField
+                label={t("Gender")}
+                items={genderItems}
+                inputValue={gender}
+                setInputValue={(v) => setGender(v as GenderTypes)}
+                errorMessage={error.gender}
+                required={true}
+              />
+            )}
+          </div>
 
           {/* Notes */}
           {notes !== undefined && (
@@ -196,7 +209,7 @@ const WorkerEditPage = () => {
               label="Notes"
               inputValue={`${notes ? notes : ""}`}
               setInputValue={setNotes}
-              placeholder="Enter your notes"
+              placeholder={t("Enter your notes")}
             />
           )}
 
@@ -205,8 +218,8 @@ const WorkerEditPage = () => {
             {/* KYC */}
             <div>
               <FormActionButton
-                heading="KYC"
-                label="Add"
+                heading={t("KYC")}
+                label={t("Add")}
                 onClick={() => setActiveDialog("kyc")}
                 isAddDisabled={isKycAddDisabled}
                 isColsTwo={true}
@@ -226,8 +239,8 @@ const WorkerEditPage = () => {
             {/* Bank Accounts */}
             <div>
               <FormActionButton
-                heading="Bank Accounts"
-                label="Add"
+                heading={t("Bank Accounts")}
+                label={t("Add")}
                 onClick={() => setActiveDialog("bankAccount")}
                 isAddDisabled={isBankAccountsAddDisabled}
                 isColsTwo={true}
@@ -247,8 +260,8 @@ const WorkerEditPage = () => {
             {/* UPI */}
             <div>
               <FormActionButton
-                heading="UPIs"
-                label="Add"
+                heading={t("UPIs")}
+                label={t("Add")}
                 onClick={() => setActiveDialog("upi")}
                 isAddDisabled={isUpiAddDisabled}
                 isColsTwo={true}
@@ -268,7 +281,7 @@ const WorkerEditPage = () => {
             {/* Is Active */}
             <div className="flex items-center gap-3">
               <Label className="text-base font-medium text-black">
-                Is Active
+                {t("Is Active")}
               </Label>
               <Switch checked={isActive} onCheckedChange={setIsActive} />
             </div>
@@ -289,7 +302,7 @@ const WorkerEditPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>KYC Type</DialogTitle>
+            <DialogTitle>{t("KYC Type")}</DialogTitle>
           </DialogHeader>
           <KycCreateForm
             details={{ kycDetails: workerDetails.kycDetails }}
@@ -311,7 +324,7 @@ const WorkerEditPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Bank Account</DialogTitle>
+            <DialogTitle>{t("Bank Account")}</DialogTitle>
           </DialogHeader>
           <BankAccountCreateForm
             details={{ bankAccounts: workerDetails.bankAccounts }}
@@ -333,7 +346,7 @@ const WorkerEditPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>UPI Type</DialogTitle>
+            <DialogTitle>{t("UPI Type")}</DialogTitle>
           </DialogHeader>
           <UpiCreateForm
             details={{ upiDetails: workerDetails.upiDetails }}

@@ -25,9 +25,11 @@ import {
 import { useSupplierTransactiontList } from './useSupplierTransactionList';
 import { SupplierTransactionUrls } from '../../utils/urls';
 import supplierTransactionImage from '@/assets/images/client-creation-illustration.png';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const SupplierTransactionListPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     supplier, setSupplier,
@@ -68,7 +70,7 @@ const SupplierTransactionListPage = () => {
       <GetStartedCard
         imgSrc={supplierTransactionImage}
         buttonClick={SupplierTransactionUrls.create}
-        buttonLabel="New Supplier Transaction"
+        buttonLabel={t('New Supplier Transaction')}
       >
         Start by creating your Supplier transactions to organize and manage
         your records efficiently.
@@ -80,9 +82,9 @@ const SupplierTransactionListPage = () => {
     <div className="min-h-screen w-full px-4 py-6">
 
       {/* ── Header ── */}
-      <Header title="Supplier Transaction List">
+      <Header title={t('Supplier Transaction List')}>
         <Actions>
-          <Button onClick={handleCreate}>New Supplier Transaction</Button>
+          <Button onClick={handleCreate}>{t('New Supplier Transaction')}</Button>
         </Actions>
       </Header>
 
@@ -90,7 +92,7 @@ const SupplierTransactionListPage = () => {
       <div className="flex justify-end">
         <SearchFilterBar
           appliedFilters={appliedFilters}
-          placeholder="Search Supplier Transaction..."
+          placeholder={t('Search supplier transaction')}
           onFilterOpen={() => setFilterOpen(true)}
           onClearSearch={handleClearSearch}
         />
@@ -127,7 +129,7 @@ const SupplierTransactionListPage = () => {
             onClick={() => fetchSupplierTransactions()}
             disabled={paginationLoading}
           >
-            {paginationLoading ? 'Loading...' : 'View More'}
+            {paginationLoading ? 'Loading...' : t('View More')}
           </Button>
         </div>
       )}
@@ -136,12 +138,12 @@ const SupplierTransactionListPage = () => {
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
-            <DialogTitle>Search</DialogTitle>
+            <DialogTitle>{t('Search')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
             <ComboboxField
               id="supplier"
-              label="Supplier"
+              label={t('Supplier')}
               items={supplierDetails}
               selectedValue={supplier?.value ?? ''}
               onValueChange={val =>
@@ -170,7 +172,7 @@ const SupplierTransactionListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              Search
+              {t('Search')}
             </Button>
           </div>
         </DialogContent>
@@ -193,7 +195,7 @@ const SupplierTransactionListPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

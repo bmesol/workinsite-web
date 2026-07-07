@@ -6,8 +6,8 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
-import { Header } from '@/shared/components/Header/Header';  
-import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';  
+import { Header } from '@/shared/components/Header/Header';
+import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -21,9 +21,11 @@ import {
 import { useMaterialShiftCreation } from './useMaterialShiftCreation';
 import { MaterialShiftUrls } from '../../utils/urls';
 import { cn } from '@/shared/components/lib/utils';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const MaterialShiftCreationPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     date, setDate,
@@ -75,14 +77,14 @@ const MaterialShiftCreationPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Create Material Shift" />  
+      <Header title={t("Create Material Shift")} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
 
           {/* ── Date ── */}
           <DatePicker
-            label="Date"
+            label={t("Date")}
             date={date}
             onDateChange={setDate}
             required
@@ -93,7 +95,7 @@ const MaterialShiftCreationPage = () => {
           {/* ── Source Site ── */}
           <ComboboxField
             id="sourceSite"
-            label="Source Site"
+            label={t("Source Site")}
             items={sourceSiteDetails}
             selectedValue={sourceSiteId}
             onValueChange={setSourceSiteId}
@@ -111,7 +113,7 @@ const MaterialShiftCreationPage = () => {
           ) : (
             <ComboboxField
               id="material"
-              label="Material"
+              label={t("Material")}
               items={materialDetails}
               selectedValue={materialId}
               onValueChange={setMaterialId}
@@ -124,13 +126,13 @@ const MaterialShiftCreationPage = () => {
 
           {/* ── Quantity ── */}
           <NameField
-            label="Quantity"
+            label={t("Quantity")}
             inputValue={quantity}
             setInputValue={setQuantity}
             placeholder={
               availableQuantity !== null
                 ? `Max: ${availableQuantity}`
-                : 'Enter Quantity'
+                : t("Enter Quantity")
             }
             required
             regex="^[0-9]*(\.[0-9]*)?$"
@@ -144,7 +146,7 @@ const MaterialShiftCreationPage = () => {
           {/* ── Target Site ── */}
           <ComboboxField
             id="targetSite"
-            label="Target Site"
+            label={t("Target Site")}
             items={targetSiteDetails}
             selectedValue={targetSiteId}
             onValueChange={setTargetSiteId}
@@ -155,16 +157,16 @@ const MaterialShiftCreationPage = () => {
 
           {/* ── Notes ── */}
           <TextareaField
-            label="Notes"
+            label={t("Notes")}
             inputValue={notes}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t("Enter your Notes")}
           />
 
           {/* ── Save / Cancel ── */}
           <FormSubmissionButtons
             onSave={handleSubmission}
-            onCancel={handleBack}  
+            onCancel={handleBack}
           />
 
         </div>
@@ -186,7 +188,7 @@ const MaterialShiftCreationPage = () => {
                 navigate(MaterialShiftUrls.list);
               }}
             >
-              Exit without Saving
+              {t("Exit Without Saving")}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
@@ -195,7 +197,7 @@ const MaterialShiftCreationPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t("Save")}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

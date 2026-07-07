@@ -3,8 +3,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UpiInputFields } from "../UpiInputFields/UpiInputField";
 import { useUpiEditForm } from "./useUpiEditForm";
 import type { UpiEditFormProps } from "../DTOs/DTOs";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const UpiEditForm = (props: UpiEditFormProps) => {
+  const { t } = useLanguage();
   const { upiType, upiItems, input, setInput, error, handleUpdate } = useUpiEditForm(props);
 
   return (
@@ -18,7 +20,7 @@ const UpiEditForm = (props: UpiEditFormProps) => {
         </SelectContent>
       </Select>
       <UpiInputFields upiType={upiType} input={input} setInput={setInput} error={error} />
-      <FormSubmissionButtons label="Update" onCancel={() => props.onClose?.()} onSave={handleUpdate} />
+      <FormSubmissionButtons label={t('Update')} onCancel={() => props.onClose?.()} onSave={handleUpdate} />
     </div>
   );
 };

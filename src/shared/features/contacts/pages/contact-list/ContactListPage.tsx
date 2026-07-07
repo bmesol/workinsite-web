@@ -5,7 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import { useContactList } from "./useContactListPage";
 import { ContactsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
-import { SearchBar } from "@/shared/components/SearchBar/SearchBar"; 
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -17,10 +17,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ContactListPage = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
+  const { t } = useLanguage();
 
   const {
     contactList,
@@ -48,10 +50,10 @@ const ContactListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title="Contacts">
+      <Header title={t('Contact List')}>
         <Actions>
           <Button onClick={() => navigate(ContactsUrls.create)}>
-            New Contact
+            {t('New Contact')}
           </Button>
         </Actions>
       </Header>
@@ -65,9 +67,9 @@ const ContactListPage = () => {
               setSearchValue(val);
               fetchContact(val);
             }}
-            searchCategory="Contacts"
+            searchCategory={t('Search contacts')}
           />
-         
+
         </div>
       </div>
 
@@ -114,7 +116,7 @@ const ContactListPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

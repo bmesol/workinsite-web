@@ -6,7 +6,7 @@ import { ContactTypes } from "../../../contacts/DTOs/ContactProps";
 import { useClientList } from "./useClientList";
 import { ClientsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
-import { SearchBar } from "@/shared/components/SearchBar/SearchBar"; 
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -18,10 +18,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientListPage = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
+  const { t } = useLanguage();
 
   const {
     clientDetails,
@@ -49,10 +51,10 @@ const ClientListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title="Clients">
+      <Header title={t('Client List')}>
         <Actions>
           <Button onClick={() => navigate(ClientsUrls.create)}>
-            Create Client
+            {t('Create Client')}
           </Button>
         </Actions>
       </Header>
@@ -65,7 +67,7 @@ const ClientListPage = () => {
               setSearchValue(val);
               fetchClient(val);
             }}
-            searchCategory="Clients"
+            searchCategory={t('Search clients')}
           />
         </div>
       </div>
@@ -74,7 +76,7 @@ const ClientListPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {!clientDetails.length ? (
           <div className="col-span-2 my-4 text-center text-sm text-muted-foreground">
-            No clients found
+            {t('No clients found')}
           </div>
         ) : (
           clientDetails.map((client) => (
@@ -116,7 +118,7 @@ const ClientListPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

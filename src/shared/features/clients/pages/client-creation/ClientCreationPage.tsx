@@ -34,12 +34,14 @@ import {
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
 import { cn } from "@/shared/components/lib/utils";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientCreationPage = () => {
   const [queryString] = useSearchParams();
   const [isKycOpen, setIsKycOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isComboOpen, setIsComboOpen] = useState(false);
+  const { t } = useLanguage();
 
   const {
     name,
@@ -67,7 +69,7 @@ const ClientCreationPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Create Client" />
+      <Header title={t('Create Client')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -85,7 +87,7 @@ const ClientCreationPage = () => {
                 <PopoverTrigger asChild>
                   <div className="flex flex-col gap-1 cursor-pointer">
                     <label className="text-base font-semibold mb-1">
-                      Contact <span className="text-red-500">*</span>
+                      {t('Contact')} <span className="text-red-500">*</span>
                     </label>
                     <div className="flex items-center justify-between w-full border rounded-md px-3 py-2">
                       <span className="text-sm text-black">
@@ -102,7 +104,7 @@ const ClientCreationPage = () => {
                 <PopoverContent className="w-full p-0 z-[9999]">
                   <Command>
                     <CommandInput
-                      placeholder="Search contact..."
+                      placeholder={t('Search contact')}
                       onValueChange={(val) => fetchContacts(val)}
                     />
                     <CommandList>
@@ -147,8 +149,8 @@ const ClientCreationPage = () => {
           {contact.id ? (
             <>
               <FormActionButton
-                heading="Contact detail"
-                label="Edit"
+                heading={t('Contact detail')}
+                label={t('Edit')}
                 onClick={handleContactEdit}
               />
               {contact.phone && (
@@ -171,7 +173,7 @@ const ClientCreationPage = () => {
                   className="text-sm text-secondary underline text-left ml-3"
                   onClick={() => setIsContactOpen(true)}
                 >
-                  More details...
+                  {t('More details...')}
                 </button>
               )}
             </>
@@ -179,16 +181,16 @@ const ClientCreationPage = () => {
 
           {/* Notes */}
           <TextareaField
-            label="Notes"
+            label={t('Notes')}
             inputValue={notes}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t('Enter your notes')}
           />
 
           {/* KYC */}
           <FormActionButton
-            heading="KYC"
-            label="Add"
+            heading={t('KYC')}
+            label={t('Add')}
             onClick={() => setIsKycOpen(true)}
             isAddDisabled={isAddDisabled}
           />
@@ -214,7 +216,7 @@ const ClientCreationPage = () => {
       <Dialog open={isKycOpen} onOpenChange={setIsKycOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>KYC Type</DialogTitle>
+            <DialogTitle>{t('KYC Type')}</DialogTitle>
           </DialogHeader>
           <KycCreateForm
             details={{ kycDetails: clientDetails.kycDetails }}

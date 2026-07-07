@@ -18,6 +18,7 @@ import {
 } from '@/shared/components/ui/alert-dialog';
 import { useCuringEdit } from './useCuringEdit';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { CuringUrls } from '../../utils/urls';
 import { formatStringToDate, nextYear } from '@/shared/utils/function';
 
@@ -26,6 +27,7 @@ export const CuringEditPage = () => {
   const navigate = useNavigate();
   const { canEdit } = usePermission();
   const editable = canEdit('Curing');
+  const { t } = useLanguage();
 
   if (!id) return null;
 
@@ -53,7 +55,7 @@ export const CuringEditPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -61,16 +63,14 @@ export const CuringEditPage = () => {
   return (
     <div className="w-full min-h-screen px-4 pb-10">
 
-      {/* ── Header ── */}
-      <Header title="Edit Curing" />
+      <Header title={t('Edit Curing')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
 
-          {/* ── Site ── */}
           <ComboboxField
             id="site"
-            label="Site"
+            label={t('Site')}
             items={siteDetails}
             selectedValue={siteId}
             onValueChange={setSiteId}
@@ -80,10 +80,9 @@ export const CuringEditPage = () => {
             disabled={!editable}
           />
 
-          {/* ── Curing Type ── */}
           <ComboboxField
             id="curingType"
-            label="Curing Type"
+            label={t('Curing Type')}
             items={curingTypeDetails}
             selectedValue={curingTypeId}
             onValueChange={setCuringTypeId}
@@ -93,9 +92,8 @@ export const CuringEditPage = () => {
             disabled={!editable}
           />
 
-          {/* ── Start Date ── */}
           <DatePicker
-            label="Start Date"
+            label={t('Start Date')}
             date={startDate}
             onDateChange={date => {
               setStartDate(date);
@@ -106,9 +104,8 @@ export const CuringEditPage = () => {
             disable={!editable}
           />
 
-          {/* ── End Date ── */}
           <DatePicker
-            label="End Date"
+            label={t('End Date')}
             date={endDate}
             onDateChange={setEndDate}
             required
@@ -122,16 +119,14 @@ export const CuringEditPage = () => {
             maxDate={nextYear}
           />
 
-          {/* ── Note ── */}
           <TextareaField
-            label="Note"
+            label={t('Note')}
             inputValue={note}
             setInputValue={setNote}
-            placeholder="Enter note"
+            placeholder={t('Enter note')}
             isDisabled={!editable}
           />
 
-          {/* ── Save / Cancel ── */}
           <FormSubmissionButtons
             onSave={handleSubmission}
             onCancel={handleBack}
@@ -141,13 +136,12 @@ export const CuringEditPage = () => {
         </div>
       </Card>
 
-      {/* ── Unsaved Changes Dialog ── */}
       <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Do you want to save them before leaving?
+              {t('You have unsaved changes. Do you want to save them before leaving?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -158,7 +152,7 @@ export const CuringEditPage = () => {
                 navigate(CuringUrls.list);
               }}
             >
-              Exit without Saving
+              {t('Exit without Saving')}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
@@ -167,7 +161,7 @@ export const CuringEditPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t('Save')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
