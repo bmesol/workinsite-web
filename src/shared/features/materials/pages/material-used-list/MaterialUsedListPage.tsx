@@ -27,9 +27,11 @@ import { MaterialUsedUrls } from "../../utils/urls";
 import { SlidersHorizontal, X } from "lucide-react";
 import materialUsedImage from "@/assets/images/client-creation-illustration.png";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const MaterialUsedListPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     site,
@@ -98,7 +100,7 @@ const MaterialUsedListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* ── Header ── */}
-      <Header title="Material Used List">
+      <Header title={t("Material Used List")}>
         <Actions>
           <Button onClick={handlePress}>New Material Used</Button>
         </Actions>
@@ -108,7 +110,7 @@ const MaterialUsedListPage = () => {
       <div className="flex justify-end ">
        <SearchFilterBar
         appliedFilters={appliedFilters}
-        placeholder="Search Material Used..."
+        placeholder={t('Search material used')}
         onFilterOpen={() => setFilterOpen(true)}
         onClearSearch={handleClearSearch}
       />
@@ -119,7 +121,7 @@ const MaterialUsedListPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         {materialUsedDetails.length === 0 ? (
           <p className="col-span-full text-center text-muted-foreground mt-10">
-            No material used found
+            {t("No material used found")}
           </p>
         ) : (
           materialUsedDetails.map((item) => (
@@ -146,7 +148,7 @@ const MaterialUsedListPage = () => {
             onClick={() => fetchMaterialUsed()}
             disabled={paginationLoading}
           >
-            {paginationLoading ? "Loading..." : "View More"}
+            {paginationLoading ? "Loading..." : t("View More")}
           </Button>
         </div>
       )}
@@ -158,10 +160,10 @@ const MaterialUsedListPage = () => {
             <DialogTitle>Material Used Search</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
-            <DatePicker label="Date" date={date} onDateChange={setDate} />
+            <DatePicker label={t("Date")} date={date} onDateChange={setDate} />
             <ComboboxField
               id="site"
-              label="Site"
+              label={t("Site")}
               items={siteDetails}
               selectedValue={site.value}
               onValueChange={(val) =>
@@ -174,7 +176,7 @@ const MaterialUsedListPage = () => {
             />
             <ComboboxField
               id="material"
-              label="Material"
+              label={t("Material")}
               items={materialDetails}
               selectedValue={material.value}
               onValueChange={(val) =>
@@ -187,15 +189,15 @@ const MaterialUsedListPage = () => {
               onSearch={fetchMaterials}
             />
             <NameField
-              label="Quantity"
+              label={t("Quantity")}
               inputValue={quantity}
               setInputValue={setQuantity}
-              placeholder="Enter Quantity"
+              placeholder={t("Enter Quantity")}
               regex="^[0-9]*\.?[0-9]*$"
             />
             <ComboboxField
               id="workMode"
-              label="Work Mode"
+              label={t("Work Mode")}
               items={workModeDetails}
               selectedValue={workMode.value}
               onValueChange={(val) =>
@@ -215,7 +217,7 @@ const MaterialUsedListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              Search
+              {t("Search")}
             </Button>
           </div>
         </DialogContent>
@@ -236,7 +238,7 @@ const MaterialUsedListPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t("Cancel")}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

@@ -32,4 +32,8 @@ const ShiftUrls = {
   list: `/${shiftBasePath}`, 
 };
 
-export { WorkersUrls, WorkerCategoriesUrls, WorkRateAbstractUrls, WorkModeUrls, ShiftUrls };
+const WorkerRoleCostUrls = {
+  edit: (id: number) => `/workers/${id}/worker-role-costs`,
+};
+
+export { WorkersUrls, WorkerCategoriesUrls, WorkRateAbstractUrls, WorkModeUrls, ShiftUrls, WorkerRoleCostUrls };

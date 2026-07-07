@@ -25,10 +25,12 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import type { GenderTypes } from "../../DTOs/WorkerProps";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 type DialogType = "kyc" | "bankAccount" | "upi" | "contactEdit" | null;
 
 const WorkerCreationPage = () => {
+  const { t } = useLanguage();
   const [queryString] = useSearchParams();
   const [activeDialog, setActiveDialog] = useState<DialogType>(null);
   const closeDialog = () => setActiveDialog(null);
@@ -53,7 +55,7 @@ const WorkerCreationPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Create Worker" />
+      <Header title={t('Create Worker')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -68,7 +70,7 @@ const WorkerCreationPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ComboboxField
               id="contact"
-              label="Contact"
+              label={t('Contact')}
               items={contactDetails}
               selectedValue={contactId}
               onValueChange={handleContactChange}
@@ -79,7 +81,7 @@ const WorkerCreationPage = () => {
             />
             <ComboboxField
               id="workerCategory"
-              label="Worker Category"
+              label={t('Worker Category')}
               items={workerCategoryDetails}
               selectedValue={workerCategoryId}
               onValueChange={handleWorkerCategoryChange}
@@ -95,21 +97,21 @@ const WorkerCreationPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {contactId && (
                 <div>
-                  <FormActionButton heading="Contact detail" label="Edit" onClick={handleContactEdit} isColsTwo={true} />
+                  <FormActionButton heading={t('Contact detail')} label={t('Edit')} onClick={handleContactEdit} isColsTwo={true} />
                   <ContactTypes contactList={primaryContactDetails} showEditDeleteButtons={false} />
                   {hasMoreDetails && (
                     <button
                       onClick={() => setActiveDialog("contactEdit")}
                       className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
                     >
-                      More details...
+                      {t('More details...')}
                     </button>
                   )}
                 </div>
               )}
               {workerCategoryId && (
                 <div>
-                  <FormActionButton heading="Worker Category detail" label="Edit" onClick={handleWorkerCategoryEdit} isColsTwo={true} />
+                  <FormActionButton heading={t('Worker Category detail')} label={t('Edit')} onClick={handleWorkerCategoryEdit} isColsTwo={true} />
                   <div className="mt-2 text-sm text-gray-700">{workerCategory.name}</div>
                 </div>
               )}
@@ -118,20 +120,20 @@ const WorkerCreationPage = () => {
 
           {/* Gender */}
 <RadioField
-  label="Gender"
+  label={t('Gender')}
   items={genderItems}
   inputValue={gender as string}
   setInputValue={(value) => setGender(value as GenderTypes)}
   errorMessage={error.gender}
   required={true}
 />
-          <TextareaField label="Notes" inputValue={notes} setInputValue={setNotes} placeholder="Enter your notes" />
+          <TextareaField label="Notes" inputValue={notes} setInputValue={setNotes} placeholder={t('Enter your notes')} />
 
           {/* KYC + Bank + UPI */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* KYC */}
             <div>
-              <FormActionButton heading="KYC" label="Add" onClick={() => setActiveDialog("kyc")} isAddDisabled={isKycAddDisabled} isColsTwo={true} />
+              <FormActionButton heading={t('KYC')} label={t('Add')} onClick={() => setActiveDialog("kyc")} isAddDisabled={isKycAddDisabled} isColsTwo={true} />
               <KycTypes
                 details={{ kycDetails: workerDetails.kycDetails }}
                 setDetails={(updated) =>
@@ -143,7 +145,7 @@ const WorkerCreationPage = () => {
 
             {/* Bank Accounts */}
             <div>
-              <FormActionButton heading="Bank Accounts" label="Add" onClick={() => setActiveDialog("bankAccount")} isAddDisabled={isBankAccountsAddDisabled} isColsTwo={true} />
+              <FormActionButton heading={t('Bank Accounts')} label={t('Add')} onClick={() => setActiveDialog("bankAccount")} isAddDisabled={isBankAccountsAddDisabled} isColsTwo={true} />
               <BankAccounts
                 details={{ bankAccounts: workerDetails.bankAccounts }}
                 setDetails={(updated) =>
@@ -155,7 +157,7 @@ const WorkerCreationPage = () => {
 
             {/* UPI */}
             <div>
-              <FormActionButton heading="UPIs" label="Add" onClick={() => setActiveDialog("upi")} isAddDisabled={isUpiAddDisabled} isColsTwo={true} />
+              <FormActionButton heading={t('UPIs')} label={t('Add')} onClick={() => setActiveDialog("upi")} isAddDisabled={isUpiAddDisabled} isColsTwo={true} />
               <UpiTypes
                 details={{ upiDetails: workerDetails.upiDetails }}
                 setDetails={(updated) =>
@@ -174,7 +176,7 @@ const WorkerCreationPage = () => {
       {/* KYC Dialog */}
       <Dialog open={activeDialog === "kyc"} onOpenChange={(val) => !val && closeDialog()}>
         <DialogContent>
-          <DialogHeader><DialogTitle>KYC Type</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('KYC Type')}</DialogTitle></DialogHeader>
           <KycCreateForm
             details={{ kycDetails: workerDetails.kycDetails }}
             setDetails={(updated) =>
@@ -188,7 +190,7 @@ const WorkerCreationPage = () => {
       {/* Bank Account Dialog */}
       <Dialog open={activeDialog === "bankAccount"} onOpenChange={(val) => !val && closeDialog()}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Bank Account</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('Bank Account')}</DialogTitle></DialogHeader>
           <BankAccountCreateForm
             details={{ bankAccounts: workerDetails.bankAccounts }}
             setDetails={(updated) =>
@@ -202,7 +204,7 @@ const WorkerCreationPage = () => {
       {/* UPI Dialog */}
       <Dialog open={activeDialog === "upi"} onOpenChange={(val) => !val && closeDialog()}>
         <DialogContent>
-          <DialogHeader><DialogTitle>UPI Type</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('UPI Type')}</DialogTitle></DialogHeader>
           <UpiCreateForm
             details={{ upiDetails: workerDetails.upiDetails }}
             setDetails={(updated) =>

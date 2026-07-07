@@ -1,5 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { FormInput } from "../FormInput/FormInput";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const FormSubmissionButtons = (props: {
   label?: string;
@@ -8,6 +9,7 @@ const FormSubmissionButtons = (props: {
   className?: string;
   disabled?: boolean;
 }) => {
+  const { t } = useLanguage();
   return (
     <FormInput className={props.className}>
       <div className="flex flex-col-reverse gap-3 md:flex-row md:justify-end">
@@ -16,15 +18,15 @@ const FormSubmissionButtons = (props: {
           className="cursor-pointer"
           onClick={() => props.onCancel()}
         >
-          Cancel
+          {t("Cancel")}
         </Button>
         <Button
           variant="default"
           className="cursor-pointer"
           onClick={() => props.onSave()}
-          disabled={props.disabled} 
+          disabled={props.disabled}
         >
-          {props.label || "Save"}
+          {props.label || t("Save")}
         </Button>
       </div>
     </FormInput>

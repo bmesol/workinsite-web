@@ -13,10 +13,12 @@ import { usePermission } from "@/shared/hooks/usePermission";
 import { cn } from "@/shared/components/lib/utils";
 import { Loader2 } from "lucide-react";
 import { MaterialUsedUrls } from "../../utils/urls";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 export const MaterialUsedEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   if (!id) return null;
 
   const { canEdit } = usePermission();
@@ -85,13 +87,13 @@ export const MaterialUsedEditPage = () => {
   return (
     <div className="w-full min-h-screen px-4 pb-10">
       {/* ── Header ── */}
-      <Header title="Edit Material Used" />
+      <Header title={t("Edit Material Used")} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
           {/* ── Date ── */}
           <DatePicker
-            label="Date"
+            label={t("Date")}
             date={date}
             onDateChange={setDate}
             required
@@ -102,7 +104,7 @@ export const MaterialUsedEditPage = () => {
           {/* ── Site ── */}
           <ComboboxField
             id="site"
-            label="Site"
+            label={t("Site")}
             items={siteDetails}
             selectedValue={siteId ?? ""}
             onValueChange={setSiteId}
@@ -121,7 +123,7 @@ export const MaterialUsedEditPage = () => {
           ) : (
             <ComboboxField
               id="material"
-              label="Material"
+              label={t("Material")}
               items={materialDetails}
               selectedValue={materialId ?? ""}
               onValueChange={setMaterialId}
@@ -134,13 +136,13 @@ export const MaterialUsedEditPage = () => {
 
           {/* ── Quantity ── */}
           <NameField
-            label="Quantity"
+            label={t("Quantity")}
             inputValue={quantity}
             setInputValue={setQuantity}
             placeholder={
               maximumAllowedQuantity !== null
                 ? `Max: ${maximumAllowedQuantity}`
-                : "Enter Quantity"
+                : t("Enter Quantity")
             }
             required
             regex="^[0-9]*(\.[0-9]*)?$"
@@ -154,7 +156,7 @@ export const MaterialUsedEditPage = () => {
           {/* ── Work Mode ── */}
           <ComboboxField
             id="workMode"
-            label="Work Mode"
+            label={t("Work Mode")}
             items={workModeDetails}
             selectedValue={workModeId ?? ""}
             onValueChange={setWorkModeId}
@@ -166,10 +168,10 @@ export const MaterialUsedEditPage = () => {
 
           {/* ── Notes ── */}
           <TextareaField
-            label="Notes"
+            label={t("Notes")}
             inputValue={notes}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t("Enter your Notes")}
             isDisabled={!editable}
           />
 

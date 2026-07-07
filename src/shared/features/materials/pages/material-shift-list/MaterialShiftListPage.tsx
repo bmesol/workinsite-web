@@ -27,9 +27,11 @@ import { MaterialShiftUrls } from "../../utils/urls";
 import materialShiftImage from "@/assets/images/client-creation-illustration.png";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
 import MaterialUsedCard from "@/shared/components/MaterialUsedCard/MaterialUsedCard";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const MaterialShiftListPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     materialShiftDetails,
@@ -96,7 +98,7 @@ const MaterialShiftListPage = () => {
   return (
     <div className="w-full min-h-screen px-4 py-6">
       {/* ── Header ── */}
-      <Header title="Material Shift List">
+      <Header title={t("Material Shift List")}>
         <Actions>
           <Button onClick={handleAddShift}>New Material Shift</Button>
         </Actions>
@@ -106,7 +108,7 @@ const MaterialShiftListPage = () => {
       <div className="flex justify-end ">
         <SearchFilterBar
           appliedFilters={appliedFilters}
-          placeholder="Search Material Shift..."
+          placeholder={t('Search material shift')}
           onFilterOpen={() => setFilterOpen(true)}
           onClearSearch={handleClearSearch}
         />
@@ -116,7 +118,7 @@ const MaterialShiftListPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         {materialShiftDetails.length === 0 ? (
           <p className="col-span-full text-center text-muted-foreground mt-10">
-            No material shifts found
+            {t("No material shift found")}
           </p>
         ) : (
           materialShiftDetails.map((item) => (
@@ -144,7 +146,7 @@ const MaterialShiftListPage = () => {
             onClick={() => fetchMaterialShifts()}
             disabled={paginationLoading}
           >
-            {paginationLoading ? "Loading..." : "View More"}
+            {paginationLoading ? "Loading..." : t("View More")}
           </Button>
         </div>
       )}
@@ -156,17 +158,17 @@ const MaterialShiftListPage = () => {
             <DialogTitle>Material Shift Search</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
-            <DatePicker label="Date" date={date} onDateChange={setDate} />
+            <DatePicker label={t("Date")} date={date} onDateChange={setDate} />
             <NameField
-              label="Quantity"
+              label={t("Quantity")}
               inputValue={quantity}
               setInputValue={setQuantity}
-              placeholder="Enter quantity"
+              placeholder={t("Enter quantity")}
               regex="^[0-9]*\.?[0-9]*$"
             />
             <ComboboxField
               id="material"
-              label="Material"
+              label={t("Material")}
               items={materialDetails}
               selectedValue={materialId.value}
               onValueChange={(val) =>
@@ -180,7 +182,7 @@ const MaterialShiftListPage = () => {
             />
             <ComboboxField
               id="sourceSite"
-              label="Source Site"
+              label={t("Source Site")}
               items={siteDetails}
               selectedValue={sourceSiteId.value}
               onValueChange={(val) =>
@@ -193,7 +195,7 @@ const MaterialShiftListPage = () => {
             />
             <ComboboxField
               id="targetSite"
-              label="Target Site"
+              label={t("Target Site")}
               items={siteDetails}
               selectedValue={targetSiteId.value}
               onValueChange={(val) =>
@@ -212,7 +214,7 @@ const MaterialShiftListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              Search
+              {t("Search")}
             </Button>
           </div>
         </DialogContent>
@@ -233,7 +235,7 @@ const MaterialShiftListPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t("Cancel")}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

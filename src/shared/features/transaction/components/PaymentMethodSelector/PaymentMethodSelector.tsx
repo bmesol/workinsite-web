@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
 import { PaymentMethodEnum } from '../../DTOs/ClientTransaction';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 import cashImg from '@/assets/icons/cash-in-hand.png';
 import bankChecksImg from '@/assets/icons/bank-checks.jpg';
@@ -30,6 +31,7 @@ const PaymentMethodSelector: React.FC<Props> = ({
   errorMessage = 'This field is required',
   disable = false,
 }) => {
+  const { t } = useLanguage();
   const showError = required && !selectedMethod;
 
   const handleSelect = (id: string) => {
@@ -42,7 +44,7 @@ const PaymentMethodSelector: React.FC<Props> = ({
 
       {/* ── Label ── */}
       <label className="text-base font-medium" style={{ color: 'var(--foreground)' }}>
-        {label}
+        {t(label)}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
 

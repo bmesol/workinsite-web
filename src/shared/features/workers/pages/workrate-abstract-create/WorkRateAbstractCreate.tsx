@@ -1,13 +1,15 @@
 import { Header } from "@/shared/components/Header/Header";
 import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
-import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField"; 
+import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { useWorkRateAbstractCreate } from "./useWorkRateAbstractCreate";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkRateAbstractCreationPage = () => {
+  const { t } = useLanguage();
   const {
     siteDetails,
     workTypeDetails,
@@ -34,7 +36,7 @@ const WorkRateAbstractCreationPage = () => {
 
   return (
   <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Create Work Rate Abstract" />
+      <Header title={t('Create Work Rate Abstract')} />
 
       <Card className="mt-4">
         <CardContent className="flex flex-col gap-4 pt-4">
@@ -42,7 +44,7 @@ const WorkRateAbstractCreationPage = () => {
           {/* Site */}
           <ComboboxField
             id="site"
-            label="Site"
+            label={t('Site')}
             items={siteDetails}
             selectedValue={siteId}
             onValueChange={setSiteId}
@@ -54,7 +56,7 @@ const WorkRateAbstractCreationPage = () => {
           {/* Work Type */}
           <ComboboxField
             id="workType"
-            label="Work Type"
+            label={t('Work Type')}
             items={workTypeDetails}
             selectedValue={workTypeId}
             onValueChange={setWorkTypeId}
@@ -66,10 +68,10 @@ const WorkRateAbstractCreationPage = () => {
           {/* Total Rate */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-base font-medium">
-              Total Rate <span className="text-red-500">*</span>
+              {t('Total Rate')} <span className="text-red-500">*</span>
             </Label>
             <Input
-              placeholder="Enter Total Rate"
+              placeholder={t('Enter Total Rate')}
               value={totalRate}
               onChange={(e) => setTotalRate(e.target.value)}
             />
@@ -81,10 +83,10 @@ const WorkRateAbstractCreationPage = () => {
           {/* Total Quantity */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-base font-medium">
-              Total Quantity <span className="text-red-500">*</span>
+              {t('Total Quantity')} <span className="text-red-500">*</span>
             </Label>
             <Input
-              placeholder="Enter Total Quantity"
+              placeholder={t('Enter Total Quantity')}
               value={totalQuantity}
               onChange={(e) => setTotalQuantity(e.target.value)}
             />
@@ -96,7 +98,7 @@ const WorkRateAbstractCreationPage = () => {
           {/* Unit */}
           <ComboboxField
             id="unit"
-            label="Unit"
+            label={t('Unit')}
             items={unitDetails}
             selectedValue={unitId}
             onValueChange={setUnitId}
@@ -107,10 +109,10 @@ const WorkRateAbstractCreationPage = () => {
 
           {/* Remark */}
           <TextareaField
-            label="Remark"
+            label={t('Remark')}
             inputValue={notes ?? ""}
             setInputValue={setNotes}
-            placeholder="Enter your Remark"
+            placeholder={t('Enter your Remark')}
           />
 
           <FormSubmissionButtons

@@ -8,7 +8,6 @@ import { WorkersUrls } from "../../utils/urls";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { useState } from "react";
-import { SlidersHorizontal, X } from "lucide-react";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import {
   Dialog,
@@ -27,10 +26,12 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerListPage = () => {
   const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
+  const { t } = useLanguage();
 
   const {
     workerDetails,
@@ -57,7 +58,7 @@ const WorkerListPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -67,10 +68,10 @@ const WorkerListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title="Workers">
+      <Header title={t('Worker List')}>
         <Actions>
           <Button onClick={() => navigate(WorkersUrls.create)}>
-            New Worker
+             {t('Create Worker')}
           </Button>
         </Actions>
       </Header>
@@ -78,7 +79,7 @@ const WorkerListPage = () => {
       <div className="flex justify-end ">
         <SearchFilterBar
           appliedFilters={appliedFilters}
-          placeholder="Search Workers..."
+          placeholder={t('Search workers')}
           onFilterOpen={() => setFilterOpen(true)}
           onClearSearch={handleClearSearch}
         />
@@ -87,7 +88,7 @@ const WorkerListPage = () => {
       {/* Search Loading */}
       {searchLoading && (
         <p className="text-xs text-muted-foreground mt-2 text-right">
-          Searching...
+           {t('Searching...')}
         </p>
       )}
 
@@ -95,14 +96,14 @@ const WorkerListPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
         {!workerDetails.length ? (
           <div className="col-span-full my-4 text-center text-muted-foreground">
-            No workers found
+             {t('No workers found')}
           </div>
         ) : (
           workerDetails.map((worker) => {
-            const phone = worker.contact.contactDetails.find(
+            const phone = worker.contact?.contactDetails?.find(
               (item) => item.contactType === ContactTypes.PHONE,
             )?.value;
-            const email = worker.contact.contactDetails.find(
+            const email = worker.contact?.contactDetails?.find(
               (item) => item.contactType === ContactTypes.EMAIL,
             )?.value;
             return (
@@ -134,9 +135,9 @@ const WorkerListPage = () => {
           <div className="flex flex-col gap-4 pt-2">
             {/* Worker Name */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-base font-medium">Search Workers</label>
+              <label className="text-base font-medium"> {t('Search Workers')}</label>
               <Input
-                placeholder="Enter worker name"
+                placeholder={t('Enter worker name')}
                 value={searchText}
                 onChange={(e) => {
                   const sanitized = e.target.value
@@ -150,7 +151,7 @@ const WorkerListPage = () => {
             {/* Worker Category */}
             <ComboboxField
               id="workerCategory"
-              label="Worker Category"
+              label= {t('Worker Category')}
               items={workerCategoryDetails}
               selectedValue={workerCategory?.value}
               onValueChange={(val) => {
@@ -174,7 +175,7 @@ const WorkerListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              Search
+               {t('Search')}
             </Button>
           </div>
         </DialogContent>
@@ -188,16 +189,16 @@ const WorkerListPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+               {t('Confirm Delete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this worker?
+              {t('Are you sure you want to delete this worker?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                 {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
@@ -205,7 +206,7 @@ const WorkerListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleWorkerDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

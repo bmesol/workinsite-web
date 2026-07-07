@@ -1,8 +1,10 @@
 import { FormInput } from "../FormInput/FormInput";
 import type { InputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const DateOfBirthField = (props: InputPropTypes) => {
+  const { t } = useLanguage()
   const {
     label,
     placeholder,
@@ -18,7 +20,7 @@ const DateOfBirthField = (props: InputPropTypes) => {
     <FormInput errorMessage={errorMessage}>
       {!isHideLabel && (
         <label className="text-base font-semibold mb-1">
-          {label || "Date of Birth"}
+          {label || t("Date of Birth")}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}

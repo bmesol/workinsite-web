@@ -6,7 +6,7 @@ import { useSupplierList } from "./useSupplierList";
 import { SuppliersUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/components/ui/button";
-import { SearchBar } from "@/shared/components/SearchBar/SearchBar"; 
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -18,10 +18,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const SupplierListPage = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
+  const { t } = useLanguage();
 
   const {
     supplierDetails,
@@ -49,9 +51,9 @@ const SupplierListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title="Suppliers">
+      <Header title={t('Supplier List')}>
         <Button onClick={() => navigate(SuppliersUrls.create)}>
-          New Supplier
+          {t('New Supplier')}
         </Button>
       </Header>
 
@@ -64,7 +66,7 @@ const SupplierListPage = () => {
               setSearchValue(val);
               fetchSupplier(val);
             }}
-            searchCategory="Suppliers"
+            searchCategory={t('Suppliers')}
           />
         </div>
       </div>
@@ -73,7 +75,7 @@ const SupplierListPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
         {!supplierDetails.length ? (
           <div className="col-span-2 my-4 text-center text-muted-foreground">
-            No suppliers found
+            {t('No suppliers found')}
           </div>
         ) : (
           supplierDetails.map((supplier) => (
@@ -120,7 +122,7 @@ const SupplierListPage = () => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

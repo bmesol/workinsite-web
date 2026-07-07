@@ -3,6 +3,7 @@ import { Label } from "@/shared/components/ui/label";
 import { FormInput } from "../FormInput/FormInput";
 import type { InputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
+import { cn } from "@/shared/components/lib/utils";
 
 const RadioField = (props: InputPropTypes) => {
   const {
@@ -11,6 +12,7 @@ const RadioField = (props: InputPropTypes) => {
     isDisabled,
     items = [],
     required = false,
+    className,
   } = props;
 
   const { inputValue, handleInputChange } = useInputField(props);
@@ -28,7 +30,7 @@ const RadioField = (props: InputPropTypes) => {
       <RadioGroup
         value={String(inputValue)}
         onValueChange={handleInputChange}
-        className="flex flex-row gap-4"
+        className={cn("flex flex-row gap-4", className)}
       >
         {items.map((item: any) => (
           <div key={item.value} className="flex items-center space-x-2">

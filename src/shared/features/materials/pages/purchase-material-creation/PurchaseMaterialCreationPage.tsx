@@ -12,6 +12,7 @@ import type {
   PurchaseMaterialUpdationListProps,
 } from '../../DTOs/PurchaseMaterialProps';
 import type { ReceivedQualityTypes } from '../../DTOs/PurchaseProps';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 interface PurchaseMaterialsProps {
   purchaseMaterials: PurchaseMaterialCreationListProps[];
@@ -28,10 +29,12 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
   addPurchaseMaterial,
   updatedPurchaseMaterials,
 }) => {
+  const { t } = useLanguage();
+
   const {
     materialId,
     setMaterialId,
- 
+
     rate,
     setRate,
     additionalCharges,
@@ -68,7 +71,7 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
       {/* Material */}
       <ComboboxField
         id="material"
-        label="Material"
+        label={t("Material")}
         items={materialDetails}
         selectedValue={materialId}
         onValueChange={setMaterialId}
@@ -78,10 +81,10 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
       />
 
      <NameField
-        label="Received Quantity"
+        label={t("Received Quantity")}
         inputValue={receivedQuantity}
         setInputValue={setReceivedQuantity}
-        placeholder="Enter Received Quantity"
+        placeholder={t("Enter Received Quantity")}
         required={true}
         regex="^[0-9]*\.?[0-9]*$"
         errorMessage={error.receivedQuantity}
@@ -89,10 +92,10 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
 
       {/* Rate */}
       <NameField
-        label="Rate (₹/Unit)"
+        label={t("Rate (₹/Unit)")}
         inputValue={rate}
         setInputValue={setRate}
-        placeholder="Enter Rate"
+        placeholder={t("Enter Rate")}
         required={true}
         regex="^[0-9]*\.?[0-9]*$"
         errorMessage={error.rate}
@@ -100,25 +103,25 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
 
       {/* Additional Charges */}
       <NameField
-        label="Additional Charges"
+        label={t("Additional Charges")}
         inputValue={additionalCharges}
         setInputValue={setAdditionalCharges}
-        placeholder="Enter Additional Charges"
+        placeholder={t("Enter Additional Charges")}
         regex="^[0-9]*\.?[0-9]*$"
       />
 
       {/* Discount */}
       <NameField
-        label="Discount"
+        label={t("Discount")}
         inputValue={discount}
         setInputValue={setDiscount}
-        placeholder="Enter Discount"
+        placeholder={t("Enter Discount")}
         regex="^[0-9]*\.?[0-9]*$"
       />
 
       {/* Received Quality */}
     <SelectField
-  label="Received Quality"
+  label={t("Received Quality")}
   items={ReceivedQualityItems}
   selectedValue={receivedQuality}
   onValueChange={(val) => setReceivedQuality(val as ReceivedQualityTypes)}
@@ -128,7 +131,7 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
 
       {/* Received Date */}
       <DatePicker
-        label="Received Date"
+        label={t("Received Date")}
         date={receivedDate}
         onDateChange={setReceivedDate}
         required={true}
@@ -137,14 +140,14 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
       />
 
       {/* Received Quantity */}
-      
+
 
       {/* Notes */}
       <TextareaField
-        label="Notes"
+        label={t("Notes")}
         inputValue={notes}
         setInputValue={setNotes}
-        placeholder="Enter your notes"
+        placeholder={t("Enter your Notes")}
       />
 
       {/* Purchase Photos */}
@@ -155,7 +158,7 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
 
       {/* Image Upload */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-base font-medium">Upload Images</label>
+        <label className="text-base font-medium">{t("Upload Images")}</label>
         <input
           type="file"
           accept="image/*"
@@ -167,7 +170,7 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
 
       {/* Add Button */}
       <Button onClick={handleAddPurchaseItem} className="w-full">
-        Add
+        {t("Add")}
       </Button>
 
     </div>

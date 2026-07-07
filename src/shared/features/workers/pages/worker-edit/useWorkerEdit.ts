@@ -3,7 +3,7 @@ import { useWorkerInputValidate } from "../../components/InputValidate/WorkerInp
 import { useWorkerCategoryService } from "@/shared/features/workers/service/WorkerCategoryService";
 import { useContactService } from "@/shared/features/contacts/service/ContactService";
 import type { GenderTypes, WorkerRequest, Worker } from "../../DTOs/WorkerProps";
-import { WorkerCategoriesUrls, WorkersUrls } from "../../utils/urls";
+import { WorkerCategoriesUrls, WorkersUrls, WorkerRoleCostUrls } from "../../utils/urls";
 import type { WorkerCategoryProps } from "../../DTOs/WorkerCategoryProps";
 import { UpiTypes } from "../../../suppliers/DTOs/SupplierProps";
 import { useWorkerService } from "@/shared/features/workers/service/WorkerService";
@@ -12,6 +12,8 @@ import { KYCTypes } from "../../../clients/DTOs/ClientProps";
 import { ContactsUrls } from "../../../contacts/utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+// ✅ new import — matches mobile's useWorkerRoleCostService usage
+import { useWorkerRoleCostService } from "../../service/WorkerRoleService";
 
 const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   const workerService = useWorkerService();
   const workerCategoryService = useWorkerCategoryService();
   const contactService = useContactService();
+  // ✅ new service hook — matches mobile's { getWorkerRoleCosts }
+  const { getWorkerRoleCosts } = useWorkerRoleCostService();
 
   const newContactId = queryString.get("contactId") || "";
   const newWorkerCategoryId = queryString.get("workerCategoryId") || "";
@@ -34,10 +38,13 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps[]>([]);
- const [workerCategory, setWorkerCategory] = useState<WorkerCategoryProps>({
-  id: 0, name: "", note: "", isActive: true, workTypes: [], workerRoles: [],
-});
-const [loading, setLoading] = useState(true);
+  const [workerCategory, setWorkerCategory] = useState<WorkerCategoryProps>({
+    id: 0, name: "", note: "", isActive: true, workTypes: [], workerRoles: [],
+  });
+  const [loading, setLoading] = useState(true);
+
+  // ✅ new state — matches mobile's workerRoleCost
+  const [workerRoleCost, setWorkerRoleCost] = useState<any>([]);
 
   const [workerDetails, setWorkerDetails] = useState<Worker | WorkerRequest>({
     id: 0,
@@ -53,24 +60,41 @@ const [loading, setLoading] = useState(true);
     isActive: true,
   });
 
- const fetchWorker = async () => {
-  setLoading(true); 
-  try {
-    const workerData: Worker = await workerService.getWorker(parseInt(id));
-    setWorkerDetails(workerData);
-    setName(workerData.name);
-    setDateOfBirth(workerData.dateOfBirth);
-    setNotes(workerData.note);
-    setGender(workerData.gender);
-    setIsActive(workerData.isActive as boolean);
-    if (!newContactId) setContactId(workerData.contact.id.toString());
-    if (!newWorkerCategoryId) setWorkerCategoryId(workerData.workerCategory.id.toString());
-  } finally {
-    setLoading(false);  
-  }
-};
+  const fetchWorker = async () => {
+    setLoading(true);
+    try {
+      const workerData: Worker = await workerService.getWorker(parseInt(id));
+      setWorkerDetails(workerData);
+      setName(workerData.name);
+      setDateOfBirth(workerData.dateOfBirth);
+      setNotes(workerData.note);
+      setGender(workerData.gender);
+      setIsActive(workerData.isActive as boolean);
+      if (!newContactId) setContactId(workerData.contact.id.toString());
+      if (!newWorkerCategoryId) setWorkerCategoryId(workerData.workerCategory.id.toString());
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => { fetchWorker(); }, []);
+
+  // ✅ new — matches mobile's fetchWorkerRoleCost
+  const fetchWorkerRoleCost = async () => {
+    if (!workerCategoryId) return;
+    const roleCost = await getWorkerRoleCosts({
+      WorkerCategoryId: parseInt(workerCategoryId),
+      WorkerId: parseInt(id),
+    });
+    setWorkerRoleCost(roleCost);
+  };
+
+  // ✅ new — refetch whenever workerCategoryId or id changes
+  // (web has no isFocused, so we key off the actual values instead)
+  useEffect(() => {
+    fetchWorkerRoleCost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workerCategoryId, id]);
 
   const fetchContacts = async (searchString: string = "") => {
     if (!searchString) return;
@@ -124,10 +148,10 @@ const [loading, setLoading] = useState(true);
   const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact);
 
   const contactDetails = contactList.map((item) => ({ label: item.name, value: item.id.toString() }));
-  const workerCategoryDetails = workerCategoryList.map((item) => ({ 
-  label: item.name,  
-  value: item.id.toString() 
-}));
+  const workerCategoryDetails = workerCategoryList.map((item) => ({
+    label: item.name,
+    value: item.id.toString()
+  }));
 
   const validKycDetails = workerDetails.kycDetails.filter((item) => item.value);
   const validBankAccounts = workerDetails.bankAccounts.filter(
@@ -163,6 +187,12 @@ const [loading, setLoading] = useState(true);
 
   const handleWorkerCategoryEdit = () => {
     navigate(`${WorkerCategoriesUrls.edit(parseInt(workerCategoryId))}?redirect=${encodeURIComponent(redirectParams)}`);
+  };
+
+  const handleWorkerRoleCostEdit = () => {
+    navigate(
+      `${WorkerRoleCostUrls.edit(parseInt(id))}?workerCategoryId=${workerCategoryId}&redirect=${encodeURIComponent(redirectParams)}`
+    );
   };
 
   const handleSubmission = async () => {
@@ -202,6 +232,8 @@ const [loading, setLoading] = useState(true);
     fetchContacts, fetchWorkerCategories,
     contact, workerCategory,
     primaryContactDetails, hasMoreDetails,
+    // ✅ new returns
+    workerRoleCost, handleWorkerRoleCostEdit,
   };
 };
 

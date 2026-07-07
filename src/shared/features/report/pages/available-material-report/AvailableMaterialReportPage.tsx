@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
 } from '@/shared/components/ui/alert-dialog';
 import { useAvailableMaterialReportScreen } from './useAvailableMaterialReport';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { MaterialReportCard } from '@/shared/components/MaterialReportCard/MaterialReportCard';
 import { MaterialMultiSelect } from '@/shared/components/MaterialMultiSelect/MaterialMultiSelect';
 import { cn } from '@/shared/components/lib/utils';
@@ -24,6 +25,7 @@ import type { AvailableMaterialReport } from '@/shared/features/materials/servic
 
 const AvailableMaterialReportScreen = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     loading,
@@ -65,7 +67,7 @@ const AvailableMaterialReportScreen = () => {
         <Actions>
           <SearchFilterBar
             appliedFilters={appliedFilters}
-            placeholder="Search Material Report..."
+            placeholder={t('Search material report')}
             onFilterOpen={() => {
               fetchMaterials('');
               setIsFilterOpen(true);

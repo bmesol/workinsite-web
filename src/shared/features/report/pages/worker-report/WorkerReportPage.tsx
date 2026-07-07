@@ -11,6 +11,7 @@ import { WorkerReportCard } from "../../components/WorkerReportCard/WorkerReport
 import { DateFilter } from "../../components/DateFilter/DateFilter";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useWorkerReport } from "./useWorkerReport";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +40,7 @@ function CardSkeleton() {
 
 export default function WorkerReportPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const {
     reports,
     totalAmount,
@@ -75,13 +77,13 @@ export default function WorkerReportPage() {
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => fetchSites(siteSearch), 300);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => fetchSites(siteSearch), 300);
+    return () => clearTimeout(timer);
   }, [siteSearch]);
 
   useEffect(() => {
-    const t = setTimeout(() => fetchWorkers(workerSearch), 300);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => fetchWorkers(workerSearch), 300);
+    return () => clearTimeout(timer);
   }, [workerSearch]);
 
   return (
@@ -89,11 +91,11 @@ export default function WorkerReportPage() {
 
       {/* ── Header + SearchFilterBar ── */}
       <div className="px-4">
-        <Header title="Worker Report">
+        <Header title={t('Worker Report')}>
           <Actions>
             <SearchFilterBar
               appliedFilters={appliedFilters}
-              placeholder="Search Worker Report..."
+              placeholder={t('Search worker report')}
               onFilterOpen={() => setFilterOpen(true)}
               onClearSearch={handleClearFilters}
             />
@@ -141,7 +143,7 @@ export default function WorkerReportPage() {
                   onClick={() => fetchReports(false)}
                   disabled={paginationLoading}
                 >
-                  {paginationLoading ? "Loading..." : "View More"}
+                  {paginationLoading ? "Loading..." : t("View More")}
                 </Button>
               </div>
             )}
@@ -155,7 +157,7 @@ export default function WorkerReportPage() {
 
           {/* Header + Close icon */}
           <AlertDialogHeader className="relative">
-            <AlertDialogTitle>Filter Worker Reports</AlertDialogTitle>
+            <AlertDialogTitle>{t('Filter Worker Reports')}</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">
               Filter by site, worker and date
             </AlertDialogDescription>
@@ -183,7 +185,7 @@ export default function WorkerReportPage() {
 
             <ComboboxField
               id="worker"
-              label="Worker"
+              label={t('Worker')}
               items={workerSelectOptions}
               selectedValue={worker.value}
               onValueChange={(val) => {

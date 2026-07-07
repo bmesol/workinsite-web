@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { Header } from '@/shared/components/Header/Header';  // ✅ remove Actions
+import { Header } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
-import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';  // ✅ add
+import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -20,9 +20,11 @@ import { useMaterialUsedCreation } from './useMaterialUsedCreation';
 import { MaterialUsedUrls } from '../../utils/urls';
 import { Loader2 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const MaterialUsedCreationPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     siteId, setSiteId,
@@ -73,14 +75,14 @@ const MaterialUsedCreationPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Create Material Used" />  {/* ✅ remove Actions/Back button */}
+      <Header title={t("Create Material Used")} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
 
           {/* ── Date ── */}
           <DatePicker
-            label="Date"
+            label={t("Date")}
             required
             date={date}
             onDateChange={setDate}
@@ -91,7 +93,7 @@ const MaterialUsedCreationPage = () => {
           {/* ── Site ── */}
           <ComboboxField
             id="site"
-            label="Site"
+            label={t("Site")}
             required
             items={siteDetails}
             selectedValue={siteId}
@@ -109,7 +111,7 @@ const MaterialUsedCreationPage = () => {
           ) : (
             <ComboboxField
               id="material"
-              label="Material"
+              label={t("Material")}
               required
               items={materialDetails}
               selectedValue={materialId}
@@ -122,14 +124,14 @@ const MaterialUsedCreationPage = () => {
 
           {/* ── Quantity ── */}
           <NameField
-            label="Quantity"
+            label={t("Quantity")}
             required
             inputValue={quantity}
             setInputValue={setQuantity}
             placeholder={
               availableQuantity !== null
                 ? `Max: ${availableQuantity}`
-                : 'Enter Quantity'
+                : t("Enter Quantity")
             }
             errorMessage={error.quantity}
             isDisabled={!materialId}
@@ -142,7 +144,7 @@ const MaterialUsedCreationPage = () => {
           {/* ── Work Mode ── */}
           <ComboboxField
             id="workMode"
-            label="Work Mode"
+            label={t("Work Mode")}
             required
             items={workModeDetails}
             selectedValue={workModeId}
@@ -153,16 +155,16 @@ const MaterialUsedCreationPage = () => {
 
           {/* ── Notes ── */}
           <TextareaField
-            label="Notes"
+            label={t("Notes")}
             inputValue={notes}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t("Enter your Notes")}
           />
 
           {/* ── Save / Cancel ── */}
           <FormSubmissionButtons
             onSave={handleSubmission}
-            onCancel={handleBack}  // ✅ reuse handleBack
+            onCancel={handleBack}
           />
 
         </div>
@@ -184,7 +186,7 @@ const MaterialUsedCreationPage = () => {
                 navigate(MaterialUsedUrls.list);
               }}
             >
-              Exit without Saving
+              {t("Exit Without Saving")}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
@@ -193,7 +195,7 @@ const MaterialUsedCreationPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t("Save")}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

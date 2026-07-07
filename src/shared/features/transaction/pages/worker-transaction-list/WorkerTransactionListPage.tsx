@@ -28,11 +28,13 @@ import type { WorkerTransactionProps } from '../../DTOs/WorkerTransaction';
 import workerTransactionImage from '@/assets/images/client-creation-illustration.png';
 import { WorkerTransactionUrls } from '../../utils/urls';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerTransactionListPage = () => {
   const navigate = useNavigate();
   const { canEdit } = usePermission();
   const hasPermission = canEdit('Worker Transaction');
+  const { t } = useLanguage();
 
   const {
     worker,
@@ -76,7 +78,7 @@ const WorkerTransactionListPage = () => {
       <GetStartedCard
         imgSrc={workerTransactionImage}
         buttonClick={WorkerTransactionUrls.create}
-        buttonLabel="New Worker Transaction"
+        buttonLabel={t('New Worker Transaction')}
       >
         Start by creating your Worker transactions to organize and manage your
         records efficiently.
@@ -88,10 +90,10 @@ const WorkerTransactionListPage = () => {
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Worker Transaction List">
+      <Header title={t('Worker Transaction List')}>
         {hasPermission && (
           <Actions>
-            <Button onClick={handleCreate}>New Worker Transaction</Button>
+            <Button onClick={handleCreate}>{t('New Worker Transaction')}</Button>
           </Actions>
         )}
       </Header>
@@ -99,7 +101,7 @@ const WorkerTransactionListPage = () => {
       {/* ── Search Filter Bar ── */}
       <SearchFilterBar
         appliedFilters={appliedFilters}
-        placeholder="Search Worker Transactions..."
+        placeholder={t('Search worker transaction')}
         onFilterOpen={() => setFilterOpen(true)}
         onClearSearch={handleClearSearch}
       />
@@ -138,7 +140,7 @@ const WorkerTransactionListPage = () => {
             />
           ) : (
             <Button variant="outline" onClick={() => fetchWorkerTransactions()}>
-              View More
+              {t('View More')}
             </Button>
           )}
         </div>
@@ -153,7 +155,7 @@ const WorkerTransactionListPage = () => {
           <div className="flex flex-col gap-4 pt-2">
             <ComboboxField
               id="worker"
-              label="Worker"
+              label={t('Worker')}
               items={workerDetails}
               selectedValue={worker.value}
               onValueChange={(val) => {
@@ -180,7 +182,7 @@ const WorkerTransactionListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              Search
+              {t('Search')}
             </Button>
           </div>
         </DialogContent>
@@ -200,7 +202,7 @@ const WorkerTransactionListPage = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDeleteId(null)}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button variant="destructive" onClick={handleDeleteConfirm}>

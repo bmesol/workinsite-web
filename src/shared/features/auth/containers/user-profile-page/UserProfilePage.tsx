@@ -132,8 +132,10 @@ import { Header, Actions } from "@/shared/components/Header/Header";
 import { useUserProfile } from "./useUserProfilePage";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const UserProfilePage = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [openPinDialog, setOpenPinDialog] = useState(false);
 
@@ -157,7 +159,7 @@ const UserProfilePage = () => {
             className="cursor-pointer"
             onClick={() => setOpenPinDialog(true)}
           >
-            Change PIN
+            {t('Change PIN')}
           </Button>
         </Actions>
       </Header>
@@ -176,7 +178,7 @@ const UserProfilePage = () => {
               required={true}
             />
             <PhoneNumberField
-              label="Phone Number"
+              label={t('Phone Number')}
               inputValue={phoneNumber}
               setInputValue={setPhoneNumber}
               errorMessage={error.phoneNumber}
@@ -188,11 +190,11 @@ const UserProfilePage = () => {
           {/* Row 2 - Role & Is Active */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <Label className="text-black">Role</Label>
+              <Label className="text-black">{t('Role')}</Label>
               <Label className="opacity-50">{user.role.name}</Label>
             </div>
             <div className="flex flex-col gap-1">
-              <Label>Is Active</Label>
+              <Label>{t('Is Active')}</Label>
               <Switch
                 checked={isActive}
                 onCheckedChange={() => setIsActive(true)}
@@ -206,10 +208,10 @@ const UserProfilePage = () => {
             <>
               <div className="grid grid-cols-1">
                 <TextareaField
-                  label="Notes"
+                  label={t('Notes')}
                   inputValue={notes ?? ""}
                   setInputValue={setNotes}
-                  placeholder="Enter your notes"
+                  placeholder={t('Enter your notes')}
                 />
               </div>
               <div className="grid grid-cols-1">
@@ -228,7 +230,7 @@ const UserProfilePage = () => {
       <Dialog open={openPinDialog} onOpenChange={setOpenPinDialog}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Change PIN</DialogTitle>
+            <DialogTitle>{t('Change PIN')}</DialogTitle>
             <DialogDescription>Please set 4 digit number</DialogDescription>
           </DialogHeader>
           <ProfileEditPinForm onClose={() => setOpenPinDialog(false)} />

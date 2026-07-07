@@ -2,9 +2,11 @@ import { FormInput } from '../FormInput/FormInput';
 import { Input } from "@/shared/components/ui/input";
 import type { InputPropTypes } from './InputPropTypes';
 import { useInputField } from './useInputField';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const IfscCodeField = (props: InputPropTypes) => {
-  const { label, length = 11, errorMessage, placeholder, className, isDisabled, required = false } = props; // 👈 classNames → className
+  const { t } = useLanguage();
+  const { label, length = 11, errorMessage, placeholder, className, isDisabled, required = false } = props;
   const { inputValue, handleInputChange } = useInputField(props);
 
 const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +22,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         value={inputValue}
         onChange={handleChange}
         maxLength={length}
-        placeholder={placeholder || "IFSC code"}
+        placeholder={placeholder || t("IFSC Code")}
         disabled={isDisabled}
       />
     </FormInput>

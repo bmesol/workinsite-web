@@ -25,6 +25,8 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { useSupplierCreation } from "./useSupplierCreation";
 import { SuppliersUrls } from "../../utils/urls";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
+import { Switch } from "@/shared/components/ui/switch";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 // ─── Dialog state type ────────────────────────────────────────────────────────
 
@@ -35,6 +37,7 @@ type DialogType = "kyc" | "bankAccount" | "upi" | "contactEdit" | null;
 const SupplierCreationPage = () => {
   const [queryString] = useSearchParams();
   const [activeDialog, setActiveDialog] = useState<DialogType>(null);
+  const { t } = useLanguage();
 
   const closeDialog = () => setActiveDialog(null);
 
@@ -43,6 +46,8 @@ const SupplierCreationPage = () => {
     setName,
     notes,
     setNotes,
+    isActive,
+    setIsActive,
     supplierDetails,
     setSupplierDetails,
     error,
@@ -64,7 +69,7 @@ const SupplierCreationPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Create Supplier" />
+      <Header title={t('Create Supplier')} />
 
       <Card className="mt-4 p-6">
         {/* Row 1: Name + Contact */}
@@ -77,7 +82,7 @@ const SupplierCreationPage = () => {
           />
           <ComboboxField
             id="contact-combobox"
-            label="Contact"
+            label={t('Contact')}
             items={contactDetails}
             selectedValue={contactId}
             onValueChange={handleContactChange}
@@ -93,8 +98,8 @@ const SupplierCreationPage = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <FormActionButton
-                heading="Contact detail"
-                label="Edit"
+                heading={t('Contact detail')}
+                label={t('Edit')}
                 onClick={() => handleContactEdit(closeDialog)}
                 isColsTwo={true}
               />
@@ -109,7 +114,7 @@ const SupplierCreationPage = () => {
                   onClick={() => setActiveDialog("contactEdit")}
                   className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
                 >
-                  More details...
+                  {t('More details...')}
                 </button>
               </div>
             )}
@@ -120,36 +125,80 @@ const SupplierCreationPage = () => {
         {notes !== undefined && (
           <div className="flex flex-col gap-1.5 mt-4">
             <Label htmlFor="notes" className="text-base">
-              Notes
+              {t('Notes')}
             </Label>
             <Textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Enter your notes"
+              placeholder={t('Enter your notes')}
               rows={4}
             />
           </div>
         )}
 
-        {/* KYC + Bank Accounts + UPI — same as SupplierEditPage */}
-        {/* KYC */}
-<div>
-  <FormActionButton
-    heading="KYC"
-    label="Add"
-    onClick={() => setActiveDialog("kyc")}
-    isAddDisabled={isKycAddDisabled}
-    isColsTwo={true}
-  />
-  <KycTypes
-    details={{ kycDetails: supplierDetails.kycDetails }}
-    setDetails={(updated) =>
-      setSupplierDetails((prev) => ({ ...prev, kycDetails: updated.kycDetails }))
-    }
-    isColsTwo={true}
-  />
-</div>
+        {/* KYC / Bank Accounts / UPIs / Is Active */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* KYC */}
+          <div>
+            <FormActionButton
+              heading={t('KYC')}
+              label={t('Add')}
+              onClick={() => setActiveDialog("kyc")}
+              isAddDisabled={isKycAddDisabled}
+              isColsTwo={true}
+            />
+            <KycTypes
+              details={{ kycDetails: supplierDetails.kycDetails }}
+              setDetails={(updated) =>
+                setSupplierDetails((prev) => ({ ...prev, kycDetails: updated.kycDetails }))
+              }
+              isColsTwo={true}
+            />
+          </div>
+
+          {/* Bank Accounts */}
+          <div>
+            <FormActionButton
+              heading={t('Bank Accounts')}
+              label={t('Add')}
+              onClick={() => setActiveDialog("bankAccount")}
+              isAddDisabled={isBankAccountsAddDisabled}
+              isColsTwo={true}
+            />
+            <BankAccounts
+              details={{ bankAccounts: supplierDetails.bankAccounts }}
+              setDetails={(updated) =>
+                setSupplierDetails((prev) => ({ ...prev, bankAccounts: updated.bankAccounts }))
+              }
+              isColsTwo={true}
+            />
+          </div>
+
+          {/* UPIs */}
+          <div>
+            <FormActionButton
+              heading={t('UPIs')}
+              label={t('Add')}
+              onClick={() => setActiveDialog("upi")}
+              isAddDisabled={isUpiAddDisabled}
+              isColsTwo={true}
+            />
+            <UpiTypes
+              details={{ upiDetails: supplierDetails.upiDetails }}
+              setDetails={(updated) =>
+                setSupplierDetails((prev) => ({ ...prev, upiDetails: updated.upiDetails }))
+              }
+              isColsTwo={true}
+            />
+          </div>
+
+          {/* Is Active Toggle */}
+          <div className="flex items-center gap-3">
+            <Label className="text-base font-medium text-black">{t('Is Active')}</Label>
+            <Switch checked={isActive} onCheckedChange={setIsActive} />
+          </div>
+        </div>
 
         {/* Footer: Cancel + Save */}
         <div className="flex justify-end gap-2 pt-4  ">
@@ -168,7 +217,7 @@ const SupplierCreationPage = () => {
 >
   <DialogContent>
     <DialogHeader>
-      <DialogTitle>KYC Type</DialogTitle>
+      <DialogTitle>{t('KYC Type')}</DialogTitle>
     </DialogHeader>
     <KycCreateForm
       details={{ kycDetails: supplierDetails.kycDetails }}
@@ -186,7 +235,7 @@ const SupplierCreationPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Bank Account</DialogTitle>
+            <DialogTitle>{t('Bank Account')}</DialogTitle>
           </DialogHeader>
            <BankAccountCreateForm
       details={{ bankAccounts: supplierDetails.bankAccounts }}
@@ -205,7 +254,7 @@ const SupplierCreationPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>UPI Type</DialogTitle>
+            <DialogTitle>{t('UPI Type')}</DialogTitle>
           </DialogHeader>
         <UpiCreateForm
   details={{ upiDetails: supplierDetails.upiDetails }}

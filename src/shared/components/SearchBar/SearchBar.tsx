@@ -7,6 +7,7 @@ interface SearchBarProps {
   searchText: string;
   setSearchText: (text: string) => void;
   searchCategory?: string;
+  placeholder?: string;
   allowAllCharacters?: boolean;
 }
 
@@ -14,6 +15,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   searchText,
   setSearchText,
   searchCategory,
+  placeholder,
   allowAllCharacters = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -58,7 +60,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onChange={handleChange}
   onFocus={() => setFocused(true)}
   onBlur={() => setFocused(false)}
-  placeholder={`Search${searchCategory ? ` ${searchCategory}` : ""}...`}
+  placeholder={placeholder ?? `${searchCategory ? ` ${searchCategory}` : ""}...`}
   style={{
     fontSize: "var(--font-sm)",
     color: "var(--foreground)",

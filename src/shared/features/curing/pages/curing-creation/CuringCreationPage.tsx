@@ -5,12 +5,14 @@ import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import { useCuringCreate } from './useCuringCreation';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { formatStringToDate, nextYear } from '@/shared/utils/function';
 
 export const CuringCreationPage = () => {
   const { canEdit } = usePermission();
   const editable = canEdit('Curing');
+  const { t } = useLanguage();
 
   const {
     siteId, setSiteId,
@@ -30,16 +32,14 @@ export const CuringCreationPage = () => {
   return (
     <div className="w-full min-h-screen px-4 pb-10">
 
-      {/* ── Header ── */}
-      <Header title="New Curing" />
+      <Header title={t('New Curing')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
 
-          {/* ── Site ── */}
           <ComboboxField
             id="site"
-            label="Site"
+            label={t('Site')}
             items={siteDetails}
             selectedValue={siteId}
             onValueChange={setSiteId}
@@ -49,10 +49,9 @@ export const CuringCreationPage = () => {
             disabled={!editable}
           />
 
-          {/* ── Curing Type ── */}
           <ComboboxField
             id="curingType"
-            label="Curing Type"
+            label={t('Curing Type')}
             items={curingTypeDetails}
             selectedValue={curingTypeId}
             onValueChange={setCuringTypeId}
@@ -62,9 +61,8 @@ export const CuringCreationPage = () => {
             disabled={!editable}
           />
 
-          {/* ── Start Date ── */}
           <DatePicker
-            label="Start Date"
+            label={t('Start Date')}
             date={startDate}
             onDateChange={date => {
               setStartDate(date);
@@ -75,9 +73,8 @@ export const CuringCreationPage = () => {
             disable={!editable}
           />
 
-          {/* ── End Date ── */}
           <DatePicker
-            label="End Date"
+            label={t('End Date')}
             date={endDate}
             onDateChange={setEndDate}
             required
@@ -91,18 +88,16 @@ export const CuringCreationPage = () => {
             maxDate={nextYear}
           />
 
-          {/* ── Note ── */}
           <TextareaField
-            label="Note"
+            label={t('Note')}
             inputValue={note}
             setInputValue={setNote}
-            placeholder="Enter note"
+            placeholder={t('Enter note')}
             isDisabled={!editable}
           />
 
-          {/* ── Create / Cancel ── */}
           <FormSubmissionButtons
-            label="Create"
+            label={t('Create')}
             onSave={handleSubmission}
             onCancel={handleBack}
             disabled={!editable}

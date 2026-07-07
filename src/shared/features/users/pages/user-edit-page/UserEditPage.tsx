@@ -19,8 +19,10 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { UsersUrls } from "../../utils/urls";
 import { useUserEdit } from "./useUserEdit";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const UserEditPage = () => {
+  const { t } = useLanguage();
   const { id } = useParams<string>();
   const [pinModalOpen, setPinModalOpen] = useState(false);
   
@@ -55,14 +57,14 @@ const UserEditPage = () => {
   return (
     <div className="w-full min-h-screen px-4 pb-10">
       {/* ── Header ── */}
-      <Header title="Edit User">
+      <Header title={t("Edit User")}>
         <Actions>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setPinModalOpen(true)}
           >
-            Change PIN
+            {t("Change PIN")}
           </Button>
         </Actions>
       </Header>
@@ -79,7 +81,7 @@ const UserEditPage = () => {
                 required
               />
               <PhoneNumberField
-                label="Phone Number"
+                label={t("Phone Number")}
                 inputValue={phoneNumber}
                 setInputValue={setPhoneNumber}
                 errorMessage={error.phoneNumber}
@@ -89,14 +91,14 @@ const UserEditPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <RadioField
-                label="Role"
+                label={t("Role")}
                 items={roles}
                 inputValue={role}
                 setInputValue={setRole}
               />
               <div className="flex flex-col gap-2">
                 <Label className="text-base font-medium text-black flex items-center gap-0.5">
-                  Is Active
+                  {t("Is Active")}
                 </Label>
                 <Switch checked={isActive} onCheckedChange={setIsActive} />
               </div>
@@ -104,10 +106,10 @@ const UserEditPage = () => {
 
             <div className="flex flex-col gap-2">
               <Label className="text-base font-medium text-black flex items-center gap-0.5">
-                Notes
+                {t("Notes")}
               </Label>
               <Textarea
-                placeholder="Enter your notes"
+                placeholder={t("Enter your notes")}
                 value={notes ?? ""}
                 onChange={(e) => setNotes(e.target.value)}
                 className="resize-none"
@@ -129,7 +131,7 @@ const UserEditPage = () => {
       <Dialog open={pinModalOpen} onOpenChange={setPinModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Change PIN</DialogTitle>
+            <DialogTitle>{t("Change PIN")}</DialogTitle>
             <DialogDescription>Please set a 4 digit number</DialogDescription>
           </DialogHeader>
           <UserEditPinForm

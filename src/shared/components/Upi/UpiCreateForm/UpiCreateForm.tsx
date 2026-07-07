@@ -4,8 +4,10 @@ import { UpiInputFields } from "../UpiInputFields/UpiInputField";
 import { useUpiCreateForm } from "./useUpiCreateForm";
 import { UpiTypes, type UpiTypesProps } from "../DTOs/DTOs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const UpiCreateForm = (props: UpiTypesProps) => {
+  const { t } = useLanguage();
   const { upiType, upiItems, input, setInput, error, handleSelectChange, handleAdd } = useUpiCreateForm(props);
 
   return (
@@ -13,7 +15,7 @@ const UpiCreateForm = (props: UpiTypesProps) => {
       <FormInput errorMessage={error.select}>
         <Select onValueChange={(value) => handleSelectChange(value as UpiTypes)} value={upiType}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select UPI Type..." />
+            <SelectValue placeholder={t('UPI Type')} />
           </SelectTrigger>
           <SelectContent position="popper" sideOffset={4} className="z-[9999] bg-white">
             {upiItems.map((item) => (
@@ -23,7 +25,7 @@ const UpiCreateForm = (props: UpiTypesProps) => {
         </Select>
       </FormInput>
       <UpiInputFields upiType={upiType as UpiTypes} input={input} setInput={setInput} error={error} />
-      <FormSubmissionButtons label="Add" onCancel={() => props.onClose?.()} onSave={handleAdd} />
+      <FormSubmissionButtons label={t('Add')} onCancel={() => props.onClose?.()} onSave={handleAdd} />
     </div>
   );
 };

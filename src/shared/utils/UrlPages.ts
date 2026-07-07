@@ -65,7 +65,8 @@ import WorkerTransactionCreationPage from "../features/transaction/pages/worker-
 import WorkerTransactionEditPage from "../features/transaction/pages/worker-transaction-edit/WorkerTransactionEditPage";
 import { TaskListPage } from "../features/task/pages/task-list/TaskListPage";
 import { TaskCreationPage } from "../features/task/pages/task-create/TaskCreationPage";
-import { TaskEditPage } from "../features/task/pages/task-edit/TaskEditPage"
+import { TaskEditPage } from "../features/task/pages/task-edit/TaskEditPage";
+import { WorkerRoleCostEditPage } from "../features/workers/pages/workerrole-cost-edit/WorkerRoleCostEdit";
 
 const UrlPages = {
   "/profile":                          { page: UserProfilePage,                allowedUserRoles: ALL_USERS },
@@ -132,9 +133,10 @@ const UrlPages = {
   "/transactions/worker":            { page: WorkerTransactionListPage,      allowedUserRoles: ALL_USERS },
   "/transactions/worker/create":     { page: WorkerTransactionCreationPage,  allowedUserRoles: ALL_USERS },
   "/transactions/worker/:id/edit":   { page: WorkerTransactionEditPage,      allowedUserRoles: ALL_USERS },
-  "/task":              { page: TaskListPage,       allowedUserRoles: ALL_USERS },
-"/task/create":       { page: TaskCreationPage,   allowedUserRoles: ALL_USERS },
-"/task/:id/edit":     { page: TaskEditPage,        allowedUserRoles: ALL_USERS },
+  "/task":                              { page: TaskListPage,             allowedUserRoles: ALL_USERS },
+  "/task/create":                       { page: TaskCreationPage,         allowedUserRoles: ALL_USERS },
+  "/task/:id/edit":                     { page: TaskEditPage,              allowedUserRoles: ALL_USERS },
+  "/workers/:id/worker-role-costs":     { page: WorkerRoleCostEditPage,   allowedUserRoles: ALL_USERS },
 };
 
 const BaseUrls = {

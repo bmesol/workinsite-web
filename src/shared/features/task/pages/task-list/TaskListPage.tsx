@@ -3,10 +3,11 @@ import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import { TaskUrls } from "../../utils/urls";
 import { useTaskList } from "./useTaskList";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { TaskCard } from "@/shared/components/TaskCard/TaskCard";
 import { GetStartedCard } from "@/shared/components/GetStartedCard/GetStartedCard";
 import TaskCreationIllustration from "@/assets/images/site-creation-illustration.png";
-import { SearchBar } from "@/shared/components/SearchBar/SearchBar";  // ADD
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +21,7 @@ import {
 
 const TaskListPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     taskDetails,
@@ -40,7 +42,7 @@ const TaskListPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -49,7 +51,7 @@ const TaskListPage = () => {
     <GetStartedCard
       imgSrc={TaskCreationIllustration}
       buttonClick={TaskUrls.create}
-      buttonLabel="Create Task"
+      buttonLabel={t('Create Task')}
     >
       Dive into the heart of construction site management. Create, edit, and
       view site information effortlessly. Assign workers, supervisors, and
@@ -59,31 +61,28 @@ const TaskListPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
-      {/* Header */}
-      <Header title="Tasks">
+      <Header title={t('Task List')}>
         <Actions>
           <Button onClick={() => navigate(TaskUrls.create)}>
-            New Task
+            {t('New Task')}
           </Button>
         </Actions>
       </Header>
 
-      {/* SearchBar — ClientListPage pattern */}
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
           <SearchBar
             searchText={searchText}
             setSearchText={setSearchText}
-            searchCategory="Tasks"
+            searchCategory={t('Search Tasks')}
           />
         </div>
       </div>
 
-      {/* Task Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
         {filteredTaskList.length === 0 ? (
           <div className="col-span-full my-4 text-center text-muted-foreground">
-            No tasks found
+            {t('No tasks found')}
           </div>
         ) : (
           filteredTaskList.map(item => (
@@ -102,7 +101,6 @@ const TaskListPage = () => {
         )}
       </div>
 
-      {/* Delete Confirm Dialog */}
       <AlertDialog
         open={!!deleteId}
         onOpenChange={val => !val && setDeleteId(null)}
@@ -110,16 +108,16 @@ const TaskListPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+              {t('Confirm Delete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this task?
+              {t('Are you sure you want to delete this task?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
@@ -127,7 +125,7 @@ const TaskListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleTaskDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

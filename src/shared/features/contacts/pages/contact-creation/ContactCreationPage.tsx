@@ -2,7 +2,7 @@ import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmis
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { ContactCreateForm } from "../../components/ContactCreateForm/ContactCreateForm";
 import { NameField } from "@/shared/components/FormFields/NameField";
-import { PhoneNumberField } from "@/shared/components/FormFields/PhoneNumberField";  
+import { PhoneNumberField } from "@/shared/components/FormFields/PhoneNumberField";
 import { ContactTypes } from "@/shared/features/contacts/components/ContactTypes/ContactTypes";
 import { Header } from "@/shared/components/Header/Header";
 import { useContactCreation } from "./useContactCreation";
@@ -10,10 +10,12 @@ import { Card } from "@/shared/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ContactCreationPage = () => {
   const [queryString] = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);  
+  const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   const { name, phone, setName, setPhone, error, contactList, setContactList, handleSubmission, handleCancel, isAddDisabled } = useContactCreation(queryString);
 
@@ -23,7 +25,7 @@ const ContactCreationPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Create Contact" />
+      <Header title={t('Create Contact')} />
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
 
@@ -37,7 +39,7 @@ const ContactCreationPage = () => {
 
           {/* ✅ added PhoneNumberField */}
           <PhoneNumberField
-            label="Phone Number"
+            label={t('Phone Number')}
             inputValue={phone}
             setInputValue={setPhone}
             errorMessage={error.phone}
@@ -46,8 +48,8 @@ const ContactCreationPage = () => {
           />
 
           <FormActionButton
-            heading="Additional Details"
-            label="Add"
+            heading={t('Additional Details')}
+            label={t('Add')}
             onClick={handleAdd}
             isAddDisabled={isAddDisabled}
             required={true}
@@ -67,7 +69,7 @@ const ContactCreationPage = () => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="border overflow-y-auto max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle>Additional Details</DialogTitle>
+            <DialogTitle>{t('Additional Details')}</DialogTitle>
           </DialogHeader>
           <ContactCreateForm
             contactList={contactList}

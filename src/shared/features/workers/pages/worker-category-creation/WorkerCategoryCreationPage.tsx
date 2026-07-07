@@ -18,8 +18,10 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerCategoryCreationPage = () => {
+  const { t } = useLanguage();
   const [queryString] = useSearchParams();
 
   const {
@@ -41,24 +43,24 @@ const WorkerCategoryCreationPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Create Worker Category" />
+      <Header title={t('Create Worker Category')} />
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
           {/* Worker Category Name */}
           <NameField
-            label="Worker Category Name"
+            label={t('Worker Category Name')}
             inputValue={workerCategoryName}
             setInputValue={(v) => setWorkerCategoryName(v)}
             errorMessage={error.workerCategoryName}
-            placeholder="Enter worker category name"
+            placeholder={t('Enter worker category name')}
             required={true}
           />
 
           {/* Work Type Section */}
           <div className="flex flex-col gap-1">
             <FormActionButton
-              heading="Work Type"
-              label="Add"
+              heading={t('Work Type')}
+              label={t('Add')}
               onClick={() => setWorkTypeDialogOpen(true)}
               required
               isColsTwo={true} // ✅ add — full width
@@ -75,8 +77,8 @@ const WorkerCategoryCreationPage = () => {
           {/* Worker Role Section */}
           <div className="flex flex-col gap-1">
             <FormActionButton
-              heading="Worker Role"
-              label="Add"
+              heading={t('Worker Role')}
+              label={t('Add')}
               onClick={() => setWorkerRoleDialogOpen(true)}
               required
               isColsTwo={true} // ✅ add — full width
@@ -91,10 +93,10 @@ const WorkerCategoryCreationPage = () => {
 
           {/* Notes */}
           <TextareaField
-            label="Notes"
+            label={t('Notes')}
             inputValue={notes}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t('Enter your notes')}
           />
 
           <FormSubmissionButtons
@@ -108,7 +110,7 @@ const WorkerCategoryCreationPage = () => {
       <Dialog open={workTypeDialogOpen} onOpenChange={setWorkTypeDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Work Type</DialogTitle>
+            <DialogTitle>{t('Create Work Type')}</DialogTitle>
           </DialogHeader>
           <WorkTypeCreateForm
             workTypeList={workTypeList}
@@ -125,7 +127,7 @@ const WorkerCategoryCreationPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Worker Role</DialogTitle>
+            <DialogTitle>{t('Create Worker Role')}</DialogTitle>
           </DialogHeader>
           <WorkerRoleCreateForm
             workerRoleList={workerRoleList}

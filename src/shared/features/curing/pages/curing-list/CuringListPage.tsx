@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/dialog';
 import { useCuringList } from './useCuringList';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { CuringUrls } from '../../utils/urls';
 import CuringCard from '@/shared/components/CuringCard/CuringCard';
 import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
@@ -27,6 +28,7 @@ import curingImage from '@/assets/images/client-creation-illustration.png';
 
 const CuringListPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const {
     curingList,
@@ -53,7 +55,7 @@ const CuringListPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -63,7 +65,7 @@ const CuringListPage = () => {
       <GetStartedCard
         imgSrc={curingImage}
         buttonClick={CuringUrls.create}
-        buttonLabel="New Curing"
+        buttonLabel={t('New Curing')}
       >
         With WorkInSite, tracking curing activities is easy. Start adding
         curing records today to monitor progress and status.
@@ -75,16 +77,16 @@ const CuringListPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Curing List">
+      <Header title={t('Curing List')}>
         <Actions>
-          <Button onClick={handlePress}>New Curing</Button>
+          <Button onClick={handlePress}>{t('New Curing')}</Button>
         </Actions>
       </Header>
 
       {/* ── Filter / Search bar ── */}
       <SearchFilterBar
         appliedFilters={appliedFilters}
-        placeholder="Search Curing..."
+        placeholder={t('Search Curing')}
         onFilterOpen={() => setFilterOpen(true)}
         onClearSearch={handleClearSearch}
       />
@@ -93,7 +95,7 @@ const CuringListPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         {curingList.length === 0 ? (
           <p className="col-span-full text-center text-muted-foreground mt-10">
-            No curings found
+            {t('No curings found')}
           </p>
         ) : (
           curingList.map(item => (
@@ -115,12 +117,12 @@ const CuringListPage = () => {
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
-            <DialogTitle>Curing Search</DialogTitle>
+            <DialogTitle>{t('Curing Search')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
             <ComboboxField
               id="site"
-              label="Site"
+              label={t('Site')}
               items={siteDetails}
               selectedValue={siteName.value}
               onValueChange={val =>
@@ -133,7 +135,7 @@ const CuringListPage = () => {
             />
             <ComboboxField
               id="curingType"
-              label="Curing Type"
+              label={t('Curing Type')}
               items={curingTypeDetails}
               selectedValue={curingType.value}
               onValueChange={val =>
@@ -152,7 +154,7 @@ const CuringListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              Search
+              {t('Search')}
             </Button>
           </div>
         </DialogContent>
@@ -165,15 +167,15 @@ const CuringListPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this curing record?
+              {t('Are you sure you want to delete this curing record?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
@@ -181,7 +183,7 @@ const CuringListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleCuringDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

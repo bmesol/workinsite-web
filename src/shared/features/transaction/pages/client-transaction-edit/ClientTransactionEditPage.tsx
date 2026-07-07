@@ -21,11 +21,13 @@ import { useClientTransactionEdit } from './useClientTransactionEdit';
 import PaymentMethodSelector from '../../components/PaymentMethodSelector/PaymentMethodSelector';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { ClientTransactionUrls } from '../../utils/urls';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientTransactionEditPage = () => {
   const navigate = useNavigate();
   const { canEdit } = usePermission();
   const editable = canEdit('Client Transaction');
+  const { t } = useLanguage();
 
   const {
     handleBack,
@@ -57,7 +59,7 @@ const ClientTransactionEditPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Edit Client Transaction" />
+      <Header title={t('Edit Client Transaction')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
@@ -66,7 +68,7 @@ const ClientTransactionEditPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ComboboxField
               id="client"
-              label="Client"
+              label={t('Client')}
               items={clientDetails}
               selectedValue={clientId}
               onValueChange={setClientId}
@@ -76,7 +78,7 @@ const ClientTransactionEditPage = () => {
               disabled={!editable}
             />
             <DatePicker
-              label="Date"
+              label={t('Date')}
               date={date}
               onDateChange={setDate}
               required
@@ -87,10 +89,10 @@ const ClientTransactionEditPage = () => {
 
           {/* Row 2: Amount — full width */}
           <NameField
-            label="Amount"
+            label={t('Amount')}
             inputValue={amount}
             setInputValue={setAmount}
-            placeholder="Enter Amount"
+            placeholder={t('Enter Amount')}
             required
             regex="^[0-9]*(\.[0-9]*)?$"
             length={10}
@@ -109,10 +111,10 @@ const ClientTransactionEditPage = () => {
 
           {/* Row 4: Remark — full width */}
           <TextareaField
-            label="Remark"
+            label={t('Remark')}
             inputValue={remark}
             setInputValue={setRemark}
-            placeholder="Enter Remark"
+            placeholder={t('Enter Remark')}
             isDisabled={!editable}
           />
 
@@ -151,7 +153,7 @@ const ClientTransactionEditPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t('Save')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

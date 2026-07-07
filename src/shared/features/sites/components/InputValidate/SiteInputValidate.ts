@@ -2,9 +2,16 @@ import type { SiteInputValidateProps } from "./DTOs";
 import { useState } from "react";
 
 const useSiteInputValidate = (props: SiteInputValidateProps) => {
-  const { name, clientId, googleLocation, contactId } = props;
+  const { name, clientId, googleLocation, contactId, wageTypeId } = props; 
 
-  const initialError = { name: "", client: "", googleLocation: "", contact: "", supervisor: "" };
+  const initialError = {
+    name: "",
+    client: "",
+    googleLocation: "",
+    contact: "",
+    supervisor: "",
+    wageType: "", 
+  };
   const [error, setError] = useState(initialError);
 
   const resetErrors = () => setError(initialError);
@@ -23,7 +30,7 @@ const useSiteInputValidate = (props: SiteInputValidateProps) => {
     if (!clientId) updateError("client", "Please select client");
     if (!googleLocation) updateError("googleLocation", "Please enter google location");
     if (!contactId) updateError("contact", "Please select contact");
-
+    if (!wageTypeId) updateError("wageType", "Please select wage type"); 
     return isValid;
   };
 

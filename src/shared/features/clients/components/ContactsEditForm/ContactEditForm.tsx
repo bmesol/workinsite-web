@@ -2,16 +2,18 @@ import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactT
 import type { Contact } from "../../../contacts/DTOs/ContactProps";
 import { Button } from "@/shared/components/ui/button";
 import { Pencil } from "lucide-react";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ContactsEditForm = (props: { contact: Contact; onEdit: () => void; onClose: () => void }) => {
   const { contact, onEdit, onClose } = props;
+  const { t } = useLanguage();
 
   return (
     <div className="flex flex-col gap-4 max-h-[300px]">
       {/* Header */}
       <div className="flex justify-between items-center pr-6">
         <span style={{ fontSize: "var(--font-lg)", fontWeight: 600 }}>
-          Contacts
+          {t('Contacts')}
         </span>
         <Pencil
           style={{ width: 18, height: 18 }}
@@ -33,7 +35,7 @@ const ContactsEditForm = (props: { contact: Contact; onEdit: () => void; onClose
       {/* Cancel Button */}
       <div className="flex justify-end">
         <Button variant="outline" onClick={onClose}>
-          Cancel
+          {t('Cancel')}
         </Button>
       </div>
     </div>

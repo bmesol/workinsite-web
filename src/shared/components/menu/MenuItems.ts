@@ -1,116 +1,3 @@
-// import type { ElementType } from "react";
-// import {
-//   Users,
-//   Contact,
-//   Briefcase,
-//   MapPin,
-//   HardHat,
-//   Truck,
-//   Package,
-//   CalendarCheck,
-//   ArrowLeftRight,
-//   FileText,
-//   ShieldCheck,
-// } from "lucide-react";
-// import { ADMIN_USERS, ALL_USERS } from "@/shared/helpers/RouteHelper";
-
-// export type MenuChildItem = {
-//   label: string;
-//   href: string;
-// };
-
-// export type MenuItem = {
-//   label: string;
-//   icon: ElementType;
-//   allowedUserRoles: number[];
-//   children?: MenuChildItem[];
-// };
-
-// const MenuItems: Record<string, MenuItem> = {
-//   "/roles-rights": {
-//     label: "Roles & Rights",
-//     icon: ShieldCheck,
-//     allowedUserRoles: ADMIN_USERS,
-//   },
-//   "/users": {
-//     label: "Users",
-//     icon: Users,
-//     allowedUserRoles: ADMIN_USERS,
-//   },
-//   "/contacts": {
-//     label: "Contacts",
-//     icon: Contact,
-//     allowedUserRoles: ALL_USERS,
-//   },
-//   "/clients": {
-//     label: "Clients",
-//     icon: Briefcase,
-//     allowedUserRoles: ALL_USERS,
-//   },
-//   "/sites": {
-//     label: "Sites",
-//     icon: MapPin,
-//     allowedUserRoles: ALL_USERS,
-//   },
-//   "/workers": {
-//     label: "Workers",
-//     icon: HardHat,
-//     allowedUserRoles: ALL_USERS,
-//     children: [
-//       { label: "Worker", href: "/workers" },
-//       { label: "Worker Category", href: "/worker-categories" },
-//       { label: "Work Rate Abstract", href: "/work-rate-abstracts" },
-//       { label: "Work Mode", href: "/work-modes" },
-//       { label: "Shift", href: "/workers/shift" },
-//     ],
-//   },
-//   "/suppliers": {
-//     label: "Suppliers",
-//     icon: Truck,
-//     allowedUserRoles: ALL_USERS,
-//   },
-//   "/materials": {
-//     label: "Materials",
-//     icon: Package,
-//     allowedUserRoles: ALL_USERS,
-//     children: [
-//       { label: "Unit", href: "/materials/unit" },
-//       { label: "Material", href: "/materials" },
-//       { label: "Purchase", href: "/materials/purchase" },
-//       { label: "Material Used", href: "/materials/used" },
-//       { label: "Material Shift", href: "/materials/shift" },
-//     ],
-//   },
-//   "/attendance": {
-//     label: "Attendance",
-//     icon: CalendarCheck,
-//     allowedUserRoles: ALL_USERS,
-//   },
-//   "/transactions": {
-//     label: "Transaction",
-//     icon: ArrowLeftRight,
-//     allowedUserRoles: ALL_USERS,
-//     children: [
-//       { label: "Client Transaction", href: "/transactions/client" },
-//       { label: "Supplier Transaction", href: "/transactions/supplier" },
-//       { label: "Worker Transaction", href: "/transactions/worker" },
-//     ],
-//   },
-//  "/reports": {
-//     label: "Reports",
-//     icon: FileText,
-//     allowedUserRoles: ALL_USERS,
-//     children: [
-//       { label: "Worker Report", href: "/reports/worker" },
-//       { label: "Supervisor Attendance", href: "/reports/supervisor-attendance" },  // ✅ add
-//       { label: "Available Material Report", href: "/reports/available-material" },  // ✅ add
-//     ],
-//   },
-// };
-
-// export { MenuItems };
-
-
 import type { ElementType } from "react";
 import { ROLE_IDS } from '@/shared/features/rolesandrights/DTOs/DTOs';
 import {
@@ -130,6 +17,7 @@ import {
   Droplet
 } from "lucide-react";
 import { ADMIN_USERS, ALL_USERS, SUPERVISOR_ONLY } from "@/shared/helpers/RouteHelper";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 export type MenuChildItem = {
   label: string;
@@ -144,6 +32,7 @@ export type MenuItem = {
 };
 
 const MenuItems: Record<string, MenuItem> = {
+  
   "/dashboard": {
     label: "Home",
     icon: LayoutDashboard,
@@ -233,7 +122,7 @@ const MenuItems: Record<string, MenuItem> = {
     allowedUserRoles: ALL_USERS,
     children: [
       { label: "Worker Report", href: "/reports/worker" },
-      { label: "Supervisor Attendance", href: "/reports/supervisor-attendance" },
+      { label: "Supervisor Attendance Report", href: "/reports/supervisor-attendance" },
       { label: "Available Material Report", href: "/reports/available-material" },
     ],
   },

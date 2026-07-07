@@ -4,8 +4,10 @@ import type { InputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const PinField = (props: InputPropTypes) => {
+  const { t } = useLanguage();
   const { label, errorMessage, className, isDisabled, required = false } = props;
   const { inputValue, handleInputChange } = useInputField(props);
 
@@ -63,7 +65,7 @@ const PinField = (props: InputPropTypes) => {
   return (
     <FormInput errorMessage={errorMessage} className={className}>
       <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
-        {label || "PIN"}
+        {label || t("Pin")}
         {required && <span className="text-red-500">*</span>}
       </Label>
       <div className="flex gap-6 w-full">

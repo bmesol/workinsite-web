@@ -24,6 +24,7 @@ import type {
   PurchaseMaterialCreationListProps,
   PurchaseMaterialUpdationListProps,
 } from "../../DTOs/PurchaseMaterialProps";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 interface Props {
   newPurchaseMaterials: PurchaseMaterialCreationListProps[];
@@ -48,6 +49,7 @@ const PurchaseMaterialsList: React.FC<Props> = ({
   removedPurchaseMaterialIds,
   setRemovedPurchaseMaterialIds,
 }) => {
+  const { t } = useLanguage();
   const { canEdit } = usePermission();
   const editable = canEdit("Purchase");
 
@@ -84,7 +86,7 @@ const PurchaseMaterialsList: React.FC<Props> = ({
   if (combinedList.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-2">
-        No materials added yet.
+        {t("No materials added yet.")}
       </p>
     );
   }
@@ -159,7 +161,7 @@ const PurchaseMaterialsList: React.FC<Props> = ({
             >
               <div className="flex flex-col gap-0.5 px-4 py-1">
                 <span className="text-xs text-muted-foreground">
-                  Received Quantity
+                  {t("Received Quantity")}
                 </span>
                 <span
                   className="text-sm font-bold"
@@ -172,7 +174,7 @@ const PurchaseMaterialsList: React.FC<Props> = ({
                 </span>
               </div>
               <div className="flex flex-col gap-0.5 px-4 py-1">
-                <span className="text-xs text-muted-foreground">Rate</span>
+                <span className="text-xs text-muted-foreground">{t("Rate")}</span>
                 <span
                   className="text-sm font-bold"
                   style={{ color: "var(--foreground)" }}
@@ -211,7 +213,7 @@ const PurchaseMaterialsList: React.FC<Props> = ({
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Edit Purchase Material</DialogTitle>
+            <DialogTitle>{t("Edit Purchase Material")}</DialogTitle>
           </DialogHeader>
           {selectedItem && (
             <PurchaseMaterialsEditScreen
@@ -245,7 +247,7 @@ const PurchaseMaterialsList: React.FC<Props> = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDeleteDialogItem(null)}>
-              Cancel
+              {t("Cancel")}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button variant="destructive" onClick={handleDelete}>

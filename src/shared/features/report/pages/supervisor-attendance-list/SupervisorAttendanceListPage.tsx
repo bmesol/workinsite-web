@@ -5,6 +5,7 @@ import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilter
 import SupervisorAttendanceCard from '@/shared/components/SupervisorAttendanceCard/SupervisorAttendanceCard';
 import { DateFilter } from '../../components/DateFilter/DateFilter';
 import { useSupervisorAttendanceList } from './useSuperVisorAttendanceList';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import type { SupervisorAttendance } from '../../DTOs/SupervisorAttendanceProps';
 import { Loader2 } from 'lucide-react';
 import {
@@ -27,6 +28,7 @@ import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 
 const SupervisorAttendanceListPage = () => {
+  const { t } = useLanguage();
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const {
@@ -69,7 +71,7 @@ const SupervisorAttendanceListPage = () => {
         <Actions>
           <SearchFilterBar
             appliedFilters={appliedFilters}
-            placeholder="Search Supervisor Attendance..."
+            placeholder={t('Search supervisor attendance')}
             onFilterOpen={() => setFilterOpen(true)}
             onClearSearch={handleClearSearch}
           />

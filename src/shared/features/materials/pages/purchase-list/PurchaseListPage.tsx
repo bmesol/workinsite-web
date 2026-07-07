@@ -28,6 +28,7 @@ import { PurchaseUrls } from "../../utils/urls";
 import { SlidersHorizontal, X } from "lucide-react";
 import { MapPin, FileText, Calendar } from "lucide-react";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const PurchaseListPage = () => {
   const navigate = useNavigate();
@@ -61,6 +62,8 @@ const PurchaseListPage = () => {
     deleteId,
     setDeleteId,
   } = usePurchaseList();
+
+  const { t } = useLanguage();
 
   const isFiltered = !!(
     date ||
@@ -105,7 +108,7 @@ const PurchaseListPage = () => {
       <div className="flex justify-end ">
         <SearchFilterBar
           appliedFilters={appliedFilters}
-          placeholder="Search Purchases..."
+          placeholder={t('Search purchases')}
           onFilterOpen={() => setFilterOpen(true)}
           onClearSearch={handleClearSearch}
         />

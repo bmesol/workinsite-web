@@ -19,8 +19,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkTypeList = (props: WorkTypeListProps) => {
+  const { t } = useLanguage();
   const {
     workTypeList,
     setWorkTypeList,
@@ -61,7 +63,7 @@ const WorkTypeList = (props: WorkTypeListProps) => {
         <div
           key={`${item.name}-${index}`}
           className={`flex items-center justify-between px-3 py-2 rounded-md border text-sm ${
-            item.source === "new" ? "bg-green-100" : "bg-white" 
+            item.source === "new" ? "bg-green-100" : "bg-white"
           }`}
         >
           <span className="flex-1 truncate">{item.name}</span>
@@ -89,7 +91,7 @@ const WorkTypeList = (props: WorkTypeListProps) => {
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Work Type</DialogTitle>
+            <DialogTitle>{t('Edit Work Type')}</DialogTitle>
           </DialogHeader>
           {selectedItem && (
             <WorkTypeEditForm
@@ -118,7 +120,7 @@ const WorkTypeList = (props: WorkTypeListProps) => {
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>

@@ -20,6 +20,7 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
   const [name, setName] = useState(getQueryParam("name"));
   const [contactId, setContactId] = useState(getQueryParam("contactId"));
   const [notes, setNotes] = useState(getQueryParam("notes"));
+  const [isActive, setIsActive] = useState(true);
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
 
@@ -140,6 +141,7 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
         kycDetails: validKycDetails,
         bankAccounts: validBankAccounts,
         upiDetails: validUpiDetails,
+        isActive,
       };
       await supplierService.createSupplier(supplier);
       navigate(SuppliersUrls.list);
@@ -151,6 +153,8 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
     setName,
     notes,
     setNotes,
+    isActive,
+    setIsActive,
     supplierDetails,
     setSupplierDetails,
     error,

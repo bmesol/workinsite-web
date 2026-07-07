@@ -8,10 +8,13 @@ import { Header } from "@/shared/components/Header/Header";
 import { useUserCreation } from "./useUserCreation.ts";
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { RoleSelectField } from "@/shared/components/RoleSelectField/RoleSelectField.tsx";
 
 const UserCreationPage = () => {
+  const { t } = useLanguage();
   const [queryString] = useSearchParams();
-  const [pinModalOpen, setPinModalOpen] = useState(false); 
+  const [pinModalOpen, setPinModalOpen] = useState(false);
 
   const { name, setName, phoneNumber, setPhoneNumber, role, setRole, error, validate, userDetail, roles, handleOnCancel } = useUserCreation(queryString);
 
@@ -25,7 +28,7 @@ const UserCreationPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
                               
       {/* ── Header ── */}
-      <Header title="Create User" />
+      <Header title={t('Create User')} />
 
       {/* ── Form Card ── */}
       <div className="mt-4 rounded-2xl border border-border bg-card p-6 flex flex-col gap-6">
@@ -37,7 +40,7 @@ const UserCreationPage = () => {
             required
           />
           <PhoneNumberField
-            label="Phone Number"
+            label={t('Phone Number')}
             inputValue={phoneNumber}
             setInputValue={setPhoneNumber}
             errorMessage={error.phoneNumber}
@@ -45,14 +48,14 @@ const UserCreationPage = () => {
           />
         </div>
 
-        <RadioField
-          label="Role"
-          items={roles}
-          inputValue={role}
-          setInputValue={setRole}
-          errorMessage={error.role}
-          required
-        />
+    <RoleSelectField
+  label={t('Role')}
+  items={roles}
+  selectedValue={role}
+  onValueChange={setRole}
+  errorMessage={error.role}
+  required
+/>
 
         <FormSubmissionButtons onCancel={handleOnCancel} onSave={handleOnSave} />
       </div>
@@ -61,7 +64,7 @@ const UserCreationPage = () => {
       <Dialog open={pinModalOpen} onOpenChange={setPinModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Set up a PIN</DialogTitle>
+            <DialogTitle>{t('Set up a PIN')}</DialogTitle>
             <DialogDescription>Please set 4 digit number</DialogDescription>
           </DialogHeader>
           <UserCreationPinForm

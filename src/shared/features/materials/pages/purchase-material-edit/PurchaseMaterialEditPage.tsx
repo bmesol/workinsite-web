@@ -20,6 +20,7 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import type { ReceivedQualityTypes } from "../../DTOs/PurchaseProps";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 interface Props {
   newPurchaseMaterials: PurchaseMaterialCreationListProps[];
@@ -44,6 +45,8 @@ interface Props {
 }
 
 const PurchaseMaterialsEditScreen = (props: Props) => {
+  const { t } = useLanguage();
+
   const {
     materialId,
     setMaterialId,
@@ -108,7 +111,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
       {/* ── Material ── */}
       <ComboboxField
         id="material"
-        label="Material"
+        label={t("Material")}
         required
         items={materialDetails}
         selectedValue={materialId}
@@ -119,11 +122,11 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
 
       {/* ── Quantity ── */}
       <NameField
-        label="Received Quantity"
+        label={t("Received Quantity")}
         required
         inputValue={receivedQuantity}
         setInputValue={handleReceivedQuantityChange}
-        placeholder="Enter Received Quantity"
+        placeholder={t("Enter Received Quantity")}
         errorMessage={error.receivedQuantity}
         regex="^[0-9]*\.?[0-9]*$"
       />
@@ -131,34 +134,34 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
 
       {/* ── Rate ── */}
       <NameField
-        label="Rate (₹/Unit)"
+        label={t("Rate (₹/Unit)")}
         required
         inputValue={rate}
         setInputValue={setRate}
-        placeholder="Enter Rate"
+        placeholder={t("Enter Rate")}
         errorMessage={error.rate}
         regex="^[0-9]*\.?[0-9]*$"
       />
       {/* ── Additional Charges ── */}
       <NameField
-        label="Additional Charges"
+        label={t("Additional Charges")}
         inputValue={additionalCharges}
         setInputValue={setAdditionalCharges}
-        placeholder="Enter Additional Charges"
+        placeholder={t("Enter Additional Charges")}
         regex="^[0-9]*\.?[0-9]*$"
       />
       {/* ── Discount ── */}
       <NameField
-        label="Discount"
+        label={t("Discount")}
         inputValue={discount}
         setInputValue={setDiscount}
-        placeholder="Enter Discount"
+        placeholder={t("Enter Discount")}
         regex="^[0-9]*\.?[0-9]*$"
       />
 
       {/* ── Received Quality ── */}
       <SelectField
-        label="Received Quality"
+        label={t("Received Quality")}
         required
         items={ReceivedQualityItems}
         selectedValue={receivedQuality}
@@ -169,7 +172,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
 
       {/* ── Received Date ── */}
       <DatePicker
-        label="Received Date"
+        label={t("Received Date")}
         required
         date={receivedDate}
         onDateChange={setReceivedDate}
@@ -179,10 +182,10 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
 
       {/* ── Notes ── */}
       <TextareaField
-        label="Notes"
+        label={t("Notes")}
         inputValue={notes && notes !== "null" ? notes : ""}
         setInputValue={setNotes}
-        placeholder="Enter your notes"
+        placeholder={t("Enter your Notes")}
       />
       {/* ── Photos ── */}
       <PurchasePhoto
@@ -196,7 +199,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
 
       {/* ── Upload button ── */}
       <Button variant="outline" onClick={handleImageSheetOpen}>
-        Upload Images
+        {t("Upload Images")}
       </Button>
 
       {/* ── Hidden file input ── */}

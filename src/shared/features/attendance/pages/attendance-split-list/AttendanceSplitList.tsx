@@ -11,6 +11,7 @@ import {
 } from '@/shared/components/ui/dialog';
 import AttendanceSplitEditForm from '../attendance-split-edit/AttendanceSplitEditForm';
 import type { Shift } from '@/shared/features/workers/DTOs/ShiftProps';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 export type WorkerCategory = {
   id: number;
@@ -47,6 +48,7 @@ const AttendanceSplitList = ({
 }: AttendanceSplitListProps) => {
   const { canEdit } = usePermission();
   const editable = canEdit('Attendance');
+  const { t } = useLanguage();
 
   const [selectedAttendance, setSelectedAttendance] =
     useState<AttendanceSplit | null>(null);
@@ -64,9 +66,9 @@ const AttendanceSplitList = ({
 
     {/* Table Header */}
   <div className="grid grid-cols-[2fr_1fr_1fr_1fr] bg-[var(--table-header-bg)] border-b border-[var(--border)] px-4 py-3">
-      {['Role', 'No.', 'Shift', 'Action'].map(col => (
+      {[t('Role'), t('No.'), t('Shift'), t('Action')].map((col, idx) => (
         <p
-          key={col}
+          key={idx}
           className="text-xs font-semibold text-[var(--gray-color)] uppercase tracking-wide"
         >
           {col}
@@ -137,7 +139,7 @@ const AttendanceSplitList = ({
     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Edit Attendance Split</DialogTitle>
+          <DialogTitle>{t('Edit Attendance Split')}</DialogTitle>
         </DialogHeader>
         {selectedAttendance && (
           <AttendanceSplitEditForm

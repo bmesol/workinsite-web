@@ -5,8 +5,10 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { FormInput } from "@/shared/components/FormInput/FormInput";
 import { useBankAccountCreateForm } from "./useBankAccountCreateForm";
 import type { BankAccountTypesProps } from "../DTOs/DTOs";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const BankAccountCreateForm = (props: BankAccountTypesProps) => {
+  const { t } = useLanguage();
   const {
     accountName,
     setAccountName,
@@ -21,15 +23,15 @@ const BankAccountCreateForm = (props: BankAccountTypesProps) => {
   return (
     <div className="flex flex-col gap-4">
       <FormInput errorMessage={error.accountName}>
-        <NameField inputValue={accountName} setInputValue={setAccountName} placeholder="Account name" isHideLabel={true} />
+        <NameField inputValue={accountName} setInputValue={setAccountName} placeholder={t('Account name')} isHideLabel={true} />
       </FormInput>
       <FormInput errorMessage={error.accountNumber}>
-        <AccountNumberField inputValue={accountNumber} setInputValue={setAccountNumber} length={18} placeholder="Account number" isHideLabel={true} />
+        <AccountNumberField inputValue={accountNumber} setInputValue={setAccountNumber} length={18} placeholder={t('Account number')} isHideLabel={true} />
       </FormInput>
       <FormInput errorMessage={error.ifscCode}>
         <IfscCodeField inputValue={ifscCode} setInputValue={setIfscCode} />
       </FormInput>
-      <FormSubmissionButtons label="Add" onCancel={() => props.onClose?.()} onSave={handleAdd} />
+      <FormSubmissionButtons label={t('Add')} onCancel={() => props.onClose?.()} onSave={handleAdd} />
     </div>
   );
 };

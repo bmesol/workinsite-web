@@ -17,12 +17,14 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import { useMaterialEdit } from './useMaterialEdit';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const MaterialEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const [showExitDialog, setShowExitDialog] = useState(false);
   const { canEdit } = usePermission();
   const editable = canEdit('Material');
+  const { t } = useLanguage();
 
   const {
     name,
@@ -59,7 +61,7 @@ const MaterialEditPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* Header */}
-      <Header title="Edit Material" />
+      <Header title={t('Edit Material')} />
 
       {/* Form Card */}
       <Card className="mt-4 p-6">
@@ -67,10 +69,10 @@ const MaterialEditPage = () => {
 
           {/* Material Name */}
           <NameField
-            label="Material Name"
+            label={t('Material Name')}
             inputValue={name}
             setInputValue={setName}
-            placeholder="Enter material name"
+            placeholder={t('Enter material name')}
             required={true}
             errorMessage={error.name}
             isDisabled={!editable}
@@ -79,7 +81,7 @@ const MaterialEditPage = () => {
           {/* Unit Combobox */}
           <ComboboxField
             id="unit"
-            label="Unit"
+            label={t('Unit')}
             items={unitDetails}
             selectedValue={unitId}
             onValueChange={handleUnitChange}
@@ -91,10 +93,10 @@ const MaterialEditPage = () => {
 
           {/* HSN Code */}
           <NameField
-            label="HSN Code"
+            label={t('HSN Code')}
             inputValue={hsnCode}
             setInputValue={setHsnCode}
-            placeholder="Enter HSN code"
+            placeholder={t('Enter HSN code')}
             length={15}
             regex="^[0-9]*$"
             isDisabled={!editable}
@@ -125,7 +127,7 @@ const MaterialEditPage = () => {
                 handleSaveAndExit();
               }}
             >
-              Save
+              {t('Save')}
             </Button>
             <Button
               variant="destructive"
@@ -134,10 +136,10 @@ const MaterialEditPage = () => {
                 handleConfirmExit();
               }}
             >
-              Exit Without Saving
+              {t('Exit Without Saving')}
             </Button>
             <AlertDialogCancel onClick={() => setShowExitDialog(false)}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -5,8 +5,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const UserStatus = () => {
+  const { t } = useLanguage();
   return (
     <TooltipProvider>
       <Tooltip>
@@ -20,7 +22,7 @@ const UserStatus = () => {
           <div className="p-2 flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-green-500" />
-              <span className="text-sm">Active User</span>
+              <span className="text-sm">{t('Active User')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-red-500" />

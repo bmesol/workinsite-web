@@ -10,16 +10,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const KycCreateForm = (props: KycTypesProps) => {
+  const { t } = useLanguage();
   const { kycType, kycItems, input, setInput, error, handleSelectChange, handleAdd } = useKycCreateForm(props);
 
   return (
     <div className="flex flex-col gap-4">
       <FormInput errorMessage={error.select}>
         <Select onValueChange={handleSelectChange} value={kycType}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select KYC type..." />
+          <SelectTrigger className={`w-full ${!kycType ? 'text-muted-foreground' : ''}`}>
+            <SelectValue placeholder={t('Select')} />
           </SelectTrigger>
           <SelectContent position="popper" sideOffset={4} className="z-[9999] bg-white">
             {kycItems.map((item) => (
@@ -33,7 +35,7 @@ const KycCreateForm = (props: KycTypesProps) => {
 
       <KycInputFields kycType={kycType as KYCTypes} input={input} setInput={setInput} error={error} />
 
-      <FormSubmissionButtons label="Add" onCancel={() => props.onClose?.()} onSave={handleAdd} />
+      <FormSubmissionButtons label={t('Add')} onCancel={() => props.onClose?.()} onSave={handleAdd} />
     </div>
   );
 };

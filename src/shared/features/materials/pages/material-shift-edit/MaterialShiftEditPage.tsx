@@ -6,8 +6,8 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
-import { Header } from '@/shared/components/Header/Header';  // ✅ remove Actions
-import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';  // ✅ add
+import { Header } from '@/shared/components/Header/Header';
+import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -22,10 +22,12 @@ import { useMaterialShiftEdit } from './useMaterialShiftEdit';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { MaterialShiftUrls } from '../../utils/urls';
 import { cn } from '@/shared/components/lib/utils';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 export const MaterialShiftEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { canEdit } = usePermission();
   const editable = canEdit('Material Shift');
 
@@ -92,14 +94,14 @@ export const MaterialShiftEditPage = () => {
     <div className="w-full min-h-screen px-4 pb-10">
 
       {/* ── Header ── */}
-      <Header title="Edit Material Shift" />  {/* ✅ remove Actions/Back button */}
+      <Header title={t("Edit Material Shift")} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
 
           {/* ── Date ── */}
           <DatePicker
-            label="Date"
+            label={t("Date")}
             date={date}
             onDateChange={setDate}
             required
@@ -110,7 +112,7 @@ export const MaterialShiftEditPage = () => {
           {/* ── Source Site ── */}
           <ComboboxField
             id="sourceSite"
-            label="Source Site"
+            label={t("Source Site")}
             items={sourceSiteDetails}
             selectedValue={sourceSiteId}
             onValueChange={setSourceSiteId}
@@ -129,7 +131,7 @@ export const MaterialShiftEditPage = () => {
           ) : (
             <ComboboxField
               id="material"
-              label="Material"
+              label={t("Material")}
               items={materialDetails}
               selectedValue={materialId}
               onValueChange={setMaterialId}
@@ -142,13 +144,13 @@ export const MaterialShiftEditPage = () => {
 
           {/* ── Quantity ── */}
           <NameField
-            label="Quantity"
+            label={t("Quantity")}
             inputValue={quantity}
             setInputValue={setQuantity}
             placeholder={
               maximumAllowedQuantity !== null
                 ? `Max: ${maximumAllowedQuantity}`
-                : 'Enter Quantity'
+                : t("Enter Quantity")
             }
             required
             regex="^[0-9]*(\.[0-9]*)?$"
@@ -162,7 +164,7 @@ export const MaterialShiftEditPage = () => {
           {/* ── Target Site ── */}
           <ComboboxField
             id="targetSite"
-            label="Target Site"
+            label={t("Target Site")}
             items={targetSiteDetails}
             selectedValue={targetSiteId}
             onValueChange={setTargetSiteId}
@@ -174,17 +176,17 @@ export const MaterialShiftEditPage = () => {
 
           {/* ── Notes ── */}
           <TextareaField
-            label="Notes"
+            label={t("Notes")}
             inputValue={notes}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t("Enter your Notes")}
             isDisabled={!editable}
           />
 
           {/* ── Save / Cancel ── */}
           <FormSubmissionButtons
             onSave={handleSubmission}
-            onCancel={handleBack}        // ✅ reuse handleBack
+            onCancel={handleBack}
             disabled={!editable}
           />
 
@@ -208,7 +210,7 @@ export const MaterialShiftEditPage = () => {
                 navigate(MaterialShiftUrls.list);
               }}
             >
-              Exit without Saving
+              {t("Exit Without Saving")}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
@@ -217,7 +219,7 @@ export const MaterialShiftEditPage = () => {
                   setShowUnsavedDialog(false);
                 }}
               >
-                Save
+                {t("Save")}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

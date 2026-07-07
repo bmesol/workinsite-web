@@ -19,8 +19,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerCategoryEditPage = () => {
+  const { t } = useLanguage();
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
 
@@ -62,25 +64,25 @@ const WorkerCategoryEditPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
-      <Header title="Edit Worker Category" />
+      <Header title={t('Edit Worker Category')} />
 
       <Card className="mt-4">
         <CardContent className="flex flex-col gap-4 pt-4">
 
           <NameField
-            label="Worker Category Name"
+            label={t('Worker Category Name')}
             inputValue={name}
             setInputValue={setName}
             errorMessage={error.workerCategoryName}
-            placeholder="Enter worker category name"
+            placeholder={t('Enter worker category name')}
             required={true}
           />
 
           {/* Work Type Section */}
-       
+
           <FormActionButton
-            heading="Work Type"
-            label="Add"
+            heading={t('Work Type')}
+            label={t('Add')}
             onClick={() => setWorkTypeDialogOpen(true)}
             required={true}
             errorMessage={error.workTypeList}
@@ -94,10 +96,10 @@ const WorkerCategoryEditPage = () => {
             deletedWorkTypeList={deletedWorkTypeList}
             setDeletedWorkTypeList={setDeletedWorkTypeList}
           />
-        
+
           <FormActionButton
-            heading="Worker Role"
-            label="Add"
+            heading={t('Worker Role')}
+            label={t('Add')}
             onClick={() => setWorkerRoleDialogOpen(true)}
             required={true}
             errorMessage={error.workerRoleList}
@@ -113,10 +115,10 @@ const WorkerCategoryEditPage = () => {
           />
 
           <TextareaField
-            label="Notes"
+            label={t('Notes')}
             inputValue={notes ?? ""}
             setInputValue={setNotes}
-            placeholder="Enter your notes"
+            placeholder={t('Enter your notes')}
           />
 
           {/* Is Active Toggle */}
@@ -132,7 +134,7 @@ const WorkerCategoryEditPage = () => {
       <Dialog open={workTypeDialogOpen} onOpenChange={setWorkTypeDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Work Type</DialogTitle>
+            <DialogTitle>{t('Create Work Type')}</DialogTitle>
           </DialogHeader>
           <WorkTypeCreateForm
             workTypeList={workTypeList}
@@ -147,7 +149,7 @@ const WorkerCategoryEditPage = () => {
       <Dialog open={workerRoleDialogOpen} onOpenChange={setWorkerRoleDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Worker Role</DialogTitle>
+            <DialogTitle>{t('Create Worker Role')}</DialogTitle>
           </DialogHeader>
           <WorkerRoleCreateForm
             workerRoleList={workerRoleList}

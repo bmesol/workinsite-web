@@ -1,5 +1,3 @@
-import { Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
 import { usePermission } from "@/shared/hooks/usePermission";
 import type { WorkModeListProps } from "../../DTOs/WorkModeProps";
 import { ListItem } from "@/shared/components/ListItem/ListItem";

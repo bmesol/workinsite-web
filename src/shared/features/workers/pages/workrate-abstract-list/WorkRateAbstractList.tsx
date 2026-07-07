@@ -4,7 +4,7 @@ import { Header } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
 import { WorkRateAbstractUrls } from "../../utils/urls";
-import { useWorkRateAbstractList } from "./useWorkRateAbstractList"; 
+import { useWorkRateAbstractList } from "./useWorkRateAbstractList";
 import type { WorkRateAbstractProps } from "../../DTOs/WorkRateAbstract";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import {
@@ -17,8 +17,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkRateAbstractListPage = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const {
@@ -48,9 +50,9 @@ const WorkRateAbstractListPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
-      <Header title="Work Rate Abstract List">
+      <Header title={t('Work Rate Abstract List')}>
         <Button onClick={() => navigate(WorkRateAbstractUrls.create)}>
-          Create Work Rate Abstract
+          {t('Create Work Rate Abstract')}
         </Button>
       </Header>
 
@@ -60,7 +62,7 @@ const WorkRateAbstractListPage = () => {
     <SearchBar
       searchText={searchText}
       setSearchText={setSearchText}
-      searchCategory="Work Rate Abstract"
+      placeholder={t('Search work rate abstract')}
     />
   </div>
 </div>
@@ -95,7 +97,7 @@ const WorkRateAbstractListPage = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancelDelete}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}

@@ -27,12 +27,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/shared/components/ui/alert-dialog';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceEditPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { canEdit } = usePermission();
   const editable = canEdit('Attendance');
   const [splitOpen, setSplitOpen] = useState(false);
+  const { t } = useLanguage();
 
   const {
     siteDetails,
@@ -100,7 +102,7 @@ const AttendanceEditPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
-      <Header title="Edit Attendance" />
+      <Header title={t('Edit Attendance')} />
 
       <Card className="mt-4">
         <CardContent className="pt-4">
@@ -110,14 +112,14 @@ const AttendanceEditPage = () => {
               date={date}
               onDateChange={setDate}
               errorMessage={error.date}
-              label="Date"
+              label={t('Date')}
               required
               disable={!editable}
             />
 
             <ComboboxField
               id="site"
-              label="Site"
+              label={t('Site')}
               items={siteDetails}
               selectedValue={siteId}
               onValueChange={setSiteId}
@@ -129,7 +131,7 @@ const AttendanceEditPage = () => {
 
             <ComboboxField
               id="wageType"
-              label="Wage Type"
+              label={t('Wage Type')}
               items={wageTypeDetails}
               selectedValue={wageTypeId}
               onValueChange={setWageTypeId}
@@ -141,7 +143,7 @@ const AttendanceEditPage = () => {
 
             <ComboboxField
               id="workType"
-              label="Work Type"
+              label={t('Work Type')}
               items={workTypeDetails}
               selectedValue={workType.id.toString()}
               onValueChange={(val) => {
@@ -156,7 +158,7 @@ const AttendanceEditPage = () => {
 
             <ComboboxField
               id="worker"
-              label="Worker"
+              label={t('Worker')}
               items={workerDetails}
               selectedValue={workerId}
               onValueChange={setWorkerId}
@@ -167,10 +169,10 @@ const AttendanceEditPage = () => {
             />
 
             <NameField
-              label="Worked Quantity"
+              label={t('Worked Quantity')}
               inputValue={workedQuantity}
               setInputValue={setWorkedQuantity}
-              placeholder="Enter Worked Quantity"
+              placeholder={t('Enter Worked Quantity')}
               errorMessage={error.workedQuantity}
               required
               isDisabled={!editable}
@@ -178,7 +180,7 @@ const AttendanceEditPage = () => {
 
             <ComboboxField
               id="unit"
-              label="Unit"
+              label={t('Unit')}
               items={unitDetails}
               selectedValue={unitId}
               onValueChange={setUnitId}
@@ -190,7 +192,7 @@ const AttendanceEditPage = () => {
 
             <ComboboxField
               id="workMode"
-              label="Work Mode"
+              label={t('Work Mode')}
               items={workModeDetails}
               selectedValue={workModeId}
               onValueChange={setWorkModeId}
@@ -209,7 +211,7 @@ const AttendanceEditPage = () => {
                   className="flex items-center gap-2 text-sm font-medium text-[var(--secondary)] hover:opacity-80 w-fit"
                 >
                   <PlusCircle size={18} />
-                  Attendance Split
+                  {t('Attendance Split')}
                 </button>
                 {error.attendanceSplit && (
                   <p className="text-xs text-destructive">{error.attendanceSplit}</p>
@@ -287,7 +289,7 @@ const AttendanceEditPage = () => {
                   className="flex items-center gap-2 text-sm font-medium text-[var(--secondary)] hover:opacity-80 w-fit"
                 >
                   <Upload size={18} />
-                  Upload Images
+                  {t('Upload Images')}
                 </button>
                 <input
                   ref={fileInputRef}
@@ -301,8 +303,8 @@ const AttendanceEditPage = () => {
             )}
 
             <TextareaField
-              label="Notes"
-              placeholder="Enter your Notes"
+              label={t('Notes')}
+              placeholder={t('Enter your Notes')}
               inputValue={notes}
               setInputValue={setNotes}
               isDisabled={!editable}
@@ -317,10 +319,10 @@ const AttendanceEditPage = () => {
                   className="w-24"
                   onClick={handleBackPress}  // ✅ Cancel — unsaved changes check பண்ணி navigate
                 >
-                  Cancel
+                  {t('Cancel')}
                 </Button>
                 <Button type="submit" className="w-24">
-                  Save
+                  {t('Save')}
                 </Button>
               </div>
             )}
@@ -333,7 +335,7 @@ const AttendanceEditPage = () => {
       <Dialog open={splitOpen} onOpenChange={setSplitOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Attendance Split</DialogTitle>
+            <DialogTitle>{t('Attendance Split')}</DialogTitle>
           </DialogHeader>
           <AttendanceSplitCreationPage
             workerCategoryId={workType?.workerCategory?.id}
@@ -355,7 +357,7 @@ const AttendanceEditPage = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => handleDelete(deleteIndex!)}
               className="bg-destructive text-white hover:bg-destructive/90"

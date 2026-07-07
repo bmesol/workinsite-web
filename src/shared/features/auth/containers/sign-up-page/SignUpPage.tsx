@@ -17,8 +17,10 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import "@/shared/features/auth/containers/sign-up-page/SignUpPage.scss";
 import { useState } from "react";
 import { Footer } from "@/shared/components/footer/Footer";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 export const SignUpPage = () => {
+  const { t } = useLanguage();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [organization, setOrganization] = useState("");
@@ -91,12 +93,12 @@ export const SignUpPage = () => {
                 <div className="flex flex-col gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="name">
-                      Name<span className="text-red-500">*</span>
+                      {t('Name')}<span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="name"
                       type="text"
-                      placeholder="Enter your name"
+                      placeholder={t('Enter your name')}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                     />
@@ -106,7 +108,7 @@ export const SignUpPage = () => {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="email">
-                      Phone Number<span className="text-red-500">*</span>
+                      {t('Phone Number')}<span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="name"
@@ -116,7 +118,7 @@ export const SignUpPage = () => {
                         setPhone(e.target.value.replace(/\D/g, ""))
                       }
                       maxLength={10}
-                      placeholder="Enter phone number"
+                      placeholder={t('Enter phone number')}
                     />
                     {errors.phone && (
                       <p className="text-red-500 text-sm">{errors.phone}</p>
@@ -211,7 +213,7 @@ export const SignUpPage = () => {
                   <p className="md-unit" style={{ color: "var(--gray-color)" }}>
                     Already have an account?{" "}
                     <Link to="/" className="md-unit mt-1 !text-black">
-                      Sign in
+                      {t('Sign in')}
                     </Link>
                   </p>
                 </div>

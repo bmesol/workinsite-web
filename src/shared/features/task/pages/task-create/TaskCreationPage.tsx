@@ -16,11 +16,13 @@ import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import { SelectField } from "@/shared/components/FormFields/SelectField";
 import SupervisorSelector from "../../components/SupervisorSelector/SupervisorSelector";
 import { useTaskCreation } from "./useTaskCreate";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { TaskUrls } from "../../utils/urls";
 import PurchasePhoto from "@/shared/features/materials/pages/purchase-photo/PurchasePhoto";
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
 
 const TaskCreationPage = () => {
+  const { t } = useLanguage();
   const [supervisorDialogOpen, setSupervisorDialogOpen] = useState(false);
 
   const {
@@ -55,14 +57,14 @@ const TaskCreationPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      <Header title="Create Task" />
+      <Header title={t('Create Task')} />
 
       <Card className="mt-4 p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Site */}
           <ComboboxField
             id="site-combobox"
-            label="Site"
+            label={t('Site')}
             items={siteDetails}
             selectedValue={siteId}
             onValueChange={handleSiteChange}
@@ -74,13 +76,13 @@ const TaskCreationPage = () => {
           {/* Task Name */}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="taskName" className="text-base">
-              Task Name <span className="text-red-500">*</span>
+              {t('Task Name')} <span className="text-red-500">*</span>
             </Label>
             <Textarea
               id="taskName"
               value={taskName}
               onChange={(e) => setTaskName(e.target.value)}
-              placeholder="Enter your Task name"
+              placeholder={t('Enter your Task name')}
               rows={2}
             />
             {error.taskName && (
@@ -90,7 +92,7 @@ const TaskCreationPage = () => {
 
           {/* Date */}
           <DatePicker
-            label="Date"
+            label={t('Date')}
             date={date}
             onDateChange={setDate}
             errorMessage={error.date}
@@ -100,7 +102,7 @@ const TaskCreationPage = () => {
 
           {/* Priority */}
           <SelectField
-            label="Priority"
+            label={t('Priority')}
             items={priorityType}
             selectedValue={priority}
             onValueChange={(val) => setPriority(val as string)}
@@ -110,7 +112,7 @@ const TaskCreationPage = () => {
 
           {/* Status */}
           <SelectField
-            label="Status"
+            label={t('Status')}
             items={workflowStatus}
             selectedValue={status}
             onValueChange={(val) => setStatus(val as string)}
@@ -121,45 +123,45 @@ const TaskCreationPage = () => {
           {/* Remarks */}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="remarks" className="text-base">
-              Remarks
+              {t('Remarks')}
             </Label>
             <Textarea
               id="remarks"
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
-              placeholder="Enter your Remarks"
+              placeholder={t('Enter Remark')}
               rows={3}
             />
           </div>
         </div>
 
-  <FormActionButton
-    heading="Assign Supervisor"
-    label="Select"
-    onClick={() => setSupervisorDialogOpen(true)}
-    isColsTwo={true}
-    required={true}
-    errorMessage={error.supervisor}
-  />
+        <FormActionButton
+          heading={t('Assign Supervisor')}
+          label={t('Select')}
+          onClick={() => setSupervisorDialogOpen(true)}
+          isColsTwo={true}
+          required={true}
+          errorMessage={error.supervisor}
+        />
 
-  {supervisorId && (
-    <div className="mt-2 p-3 rounded-xl border border-[var(--primary)] bg-white flex items-center gap-3">
-      <div
-        className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-        style={{ backgroundColor: "var(--primary)" }}
-      >
-        <span className="text-sm font-bold text-white">
-          {supervisorDetails
-            .find((s) => s.value === supervisorId)
-            ?.label?.substring(0, 2)
-            .toUpperCase()}
-        </span>
-      </div>
-      <span className="text-base font-semibold text-black">
-        {supervisorDetails.find((s) => s.value === supervisorId)?.label}
-      </span>
-    </div>
-  )}
+        {supervisorId && (
+          <div className="mt-2 p-3 rounded-xl border border-[var(--primary)] bg-white flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+              style={{ backgroundColor: "var(--primary)" }}
+            >
+              <span className="text-sm font-bold text-white">
+                {supervisorDetails
+                  .find((s) => s.value === supervisorId)
+                  ?.label?.substring(0, 2)
+                  .toUpperCase()}
+              </span>
+            </div>
+            <span className="text-base font-semibold text-black">
+              {supervisorDetails.find((s) => s.value === supervisorId)?.label}
+            </span>
+          </div>
+        )}
 
         {/* ── Photos ── */}
         <div className="mt-4">
@@ -173,7 +175,7 @@ const TaskCreationPage = () => {
             permissionKey="Task"
           />
           <UploadButton
-            text="Upload Images"
+            text={t('Upload Images')}
             onFilesSelected={(files) =>
               handleFileChange({
                 target: { files },
@@ -199,7 +201,7 @@ const TaskCreationPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Select Supervisor</DialogTitle>
+            <DialogTitle>{t('Select Supervisor')}</DialogTitle>
           </DialogHeader>
           <SupervisorSelector
             supervisorDetails={supervisorDetails}

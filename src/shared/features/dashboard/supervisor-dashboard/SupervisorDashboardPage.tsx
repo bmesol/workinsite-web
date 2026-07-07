@@ -1,7 +1,7 @@
 import { MapPin, Loader2, CheckCircle2, LogOut, ChevronRight, Users, ClipboardList, CalendarDays } from 'lucide-react';
 import { useSupervisorDashboard, type AttendanceItem, type Task, type SupervisorAttendance } from './useSupervisorDasboard';
 import { useNavigate } from 'react-router-dom';
-
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 // ── Section Title ──────────────────────────────────────────────────────────────
 const SectionTitle = ({
   children,
@@ -92,6 +92,7 @@ const SupervisorDashboard = () => {
   const navigateToTask = (id: number) => navigate(`/task/${id}/edit`);
   const navigateToSite = (id: number) => navigate(`/sites/${id}/edit`);
   const navigateAttendance = () => navigate('/attendance/create');
+  const { t } = useLanguage(); 
 
   if (loading) {
     return (
@@ -107,7 +108,7 @@ const SupervisorDashboard = () => {
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="px-4 md:px-6 py-4" style={{ background: 'var(--primary)' }}>
         <p style={{ fontSize: 'var(--font-md)', fontWeight: 600, color: 'var(--primary-foreground)' }}>
-          Welcome, {greetingName} 👋
+          {t('Welcome')}, {greetingName} 👋
         </p>
       </div>
 
@@ -140,7 +141,7 @@ const SupervisorDashboard = () => {
               style={{ borderRadius: '1rem', padding: '1rem', background: '#ef4444', color: '#fff', fontSize: 'var(--font-sm)', fontWeight: 700 }}
             >
               <LogOut className="w-4 h-4" />
-              Check Out
+             {t('Check Out')} 
             </button>
           </div>
         ) : (

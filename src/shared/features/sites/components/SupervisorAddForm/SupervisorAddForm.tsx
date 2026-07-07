@@ -19,8 +19,10 @@ import { useState } from "react";
 import { useSupervisorAddForm } from "./useSupervisorAddForm";
 import type { SupervisorAddFormProps } from "./DTOs";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const SupervisorAddForm = (props: SupervisorAddFormProps) => {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -47,7 +49,7 @@ const SupervisorAddForm = (props: SupervisorAddFormProps) => {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="supervisor-combobox" className="text-base font-medium">
-          Supervisor <span className="text-red-500">*</span>
+          {t('Supervisor')} <span className="text-red-500">*</span>
         </Label>
 
         <Popover
