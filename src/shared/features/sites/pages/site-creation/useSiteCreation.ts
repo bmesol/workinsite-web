@@ -103,7 +103,7 @@ const useSiteCreation = (queryString: URLSearchParams) => {
     setWageTypeList(searchString ? wageTypes.slice(0, 3) : wageTypes);
   };
 
-  const { error, validate } = useSiteInputValidate({ name, clientId, googleLocation, contactId });
+  const { error, validate } = useSiteInputValidate({ name, clientId, googleLocation, contactId, wageTypeId });
   const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact);
 
   const clientDetails = clientList.map((item) => ({ label: item.name, value: item.id.toString() }));
