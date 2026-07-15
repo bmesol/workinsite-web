@@ -5,9 +5,12 @@ import { Toaster } from "@/shared/components/ui/sonner";
 import App from "./App";
 import '@/shared/styles/global.css'
 import { LanguageProvider } from "@/shared/hooks/useLanguageContext";
+import { ThemeProvider } from '@/shared/context/ThemeContext';
+
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <ThemeProvider>
     <LanguageProvider> 
     <HashRouter>
       <App />
@@ -15,5 +18,6 @@ createRoot(document.getElementById("root")!).render(
 
     </HashRouter>
     </LanguageProvider> 
+    </ThemeProvider>
   </StrictMode>
 );
