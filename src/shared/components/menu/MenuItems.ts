@@ -13,7 +13,7 @@ import {
   FileText,
   ShieldCheck,
   ClipboardList,
-  LayoutDashboard,
+  Home,
   Droplet
 } from "lucide-react";
 import { ADMIN_USERS, ALL_USERS, SUPERVISOR_ONLY } from "@/shared/helpers/RouteHelper";
@@ -35,8 +35,8 @@ const MenuItems: Record<string, MenuItem> = {
   
   "/dashboard": {
     label: "Home",
-    icon: LayoutDashboard,
-    allowedUserRoles: SUPERVISOR_ONLY,
+    icon: Home,
+    allowedUserRoles: ALL_USERS,
   },
   "/roles-rights": {
     label: "Roles & Rights",

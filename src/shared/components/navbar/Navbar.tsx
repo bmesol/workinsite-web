@@ -3,7 +3,7 @@ import { Label } from "@/shared/components/ui/label";
 import workInSiteLogo from "@/assets/images/work-insite-logo.png";
 import { MenuBar } from "@/shared/components/menu/Menubar";
 import Sidebar from "@/shared/components/menu/Sidebar";
-import { LanguageSelector } from "@/shared/components/LanguageSelector/LanguageSelector";
+
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -28,7 +28,7 @@ export const Navbar = () => {
 
         {/* ✅ Right side: Language Selector + Menu icon */}
         <div className="flex items-center gap-4">
-          <LanguageSelector />
+         
           <MenuBar onOpen={() => setOpen(true)} />
         </div>
       </nav>
