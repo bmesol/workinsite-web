@@ -127,7 +127,7 @@ import { WorkerCategoriesUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import type { WorkType } from "../../DTOs/WorkTypeProps";
+import type { WorkType, WorkTypeNew } from "../../DTOs/WorkTypeProps";
 import type { WorkerRole, WorkerRoles } from "../../DTOs/WorkRoleProps";
 
 const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
@@ -140,8 +140,8 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
   const [isActive, setIsActive] = useState(true);
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps>();
 
-  // ✅ WorkType states
-  const [workTypeList, setWorkTypeList] = useState<WorkType[]>([]);
+  // ✅ WorkType states — workTypeList holds locally-added (unsaved) items
+  const [workTypeList, setWorkTypeList] = useState<WorkTypeNew[]>([]);
   const [updatedWorkTypeList, setUpdatedWorkTypeList] = useState<WorkType[]>([]);
   const [deletedWorkTypeList, setDeletedWorkTypeList] = useState<number[]>([]);
 
@@ -186,7 +186,7 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
 
   useEffect(() => {
     fetchWorkerCategory();
-  }, []);
+  }, [id]);
 
   // ✅ Cancel
   const handleCancel = () => {
@@ -197,20 +197,32 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     navigate(WorkerCategoriesUrls.list);
   };
 
-  // ✅ SUBMIT (🔥 FIXED HERE)
+  // ✅ SUBMIT — payload shape now matches mobile exactly:
+  // backend silently ignores unrecognized "workTypes"/"workerRoles" keys, so nested
+  // updates (unit change, salary change) were never actually persisted before.
+  // Sending newWorkTypes/updatedWorkTypes/deletedWorkTypes (and the worker-role
+  // equivalents) is what the backend actually reads.
   const handleSubmission = async () => {
     if (validate()) {
       try {
         const workerCategory = {
-          name: name.trim(), 
+          name: name.trim(),
           note: notes.trim(),
-          isActive,
 
-          workTypes: [...updatedWorkTypeList, ...workTypeList],
-          workerRoles: [...updateworkerRoleList, ...workerRoleList],
+          newWorkTypes: workTypeList.map((wt) => ({
+            name: wt.name,
+            unitId: wt.unitId,
+          })),
+          updatedWorkTypes: updatedWorkTypeList.map((wt) => ({
+            id: wt.id,
+            name: wt.name,
+            unitId: wt.unit?.id,
+          })),
+          deletedWorkTypes: deletedWorkTypeList,
 
-          deletedWorkTypeIds: deletedWorkTypeList,
-          deletedWorkerRoleIds: deleteworkerRoleList,
+          newWorkerRoles: workerRoleList,
+          updatedWorkerRoles: updateworkerRoleList,
+          deletedWorkerRoles: deleteworkerRoleList,
         };
 
         await workerCategoryService.updateWorkerCategory(

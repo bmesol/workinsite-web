@@ -24,17 +24,13 @@ const useContactCreation = (queryString: URLSearchParams) => {
 
   const handleSubmission = async () => {
     if (validate()) {
-      if (!phone && contactList.contactDetails.length === 0) {
-        toast.error("Please add at least one contact.");
-      } else {
-        const contact = { ...contactList, name, phone };  // ✅ include phone
-        const response = await contactService.createContact(contact);
-        if (redirectUrl) {
-          navigate(`${redirectUrl}&name=${name}&contactId=${response.id}`);
-          return;
-        }
-        navigate(ContactsUrls.list);
+      const contact = { ...contactList, name, phone };
+      const response = await contactService.createContact(contact);
+      if (redirectUrl) {
+        navigate(`${redirectUrl}&name=${name}&contactId=${response.id}`);
+        return;
       }
+      navigate(ContactsUrls.list);
     }
   };
 

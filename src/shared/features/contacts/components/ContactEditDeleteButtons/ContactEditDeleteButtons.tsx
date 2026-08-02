@@ -35,7 +35,7 @@ const ContactEditDeleteButtons = (props: ContactEditDeleteButtonsProps) => {
         onClick={() => handleDelete(selectedItem.id)}
         className="p-1 rounded-md hover:bg-destructive/10 transition-colors"
       >
-        <Trash2 className="h-4 w-4 text-destructive" />
+        <Trash2 className="h-4 w-4 text-destructive" style={{ color: 'var(--danger-color)' }} />
       </button>
 
       {/* ✅ useModel → shadcn Dialog */}

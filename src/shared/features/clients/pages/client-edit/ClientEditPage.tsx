@@ -4,7 +4,6 @@ import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { ContactsEditForm } from "@/shared/features/clients/components/ContactsEditForm/ContactEditForm";
 import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
 import { NameField } from "@/shared/components/FormFields/NameField";
-import { FormInput } from "@/shared/components/FormInput/FormInput";
 import { KycCreateForm } from "@/shared/components/Kyc/KycCreateForm/KycCreateForm";
 import { Header } from "@/shared/components/Header/Header";
 import { KycTypes } from "@/shared/components/Kyc/KycTypes/KycTypes";
@@ -20,22 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/shared/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover";
-import { Button } from "@/shared/components/ui/button";
-import { Phone, Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/shared/components/lib/utils";
+import { Phone } from "lucide-react";
+import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientEditPage = () => {
@@ -45,7 +30,6 @@ const ClientEditPage = () => {
 
   const [isKycOpen, setIsKycOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [isComboOpen, setIsComboOpen] = useState(false);
 
   const {
     name,
@@ -69,9 +53,6 @@ const ClientEditPage = () => {
     hasMoreDetails,
     loading,
   } = useClientEdit(id as string, queryString);
-  console.log("contact:", contact);
-  console.log("contactId:", contactId);
-  console.log("primaryContactDetails:", primaryContactDetails);
 
   if (loading) {
     return (
@@ -96,67 +77,17 @@ const ClientEditPage = () => {
               required={true}
             />
             {(clientDetails as Client).contact.id && (
-              <FormInput errorMessage={error.contact}>
-                <Popover open={isComboOpen} onOpenChange={setIsComboOpen}>
-                  <PopoverTrigger asChild>
-                    <div className="flex flex-col gap-1 cursor-pointer">
-                      <label className="text-base font-medium ">
-                        {t('Contact')} <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex items-center justify-between w-full border rounded-md px-3 py-2">
-                        <span className="text-sm text-black">
-                          {contactId
-                            ? contactDetails.find(
-                                (c) => c.value === contactId.toString(),
-                              )?.label
-                            : "Select contact..."}
-                        </span>
-                        <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-                      </div>
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full p-0 z-[9999]">
-                    <Command>
-                      <CommandInput
-                        placeholder={t('Search contact')}
-                        onValueChange={(val) => fetchContacts(val)}
-                      />
-                      <CommandList>
-                        <CommandEmpty>
-                          <button
-                            className="text-sm text-primary underline px-2"
-                            onClick={() => handleContactCreate("")}
-                          >
-                            + Create new contact
-                          </button>
-                        </CommandEmpty>
-                        <CommandGroup>
-                          {contactDetails.map((item) => (
-                            <CommandItem
-                              key={item.value}
-                              value={item.value}
-                              onSelect={(val) => {
-                                handleContactChange(val);
-                                setIsComboOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  contactId.toString() === item.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                              {item.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </FormInput>
+              <ComboboxField
+                id="contact-combobox"
+                label={t('Contact')}
+                items={contactDetails}
+                selectedValue={contactId}
+                onValueChange={handleContactChange}
+                onSearch={fetchContacts}
+                onCreate={handleContactCreate}
+                error={error.contact}
+                required
+              />
             )}
           </div>
 
@@ -219,6 +150,7 @@ const ClientEditPage = () => {
                     kycDetails: updated.kycDetails,
                   }))
                 }
+                isColsTwo
               />
             </div>
           </div>

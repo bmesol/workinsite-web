@@ -93,8 +93,9 @@ const ComboboxField = ({
         </PopoverTrigger>
 
         <PopoverContent
-          className="w-full p-0 bg-white dark:bg-background"
+          className="w-full p-0 bg-white dark:bg-background z-[200]"
           align="start"
+          collisionPadding={{ top: 72 }}
         >
           <Command shouldFilter={false}>
             <CommandInput

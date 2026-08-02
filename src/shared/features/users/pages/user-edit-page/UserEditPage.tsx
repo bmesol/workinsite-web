@@ -20,6 +20,7 @@ import { Header, Actions } from "@/shared/components/Header/Header";
 import { UsersUrls } from "../../utils/urls";
 import { useUserEdit } from "./useUserEdit";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { RoleSelectField } from "@/shared/components/RoleSelectField/RoleSelectField";
 
 const UserEditPage = () => {
   const { t } = useLanguage();
@@ -89,21 +90,14 @@ const UserEditPage = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <RadioField
-                label={t("Role")}
-                items={roles}
-                inputValue={role}
-                setInputValue={setRole}
-              />
-              <div className="flex flex-col gap-2">
-                <Label className="text-base font-medium text-black flex items-center gap-0.5">
-                  {t("Is Active")}
-                </Label>
-                <Switch checked={isActive} onCheckedChange={setIsActive} />
-              </div>
-            </div>
-
+           <RoleSelectField
+  label={t("Role")}
+  items={roles}
+  selectedValue={role}
+  onValueChange={setRole}
+  errorMessage={error.role}
+  required
+/>
             <div className="flex flex-col gap-2">
               <Label className="text-base font-medium text-black flex items-center gap-0.5">
                 {t("Notes")}

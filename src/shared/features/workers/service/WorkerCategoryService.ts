@@ -1,4 +1,4 @@
-import type { WorkerCategoryCreationRequest, WorkerCategoryUpdationRequest } from "../DTOs/WorkerCategoryProps";
+import type { WorkerCategoryEditRequest } from "../DTOs/WorkerCategoryProps";
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
 
 const useWorkerCategoryService = () => {
@@ -25,7 +25,7 @@ const useWorkerCategoryService = () => {
 
   return response.data;
 };
-  const updateWorkerCategory = async (id: number, workerCategory: WorkerCategoryUpdationRequest) => {
+  const updateWorkerCategory = async (id: number, workerCategory: WorkerCategoryEditRequest) => {
     await apiHelper.put(`worker-categories/${id}`, workerCategory);
   };
 

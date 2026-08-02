@@ -1,4 +1,4 @@
-import type { SelectedItemProps, WorkType, WorkTypeListProps, WorkTypes } from "../../DTOs/WorkTypeProps";
+import type { SelectedItemProps, WorkType, WorkTypeListProps, WorkTypeNew } from "../../DTOs/WorkTypeProps";
 import { useState } from "react";
 import { useWorkTypeService } from "../../service/WorkerTypeService";
 import { toast } from "sonner";
@@ -20,7 +20,7 @@ export const useWorkTypeList = (props: WorkTypeListProps) => {
 
   const WorkTypeService = useWorkTypeService();
 
-  const handleEdit = (index: number, value: WorkType | WorkTypes, source: string) => {
+  const handleEdit = (index: number, value: WorkType | WorkTypeNew, source: string) => {
     setSelectedItem({ index, value, source });
     setEditDialogOpen(true);   // ← replaces bottomSheetRef.current?.open()
   };

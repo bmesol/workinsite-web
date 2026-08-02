@@ -86,14 +86,14 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
               size="icon-sm"
               onClick={() => handleEdit(item.index, item)}
             >
-              <Pencil className="h-4 w-4 text-yellow-600" />
+              <Pencil className="h-4 w-4 text-black" />
             </Button>
             <Button
               variant="ghost"
               size="icon-sm"
               onClick={() => handleDeleteClick(item.index, item.source, item)}
             >
-              <Trash2 className="h-4 w-4 text-destructive" />
+              <Trash2 className="h-4 w-4 text-destructive" style={{ color: 'var(--danger-color)' }} />
             </Button>
           </div>
         </div>

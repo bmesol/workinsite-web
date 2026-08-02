@@ -53,12 +53,12 @@
 
 
 import { useState } from "react";
-import type { WorkType } from "../../DTOs/WorkTypeProps";
+import type { WorkType, WorkTypeNew } from "../../DTOs/WorkTypeProps";
 import type { WorkerRole, WorkerRoles } from "../../DTOs/WorkRoleProps";
 
 const useWorkerCategoryInputValidate = (
   workerCategoryName: string,
-  workTypeList: WorkType[],
+  workTypeList: (WorkType | WorkTypeNew)[],
   workerRoleList: (WorkerRole | WorkerRoles)[],
 ) => {
   const initialError = {

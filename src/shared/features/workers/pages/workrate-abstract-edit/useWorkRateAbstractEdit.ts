@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';                   
+import { useNavigate } from 'react-router-dom';
 import { useWorkRateAbstractValidate } from '../../components/InputValidate/WorkRateAbstractValidate';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { useWorkTypeService } from '@/shared/features/workers/service/WorkerTypeService';
 import { useUnitService } from '@/shared/features/materials/service/UnitService';
 import { useWorkRateAbstractService } from '../../service/WorkRateAbstractService';
-import { toast } from 'sonner';                                    
+import { toast } from 'sonner';
 import type { WorkRateAbstractProps } from '../../DTOs/WorkRateAbstract';
 import type { Unit } from '@/shared/features/materials/DTOs/UnitProps';
 import type { WorkType } from '@/shared/features/workers/DTOs/WorkTypeProps';
-import { WorkRateAbstractUrls } from '../../utils/urls';              
+import { WorkRateAbstractUrls } from '../../utils/urls';
 
-const useWorkRateAbstractEdit = (id: string) => {                
+const useWorkRateAbstractEdit = (id: string) => {
   const navigate = useNavigate();
 
   const [siteId, setSiteId] = useState('');
@@ -41,8 +41,9 @@ const useWorkRateAbstractEdit = (id: string) => {
     value: item.id.toString(),
   }));
 
+  // ✅ show unit alongside work type name, like mobile: "Tile Laying [SQM]"
   const workTypeDetails = workTypeList.map(item => ({
-    label: item.name,
+    label: `${item.name}${item.unit?.name ? ` [${item.unit.name}]` : ''}`,
     value: item.id.toString(),
   }));
 
@@ -51,7 +52,6 @@ const useWorkRateAbstractEdit = (id: string) => {
     value: item.id.toString(),
   }));
 
-  // ✅ { searchString } → searchString (matches SiteService signature)
   const fetchSites = async (searchString: string = '') => {
     const sites = await siteService.getSites({ searchString });
     if (!sites) return;
@@ -64,10 +64,25 @@ const useWorkRateAbstractEdit = (id: string) => {
     setWorkTypeList(searchString ? workTypes.slice(0, 3) : workTypes);
   };
 
+  // ✅ Unit is auto-derived from work type now — no manual search needed,
+  // kept only in case it's needed elsewhere; not wired to the Unit field's onSearch anymore.
   const fetchUnits = async (searchString: string = '') => {
     const units = await unitService.getUnits(searchString, false);
     if (!units) return;
     setUnitList(searchString ? units.slice(0, 3) : units);
+  };
+
+  // ✅ NEW: mirrors mobile's handleWorkTypeChange — auto-derives unit from selected work type
+  const handleWorkTypeChange = (value: string) => {
+    setWorkTypeId(value);
+    const selected = workTypeList.find(wt => wt.id.toString() === value);
+    if (selected?.unit) {
+      setUnitId(selected.unit.id.toString());
+      setUnitList([{ id: selected.unit.id, name: selected.unit.name } as Unit]);
+    } else {
+      setUnitId('');
+      setUnitList([]);
+    }
   };
 
   const fetchWorkRateAbstract = async () => {
@@ -89,12 +104,10 @@ const useWorkRateAbstractEdit = (id: string) => {
     }
   };
 
-  // ✅ useFocusEffect → useEffect on mount
   useEffect(() => {
     fetchWorkRateAbstract();
   }, [id]);
 
-  // ✅ Fetch site by id when siteId is set (to show label in combobox)
   useEffect(() => {
     const fetchSiteById = async () => {
       if (siteId) {
@@ -109,12 +122,17 @@ const useWorkRateAbstractEdit = (id: string) => {
     fetchSiteById();
   }, [siteId]);
 
+  // ✅ FIX: now also syncs unit from the latest work type data (matches mobile behavior)
   useEffect(() => {
     const fetchWorkTypeById = async () => {
       if (workTypeId) {
         try {
           const workType = await workTypeService.getWorkType(parseInt(workTypeId));
           setWorkTypeList([workType]);
+          if (workType?.unit) {
+            setUnitId(workType.unit.id.toString());
+            setUnitList([{ id: workType.unit.id, name: workType.unit.name } as Unit]);
+          }
         } catch (error) {
           console.error('Failed to fetch workType:', error);
         }
@@ -123,19 +141,9 @@ const useWorkRateAbstractEdit = (id: string) => {
     fetchWorkTypeById();
   }, [workTypeId]);
 
-  useEffect(() => {
-    const fetchUnitById = async () => {
-      if (unitId) {
-        try {
-          const unit = await unitService.getUnit(parseInt(unitId));
-          setUnitList([unit]);
-        } catch (error) {
-          console.error('Failed to fetch unit:', error);
-        }
-      }
-    };
-    fetchUnitById();
-  }, [unitId]);
+  // ❌ REMOVED: fetchUnitById useEffect that let unitId drive an independent unit fetch.
+  // Unit is now a derived/read-only field driven entirely by workTypeId, so this is no
+  // longer needed and would fight with handleWorkTypeChange's own unitList updates.
 
   const resetFormFields = () => {
     setSiteId('');
@@ -184,7 +192,6 @@ const useWorkRateAbstractEdit = (id: string) => {
     }
   };
 
-  // ✅ Alert.alert → window.confirm
   const handleBackPress = () => {
     if (hasUnsavedChanges()) {
       const confirmed = window.confirm(
@@ -216,8 +223,7 @@ const useWorkRateAbstractEdit = (id: string) => {
     handleBackPress,
     setSiteId,
     handleSubmission,
-    setWorkTypeId,
-    setUnitId,
+    handleWorkTypeChange,   // ✅ export instead of raw setWorkTypeId
     setTotalRate,
     setTotalQuantity,
     setNotes,

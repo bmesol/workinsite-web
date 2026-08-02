@@ -50,11 +50,11 @@ const WorkModeCreationPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-10">
+    <div className="min-h-screen w-full px-4  pb-10">
       <Header title={t('Work Mode')} />
 
       <Card className="mt-4">
-        <CardContent className="flex flex-col gap-4 pt-4">
+        <CardContent className="flex flex-col gap-4">
 
           {/* Form with keyboard submit support */}
           <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">

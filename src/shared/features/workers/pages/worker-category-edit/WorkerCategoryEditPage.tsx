@@ -5,8 +5,6 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { Header } from "@/shared/components/Header/Header";
 import { useWorkerCategoryEdit } from "./useWorkerCategoryEditPage";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Switch } from "@/shared/components/ui/switch";
-import { Label } from "@/shared/components/ui/label";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import WorkTypeCreateForm from "../../components/WorkTypeCreateForm/WorkTypeCreateForm";
 import WorkTypeList from "../worker-type-list/WorkTypeList";
@@ -31,8 +29,6 @@ const WorkerCategoryEditPage = () => {
     setName,
     notes,
     setNotes,
-    isActive,
-    setIsActive,
     error,
     handleCancel,
     handleSubmission,
@@ -63,11 +59,11 @@ const WorkerCategoryEditPage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-10">
+    <div className="min-h-screen w-full px-4 pb-10">
       <Header title={t('Edit Worker Category')} />
 
       <Card className="mt-4">
-        <CardContent className="flex flex-col gap-4 pt-4">
+        <CardContent className="flex flex-col gap-4">
 
           <NameField
             label={t('Worker Category Name')}

@@ -1,3 +1,5 @@
+// 
+
 import { useNavigate } from "react-router-dom";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
@@ -88,9 +90,10 @@ const TaskListPage = () => {
           filteredTaskList.map(item => (
             <TaskCard
               key={item.id}
+              id={item.id}
               taskName={item.taskName}
               siteId={item.site?.name}
-              supervisor={item.supervisor?.name}
+              supervisor={item.assignedTo?.name}
               date={item.date}
               priority={item.priority}
               status={item.status}

@@ -5,6 +5,7 @@ import { useMaterialInputValidate } from '../../components/InputValidate/Materia
 import type { Unit } from '../../DTOs/UnitProps';
 import { useUnitService } from '../../service/UnitService';
 import { useMaterialService } from '../../service/MaterialService';
+import { MaterialsUrls } from '../../utils/urls';
 
 const useMaterialCreation = () => {
   const navigate = useNavigate();
@@ -42,13 +43,13 @@ const useMaterialCreation = () => {
       return true;
     }
     resetFormFields();
-    navigate('/material-list');
+    navigate(MaterialsUrls.list);
     return false;
   };
 
   const handleConfirmExit = () => {
     resetFormFields();
-    navigate('/material-list');
+    navigate(MaterialsUrls.list);
   };
 
   const handleSaveAndExit = async () => {

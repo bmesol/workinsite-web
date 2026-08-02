@@ -1,8 +1,5 @@
-import { Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
 import type { ShiftListProps } from "../../DTOs/ShiftDetails";
 import { usePermission } from "@/shared/hooks/usePermission";
-import { cn } from "@/shared/components/lib/utils";
 import { ListItem } from "@/shared/components/ListItem/ListItem";
 const ShiftListPage = ({
   shiftDetails = [],
@@ -27,8 +24,7 @@ const ShiftListPage = ({
   return (
     <div className="flex flex-col gap-2">
 {shiftDetails.map((item) => {
-  const isFixedMultiplier = fixedMultipliers.includes(item.multiplier); // ✅ define here
-
+  const isFixedMultiplier = fixedMultipliers.includes(item.multiplier);
   return (
     <ListItem
       key={item.id}

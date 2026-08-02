@@ -28,11 +28,11 @@ import {
 } from '@/shared/components/ui/alert-dialog';
 import { useState } from 'react';
 import { useTaskEdit } from './useTaskEdit';
-import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { TaskUrls } from '../../utils/urls';
 import SupervisorSelector from '../../components/SupervisorSelector/SupervisorSelector';
 import SelectedSupervisorCard from '@/shared/components/SelectedSupervisorCard/SelectedSupervisorCard';
+import AssignedByCard from '../../components/AssignedbyCard/AssignedbyCard';
 import RemarkSection from '@/shared/components/RemarkSection/RemarkSection';
 import PurchasePhoto from '@/shared/features/materials/pages/purchase-photo/PurchasePhoto';
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
@@ -40,8 +40,6 @@ import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
 export const TaskEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { canEdit } = usePermission();
-  const editable = canEdit('Task');
   const { t } = useLanguage();
 
   const [supervisorDialogOpen, setSupervisorDialogOpen] = useState(false);
@@ -84,6 +82,9 @@ export const TaskEditPage = () => {
     resetFormFields,
     setError,
     initialError,
+    editable,
+    isAssignee,
+    taskFieldPermissions,
   } = useTaskEdit(id);
 
   if (loading) {
@@ -113,7 +114,7 @@ export const TaskEditPage = () => {
             onSearch={fetchSites}
             required
             error={error.site}
-            disabled={!editable}
+            disabled={!taskFieldPermissions.canEditCoreFields}
           />
 
           {/* Task Name */}
@@ -124,7 +125,7 @@ export const TaskEditPage = () => {
             placeholder={t('Enter your Task name')}
             required
             errorMessage={error.taskName}
-            isDisabled={!editable}
+            isDisabled={!taskFieldPermissions.canEditCoreFields}
           />
 
           {/* Date */}
@@ -135,7 +136,7 @@ export const TaskEditPage = () => {
             required
             errorMessage={error.date}
             defaultDate
-            disable={!editable}
+            disable={!taskFieldPermissions.canEditCoreFields}
           />
 
           {/* Priority */}
@@ -146,7 +147,7 @@ export const TaskEditPage = () => {
             onValueChange={(val) => setPriority(val as string)}
             errorMessage={error.priority}
             required
-            isDisabled={!editable}
+            isDisabled={!taskFieldPermissions.canEditCoreFields}
           />
 
           {/* Status */}
@@ -157,6 +158,7 @@ export const TaskEditPage = () => {
             onValueChange={(val) => setStatus(val as string)}
             errorMessage={error.status}
             required
+            isDisabled={!taskFieldPermissions.canEditStatus}
           />
 
           {/* New Remark input */}
@@ -167,28 +169,40 @@ export const TaskEditPage = () => {
               onChange={e => setNewRemark(e.target.value)}
               placeholder={t('Type your remark...')}
               rows={3}
-              disabled={!editable}
+              disabled={!taskFieldPermissions.canEditRemarks}
             />
           </div>
         </div>
 
-        {/* ── Assign Supervisor ── */}
+        {/* ── Assigned To / Assigned By ──
+            If the logged-in user is the assignee, show who assigned the task
+            (read-only). Otherwise show the assignee picker. */}
         {siteId && (
           <div className="mt-4">
-            <FormActionButton
-              heading={t('Assign Supervisor')}
-              label={t('Select')}
-              onClick={() => setSupervisorDialogOpen(true)}
-              isColsTwo={true}
-            />
-            {error.supervisor && (
-              <p className="text-sm text-red-500 mt-1">{error.supervisor}</p>
-            )}
-            {supervisorId && (
-              <SelectedSupervisorCard
-                supervisorId={supervisorId}
-                supervisorDetails={supervisorDetails}
-              />
+            {isAssignee ? (
+              taskDetails?.assignedBy && (
+                <>
+                  <Label className="text-base font-medium">{t('AssignedBy')}</Label>
+                  <AssignedByCard assignedBy={taskDetails.assignedBy} />
+                </>
+              )
+            ) : (
+              <>
+                <FormActionButton
+                  heading={t('Assign Supervisor')}
+                  label={t('Select')}
+                  onClick={() => setSupervisorDialogOpen(true)}
+                  isColsTwo={true}
+                  isAddDisabled={!taskFieldPermissions.canEditAssignedTo}
+                  errorMessage={error.supervisor}
+                />
+                {supervisorId && (
+                  <SelectedSupervisorCard
+                    supervisorId={supervisorId}
+                    supervisorDetails={supervisorDetails}
+                  />
+                )}
+              </>
             )}
           </div>
         )}
@@ -221,7 +235,7 @@ export const TaskEditPage = () => {
             onFilesSelected={(files) =>
               handleFileChange({ target: { files } } as unknown as React.ChangeEvent<HTMLInputElement>)
             }
-            disabled={!editable}
+            disabled={!taskFieldPermissions.canEditPhotos}
             buttonClassName="mt-2"
           />
         </div>

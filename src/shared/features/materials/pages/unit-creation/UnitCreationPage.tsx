@@ -50,7 +50,7 @@ const UnitCreationPage = () => {
       <Header title={t('Create Unit')} />
 
       <Card className="mt-2">
-        <CardContent className="pt-6 flex flex-col gap-4">
+        <CardContent className=" flex flex-col gap-4">
           {/* Input */}
           <NameField
             label={t('Unit')}

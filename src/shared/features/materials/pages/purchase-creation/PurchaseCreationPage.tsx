@@ -29,6 +29,7 @@ import PurchaseMaterialsList from "../purchase-material-list/PurchaseMaterialLis
 import PurchasePhoto from "../purchase-photo/PurchasePhoto";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
 
 const PurchaseCreationPage = () => {
   const [showExitDialog, setShowExitDialog] = useState(false);
@@ -191,15 +192,11 @@ const PurchaseCreationPage = () => {
     {/* Purchase Photos - full width */}
     <PurchasePhoto photo={uploadedImages} setPhoto={setUploadedImages} />
 
-    {/* Image Upload - full width */}
-    <div className="flex flex-col gap-1.5">
-      <label className="text-base font-medium">{t('Upload Images')}</label>
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"
-        onChange={(e) => handleImageUpload(e.target.files)}
+    {/* Image Upload */}
+    <div className="flex">
+      <UploadButton
+        text={t('Upload Images')}
+        onFilesSelected={handleImageUpload}
       />
     </div>
 

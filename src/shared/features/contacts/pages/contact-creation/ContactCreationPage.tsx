@@ -52,7 +52,6 @@ const ContactCreationPage = () => {
             label={t('Add')}
             onClick={handleAdd}
             isAddDisabled={isAddDisabled}
-            required={true}
           />
 
           <ContactTypes contactList={contactList} setContactList={setContactList} />
