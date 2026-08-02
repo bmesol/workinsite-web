@@ -31,6 +31,7 @@ const KycEditDeleteButtons = (props: KycEditDeleteButtonsProps) => {
         />
         <Trash2
           className="w-4 h-4 cursor-pointer text-destructive hover:text-destructive/80"
+          style={{ color: 'var(--danger-color)' }}
           onClick={() => handleDelete(selectedItem.id)}
         />
       </div>

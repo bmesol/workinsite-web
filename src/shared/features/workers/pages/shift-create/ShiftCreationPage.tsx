@@ -59,7 +59,7 @@ const ShiftCreationPage = () => {
       <Header title={t('Shift')} />
 
       <Card className="mt-4">
-        <CardContent className="flex flex-col gap-4 pt-4">
+        <CardContent className="flex flex-col gap-4 ">
 
           {/* Form with keyboard submit support */}
           <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">

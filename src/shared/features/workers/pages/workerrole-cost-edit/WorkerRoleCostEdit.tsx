@@ -2,8 +2,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { HardHat, Wallet, Clock, UserX, Pencil, ArrowLeft } from 'lucide-react';
 import { Header } from '@/shared/components/Header/Header';
 import { Card, CardContent } from '@/shared/components/ui/card';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
+import { NameField } from '@/shared/components/FormFields/NameField';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -131,59 +130,36 @@ const WorkerRoleCostEditPage = () => {
           </DialogHeader>
 
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label>{t('Name')}</Label>
-              <Input
-                value={editingCost.name}
-                onChange={e =>
-                  setEditingCost(prev => ({ ...prev, name: e.target.value }))
-                }
-                disabled
-              />
-              {error.name && (
-                <p className="text-sm text-red-500">{error.name}</p>
-              )}
-            </div>
+            <NameField
+              inputValue={editingCost.name}
+              setInputValue={value =>
+                setEditingCost(prev => ({ ...prev, name: value }))
+              }
+              errorMessage={error.name}
+              isDisabled
+            />
 
-            <div className="flex flex-col gap-1.5">
-              <Label>
-                {t('Salary Per Shift')} <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                type="number"
-                placeholder={t('Salary Per Shift')}
-                value={editingCost.salaryPerShift}
-                onChange={e =>
-                  setEditingCost(prev => ({
-                    ...prev,
-                    salaryPerShift: e.target.value,
-                  }))
-                }
-              />
-              {error.salaryPerShift && (
-                <p className="text-sm text-red-500">{error.salaryPerShift}</p>
-              )}
-            </div>
+            <NameField
+              label={t('Salary Per Shift')}
+              placeholder={t('Salary Per Shift')}
+              inputValue={editingCost.salaryPerShift.toString()}
+              setInputValue={value =>
+                setEditingCost(prev => ({ ...prev, salaryPerShift: value }))
+              }
+              errorMessage={error.salaryPerShift}
+              required
+            />
 
-            <div className="flex flex-col gap-1.5">
-              <Label>
-                {t('Hours Per Shift')} <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                type="number"
-                placeholder={t('Hours Per Shift')}
-                value={editingCost.hoursPerShift}
-                onChange={e =>
-                  setEditingCost(prev => ({
-                    ...prev,
-                    hoursPerShift: e.target.value,
-                  }))
-                }
-              />
-              {error.hoursPerShift && (
-                <p className="text-sm text-red-500">{error.hoursPerShift}</p>
-              )}
-            </div>
+            <NameField
+              label={t('Hours Per Shift')}
+              placeholder={t('Hours Per Shift')}
+              inputValue={editingCost.hoursPerShift.toString()}
+              setInputValue={value =>
+                setEditingCost(prev => ({ ...prev, hoursPerShift: value }))
+              }
+              errorMessage={error.hoursPerShift}
+              required
+            />
 
             <Button onClick={handleSave}>{t('Save')}</Button>
           </div>

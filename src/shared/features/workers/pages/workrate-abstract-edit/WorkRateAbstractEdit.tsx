@@ -31,13 +31,11 @@ const WorkRateAbstractEditPage = () => {
     handleBackPress,
     setSiteId,
     handleSubmission,
-    setWorkTypeId,
-    setUnitId,
+    handleWorkTypeChange,   // ✅ was setWorkTypeId
     setTotalRate,
     setTotalQuantity,
     setNotes,
     fetchWorkTypes,
-    fetchUnits,
     fetchSites,
   } = useWorkRateAbstractEdit(id as string);
 
@@ -54,7 +52,7 @@ const WorkRateAbstractEditPage = () => {
       <Header title={t('Work Rate Abstract Edit')} />
 
       <Card className="mt-4">
-        <CardContent className="flex flex-col gap-4 pt-4">
+        <CardContent className="flex flex-col gap-4">
           {/* Site */}
           <ComboboxField
             id="site"
@@ -74,7 +72,7 @@ const WorkRateAbstractEditPage = () => {
             label={t('Work Type')}
             items={workTypeDetails}
             selectedValue={workTypeId}
-            onValueChange={setWorkTypeId}
+            onValueChange={handleWorkTypeChange}   // ✅ auto-derives unit now
             onSearch={fetchWorkTypes}
             error={error.workType}
             required
@@ -115,17 +113,17 @@ const WorkRateAbstractEditPage = () => {
             )}
           </div>
 
-          {/* Unit */}
+          {/* Unit — read-only, always derived from the selected Work Type */}
           <ComboboxField
             id="unit"
             label={t('Unit')}
             items={unitDetails}
             selectedValue={unitId}
-            onValueChange={setUnitId}
-            onSearch={fetchUnits}
+            onValueChange={() => {}}
+            onSearch={() => {}}
             error={error.unit}
             required
-            disabled={!editable}
+            disabled
           />
 
           {/* Remark */}

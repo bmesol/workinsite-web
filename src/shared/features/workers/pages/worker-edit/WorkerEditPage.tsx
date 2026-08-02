@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { BankAccountCreateForm } from "@/shared/components/BankAccount/BankAccountCreateForm/BankAccountCreateForm";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
-import { DateOfBirthField } from "@/shared/components/FormFields/DateOfBirthField";
+import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
 import { RadioField } from "@/shared/components/FormFields/RadioField";
@@ -102,11 +102,13 @@ const WorkerEditPage = () => {
               errorMessage={error.name}
               required={true}
             />
-            <DateOfBirthField
-              inputValue={dateOfBirth}
-              setInputValue={setDateOfBirth}
+            <DatePicker
+              label={t("Date of Birth")}
+              date={dateOfBirth}
+              onDateChange={setDateOfBirth}
               errorMessage={error.dateOfBirth}
               required={true}
+              minDate={new Date(1900, 0, 1)}
             />
           </div>
 
@@ -140,8 +142,8 @@ const WorkerEditPage = () => {
             )}
           </div>
 
-          {/* Contact + Worker Category Details */}
-          {(contactId || workerCategoryId) && (
+          {/* Contact Details + Worker Role Cost */}
+          {(contactId || (workerRoleCost && workerRoleCost.length > 0)) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {contactId && (
                 <div>
@@ -167,31 +169,20 @@ const WorkerEditPage = () => {
                   )}
                 </div>
               )}
-              {workerCategoryId && (
-                <div>
-                  <FormActionButton
-                    heading={t("Worker Category detail")}
-                    label={t("Edit")}
-                    onClick={handleWorkerCategoryEdit}
-                    isColsTwo={true}
-                  />
-                  <div className="mt-2 text-sm text-gray-700">
-                    {workerCategory.name}
-                  </div>
-                </div>
+              {workerRoleCost && workerRoleCost.length > 0 && (
+                <FormActionButton
+                  heading={t("Worker Role Cost")}
+                  label={t("Edit")}
+                  onClick={handleWorkerRoleCostEdit}
+                  isColsTwo={true}
+                />
               )}
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {workerRoleCost && workerRoleCost.length > 0 && (
-              <FormActionButton
-                heading={t("Worker Role Cost")}
-                label={t("Edit")}
-                onClick={handleWorkerRoleCostEdit}
-                isColsTwo={true}
-              />
-            )}
-            {workerDetails.gender && (
+
+          {/* Gender */}
+          {workerDetails.gender && (
+            <div className="md:w-1/2">
               <RadioField
                 label={t("Gender")}
                 items={genderItems}
@@ -200,8 +191,8 @@ const WorkerEditPage = () => {
                 errorMessage={error.gender}
                 required={true}
               />
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Notes */}
           {notes !== undefined && (

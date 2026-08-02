@@ -39,7 +39,7 @@ const WorkRateAbstractCreationPage = () => {
       <Header title={t('Create Work Rate Abstract')} />
 
       <Card className="mt-4">
-        <CardContent className="flex flex-col gap-4 pt-4">
+        <CardContent className="flex flex-col gap-4 ">
 
           {/* Site */}
           <ComboboxField

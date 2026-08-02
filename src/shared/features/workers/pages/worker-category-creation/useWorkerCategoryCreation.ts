@@ -60,7 +60,7 @@ import { WorkerCategoriesUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import type { WorkerRole, WorkerRoles } from "../../DTOs/WorkRoleProps";
-import type { WorkType } from "../../DTOs/WorkTypeProps";
+import type { WorkTypeNew } from "../../DTOs/WorkTypeProps";
 import type { WorkerCategoryCreationRequest } from "../../DTOs/WorkerCategoryProps";
 
 const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
@@ -72,7 +72,7 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
     queryString.get("workerCategoryName") || ""
   );
   const [notes, setNotes] = useState("");
-  const [workTypeList, setWorkTypeList] = useState<WorkType[]>([]);
+  const [workTypeList, setWorkTypeList] = useState<WorkTypeNew[]>([]);
   const [workerRoleList, setWorkerRoleList] = useState<
     (WorkerRole | WorkerRoles)[]
   >([]);

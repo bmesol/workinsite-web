@@ -1,4 +1,4 @@
-import UserProfilePage from "@/shared/features/auth/containers/user-profile-page/UserProfilePage";
+import UserProfilePage from "@/shared/features/auth/pages/user-profile-page/UserProfilePage";
 import { UserListPage } from "@/shared/features/users/pages/user-list-page/UserListPage";
 import { UserCreationPage } from "@/shared/features/users/pages/user-creation-page/UserCreationPage";
 import { UserEditPage } from "@/shared/features/users/pages/user-edit-page/UserEditPage";

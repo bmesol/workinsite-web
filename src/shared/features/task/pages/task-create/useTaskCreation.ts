@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useTaskService } from '../../service/TaskService';
@@ -17,6 +17,7 @@ export type UploadedImage = {
 
 export const useTaskCreation = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const siteService = useSiteService();
   const taskService = useTaskService();
 
@@ -31,6 +32,7 @@ export const useTaskCreation = () => {
   const [supervisorList, setSupervisorList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const { error, validate, setError, initialError } = useTaskInputValidate({
     taskName,
@@ -52,12 +54,31 @@ export const useTaskCreation = () => {
     { label: 'Closed', value: 'Closed' },
   ];
 
+  // ── Prefill from navigation state (equivalent of mobile's route.params) ──
+  useEffect(() => {
+    if (location.state?.siteId) {
+      setSiteId(location.state.siteId);
+    }
+    if (location.state?.supervisorId) {
+      setSupervisorId(location.state.supervisorId);
+    }
+  }, [location.state]);
+
+  // Tracks the most recently *fired* search request so we can drop any
+  // response that resolves out of order (e.g. an earlier keystroke's
+  // request completing after a later one) instead of letting it
+  // overwrite siteList with stale data.
+  const fetchSitesRequestId = useRef(0);
+
   const fetchSites = async (searchString: string = '') => {
+    const requestId = ++fetchSitesRequestId.current;
     const sites = await siteService.getSites({
       searchString,
       status: 'Working',
     });
     if (!sites) return;
+    // A newer request has since been fired — ignore this stale response.
+    if (requestId !== fetchSitesRequestId.current) return;
     setSiteList(searchString ? sites.slice(0, 3) : sites);
   };
 
@@ -66,16 +87,22 @@ export const useTaskCreation = () => {
     value: site.id.toString(),
   }));
 
-  const handleSiteChange = (id: string) => {
+  const handleSiteChange = async (id: string) => {
     setSiteId(id);
     setSupervisorId('');
-    const selectedSite = siteList.find(site => site.id.toString() === id);
-    if (selectedSite?.supervisors) {
-      const onlySupervisors = selectedSite.supervisors.filter(
-        user => user.role?.name === 'Supervisor',
-      );
-      setSupervisorList(onlySupervisors);
-    } else {
+    setSupervisorList([]);
+
+    if (!id) return;
+
+    try {
+      // The list/search response for a site may not include the nested
+      // `supervisors` array (e.g. a lighter DTO for autocomplete results),
+      // so fetch the full site detail directly to get reliable data.
+      const site = await siteService.getSite(parseInt(id));
+      // NOTE: mobile does not filter this by role name — everyone linked
+      // to the site under `supervisors` is eligible for assignment.
+      setSupervisorList(site?.supervisors || []);
+    } catch {
       setSupervisorList([]);
     }
   };
@@ -189,7 +216,7 @@ export const useTaskCreation = () => {
     try {
       const form = new FormData();
       form.append('SiteId', parseInt(siteId).toString());
-      form.append('SupervisorId', parseInt(supervisorId).toString());
+      form.append('AssignedToId', parseInt(supervisorId).toString());
       form.append('TaskName', taskName.trim());
       form.append('Date', date.trim());
       form.append(
@@ -217,20 +244,15 @@ export const useTaskCreation = () => {
     }
   };
 
+  // ── Back / Cancel (mirrors mobile's 3-option Alert via a dialog) ───────
   const handleBackPress = useCallback(() => {
     if (hasUnsavedChanges()) {
-      const confirmLeave = window.confirm(
-        'You have unsaved changes. Are you sure you want to leave?',
-      );
-      if (confirmLeave) {
-        resetFormFields();
-        navigate(TaskUrls.list);
-      }
+      setShowUnsavedDialog(true);
     } else {
       resetFormFields();
       navigate(TaskUrls.list);
     }
-  }, [hasUnsavedChanges, navigate]);
+  }, [hasUnsavedChanges, navigate, resetFormFields]);
 
   return {
     siteId,
@@ -262,5 +284,8 @@ export const useTaskCreation = () => {
     uploadedImages,
     setUploadedImages,
     handleFileChange,
+    showUnsavedDialog,
+    setShowUnsavedDialog,
+    resetFormFields,
   };
 };

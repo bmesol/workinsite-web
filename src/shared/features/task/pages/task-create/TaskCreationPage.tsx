@@ -8,6 +8,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/shared/components/ui/alert-dialog";
+import { Button } from "@/shared/components/ui/button";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { Header } from "@/shared/components/Header/Header";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
@@ -15,7 +26,8 @@ import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmis
 import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import { SelectField } from "@/shared/components/FormFields/SelectField";
 import SupervisorSelector from "../../components/SupervisorSelector/SupervisorSelector";
-import { useTaskCreation } from "./useTaskCreate";
+import SelectedSupervisorCard from "@/shared/components/SelectedSupervisorCard/SelectedSupervisorCard";
+import { useTaskCreation } from "./useTaskCreation";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { TaskUrls } from "../../utils/urls";
 import PurchasePhoto from "@/shared/features/materials/pages/purchase-photo/PurchasePhoto";
@@ -53,6 +65,9 @@ const TaskCreationPage = () => {
     uploadedImages,
     setUploadedImages,
     handleFileChange,
+    showUnsavedDialog,
+    setShowUnsavedDialog,
+    resetFormFields,
   } = useTaskCreation();
 
   return (
@@ -135,31 +150,24 @@ const TaskCreationPage = () => {
           </div>
         </div>
 
-        <FormActionButton
-          heading={t('Assign Supervisor')}
-          label={t('Select')}
-          onClick={() => setSupervisorDialogOpen(true)}
-          isColsTwo={true}
-          required={true}
-          errorMessage={error.supervisor}
-        />
+        {/* ── Assign Supervisor ── */}
+        {siteId && (
+          <div className="mt-4">
+            <FormActionButton
+              heading={t('Assign Supervisor')}
+              label={t('Select')}
+              onClick={() => setSupervisorDialogOpen(true)}
+              isColsTwo={true}
+              required={true}
+              errorMessage={error.supervisor}
+            />
 
-        {supervisorId && (
-          <div className="mt-2 p-3 rounded-xl border border-[var(--primary)] bg-white flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-              style={{ backgroundColor: "var(--primary)" }}
-            >
-              <span className="text-sm font-bold text-white">
-                {supervisorDetails
-                  .find((s) => s.value === supervisorId)
-                  ?.label?.substring(0, 2)
-                  .toUpperCase()}
-              </span>
-            </div>
-            <span className="text-base font-semibold text-black">
-              {supervisorDetails.find((s) => s.value === supervisorId)?.label}
-            </span>
+            {supervisorId && (
+              <SelectedSupervisorCard
+                supervisorId={supervisorId}
+                supervisorDetails={supervisorDetails}
+              />
+            )}
           </div>
         )}
 
@@ -188,8 +196,9 @@ const TaskCreationPage = () => {
         {/* ── Footer ── */}
         <div className="flex justify-end gap-2 pt-6">
           <FormSubmissionButtons
-            onCancel={() => navigate(TaskUrls.list)}
+            onCancel={handleBackPress}
             onSave={handleSubmission}
+            disabled={loading}
           />
         </div>
       </Card>
@@ -211,6 +220,46 @@ const TaskCreationPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      {/* ── Unsaved Changes Dialog ──
+          Mirrors mobile's 3-option Alert: Save / Exit without saving / Cancel */}
+      <AlertDialog
+        open={showUnsavedDialog}
+        onOpenChange={setShowUnsavedDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('You have unsaved changes. Do you want to save them?')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowUnsavedDialog(false)}>
+              {t('Cancel')}
+            </AlertDialogCancel>
+            <AlertDialogCancel
+              onClick={() => {
+                resetFormFields();
+                setShowUnsavedDialog(false);
+                navigate(TaskUrls.list);
+              }}
+            >
+              {t('Exit without Saving')}
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button
+                onClick={() => {
+                  handleSubmission();
+                  setShowUnsavedDialog(false);
+                }}
+              >
+                {t('Save')}
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import SignInPage from "@/shared/features/auth/containers/sign-in-page/SignInPage";
-import { SignUpPage } from "@/shared/features/auth/containers/sign-up-page/SignUpPage";
-import { ForgetPinPage } from "@/shared/features/auth/containers/forget-pin-page/ForgetPinPage";
-import { OtpVerificationPage } from "@/shared/features/auth/containers/otp-verification-page/OtpVerificationPage";
+import SignInPage from "@/shared/features/auth/pages/sign-in-page/SignInPage";
+import { SignUpPage } from "@/shared/features/auth/pages/sign-up-page/SignUpPage";
+import { ForgetPinPage } from "@/shared/features/auth/pages/forget-pin-page/ForgetPinPage";
+import { OtpVerificationPage } from "@/shared/features/auth/pages/otp-verification-page/OtpVerificationPage";
 import { PrivateRoute } from "@/shared/components/routehandlers/PrivateRoute";
 import { EnsureUnauthenticatedRoute } from "@/shared/components/routehandlers/EnsureUnauthenticatedRoute";
 import { SiteListPage } from "@/shared/features/sites/pages/site-list/SiteListPage";

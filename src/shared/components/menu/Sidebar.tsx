@@ -304,7 +304,7 @@ import { MenuItems } from "./MenuItems";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BaseUrls } from "@/shared/utils/UrlPages";
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSidebarAttendance } from "./useSidebarAttendance";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { useTheme } from "@/shared/context/ThemeContext";
@@ -316,7 +316,7 @@ type SidebarProps = {
   onOpenChange: (value: boolean) => void;
 };
 
-type SidebarView = "menu" | "theme" | "language";
+type SidebarView = "menu" | "theme" | "language" | "site-picker";
 
 const getInitials = (name: string) =>
   name
@@ -357,8 +357,17 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
     checkedIn,
     address,
     loading,
+    mySites,
+    showSitePicker,
     handleCheckIn,
+    handleSiteSelected,
+    closeSitePicker,
   } = useSidebarAttendance(open);
+
+  // Mirror site picker state into the sidebar view stack
+  useEffect(() => {
+    if (showSitePicker) setActiveView("site-picker");
+  }, [showSitePicker]);
 
   const userRoleId = AuthHelper.getUserProfile()?.role?.id ?? -1;
 
@@ -681,6 +690,49 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
                 <LogOut className="w-4 h-4" />
                 {t("Logout")}
               </button>
+            </div>
+          </>
+        ) : activeView === "site-picker" ? (
+          <>
+            {/* Site picker header */}
+            <div
+              className="flex items-center gap-3 px-4"
+              style={{
+                background: "var(--primary-side)",
+                borderBottom: "1.5px solid var(--primary)",
+                paddingTop: "22px",
+                paddingBottom: "16px",
+              }}
+            >
+              <button
+                onClick={() => { closeSitePicker(); setActiveView("menu"); }}
+                style={{ background: "none", border: "none", cursor: "pointer" }}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <span className="text-base font-semibold">{t("Select Site")}</span>
+            </div>
+
+            {/* Site list */}
+            <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+              {mySites.map((site) => (
+                <div
+                  key={site.id}
+                  onClick={() => { handleSiteSelected(site); setActiveView("menu"); }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition"
+                  style={{
+                    background: "var(--card)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  <span className="flex-1 text-sm font-medium">{site.name}</span>
+                </div>
+              ))}
+              {mySites.length === 0 && (
+                <p className="text-sm text-center" style={{ color: "var(--gray-color)", paddingTop: "24px" }}>
+                  {t("No sites assigned")}
+                </p>
+              )}
             </div>
           </>
         ) : (

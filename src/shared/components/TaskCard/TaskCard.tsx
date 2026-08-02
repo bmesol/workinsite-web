@@ -3,6 +3,7 @@ import { MapPin, User, Calendar, Trash2 } from 'lucide-react';
 import { usePermission } from '@/shared/hooks/usePermission';
 
 interface TaskCardProps {
+  id: number;
   taskName: string;
   siteId: any;
   supervisor: string;
@@ -36,6 +37,7 @@ const getChipStyle = (type: 'priority' | 'status', value?: number | string) => {
 };
 
 export const TaskCard = ({
+  id,
   taskName,
   siteId,
   supervisor,
@@ -57,10 +59,10 @@ export const TaskCard = ({
       className="w-full p-4 gap-1.5 cursor-pointer hover:shadow-sm transition-shadow"
       onClick={onPress}
     >
-      {/* ── Top Row: Name + Delete ── */}
+      {/* ── Top Row: Id + Name + Delete ── */}
       <div className="flex items-center justify-between">
         <span className="font-semibold text-base text-black truncate flex-1 pr-2">
-          {taskName}
+          {id} - {taskName}
         </span>
         <div
           className="shrink-0  rounded-md hover:bg-destructive/10 transition-colors"

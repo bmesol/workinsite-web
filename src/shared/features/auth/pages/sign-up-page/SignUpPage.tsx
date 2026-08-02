@@ -14,7 +14,7 @@ import {
 } from "@/shared/components/ui/input-otp";
 
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import "@/shared/features/auth/containers/sign-up-page/SignUpPage.scss";
+import "@/shared/features/auth/pages/sign-up-page/SignUpPage.scss";
 import { useState } from "react";
 import { Footer } from "@/shared/components/footer/Footer";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';

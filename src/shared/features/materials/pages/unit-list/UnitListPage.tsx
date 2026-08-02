@@ -26,17 +26,25 @@ const UnitList = ({
 
   return (
     <div className="flex flex-col gap-2">
-    {unitDetails.map((item) => (
-  <ListItem
-    key={item.id}
-    label={item.name}
-    isEditing={item.id === editingUnitId}
-    actions={[
-      { type: "edit", onClick: () => handleUnitEdit(item), disabled: item.id === editingUnitId || !editable },
-      { type: "delete", onClick: () => handleUnitDelete(item.id), disabled: item.id === editingUnitId || !editable },
-    ]}
-  />
-))}
+      {unitDetails.map((item) => (
+        <ListItem
+          key={item.id}
+          label={item.name}
+          isEditing={item.id === editingUnitId}
+          actions={[
+            {
+              type: "edit",
+              onClick: () => handleUnitEdit(item),
+              disabled: item.id === editingUnitId || !editable,
+            },
+            {
+              type: "delete",
+              onClick: () => handleUnitDelete(item.id),
+              disabled: item.id === editingUnitId || !editable,
+            },
+          ]}
+        />
+      ))}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { RadioField } from "@/shared/components/FormFields/RadioField";
+import { FormInput } from "../FormInput/FormInput";
 import { cn } from "@/shared/components/lib/utils";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
@@ -38,37 +39,33 @@ const RoleSelectField = ({
   const [open, setOpen] = useState(false);
 
   const selectedItem = items.find((i) => i.value === selectedValue);
+  console.log("role value:", selectedValue, "items:", items.map(i => i.value));
 
   return (
-    <div className="w-full">
-      {label && (
-        <Label className="mb-2 block text-base font-semibold text-foreground">
-          {label}
-          {required && (
-            <span className="text-[var(--danger-color)] ml-0.5">*</span>
-          )}
-        </Label>
-      )}
+    <FormInput errorMessage={errorMessage}>
+      {/* Label — same style as NameField */}
+      <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
+        {label || t("Role")}
+        {required && (
+          <span className="text-red-500 text-base leading-none">*</span>
+        )}
+      </Label>
 
-      {/* Trigger input - shadcn Input, no default value */}
+      {/* Trigger input — click opens dialog, same as mobile TouchableOpacity */}
       <Input
+        type="text"
         readOnly
         value={selectedItem ? selectedItem.label : ""}
-        placeholder={t("Select role...")}
+        placeholder={t("Select Role")}
         onClick={() => setOpen(true)}
-        className={cn(
-          "h-12 cursor-pointer caret-transparent",
-          errorMessage && "border-[var(--danger-color)]",
-        )}
+        className={cn("w-full cursor-pointer caret-transparent")}
+        style={{
+          fontFamily: "Outfit, sans-serif",
+          fontSize: "var(--font-sm)",
+        }}
       />
 
-      {errorMessage && (
-        <p className="mt-1 text-sm text-[var(--danger-color)]">
-          {errorMessage}
-        </p>
-      )}
-
-      {/* Dialog */}
+      {/* Dialog — shows full role list, same as mobile Modal + FlatList */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -85,11 +82,20 @@ const RoleSelectField = ({
               onValueChange(value);
               setOpen(false);
             }}
-            className="flex flex-col gap-3 [&_[data-state=checked]]:border-primary [&_[data-state=checked]]:bg-primary"
+            className="flex flex-col gap-3"
           />
+
+          {/* Cancel — same as mobile CANCEL text */}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="mt-3 self-end text-sm font-semibold text-primary"
+          >
+            {t("Cancel").toUpperCase()}
+          </button>
         </DialogContent>
       </Dialog>
-    </div>
+    </FormInput>
   );
 };
 
