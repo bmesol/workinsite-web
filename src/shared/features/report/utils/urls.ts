@@ -1,6 +1,7 @@
 const workerReportBasePath = "reports/worker";
 const supervisorAttendanceBasePath = "reports/supervisor-attendance";
 const availableMaterialReportBasePath = "reports/available-material";
+const inventoryStockReportBasePath = "reports/inventory-stock";
 
 const WorkerReportUrls = {
   list: `/${workerReportBasePath}`,
@@ -15,4 +16,8 @@ const SupervisorAttendanceUrls = {
   list: `/${supervisorAttendanceBasePath}`,
 };
 
-export { WorkerReportUrls, AvailableMaterialReportUrls, SupervisorAttendanceUrls };
+const InventoryStockReportUrls = {
+  list: `/${inventoryStockReportBasePath}`,
+};
+
+export { WorkerReportUrls, AvailableMaterialReportUrls, SupervisorAttendanceUrls, InventoryStockReportUrls };
