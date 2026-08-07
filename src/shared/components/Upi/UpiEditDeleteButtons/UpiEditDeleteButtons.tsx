@@ -20,7 +20,7 @@ const UpiEditDeleteButtons = (props: UpiEditDeleteButtonsProp) => {
     <>
       <div className="flex items-center gap-2">
         <Pencil className="h-4 w-4 cursor-pointer text-secondary" onClick={() => handleEdit(selectedItem.id, selectedItem.item.upiType, selectedItem.item.value)} />
-        <Trash2 className="h-4 w-4 cursor-pointer text-destructive" onClick={() => handleDelete(selectedItem.id)} />
+        <Trash2 className="h-4 w-4 cursor-pointer text-destructive hover:text-destructive/80" style={{ color: 'var(--danger-color)' }} onClick={() => handleDelete(selectedItem.id)} />
       </div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>

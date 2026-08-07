@@ -124,6 +124,7 @@ const MenuItems: Record<string, MenuItem> = {
       { label: "Worker Report", href: "/reports/worker" },
       { label: "Supervisor Attendance Report", href: "/reports/supervisor-attendance" },
       { label: "Available Material Report", href: "/reports/available-material" },
+      { label: "Inventory Stock Report", href: "/reports/inventory-stock" },
     ],
   },
 "/task": {
