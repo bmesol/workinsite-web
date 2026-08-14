@@ -35,14 +35,12 @@ const AttendanceCreationPage = () => {
   const {
     siteDetails,
     workTypeDetails,
-    unitDetails,
     workerDetails,
     wageTypeDetails,
     workModeDetails,
     error,
     siteId,
     workType,
-    unitId,
     workerId,
     wageTypeId,
     workModeId,
@@ -55,7 +53,6 @@ const AttendanceCreationPage = () => {
     setDate,
     setWorkedQuantity,
     setSiteId,
-    setUnitId,
     setWorkerId,
     setWageTypeId,
     setWorkModeId,
@@ -63,7 +60,6 @@ const AttendanceCreationPage = () => {
     setUploadedImages,
     fetchSites,
     fetchWorkTypes,
-    fetchUnits,
     fetchWorkers,
     fetchWageTypes,
     fetchWorkModes,
@@ -80,6 +76,7 @@ const AttendanceCreationPage = () => {
     confirmWorkTypeChange,
     cancelWorkTypeChange,
     handleWorkTypeChange,
+    workQuantityIndicator,
   } = useAttendanceCreation();
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -157,28 +154,6 @@ const AttendanceCreationPage = () => {
               disabled={!workType.workerCategory.id}
             />
 
-            {/* Worked Quantity */}
-            <NameField
-              label={t('Worked Quantity')}
-              inputValue={workedQuantity}
-              setInputValue={setWorkedQuantity}
-              placeholder={t('Enter Worked Quantity')}
-              errorMessage={error.workedQuantity}
-              required
-              regex="^[0-9.]*$"
-            />
-            {/* Unit */}
-            <ComboboxField
-              id="unit"
-              label={t('Unit')}
-              items={unitDetails}
-              selectedValue={unitId}
-              onValueChange={setUnitId}
-              onSearch={fetchUnits}
-              error={error.unit}
-              required
-            />
-
             {/* Work Mode */}
             <ComboboxField
               id="workMode"
@@ -190,6 +165,27 @@ const AttendanceCreationPage = () => {
               error={error.workMode}
               required
             />
+
+            {/* Worked Quantity */}
+            <NameField
+              label={t('Worked Quantity')}
+              inputValue={workedQuantity}
+              setInputValue={setWorkedQuantity}
+              placeholder={t('Enter Worked Quantity')}
+              errorMessage={error.workedQuantity}
+              required
+              regex="^[0-9.]*$"
+            />
+
+            {/* Worked vs Estimated Plan indicator */}
+            {workQuantityIndicator && (
+              <p
+                className="text-sm font-semibold -mt-2"
+                style={{ color: workQuantityIndicator.color }}
+              >
+                {workQuantityIndicator.text}
+              </p>
+            )}
 
             {/* Attendance Split — Add Button */}
             <div className="flex flex-col gap-1">

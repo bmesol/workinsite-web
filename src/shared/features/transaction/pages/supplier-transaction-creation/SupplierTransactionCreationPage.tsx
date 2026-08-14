@@ -61,7 +61,7 @@ const SupplierTransactionCreationPage = () => {
             onValueChange={setSupplierId}
             onSearch={fetchSuppliers}
             required
-            error={error.clientId}
+            error={error.supplierId}
           />
 
           {/* ── Date ── */}

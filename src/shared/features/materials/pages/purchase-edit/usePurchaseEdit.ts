@@ -49,6 +49,7 @@ export const usePurchaseEdit = (id: string) => {
   const [notes, setNotes] = useState('');
   const [supplierList, setSupplierList] = useState<Supplier[]>([]);
   const [siteList, setSiteList] = useState<Site[]>([]);
+  const [allSites, setAllSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
   const [newPurchaseMaterials, setNewPurchaseMaterials] = useState <
     PurchaseMaterialCreationListProps[]
@@ -122,9 +123,17 @@ export const usePurchaseEdit = (id: string) => {
 
   // ── Fetch Sites ──
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
-    if (!sites) return;
-    setSiteList(searchString ? sites.slice(0, 3) : sites);
+    let source = allSites;
+    if (!source.length) {
+      const sites = await siteService.getSites({ status: 'Working' });
+      if (!sites) return;
+      setAllSites(sites);
+      source = sites;
+    }
+    const lower = searchString.toLowerCase();
+    setSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   // ── Fetch Suppliers ──
@@ -198,6 +207,7 @@ export const usePurchaseEdit = (id: string) => {
     setShowImage([]);
     setRemovedImages([]);
     setNewPurchaseMaterials([]);
+    setAllSites([]);
     setError(initialError);
   };
 

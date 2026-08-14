@@ -63,7 +63,8 @@ export type SupervisorAttendance = {
 
 export type SupervisorAttendanceCreationRequest = {
     date: string;
-    siteId: number;                     // ← NEW: fixes the TS error on check-in
+    time?: string;
+    siteId: number;
     supervisorId: number;
     currentLocation: CurrentLocation;
 };

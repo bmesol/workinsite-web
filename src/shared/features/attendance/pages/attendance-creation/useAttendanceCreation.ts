@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useWorkTypeService } from '@/shared/features/workers/service/WorkerTypeService';
-import { useUnitService } from '@/shared/features/materials/service/UnitService';
 import { useAttendanceInputValidate } from '../../components/InputValidate/AttendanceValidate';
 import { useWorkModeService } from '@/shared/features/workers/service/WorkerModeService';
 import { useWorkerService } from '@/shared/features/workers/service/WorkerService';
 import { useWageTypeService } from '@/shared/features/sites/service/WageTypeService';
 import { useAttendanceService } from '@/shared/features/attendance/service/AttendanceService';
+import { useWorkQuantityReportService } from '@/shared/features/workers/service/WorkQuantityReportService';
+import type { WorkQuantityReportItem } from '@/shared/features/workers/service/WorkQuantityReportService';
 import type { AttendanceSplit } from '../../DTOs/AttendanceProps';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
-import type { Unit } from '@/shared/features/materials/DTOs/UnitProps';
 import type { WageType, Worker } from '@/shared/features/workers/DTOs/WorkerProps';
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import { formatDateToString } from '../../utils/functions';
@@ -52,7 +52,6 @@ const useAttendanceCreation = () => {
 
   const [siteId, setSiteId] = useState<string>(redirectParams?.siteId || '');
   const [workType, setWorkType] = useState<WorkType>(defaultWorkType);
-  const [unitId, setUnitId] = useState<string>('');
   const [workerId, setWorkerId] = useState<string>('');
   const [wageTypeId, setWageTypeId] = useState<string>('');
   const [workModeId, setWorkModeId] = useState<string>('');
@@ -61,13 +60,14 @@ const useAttendanceCreation = () => {
   const [workedQuantity, setWorkedQuantity] = useState<string>('');
 
   const [siteList, setSiteList] = useState<Site[]>([]);
+  const [allSites, setAllSites] = useState<Site[]>([]);
   const [workTypeList, setWorkTypeList] = useState<WorkType[]>([]);
-  const [unitList, setUnitList] = useState<Unit[]>([]);
   const [workerList, setWorkerList] = useState<Worker[]>([]);
   const [wageTypeList, setWageTypeList] = useState<WageType[]>([]);
   const [workModeList, setWorkModeList] = useState<WorkMode[]>([]);
   const [attendanceSplit, setAttendanceSplit] = useState<AttendanceSplit[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [workQuantityReport, setWorkQuantityReport] = useState<WorkQuantityReportItem | null>(null);
 
   // Web: dialog open states replace bottomSheetRef / imageSheetRef
   const [isSplitDialogOpen, setIsSplitDialogOpen] = useState(false);
@@ -78,11 +78,11 @@ const useAttendanceCreation = () => {
 
   const siteService = useSiteService();
   const workTypeService = useWorkTypeService();
-  const unitService = useUnitService();
   const workModeService = useWorkModeService();
   const workerService = useWorkerService();
   const wageTypeService = useWageTypeService();
   const attendanceService = useAttendanceService();
+  const workQuantityReportService = useWorkQuantityReportService();
 
   const today = new Date();
   const formatted = formatDateToString(today);
@@ -120,7 +120,6 @@ const useAttendanceCreation = () => {
       workTypeId: workType?.id?.toString(),
       workerId,
       workedQuantity,
-      unitId,
       workModeId,
       attendanceSplit,
     });
@@ -131,25 +130,20 @@ const useAttendanceCreation = () => {
     value: item.id.toString(),
   }));
 
-  const workTypeDetails = workTypeList.map(item => ({
-    label: `${item.name} [${item.workerCategory.name}]`,
+ const workTypeDetails = workTypeList.map(item => ({
+  label: item.name,
+  value: item.id.toString(),
+  allItems: {
     value: item.id.toString(),
-    allItems: {
-      value: item.id.toString(),
-      name: item.name,
-      id: item.id,
-      workerCategory: {
-        id: item.workerCategory.id,
-        name: item.workerCategory.name,
-        note: item.workerCategory.note,
-      },
+    name: item.name,
+    id: item.id,
+    workerCategory: {
+      id: item.workerCategory.id,
+      name: item.workerCategory.name,
+      note: item.workerCategory.note,
     },
-  }));
-
-  const unitDetails = unitList.map(item => ({
-    label: item.name,
-    value: item.id.toString(),
-  }));
+  },
+}));
 
   const workerDetails = workerList.map(item => ({
     label: `${item.name} [${item.workerCategory.name}]`,
@@ -168,9 +162,17 @@ const useAttendanceCreation = () => {
 
   // Fetch functions
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
-    if (!sites) return;
-    setSiteList(searchString ? sites.slice(0, 3) : sites);
+    let source = allSites;
+    if (!source.length) {
+      const sites = await siteService.getSites({ status: 'Working' });
+      if (!sites) return;
+      setAllSites(sites);
+      source = sites;
+    }
+    const lower = searchString.toLowerCase();
+    setSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   const fetchWorkTypes = async (searchString: string = '') => {
@@ -179,20 +181,14 @@ const useAttendanceCreation = () => {
     setWorkTypeList(searchString ? workTypes.slice(0, 3) : workTypes);
   };
 
-  const fetchUnits = async (searchString: string = '') => {
-    const units = await unitService.getUnits(searchString, false);
-    if (!units) return;
-    setUnitList(searchString ? units.slice(0, 3) : units);
-  };
-
 const fetchWorkers = async (WorkerName: string = '') => {
   const workers = await workerService.getWorkers({
     WorkerName,
     WorkerCategoryId: workType.workerCategory.id || undefined,
   });
-  
+
   console.log("workers response:", workers);
-  
+
   if (!workers) return;
   setWorkerList(WorkerName ? workers.slice(0, 3) : workers);
 };
@@ -208,11 +204,39 @@ const fetchWorkers = async (WorkerName: string = '') => {
     setWorkModeList(searchString ? workModes.slice(0, 3) : workModes);
   };
 
+  // Fetches worked-vs-estimated quantity for the current site + work type + work mode
+  const fetchWorkQuantityReport = async (
+    currentSiteId: string,
+    currentWorkTypeId: number,
+    currentWorkModeId: string,
+  ) => {
+    if (!currentSiteId || !currentWorkTypeId || !currentWorkModeId) {
+      setWorkQuantityReport(null);
+      return;
+    }
+    try {
+      const result = await workQuantityReportService.getWorkQuantityReports({
+        SiteId: parseInt(currentSiteId),
+        WorkTypeId: currentWorkTypeId,
+        WorkModeId: parseInt(currentWorkModeId),
+      });
+      const item = result?.items?.[0] ?? null;
+      setWorkQuantityReport(item);
+    } catch (error) {
+      console.error('Failed to fetch Work Quantity Report:', error);
+      setWorkQuantityReport(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchWorkQuantityReport(siteId, workType.id, workModeId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteId, workType.id, workModeId]);
+
   const resetFormFields = () => {
     setSiteId('');
     setWorkType(defaultWorkType);
     setWorkTypeList([]);
-    setUnitId('');
     setWorkerId('');
     setWageTypeId('');
     setWorkModeId('');
@@ -222,6 +246,8 @@ const fetchWorkers = async (WorkerName: string = '') => {
     setUploadedImages([]);
     setAttendanceSplit([]);
     setError(initialError);
+    setWorkQuantityReport(null);
+    setAllSites([]);
   };
 
   const handleNavigate = () => {
@@ -237,7 +263,6 @@ const fetchWorkers = async (WorkerName: string = '') => {
     return (
       siteId !== '' ||
       workType.name !== '' ||
-      unitId !== '' ||
       workerId !== '' ||
       wageTypeId !== '' ||
       workModeId !== '' ||
@@ -361,7 +386,6 @@ const handleSubmit = async () => {
       formData.append('WorkTypeId', String(workType.id));
       formData.append('WorkerId', String(parseInt(workerId)));
       formData.append('WorkedQuantity', workedQuantity.toString());
-      formData.append('UnitId', String(parseInt(unitId)));
       formData.append('WorkModeId', String(parseInt(workModeId)));
 
       // ✅ Location with address
@@ -398,11 +422,27 @@ const handleSubmit = async () => {
   }
 };
 
+  // Worked-vs-estimated indicator (mirrors mobile app behaviour)
+  const selectedWorkModeName = workModeList.find(wm => wm.id.toString() === workModeId)?.name ?? '';
+  const isPlannedWork = selectedWorkModeName.toLowerCase().includes('planned');
+  const workedQtyNum = parseFloat(workQuantityReport?.workedQuantity ?? '0');
+  const estimatedQtyNum = parseFloat(workQuantityReport?.estimatedQuantity ?? '0');
+  const currentQty = parseFloat(workedQuantity) || 0;
+  const newTotal = workedQtyNum + currentQty;
+  const isOverEstimate = isPlannedWork && newTotal >= estimatedQtyNum;
+  const workQuantityIndicator = workQuantityReport
+    ? {
+        text: isPlannedWork
+          ? `${newTotal} / ${estimatedQtyNum} Estimated — ${isOverEstimate ? 'Exceeds plan!' : 'On track'}`
+          : `Total Worked: ${newTotal}`,
+        color: isOverEstimate ? '#e74c3c' : '#1a73e8',
+      }
+    : null;
+
   return {
     // form state
     siteId,
     workType,
-    unitId,
     workerId,
     wageTypeId,
     workModeId,
@@ -415,14 +455,12 @@ const handleSubmit = async () => {
     // dropdown options
     siteDetails,
     workTypeDetails,
-    unitDetails,
     workerDetails,
     wageTypeDetails,
     workModeDetails,
     // setters
     setSiteId,
     setWorkType,
-    setUnitId,
     setWorkerId,
     setWageTypeId,
     setWorkModeId,
@@ -434,7 +472,6 @@ const handleSubmit = async () => {
     // fetch functions
     fetchSites,
     fetchWorkTypes,
-    fetchUnits,
     fetchWorkers,
     fetchWageTypes,
     fetchWorkModes,
@@ -461,6 +498,8 @@ const handleSubmit = async () => {
     confirmWorkTypeChange,
     cancelWorkTypeChange,
     handleWorkTypeChange,
+    // work quantity / estimated plan indicator
+    workQuantityIndicator,
   };
 };
 

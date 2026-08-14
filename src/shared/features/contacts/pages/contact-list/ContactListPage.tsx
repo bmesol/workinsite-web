@@ -89,7 +89,10 @@ const ContactListPage = () => {
               <ContactCard
                 name={contact.name}
                 phone={contact.phone}
-                email={contact.email}
+                email={
+                  contact.email ??
+                  contact.contactDetails?.find((d) => d.contactType === 'Email')?.value
+                }
                 onDelete={(e: React.MouseEvent) =>
                   confirmDelete(e, contact.id)
                 }

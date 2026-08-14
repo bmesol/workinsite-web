@@ -25,7 +25,8 @@ const ContactCard = (props: ContactCardProps) => {
     .split(" ")
     .map((n) => n[0])
     .join("")
-    .toUpperCase();
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <Card

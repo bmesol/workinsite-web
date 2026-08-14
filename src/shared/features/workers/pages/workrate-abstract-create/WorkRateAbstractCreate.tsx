@@ -25,13 +25,11 @@ const WorkRateAbstractCreationPage = () => {
     setSiteId,
     fetchSites,
     fetchWorkTypes,
-    fetchUnits,
-    setWorkTypeId,
+    handleWorkTypeChange,
     setTotalRate,
     setTotalQuantity,
     setNotes,
     handleSubmit,
-    setUnitId,
   } = useWorkRateAbstractCreate();
 
   return (
@@ -59,7 +57,7 @@ const WorkRateAbstractCreationPage = () => {
             label={t('Work Type')}
             items={workTypeDetails}
             selectedValue={workTypeId}
-            onValueChange={setWorkTypeId}
+            onValueChange={handleWorkTypeChange}
             onSearch={fetchWorkTypes}
             error={error.workType}
             required
@@ -95,16 +93,17 @@ const WorkRateAbstractCreationPage = () => {
             )}
           </div>
 
-          {/* Unit */}
+          {/* Unit - auto-derived from selected Work Type, not user-editable */}
           <ComboboxField
             id="unit"
             label={t('Unit')}
             items={unitDetails}
             selectedValue={unitId}
-            onValueChange={setUnitId}
-            onSearch={fetchUnits}
+            onValueChange={() => {}}
+            onSearch={() => {}}
             error={error.unit}
             required
+            disabled
           />
 
           {/* Remark */}

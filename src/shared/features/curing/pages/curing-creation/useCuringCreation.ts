@@ -21,6 +21,7 @@ export const useCuringCreate = () => {
   const [endDate, setEndDate] = useState('');
   const [note, setNote] = useState('');
   const [siteList, setSiteList] = useState<Site[]>([]);
+  const [allSites, setAllSites] = useState<Site[]>([]);
   const [curingTypeList, setCuringTypeList] = useState<CuringType[]>([]);
 
   const { error, validate, setError, initialError } = useCuringInputValidate({
@@ -36,9 +37,17 @@ export const useCuringCreate = () => {
   }, []);
 
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
-    if (!sites) return;
-    setSiteList(searchString ? sites.slice(0, 3) : sites);
+    let source = allSites;
+    if (!source.length) {
+      const sites = await siteService.getSites({ status: 'Working' });
+      if (!sites) return;
+      setAllSites(sites);
+      source = sites;
+    }
+    const lower = searchString.toLowerCase();
+    setSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   const fetchCuringTypes = async () => {

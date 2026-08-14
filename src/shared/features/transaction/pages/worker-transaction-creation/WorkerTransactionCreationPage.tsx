@@ -62,7 +62,7 @@ const WorkerTransactionCreationPage = () => {
               onValueChange={setWorkerId}
               onSearch={fetchWorkers}
               required
-              error={error.clientId}
+              error={error.workerId}
             />
             <DatePicker
               label={t('Date')}

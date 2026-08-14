@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 import { useSupplierService } from '@/shared/features/suppliers/service/SupplierService';
 import { useSupplierTransactionService } from '../../service/SupplierTransactionService';
-import { useInputValidate } from '../../components/InputValidate/ClientTransactionInputValidate';
+import { useSupplierInputValidate } from '../../components/InputValidate/SupplierTransactionInputValidate';
 import type { SupplierTransactionProps } from '../../DTOs/SupplierTransaction';
 import { PaymentMethodEnum } from '../../DTOs/ClientTransaction';
 import { formatDateToString } from '@/shared/features/attendance/utils/functions';
@@ -32,8 +32,8 @@ const useSupplierTransactionEdit = () => {
   const today = new Date();
   const formatted = formatDateToString(today);
 
-  const { error, validate, setError, initialError } = useInputValidate({
-    clientId: supplierId,
+  const { error, validate, setError, initialError } = useSupplierInputValidate({
+    supplierId,
     date,
     amount,
     paymentMethod,

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSupplierService } from '@/shared/features/suppliers/service/SupplierService';
 import { useSupplierTransactionService } from '../../service/SupplierTransactionService';
-import { useInputValidate } from '../../components/InputValidate/ClientTransactionInputValidate';
+import { useSupplierInputValidate } from '../../components/InputValidate/SupplierTransactionInputValidate';
 import { PaymentMethodEnum } from '../../DTOs/ClientTransaction';
 import { formatDateToString } from '@/shared/utils/function';
 import { SupplierTransactionUrls } from '../../utils/urls';
@@ -27,8 +27,8 @@ const useSupplierTransactionCreation = () => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(PaymentMethodEnum.CASH);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
-  const { error, validate, setError, initialError } = useInputValidate({
-    clientId: supplierId,
+  const { error, validate, setError, initialError } = useSupplierInputValidate({
+    supplierId,
     date,
     amount,
     paymentMethod,

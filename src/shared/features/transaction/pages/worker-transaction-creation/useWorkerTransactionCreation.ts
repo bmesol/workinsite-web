@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import type { Worker } from '@/shared/features/workers/DTOs/WorkerProps';
 import { useWorkerService } from '@/shared/features/workers/service/WorkerService';
 import { useWorkerTransactionService } from '../../service/WorkerTransactionService';
-import { useInputValidate } from '../../components/InputValidate/ClientTransactionInputValidate';
+import { useWorkerInputValidate } from '../../components/InputValidate/WorkerTransactionInputValidate';
 import { PaymentMethodEnum } from '../../DTOs/ClientTransaction';
 import { formatDateToString } from '@/shared/features/attendance/utils/functions';
 import { WorkerTransactionUrls } from '../../utils/urls';
@@ -27,8 +27,8 @@ const useWorkerTransactionCreation = () => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(PaymentMethodEnum.CASH);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
-  const { error, validate, setError, initialError } = useInputValidate({
-    clientId: workerId,
+  const { error, validate, setError, initialError } = useWorkerInputValidate({
+    workerId,
     date,
     amount,
     paymentMethod,
