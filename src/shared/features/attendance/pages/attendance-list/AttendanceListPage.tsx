@@ -7,11 +7,11 @@ import { AttendanceUrls } from '../../utils/urls';
 import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
 import workerIllustration from "@/assets/images/worker-creation-illustration.png";
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';  // ✅ remove SlidersHorizontal, X
+import { Loader2 } from 'lucide-react';  
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useState } from 'react';
 import { AttendanceCard } from '@/shared/components/AttendanceCard/AttendanceCard';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';  // ✅ add
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';  
 import {
   Dialog,
   DialogContent,
@@ -129,19 +129,20 @@ const AttendanceListPage = () => {
             No Attendance found
           </p>
         ) : (
-          attendance.map(item => (
-            <AttendanceCard
-              key={item.id}
-              siteName={item.site?.name ?? ""}
-              workTypeName={item.workType?.name ?? ""}
-              wageTypeName={item.wageType?.name ?? ""}
-              date={item.date ?? ""}
-              worker={item.worker?.name ?? ""}
-              onDelete={() => confirmDelete(item.id)}
-              onPress={() => handleEditAttendance(item.id)}
-              permissionKey="Attendance"
-            />
-          ))
+       attendance.map(item => (
+  <AttendanceCard
+    key={item.id}
+    siteName={item.site?.name ?? ""}
+    attendanceId={item.id}
+    workTypeName={item.workType?.name ?? ""}
+    wageTypeName={item.wageType?.name ?? ""}
+    date={item.date ?? ""}
+    worker={item.worker?.name ?? ""}
+    onDelete={() => confirmDelete(item.id)}
+    onPress={() => handleEditAttendance(item.id)}
+    permissionKey="Attendance"
+  />
+))
         )}
       </div>
 

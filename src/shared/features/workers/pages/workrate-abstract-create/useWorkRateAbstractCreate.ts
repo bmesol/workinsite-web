@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { useWorkTypeService } from '../../service/WorkerTypeService';
-import { useUnitService } from '@/shared/features/materials/service/UnitService';
 import { useWorkRateAbstractService } from '../../service/WorkRateAbstractService';
 import { WorkRateAbstractUrls } from '../../utils/urls';  
 import type { Unit } from '@/shared/features/materials/DTOs/UnitProps';
@@ -20,13 +19,13 @@ const useWorkRateAbstractCreate = () => {
   const [totalRate, setTotalRate] = useState('');
   const [totalQuantity, setTotalQuantity] = useState('');
   const [notes, setNotes] = useState('');
+  const [allSites, setAllSites] = useState<Site[]>([]);
   const [siteList, setSiteList] = useState<Site[]>([]);
   const [workTypeList, setWorkTypeList] = useState<WorkType[]>([]);
   const [unitList, setUnitList] = useState<Unit[]>([]);
 
   const siteService = useSiteService();
   const workTypeService = useWorkTypeService();
-  const unitService = useUnitService();
   const workRateAbstractService = useWorkRateAbstractService();
 
   const { error, validate, setError, initialError } = useWorkRateAbstractValidate(
@@ -40,6 +39,7 @@ const useWorkRateAbstractCreate = () => {
     setTotalRate('');
     setTotalQuantity('');
     setNotes('');
+    setAllSites([]);
     setSiteList([]);
     setWorkTypeList([]);
     setUnitList([]);
@@ -56,7 +56,7 @@ const useWorkRateAbstractCreate = () => {
   }));
 
   const workTypeDetails = workTypeList.map(item => ({
-    label: item.name,
+    label: `${item.name} [${item.unit?.name ?? ''}]`,
     value: item.id.toString(),
   }));
 
@@ -66,9 +66,17 @@ const useWorkRateAbstractCreate = () => {
   }));
 
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString });
-    if (!sites) return;
-    setSiteList(searchString ? sites.slice(0, 3) : sites);
+    let source = allSites;
+    if (!source.length) {
+      const sites = await siteService.getSites({ status: 'Working' });
+      if (!sites) return;
+      setAllSites(sites);
+      source = sites;
+    }
+    const lower = searchString.toLowerCase();
+    setSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   const fetchWorkTypes = async (searchString: string = '') => {
@@ -77,10 +85,16 @@ const useWorkRateAbstractCreate = () => {
     setWorkTypeList(searchString ? workTypes.slice(0, 3) : workTypes);
   };
 
-  const fetchUnits = async (searchString: string = '') => {
-    const units = await unitService.getUnits(searchString, false);
-    if (!units) return;
-    setUnitList(searchString ? units.slice(0, 3) : units);
+  const handleWorkTypeChange = (value: string) => {
+    setWorkTypeId(value);
+    const selected = workTypeList.find(wt => wt.id.toString() === value);
+    if (selected?.unit) {
+      setUnitId(selected.unit.id.toString());
+      setUnitList([{ id: selected.unit.id, name: selected.unit.name }]);
+    } else {
+      setUnitId('');
+      setUnitList([]);
+    }
   };
 
   const hasUnsavedChanges = () => {
@@ -149,13 +163,11 @@ const useWorkRateAbstractCreate = () => {
     setSiteId,
     fetchSites,
     fetchWorkTypes,
-    fetchUnits,
-    setWorkTypeId,
+    handleWorkTypeChange,
     setTotalRate,
     setTotalQuantity,
     setNotes,
     handleSubmit,
-    setUnitId,
   };
 };
 

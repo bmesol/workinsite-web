@@ -36,6 +36,7 @@ export const usePurchaseCreation = () => {
   const [discount, setDiscount] = useState('');
   const [notes, setNotes] = useState('');
   const [siteList, setSiteList] = useState<Site[]>([]);
+  const [allSites, setAllSites] = useState<Site[]>([]);
   const [supplierList, setSupplierList] = useState<Supplier[]>([]);
   const [purchaseMaterials, setPurchaseMaterials] = useState<PurchaseMaterialCreationListProps[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
@@ -52,9 +53,17 @@ export const usePurchaseCreation = () => {
   });
 
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
-    if (!sites) return;
-    setSiteList(searchString ? sites.slice(0, 3) : sites);
+    let source = allSites;
+    if (!source.length) {
+      const sites = await siteService.getSites({ status: 'Working' });
+      if (!sites) return;
+      setAllSites(sites);
+      source = sites;
+    }
+    const lower = searchString.toLowerCase();
+    setSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   const siteDetails = siteList.map(site => ({
@@ -86,6 +95,7 @@ export const usePurchaseCreation = () => {
     setError(initialError);
     setPurchaseMaterials([]);
     setUploadedImages([]);
+    setAllSites([]);
   };
 
   const hasUnsavedChanges = () => {

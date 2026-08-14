@@ -18,6 +18,7 @@ export function useAvailableMaterialReportScreen({ navigate }: { navigate: (path
     const [refreshing, setRefreshing] = useState(false);
     const [reportData, setReportData] = useState<AvailableMaterialReport[]>([]);
     const [site, setSite] = useState({ name: '', value: '' });
+    const [allSites, setAllSites] = useState<any[]>([]);
     const [siteList, setSiteList] = useState<any[]>([]);
     const [selectedMaterials, setSelectedMaterials] = useState<SelectedMaterial[]>([]);
     const [materialList, setMaterialList] = useState<any[]>([]);
@@ -41,8 +42,17 @@ export function useAvailableMaterialReportScreen({ navigate }: { navigate: (path
     // ── API calls ────────────────────────────────────────────────────────────────
     const fetchSites = async (text = '') => {
         try {
-            const res = await siteService.getSites({ searchString: text, status: 'Working' });
-            setSiteList(res?.slice(0, 5) || []);
+            let source = allSites;
+            if (!source.length) {
+                const sites = await siteService.getSites({ status: 'Working' });
+                if (!sites) return;
+                setAllSites(sites);
+                source = sites;
+            }
+            const lower = text.toLowerCase();
+            setSiteList(
+                text ? source.filter((s: any) => s.name.toLowerCase().includes(lower)) : source,
+            );
         } catch (err) {
             console.log('fetchSites error:', err);
         }

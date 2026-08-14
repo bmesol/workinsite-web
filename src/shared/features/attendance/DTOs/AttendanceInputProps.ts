@@ -5,7 +5,6 @@ interface AttendanceInputProps {
   workTypeId: string;
   workerId: string;
   workedQuantity: string;
-  unitId: string;
   workModeId: string;
   attendanceSplit: any;
 }

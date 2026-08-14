@@ -29,6 +29,7 @@ type ComboboxFieldProps = {
   error?: string;
   required?: boolean;
   disabled?: boolean;
+  listClassName?: string;
 };
 
 const ComboboxField = ({
@@ -42,6 +43,7 @@ const ComboboxField = ({
   error,
   required,
   disabled = false,
+  listClassName,
 }: ComboboxFieldProps) => {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
@@ -79,7 +81,7 @@ const ComboboxField = ({
             disabled={disabled}
             className={cn(
               "w-full justify-between font-normal text-sm bg-white dark:bg-background",
-              disabled && "opacity-50 cursor-not-allowed",
+              disabled && "bg-gray-100 dark:bg-neutral-800 disabled:opacity-75",
             )}
             style={{
               fontFamily: "Outfit, sans-serif",
@@ -106,7 +108,7 @@ const ComboboxField = ({
                 onSearch(val);
               }}
             />
-            <CommandList>
+            <CommandList className={listClassName}>
               <CommandEmpty>
                 <span className="text-sm text-muted-foreground">
                   {t('No items found.')}

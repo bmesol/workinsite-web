@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { Header, Actions } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
@@ -28,7 +27,6 @@ import clientTransactionImage from '@/assets/images/client-creation-illustration
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientTransactionListPage = () => {
-  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const {
@@ -106,17 +104,16 @@ const ClientTransactionListPage = () => {
           </p>
         ) : (
           transactions.map(item => (
-            <TransactionCard
-              key={item.id}
-              id={item.id}
-              name={item.client.name}
-              amount={item.amount}
-              date={item.date}
-              paymentMethod={item.paymentMethod}
-              onDelete={handleDeleteConfirm}
-              onPress={handleEdit}
-              permissionKey="Client Transaction"
-            />
+          <TransactionCard
+  id={item.id}
+  name={item.client.name}
+  amount={item.totalAmount ?? item.amount}
+  date={item.date}
+  paymentMethod={item.paymentMethod}
+  onDelete={handleDeleteConfirm}
+  onPress={handleEdit}
+  permissionKey="Client Transaction"
+/>
           ))
         )}
       </div>

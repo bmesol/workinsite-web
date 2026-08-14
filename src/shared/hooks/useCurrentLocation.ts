@@ -64,6 +64,8 @@
 
 
 import { useCallback } from 'react';
+import  logger  from '@/shared/utils/logger';
+import { getApiInstance } from '@/shared/helpers/ApiHelper';
 
 export type LocationResult = {
   lat: number;
@@ -71,106 +73,67 @@ export type LocationResult = {
   address: string;
 };
 
-const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '';
+const GEO_OPTIONS: PositionOptions = {
+  enableHighAccuracy: true,
+  timeout: 15000,
+  maximumAge: 10000,
+};
 
-const requestLocationPermission = (): Promise<GeolocationPosition> => {
-  return new Promise((resolve, reject) => {
+// --- Browser GPS -------------------------------------------------------------
+
+const getCurrentPosition = (): Promise<GeolocationPosition> =>
+  new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error('GEOLOCATION_NOT_SUPPORTED'));
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => resolve(position),
+      resolve,
       (error) => {
-        if (error.code === error.PERMISSION_DENIED) {
-          reject(new Error('LOCATION_PERMISSION_DENIED'));
-        } else if (error.code === error.TIMEOUT) {
-          reject(new Error('LOCATION_TIMEOUT'));
-        } else {
-          reject(new Error('LOCATION_UNAVAILABLE'));
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            reject(new Error('LOCATION_PERMISSION_DENIED'));
+            break;
+          case error.TIMEOUT:
+            reject(new Error('LOCATION_TIMEOUT'));
+            break;
+          default:
+            reject(new Error('LOCATION_UNAVAILABLE'));
         }
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
-      },
+      GEO_OPTIONS,
     );
   });
-};
 
-/**
- * Reverse geocode: coordinates → human-readable address.
- * 1. Prefer the Maps JS SDK Geocoder if it's loaded on the page
- *    (works with referer-restricted browser keys).
- * 2. Fall back to the Geocoding HTTP endpoint.
- * 3. If everything fails, return "lat, lng" so check-in never blocks —
- *    but the real failure reason is logged to the console.
- */
+// --- Reverse geocoding via OUR backend, using the shared axios instance ------
+// (Authorization header + automatic 401 token-refresh are handled by the
+// interceptors inside getApiInstance — same as every other API call in the app.)
+
+const formatCoords = (lat: number, lng: number) => `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
 const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
-  const coordsFallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-
-  // 1) Maps JS SDK Geocoder (browser-safe, works with referer-restricted keys)
-  const g = (window as any).google;
-  if (g?.maps?.Geocoder) {
-    try {
-      const geocoder = new g.maps.Geocoder();
-      const { results } = await geocoder.geocode({ location: { lat, lng } });
-      if (results?.[0]?.formatted_address) {
-        return results[0].formatted_address as string;
-      }
-    } catch (e) {
-      console.warn('[useCurrentLocation] JS SDK geocode failed:', e);
-      // fall through to HTTP attempt
-    }
-  }
-
-  // 2) Geocoding HTTP endpoint
-  if (!GOOGLE_API_KEY) {
-    console.warn(
-      '[useCurrentLocation] VITE_GOOGLE_MAPS_API_KEY is empty — address will fall back to coordinates. ' +
-        'Add it to your .env and restart the dev server.',
-    );
-    return coordsFallback;
-  }
+  const coordsFallback = formatCoords(lat, lng);
 
   try {
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}&language=en`,
-    );
-    const json = await response.json();
-
-    if (json.status === 'OK' && json.results?.[0]?.formatted_address) {
-      return json.results[0].formatted_address as string;
-    }
-
-    // Surface the REAL reason instead of silently returning coordinates
-    console.warn(
-      `[useCurrentLocation] Geocoding failed — status: ${json.status}` +
-        (json.error_message ? ` — ${json.error_message}` : ''),
-    );
-    return coordsFallback;
-  } catch (e) {
-    console.warn('[useCurrentLocation] Geocoding request error:', e);
+    const api = getApiInstance(import.meta.env.VITE_SITE_SERVICE_BASE_URL, true);
+    const { data } = await api.get('/geolocation', { params: { lat, lng } });
+    return data?.address || coordsFallback;
+  } catch (err) {
+    logger.warn('useCurrentLocation: backend geocode failed', err);
     return coordsFallback;
   }
 };
 
+// --- Hook --------------------------------------------------------------------
+
 export const useCurrentLocation = () => {
-  // useCallback so getLocation is referentially stable —
-  // it's used in dependency arrays in useSupervisorDashboard / useSidebarAttendance
   const getLocation = useCallback(async (): Promise<LocationResult> => {
-    const position = await requestLocationPermission();
+    const position = await getCurrentPosition();
+    const { latitude: lat, longitude: lng } = position.coords;
+    const address = await reverseGeocode(lat, lng);
 
-    const { latitude, longitude } = position.coords;
-    const address = await reverseGeocode(latitude, longitude);
-
-    return {
-      lat: latitude,
-      lng: longitude,
-      address,
-    };
+    return { lat, lng, address };
   }, []);
 
   return { getLocation };

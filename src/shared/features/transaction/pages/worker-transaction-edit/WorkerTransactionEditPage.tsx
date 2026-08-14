@@ -73,7 +73,7 @@ const WorkerTransactionEditPage = () => {
             onValueChange={setWorkerId}
             onSearch={fetchWorkers}
             required
-            error={error.clientId}
+            error={error.workerId}
             disabled={!editable}
           />
 

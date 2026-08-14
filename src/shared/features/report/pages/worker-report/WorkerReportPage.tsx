@@ -69,17 +69,11 @@ export default function WorkerReportPage() {
     handleClearFilters,
   } = useWorkerReport();
 
-  const [siteSearch, setSiteSearch] = useState("");
   const [workerSearch, setWorkerSearch] = useState("");
 
   useEffect(() => {
     fetchReports(true);
   }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => fetchSites(siteSearch), 300);
-    return () => clearTimeout(timer);
-  }, [siteSearch]);
 
   useEffect(() => {
     const timer = setTimeout(() => fetchWorkers(workerSearch), 300);
@@ -180,7 +174,8 @@ export default function WorkerReportPage() {
                 const found = siteSelectOptions.find((s) => s.value === val);
                 setSite({ label: found?.label ?? "", value: val });
               }}
-              onSearch={(val) => setSiteSearch(val)}
+              onSearch={fetchSites}
+              listClassName="max-h-[200px] overflow-y-auto"
             />
 
             <ComboboxField

@@ -22,6 +22,7 @@ export const useMaterialShiftEdit = (id: string) => {
   const [notes, setNotes] = useState('');
   const [sourceSiteList, setSourceSiteList] = useState<Site[]>([]);
   const [targetSiteList, setTargetSiteList] = useState<Site[]>([]);
+  const [allSites, setAllSites] = useState<Site[]>([]);
   const [materialShift, setMaterialShift] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [availableMaterialList, setAvailableMaterialList] = useState<AvailableMaterial[]>([]);
@@ -136,16 +137,28 @@ export const useMaterialShiftEdit = (id: string) => {
   }));
 
   // ─── Fetch helpers ────────────────────────────────────────────────────────
+  const getOrFetchAllSites = async (): Promise<Site[]> => {
+    if (allSites.length) return allSites;
+    const sites = await siteService.getSites({ status: 'Working' });
+    if (!sites) return [];
+    setAllSites(sites);
+    return sites;
+  };
+
   const fetchSourceSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
-    if (!sites) return;
-    setSourceSiteList(searchString ? sites.slice(0, 3) : sites);
+    const source = await getOrFetchAllSites();
+    const lower = searchString.toLowerCase();
+    setSourceSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   const fetchTargetSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
-    if (!sites) return;
-    setTargetSiteList(searchString ? sites.slice(0, 3) : sites);
+    const source = await getOrFetchAllSites();
+    const lower = searchString.toLowerCase();
+    setTargetSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   const fetchMaterials = async (searchString: string = '') => {

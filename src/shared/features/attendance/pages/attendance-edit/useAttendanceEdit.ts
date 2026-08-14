@@ -1,17 +1,16 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'; 
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useWorkTypeService } from '@/shared/features/workers/service/WorkerTypeService';
-import { useUnitService } from '@/shared/features/materials/service/UnitService';
-import { useAttendanceSplitInputValidate } from '../../components/InputValidate/AttendanceSpilitInputValidate';
 import { useWorkModeService } from '@/shared/features/workers/service/WorkerModeService';
 import { useWorkerService } from '@/shared/features/workers/service/WorkerService';
 import { useWageTypeService } from '@/shared/features/sites/service/WageTypeService';
 import { useAttendanceService } from '../../service/AttendanceService';
-import { toast } from 'sonner';                                              
-import { AttendanceUrls } from '../../utils/urls';                             
+import { useWorkQuantityReportService } from '@/shared/features/workers/service/WorkQuantityReportService';
+import type { WorkQuantityReportItem } from '@/shared/features/workers/service/WorkQuantityReportService';
+import { toast } from 'sonner';
+import { AttendanceUrls } from '../../utils/urls';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
-import type { Unit } from '@/shared/features/materials/DTOs/UnitProps';
 import type { WageType, Worker } from '@/shared/features/workers/DTOs/WorkerProps';
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import type { AttendanceProps, AttendanceSplit } from '../../DTOs/AttendanceProps';
@@ -19,7 +18,9 @@ import { useAttendanceInputValidate } from '../../components/InputValidate/Atten
 
 type UploadedImage = {
   uri: string;
-  file?: File; // ✅ web File object
+  type: string;
+  name: string;
+  file: File;
 };
 
 type ViewImages = {
@@ -57,23 +58,24 @@ const useAttendanceEditScreen = () => {
 
   const [siteId, setSiteId] = useState<string>('');
   const [workType, setWorkType] = useState<WorkType>(defaultWorkType);
-  const [unitId, setUnitId] = useState<string>('');
   const [workerId, setWorkerId] = useState<string>('');
   const [wageTypeId, setWageTypeId] = useState<string>('');
   const [workModeId, setWorkModeId] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [workedQuantity, setWorkedQuantity] = useState<string>('');
+  const originalWorkedQtyRef = useRef<number>(0);
 
   const [siteList, setSiteList] = useState<Site[]>([]);
+  const [allSites, setAllSites] = useState<Site[]>([]);
   const [workTypeList, setWorkTypeList] = useState<WorkType[]>([]);
-  const [unitList, setUnitList] = useState<Unit[]>([]);
   const [workerList, setWorkerList] = useState<Worker[]>([]);
   const [wageTypeList, setWageTypeList] = useState<WageType[]>([]);
   const [workModeList, setWorkModeList] = useState<WorkMode[]>([]);
   const [attendanceSplit, setAttendanceSplit] = useState<AttendanceSplit[]>([]);
   const [attendance, setAttendance] = useState<AttendanceProps>();
   const [loading, setLoading] = useState(true);
+  const [workQuantityReport, setWorkQuantityReport] = useState<WorkQuantityReportItem | null>(null);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [viewImages, setViewImages] = useState<ViewImages[]>([]);
   const [removeImages, setRemoveImages] = useState<RemoveImages[]>([]);
@@ -81,11 +83,11 @@ const useAttendanceEditScreen = () => {
 
   const siteService = useSiteService();
   const workTypeService = useWorkTypeService();
-  const unitService = useUnitService();
   const workModeService = useWorkModeService();
   const workerService = useWorkerService();
   const wageTypeService = useWageTypeService();
   const attendanceService = useAttendanceService();
+  const workQuantityReportService = useWorkQuantityReportService();
 
   const { error, validate, setError, initialError } = useAttendanceInputValidate({
     date,
@@ -94,7 +96,6 @@ const useAttendanceEditScreen = () => {
     workTypeId: workType?.id?.toString(),
     workerId,
     workedQuantity,
-    unitId,
     workModeId,
     attendanceSplit,
   });
@@ -105,7 +106,7 @@ const useAttendanceEditScreen = () => {
   }));
 
   const workTypeDetails = workTypeList.map(item => ({
-    label: `${item.name} [${item.workerCategory.name}]`,
+    label: item.name,
     value: item.id.toString(),
     allItems: {
       value: item.id.toString(),
@@ -117,11 +118,6 @@ const useAttendanceEditScreen = () => {
         note: item.workerCategory.note,
       },
     },
-  }));
-
-  const unitDetails = unitList.map(item => ({
-    label: item.name,
-    value: item.id.toString(),
   }));
 
   const workerDetails = workerList.map(item => ({
@@ -139,23 +135,24 @@ const useAttendanceEditScreen = () => {
     value: item.id.toString(),
   }));
 
-  // ✅ getSites → string param (not object)
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString });
-    if (!sites) return;
-    setSiteList(searchString ? sites.slice(0, 3) : sites);
+    let source = allSites;
+    if (!source.length) {
+      const sites = await siteService.getSites({ status: 'Working' });
+      if (!sites) return;
+      setAllSites(sites);
+      source = sites;
+    }
+    const lower = searchString.toLowerCase();
+    setSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   const fetchWorkTypes = async (searchString: string = '') => {
     const workTypes = await workTypeService.getWorkTypes(searchString);
     if (!workTypes) return;
     setWorkTypeList(searchString ? workTypes.slice(0, 3) : workTypes);
-  };
-
-  const fetchUnits = async (searchString: string = '') => {
-    const units = await unitService.getUnits(searchString, false);
-    if (!units) return;
-    setUnitList(searchString ? units.slice(0, 3) : units);
   };
 
   const fetchWorkers = async (WorkerName: string = '') => {
@@ -179,6 +176,33 @@ const useAttendanceEditScreen = () => {
     setWorkModeList(searchString ? workModes.slice(0, 3) : workModes);
   };
 
+  // Fetches worked-vs-estimated quantity for the current site + work type + work mode
+  const fetchWorkQuantityReport = async (
+    currentSiteId: string,
+    currentWorkTypeId: number,
+    currentWorkModeId: string,
+  ) => {
+    if (!currentSiteId || !currentWorkTypeId || !currentWorkModeId) {
+      setWorkQuantityReport(null);
+      return;
+    }
+    try {
+      const result = await workQuantityReportService.getWorkQuantityReports({
+        SiteId: parseInt(currentSiteId),
+        WorkTypeId: currentWorkTypeId,
+        WorkModeId: parseInt(currentWorkModeId),
+      });
+      setWorkQuantityReport(result?.items?.[0] ?? null);
+    } catch {
+      setWorkQuantityReport(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchWorkQuantityReport(siteId, workType.id, workModeId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteId, workType.id, workModeId]);
+
   // ✅ Alert.alert → deleteIndex state — UI la confirm dialog
   const confirmDelete = (index: number) => {
     setDeleteIndex(index);
@@ -196,7 +220,6 @@ const useAttendanceEditScreen = () => {
   const resetFormFields = () => {
     setSiteId('');
     setWorkType(defaultWorkType);
-    setUnitId('');
     setWorkerId('');
     setWageTypeId('');
     setWorkModeId('');
@@ -208,13 +231,14 @@ const useAttendanceEditScreen = () => {
     setRemoveImages([]);
     setAttendanceSplit([]);
     setError(initialError);
+    setWorkQuantityReport(null);
+    setAllSites([]);
   };
 
   const hasUnsavedChanges = () => {
     return (
       siteId !== attendance?.site?.id?.toString() ||
       workType?.id?.toString() !== attendance?.workType?.id?.toString() ||
-      unitId !== attendance?.unit?.id?.toString() ||
       workerId !== attendance?.worker?.id?.toString() ||
       wageTypeId !== attendance?.wageType?.id?.toString() ||
       workModeId !== attendance?.workMode?.id?.toString() ||
@@ -258,99 +282,103 @@ const useAttendanceEditScreen = () => {
     }
   };
 
-  const handleImageUpload = (files: FileList | null) => {
-    if (!files) return;
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     const newImages: UploadedImage[] = Array.from(files).map(file => ({
       uri: URL.createObjectURL(file),
+      type: file.type || 'image/jpeg',
+      name: file.name || `photo_${Date.now()}.jpg`,
       file,
     }));
     setUploadedImages(prev => [...prev, ...newImages]);
+    e.target.value = '';
   };
 
-const handleSubmit = async () => {
-  if (validate()) {
-    try {
-      const formattedAttendanceSplits = attendanceSplit.map(split => ({
-        workerRoleId: split.workerRole.id,
-        shiftId: split.shift.id,
-        noOfPersons: split.noOfPersons,
-      }));
+  const handleSubmit = async () => {
+    if (validate()) {
+      try {
+        const formattedAttendanceSplits = attendanceSplit.map(split => ({
+          workerRoleId: split.workerRole.id,
+          shiftId: split.shift.id,
+          noOfPersons: split.noOfPersons,
+        }));
 
-      const formData = new FormData();
+        const formData = new FormData();
 
-      formData.append('Date', date);
-      formData.append('SiteId', parseInt(siteId).toString());
-      formData.append('WageTypeId', parseInt(wageTypeId).toString());
-      formData.append('WorkTypeId', workType?.id.toString());
-      formData.append('WorkerId', parseInt(workerId).toString());
-      formData.append('WorkedQuantity', workedQuantity.toString());
-      formData.append('UnitId', parseInt(unitId).toString());
-      formData.append('WorkModeId', parseInt(workModeId).toString());
+        formData.append('Date', date);
+        formData.append('SiteId', parseInt(siteId).toString());
+        formData.append('WageTypeId', parseInt(wageTypeId).toString());
+        formData.append('WorkTypeId', workType?.id.toString());
+        formData.append('WorkerId', parseInt(workerId).toString());
+        formData.append('WorkedQuantity', workedQuantity.toString());
+        formData.append('WorkModeId', parseInt(workModeId).toString());
 
-      formattedAttendanceSplits.forEach((split, index) => {
-        formData.append(`AttendanceSplits[${index}].WorkerRoleId`, split.workerRoleId.toString());
-        formData.append(`AttendanceSplits[${index}].ShiftId`, split.shiftId.toString());
-        formData.append(`AttendanceSplits[${index}].NoOfPersons`, String(split.noOfPersons));
-      });
+        formattedAttendanceSplits.forEach((split, index) => {
+          formData.append(`AttendanceSplits[${index}].WorkerRoleId`, split.workerRoleId.toString());
+          formData.append(`AttendanceSplits[${index}].ShiftId`, split.shiftId.toString());
+          formData.append(`AttendanceSplits[${index}].NoOfPersons`, String(split.noOfPersons));
+        });
 
-      removeImages.forEach((image, index) => {
-        formData.append(`RemovedImages[${index}].Id`, image.id.toString());
-        formData.append(`RemovedImages[${index}].ImagePath`, image.imagePath);
-      });
+        removeImages.forEach((image, index) => {
+          formData.append(`RemovedImages[${index}].Id`, image.id.toString());
+          formData.append(`RemovedImages[${index}].ImagePath`, image.imagePath);
+        });
 
-      if (notes) formData.append('Note', notes.trim());
+        if (notes) formData.append('Note', notes.trim());
 
-      uploadedImages.forEach(img => {
-        if (img.file) formData.append('Images', img.file);
-      });
+        uploadedImages.forEach(img => {
+          if (img.file) formData.append('Images', img.file);
+        });
 
-      await new Promise<void>((resolve, reject) => {
-        if (!navigator.geolocation) {
-          formData.append('CurrentLocation.Lat', '0');
-          formData.append('CurrentLocation.Lng', '0');
-          formData.append('CurrentLocation.Address', '');
-          resolve();
-          return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const lat = position.coords.latitude.toString();
-            const lng = position.coords.longitude.toString();
-
-            try {
-              const res = await fetch(
-                `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-              );
-              const data = await res.json();
-              const address = data.display_name || '';
-              formData.append('CurrentLocation.Lat', lat);
-              formData.append('CurrentLocation.Lng', lng);
-              formData.append('CurrentLocation.Address', address);
-            } catch {
-              formData.append('CurrentLocation.Lat', lat);
-              formData.append('CurrentLocation.Lng', lng);
-              formData.append('CurrentLocation.Address', '');
-            }
-            resolve();
-          },
-          () => {
+        await new Promise<void>((resolve, reject) => {
+          if (!navigator.geolocation) {
             formData.append('CurrentLocation.Lat', '0');
             formData.append('CurrentLocation.Lng', '0');
             formData.append('CurrentLocation.Address', '');
             resolve();
+            return;
           }
-        );
-      });
 
-      await attendanceService.updateAttendance(parseInt(attendanceId!), formData);
-      resetFormFields();
-      handleNavigateAfterSave();
-    } catch (error: any) {
-      const errorMsg = error?.response?.data?.[0]?.message || 'Failed to Edit Attendance';
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const lat = position.coords.latitude.toString();
+              const lng = position.coords.longitude.toString();
+
+              try {
+                const res = await fetch(
+                  `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+                );
+                const data = await res.json();
+                const address = data.display_name || '';
+                formData.append('CurrentLocation.Lat', lat);
+                formData.append('CurrentLocation.Lng', lng);
+                formData.append('CurrentLocation.Address', address);
+              } catch {
+                formData.append('CurrentLocation.Lat', lat);
+                formData.append('CurrentLocation.Lng', lng);
+                formData.append('CurrentLocation.Address', '');
+              }
+              resolve();
+            },
+            () => {
+              formData.append('CurrentLocation.Lat', '0');
+              formData.append('CurrentLocation.Lng', '0');
+              formData.append('CurrentLocation.Address', '');
+              resolve();
+            }
+          );
+        });
+
+        await attendanceService.updateAttendance(parseInt(attendanceId!), formData);
+        resetFormFields();
+        handleNavigateAfterSave();
+      } catch (error: any) {
+        const errorMsg = error?.response?.data?.[0]?.message || 'Failed to Edit Attendance';
+        toast.error(errorMsg);
+      }
     }
-  }
-};
+  };
 
   useEffect(() => {
     const fetchattendance = async () => {
@@ -368,12 +396,11 @@ const handleSubmit = async () => {
         setWorkTypeList([attendanceData.workType]);
         setWorkerId(attendanceData.worker.id.toString());
         setWorkerList([attendanceData.worker]);
-        setUnitId(attendanceData.unit.id.toString());
-        setUnitList([attendanceData.unit]);
         setWorkModeId(attendanceData.workMode.id.toString());
         setWorkModeList([attendanceData.workMode]);
         setAttendanceSplit(attendanceData.attendanceSplits);
         setWorkedQuantity(attendanceData.workedQuantity.toString());
+        originalWorkedQtyRef.current = parseFloat(attendanceData.workedQuantity.toString()) || 0;
         setViewImages(attendanceData.images ?? []);
         setNotes(attendanceData.notes);
       } catch (error) {
@@ -386,17 +413,32 @@ const handleSubmit = async () => {
     if (attendanceId) fetchattendance();
   }, [attendanceId]);
 
+  // Worked-vs-estimated indicator (mirrors mobile app behaviour)
+  const selectedWorkModeName = workModeList.find(wm => wm.id.toString() === workModeId)?.name ?? '';
+  const isPlannedWork = selectedWorkModeName.toLowerCase().includes('planned');
+  const workedQtyNum = parseFloat(workQuantityReport?.workedQuantity ?? '0');
+  const estimatedQtyNum = parseFloat(workQuantityReport?.estimatedQuantity ?? '0');
+  const currentQty = parseFloat(workedQuantity) || 0;
+  const newTotal = workedQtyNum - originalWorkedQtyRef.current + currentQty;
+  const isOverEstimate = isPlannedWork && newTotal >= estimatedQtyNum;
+  const workQuantityIndicator = workQuantityReport
+    ? {
+        text: isPlannedWork
+          ? `${newTotal} / ${estimatedQtyNum} Estimated — ${isOverEstimate ? 'Exceeds plan!' : 'On track'}`
+          : `Total Worked: ${newTotal}`,
+        color: isOverEstimate ? '#e74c3c' : '#1a73e8',
+      }
+    : null;
+
   return {
     siteDetails,
     workTypeDetails,
-    unitDetails,
     workerDetails,
     wageTypeDetails,
     workModeDetails,
     error,
     siteId,
     workType,
-    unitId,
     workerId,
     wageTypeId,
     workModeId,
@@ -412,14 +454,12 @@ const handleSubmit = async () => {
     setWorkedQuantity,
     setSiteId,
     setWorkType,
-    setUnitId,
     setWorkerId,
     setWageTypeId,
     setWorkModeId,
     setNotes,
     fetchSites,
     fetchWorkTypes,
-    fetchUnits,
     fetchWorkers,
     fetchWageTypes,
     fetchWorkModes,
@@ -429,12 +469,13 @@ const handleSubmit = async () => {
     confirmDelete,
     handleDelete,
     cancelDelete,
-    deleteIndex,      
+    deleteIndex,
     handleImageUpload,
     viewImages,
     setViewImages,
     removeImages,
     setRemoveImages,
+    workQuantityIndicator,
   };
 };
 

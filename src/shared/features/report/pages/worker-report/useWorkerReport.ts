@@ -91,6 +91,7 @@ export function useWorkerReport() {
   const [errors, setErrors] = useState<ValidationError>({ fromDate: '', toDate: '' });
 
   // dropdown options
+  const [allSites, setAllSites]           = useState<SiteOption[]>([]);
   const [siteOptions, setSiteOptions]     = useState<SiteOption[]>([]);
   const [workerOptions, setWorkerOptions] = useState<WorkerOption[]>([]);
 
@@ -135,9 +136,17 @@ export function useWorkerReport() {
 
 
   const fetchSites = async (text: string) => {
-    if (!text) return;
-    const res = await siteService.getSites({ searchString: text });
-    setSiteOptions((res ?? []).slice(0, 5));
+    let source = allSites;
+    if (!source.length) {
+      const sites = await siteService.getSites({ status: 'Working' });
+      if (!sites) return;
+      setAllSites(sites);
+      source = sites;
+    }
+    const lower = text.toLowerCase();
+    setSiteOptions(
+      text ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   const fetchWorkers = async (text: string) => {

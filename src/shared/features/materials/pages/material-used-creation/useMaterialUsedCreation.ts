@@ -23,6 +23,7 @@ const useMaterialUsedCreation = () => {
   const [notes, setNotes] = useState('');
   const [date, setDate] = useState('');
   const [siteList, setSiteList] = useState<Site[]>([]);
+  const [allSites, setAllSites] = useState<Site[]>([]);
   const [workModeList, setWorkModeList] = useState<WorkMode[]>([]);
   const [availableMaterialList, setAvailableMaterialList] = useState<AvailableMaterial[]>([]);
   const [allAvailableMaterials, setAllAvailableMaterials] = useState<AvailableMaterial[]>([]);
@@ -59,6 +60,7 @@ const useMaterialUsedCreation = () => {
     setAvailableMaterialList([]);
     setAllAvailableMaterials([]);
     setAvailableQuantity(null);
+    setAllSites([]);
   };
 
   // ── When siteId changes: fetch available materials ──
@@ -122,9 +124,17 @@ const useMaterialUsedCreation = () => {
 
   // ── Fetch helpers ──
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
-    if (!sites) return;
-    setSiteList(searchString ? sites.slice(0, 3) : sites);
+    let source = allSites;
+    if (!source.length) {
+      const sites = await siteService.getSites({ status: 'Working' });
+      if (!sites) return;
+      setAllSites(sites);
+      source = sites;
+    }
+    const lower = searchString.toLowerCase();
+    setSiteList(
+      searchString ? source.filter(s => s.name.toLowerCase().includes(lower)) : source,
+    );
   };
 
   // Client-side filter — no extra API call

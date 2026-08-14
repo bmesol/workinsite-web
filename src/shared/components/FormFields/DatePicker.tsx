@@ -83,7 +83,7 @@ const DatePicker = ({
             className={cn(
               'w-full justify-start font-normal bg-white dark:bg-background',
               !selectedDate && 'text-muted-foreground',
-              disable && 'opacity-50 cursor-not-allowed',
+              disable && 'bg-gray-100 dark:bg-neutral-800 disabled:opacity-75',
             )}
             style={{
               fontFamily: 'Outfit, sans-serif',

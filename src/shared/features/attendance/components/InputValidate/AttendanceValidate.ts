@@ -9,7 +9,6 @@ const useAttendanceInputValidate = (props: AttendanceInputProps) => {
     workTypeId,
     workerId,
     workedQuantity,
-    unitId,
     workModeId,
     attendanceSplit,
   } = props;
@@ -21,7 +20,6 @@ const useAttendanceInputValidate = (props: AttendanceInputProps) => {
     workType: '',
     worker: '',
     workedQuantity: '',
-    unit: '',
     workMode: '',
     attendanceSplit: '',
   };
@@ -47,7 +45,6 @@ const useAttendanceInputValidate = (props: AttendanceInputProps) => {
     if (!workerId) updateError('worker', 'Please select a worker');
     if (!workedQuantity || isNaN(Number(workedQuantity)))
       updateError('workedQuantity', 'Enter a valid worked quantity');
-    if (!unitId) updateError('unit', 'Please select a unit');
     if (!workModeId) updateError('workMode', 'Please select a work mode');
     if (!attendanceSplit || attendanceSplit.length === 0)
       updateError('attendanceSplit', 'Please add attendance split');

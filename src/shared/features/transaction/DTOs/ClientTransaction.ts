@@ -9,22 +9,35 @@ const PaymentMethodEnum = {
 
 type PaymentMethodEnum = typeof PaymentMethodEnum[keyof typeof PaymentMethodEnum];
 
+interface ClientTransactionSplitRequest {
+  siteId: number;
+  amount: string;
+}
+
 interface ClientTransactionRequest {
   clientId: string;
   date: string;
-  amount: string;
+  totalAmount: string;
   paymentMethod: PaymentMethodEnum;
   remark: string;
+  clientTransactionSplits: ClientTransactionSplitRequest[];
+}
+
+interface ClientTransactionSplitProps {
+  site: { id: number; name: string };
+  amount: string;
 }
 
 interface ClientTransactionProps {
   client: Client;
   date: string;
   amount: string;
+  totalAmount?: string;
   paymentMethod: PaymentMethodEnum;
   remark: string;
   id: number;
+  clientTransactionSplits?: ClientTransactionSplitProps[];
 }
 
 export { PaymentMethodEnum };
-export type { ClientTransactionRequest, ClientTransactionProps };
+export type { ClientTransactionRequest, ClientTransactionSplitRequest, ClientTransactionProps, ClientTransactionSplitProps };

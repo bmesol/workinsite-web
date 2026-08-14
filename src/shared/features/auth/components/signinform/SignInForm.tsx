@@ -1,5 +1,4 @@
 import { Button } from "@/shared/components/ui/button";
-import { Link } from "react-router-dom";
 import { PhoneNumberField } from "@/shared/components/FormFields/PhoneNumberField";
 import { PinField } from "@/shared/components/FormFields/PinField";
 import workInSiteLogo from "@/assets/images/work-insite-logo.png";
@@ -39,16 +38,6 @@ const SignInForm = () => {
           required={true}
         />
 
-        <div className="flex justify-end">
-          <Link
-            to="/forgot-pin"
-            className="md-unit underline"
-            style={{ color: "var(--gray-color)" }}
-          >
-            {t('Forgot your PIN?')}
-          </Link>
-        </div>
-
         <Button
           onClick={handleSubmission}
           className="w-full h-10 bg-[var(--primary)] text-black font-semibold !rounded-[12px] shadow-md hover:bg-[var(--primary)] transition-opacity duration-300 hover:opacity-90 mt-2 cursor-pointer"
@@ -56,15 +45,6 @@ const SignInForm = () => {
         >
           {t('Sign in')}
         </Button>
-
-        <div className="flex items-center justify-center gap-1">
-          <p className="text-sm mt-1" style={{ color: "var(--gray-color)" }}>
-            {t('Create new account?')}
-          </p>
-          <Link to="/sign-up" className="mt-1 !text-black">
-            {t('Sign up')}
-          </Link>
-        </div>
 
       </div>
     </div>

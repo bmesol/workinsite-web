@@ -10,7 +10,7 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { usePermission } from '@/shared/hooks/usePermission';
-import { Loader2, PlusCircle, Upload, X } from 'lucide-react';
+import { PlusCircle, Upload, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -39,14 +39,12 @@ const AttendanceEditPage = () => {
   const {
     siteDetails,
     workTypeDetails,
-    unitDetails,
     workerDetails,
     wageTypeDetails,
     workModeDetails,
     error,
     siteId,
     workType,
-    unitId,
     workerId,
     wageTypeId,
     workModeId,
@@ -65,7 +63,6 @@ const AttendanceEditPage = () => {
     setWorkedQuantity,
     setSiteId,
     setWorkType,
-    setUnitId,
     setWorkerId,
     setWageTypeId,
     setWorkModeId,
@@ -73,17 +70,17 @@ const AttendanceEditPage = () => {
     setUploadedImages,
     fetchSites,
     fetchWorkTypes,
-    fetchUnits,
     fetchWorkers,
     fetchWageTypes,
     fetchWorkModes,
-    handleBackPress,   // ✅ Cancel button-க்கு use பண்ணுவோம்
+    handleBackPress,
     handleSubmit,
     confirmDelete,
     handleDelete,
     cancelDelete,
     deleteIndex,
     handleImageUpload,
+    workQuantityIndicator,
   } = useAttendanceEditScreen();
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -108,15 +105,17 @@ const AttendanceEditPage = () => {
         <CardContent className="pt-4">
           <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
 
+            {/* Date — always locked on edit, same as mobile */}
             <DatePicker
               date={date}
               onDateChange={setDate}
               errorMessage={error.date}
               label={t('Date')}
               required
-              disable={!editable}
+              disable={true}
             />
 
+            {/* Site — always locked on edit, same as mobile */}
             <ComboboxField
               id="site"
               label={t('Site')}
@@ -126,9 +125,10 @@ const AttendanceEditPage = () => {
               onSearch={fetchSites}
               error={error.site}
               required
-              disabled={!editable}
+              disabled={true}
             />
 
+            {/* Wage Type — always locked on edit, same as mobile */}
             <ComboboxField
               id="wageType"
               label={t('Wage Type')}
@@ -138,9 +138,10 @@ const AttendanceEditPage = () => {
               onSearch={fetchWageTypes}
               error={error.wageType}
               required
-              disabled={!editable}
+              disabled={true}
             />
 
+            {/* Work Type — always locked on edit, same as mobile */}
             <ComboboxField
               id="workType"
               label={t('Work Type')}
@@ -156,6 +157,7 @@ const AttendanceEditPage = () => {
               disabled={true}
             />
 
+            {/* Worker — always locked on edit, same as mobile */}
             <ComboboxField
               id="worker"
               label={t('Worker')}
@@ -165,31 +167,10 @@ const AttendanceEditPage = () => {
               onSearch={fetchWorkers}
               error={error.worker}
               required
-              disabled={!editable}
+              disabled={true}
             />
 
-            <NameField
-              label={t('Worked Quantity')}
-              inputValue={workedQuantity}
-              setInputValue={setWorkedQuantity}
-              placeholder={t('Enter Worked Quantity')}
-              errorMessage={error.workedQuantity}
-              required
-              isDisabled={!editable}
-            />
-
-            <ComboboxField
-              id="unit"
-              label={t('Unit')}
-              items={unitDetails}
-              selectedValue={unitId}
-              onValueChange={setUnitId}
-              onSearch={fetchUnits}
-              error={error.unit}
-              required
-              disabled={!editable}
-            />
-
+            {/* Work Mode — permission-based, same as mobile */}
             <ComboboxField
               id="workMode"
               label={t('Work Mode')}
@@ -201,6 +182,27 @@ const AttendanceEditPage = () => {
               required
               disabled={!editable}
             />
+
+            {/* Worked Quantity — permission-based, same as mobile */}
+            <NameField
+              label={t('Worked Quantity')}
+              inputValue={workedQuantity}
+              setInputValue={setWorkedQuantity}
+              placeholder={t('Enter Worked Quantity')}
+              errorMessage={error.workedQuantity}
+              required
+              isDisabled={!editable}
+            />
+
+            {/* Worked vs Estimated Plan indicator */}
+            {workQuantityIndicator && (
+              <p
+                className="text-sm font-semibold -mt-2"
+                style={{ color: workQuantityIndicator.color }}
+              >
+                {workQuantityIndicator.text}
+              </p>
+            )}
 
             {/* Attendance Split */}
             {editable && (
@@ -260,7 +262,7 @@ const AttendanceEditPage = () => {
                   <div key={index} className="relative w-20 h-20">
                     <img
                       src={img.uri}
-                      alt={`upload-${index}`}
+                      alt={img.name}
                       className="w-full h-full object-cover rounded-md border"
                     />
                     {editable && (
@@ -297,7 +299,7 @@ const AttendanceEditPage = () => {
                   accept="image/*"
                   multiple
                   className="hidden"
-                  onChange={(e) => handleImageUpload(e.target.files)}
+                  onChange={handleImageUpload}
                 />
               </>
             )}

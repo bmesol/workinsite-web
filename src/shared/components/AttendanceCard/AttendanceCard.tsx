@@ -4,6 +4,7 @@ import { usePermission } from "@/shared/hooks/usePermission";
 
 interface AttendanceCardProps {
   siteName: string;
+  attendanceId?: string | number;
   workTypeName: string;
   wageTypeName: string;
   date: string;
@@ -15,6 +16,7 @@ interface AttendanceCardProps {
 
 const AttendanceCard = ({
   siteName,
+  attendanceId,
   workTypeName,
   wageTypeName,
   date,
@@ -40,41 +42,48 @@ const AttendanceCard = ({
             onDelete();
           }}
         >
-          <Trash2 className="h-4 w-4 text-destructive" />
+          <Trash2 className="h-4 w-4 text-red-500" />
         </button>
       )}
 
       {/* Details */}
       <div className="flex flex-col gap-1 min-w-0 pr-8">
-        {/* Site Name */}
-        <span className="font-semibold text-base text-[var(--foreground)] truncate mb-2">
-          {siteName}
-        </span>
+        {/* Site Name with ID */}
+        <div className="flex items-center gap-1 mb-2 min-w-0">
+          {attendanceId !== undefined && (
+            <span className="text-xs font-semibold text-[var(--foreground)] shrink-0">
+              [{attendanceId}]
+            </span>
+          )}
+          <span className="font-semibold text-base text-[var(--foreground)] truncate">
+            {siteName}
+          </span>
+        </div>
 
         {/* Row 1 — Work Type + Wage Type */}
         <div className="flex items-center gap-6 flex-wrap">
           <div className="flex items-center gap-2 min-w-[120px]">
-  <Briefcase className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-  <span className="text-sm text-[var(--foreground)] truncate">{workTypeName}</span>
-</div>
+            <Briefcase className="h-4 w-4 text-[var(--foreground)] shrink-0" />
+            <span className="text-sm text-[var(--foreground)] truncate">{workTypeName}</span>
+          </div>
 
-<div className="flex items-center gap-2 min-w-[120px]">
-  <Banknote className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-  <span className="text-sm text-[var(--foreground)] truncate">{wageTypeName}</span>
-</div>
+          <div className="flex items-center gap-2 min-w-[120px]">
+            <Banknote className="h-4 w-4 text-[var(--foreground)] shrink-0" />
+            <span className="text-sm text-[var(--foreground)] truncate">{wageTypeName}</span>
+          </div>
         </div>
 
         {/* Row 2 — Date + Worker */}
         <div className="flex items-center gap-6 flex-wrap">
           <div className="flex items-center gap-2 min-w-[120px]">
-  <CalendarDays className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-  <span className="text-sm text-[var(--foreground)]">{date}</span>
-</div>
+            <CalendarDays className="h-4 w-4 text-[var(--foreground)] shrink-0" />
+            <span className="text-sm text-[var(--foreground)]">{date}</span>
+          </div>
 
-<div className="flex items-center gap-2 min-w-[120px]">
-  <User className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-  <span className="text-sm text-[var(--foreground)] truncate">{worker}</span>
-</div>
+          <div className="flex items-center gap-2 min-w-[120px]">
+            <User className="h-4 w-4 text-[var(--foreground)] shrink-0" />
+            <span className="text-sm text-[var(--foreground)] truncate">{worker}</span>
+          </div>
         </div>
       </div>
     </Card>

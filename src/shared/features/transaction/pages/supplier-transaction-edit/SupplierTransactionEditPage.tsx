@@ -74,7 +74,7 @@ const SupplierTransactionEditPage = () => {
               onValueChange={setSupplierId}
               onSearch={fetchSuppliers}
               required
-              error={error.clientId}
+              error={error.supplierId}
               disabled={!editable}
             />
             <DatePicker
