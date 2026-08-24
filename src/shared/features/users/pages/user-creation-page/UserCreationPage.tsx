@@ -65,7 +65,7 @@ const UserCreationPage = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t('Set up a PIN')}</DialogTitle>
-            <DialogDescription>Please set 4 digit number</DialogDescription>
+            <DialogDescription>{t('Please set 4 digit number')}</DialogDescription>
           </DialogHeader>
           <UserCreationPinForm
             queryString={queryString}

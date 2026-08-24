@@ -71,6 +71,7 @@ export const AttendanceSplitCreationPage = (props: AttendanceSplitProps) => {
         placeholder={t('Enter No Of Persons')}
         errorMessage={error.noOfPersons}
         required
+        regex="^[0-9.]*$"
       />
 
       {/* Add Button */}

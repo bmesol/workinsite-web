@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
 import { Header, Actions } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import TransactionCard from '@/shared/components/TransactionCard/TransactionCard';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -22,20 +21,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import { useSupplierTransactiontList } from './useSupplierTransactionList';
+import { useSupplierTransactionList } from './useSupplierTransactionList';
 import { SupplierTransactionUrls } from '../../utils/urls';
 import supplierTransactionImage from '@/assets/images/client-creation-illustration.png';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const SupplierTransactionListPage = () => {
-  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const {
     supplier, setSupplier,
     supplierDetails,
     fromDate, setFromDate,
-    toDate, seToDate,
+    toDate, setToDate,
     fetchSuppliers,
     transactions,
     handleEdit,
@@ -53,7 +51,7 @@ const SupplierTransactionListPage = () => {
     setDeleteId,
     handleDelete,
     fetchSupplierTransactions,
-  } = useSupplierTransactiontList();
+  } = useSupplierTransactionList();
 
   const isFiltered = !!(fromDate || toDate || supplier?.value);
 
@@ -155,14 +153,14 @@ const SupplierTransactionListPage = () => {
               onSearch={fetchSuppliers}
             />
             <DatePicker
-              label="From Date"
+              label={t('From Date')}
               date={fromDate}
               onDateChange={setFromDate}
             />
             <DatePicker
-              label="To Date"
+              label={t('To Date')}
               date={toDate}
-              onDateChange={seToDate}
+              onDateChange={setToDate}
             />
             <Button
               onClick={() => {
@@ -186,10 +184,10 @@ const SupplierTransactionListPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+              {t('Confirm Delete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this supplier transaction?
+              {t('Are you sure you want to delete this supplier transaction?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -203,7 +201,7 @@ const SupplierTransactionListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

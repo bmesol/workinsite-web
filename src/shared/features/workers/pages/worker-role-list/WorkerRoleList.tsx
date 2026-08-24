@@ -124,9 +124,9 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this worker role?
+              {t('Are you sure you want to delete this worker role?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -137,7 +137,7 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button variant="destructive" onClick={confirmDelete}>
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -1,8 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import { Header, Actions } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import TransactionCard from '@/shared/components/TransactionCard/TransactionCard';
@@ -31,7 +30,6 @@ import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerTransactionListPage = () => {
-  const navigate = useNavigate();
   const { canEdit } = usePermission();
   const hasPermission = canEdit('Worker Transaction');
   const { t } = useLanguage();
@@ -150,7 +148,7 @@ const WorkerTransactionListPage = () => {
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
-            <DialogTitle>Search Worker Transactions</DialogTitle>
+            <DialogTitle>{t('Search Worker Transactions')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
             <ComboboxField
@@ -165,12 +163,12 @@ const WorkerTransactionListPage = () => {
               onSearch={fetchWorkers}
             />
             <DatePicker
-              label="From Date"
+              label={t('From Date')}
               date={fromDate}
               onDateChange={setFromDate}
             />
             <DatePicker
-              label="To Date"
+              label={t('To Date')}
               date={toDate}
               onDateChange={setToDate}
             />
@@ -195,9 +193,9 @@ const WorkerTransactionListPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this worker transaction?
+              {t('Are you sure you want to delete this worker transaction?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -206,7 +204,7 @@ const WorkerTransactionListPage = () => {
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button variant="destructive" onClick={handleDeleteConfirm}>
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

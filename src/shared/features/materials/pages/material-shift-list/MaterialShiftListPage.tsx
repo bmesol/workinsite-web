@@ -25,7 +25,7 @@ import {
 import { useMaterialShiftList } from "./useMaterialShiftList";
 import { MaterialShiftUrls } from "../../utils/urls";
 import materialShiftImage from "@/assets/images/client-creation-illustration.png";
-import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
+import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import MaterialUsedCard from "@/shared/components/MaterialUsedCard/MaterialUsedCard";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 

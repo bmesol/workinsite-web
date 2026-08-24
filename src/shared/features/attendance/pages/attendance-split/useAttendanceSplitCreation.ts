@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {useAttendanceSplitInputValidate} from '../../components/InputValidate/AttendanceSpilitInputValidate';
+import {useAttendanceSplitInputValidate} from '../../components/InputValidate/AttendanceSplitInputValidate';
 import {useWorkerRoleService} from '@/shared/features/workers/service/WorkerRoleService';
 import type {AttendanceSplit} from '../../DTOs/AttendanceProps';
 import type {Shift} from '@/shared/features/workers/DTOs/ShiftProps';

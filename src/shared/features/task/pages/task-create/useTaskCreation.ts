@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useTaskService } from '../../service/TaskService';
 import { useTaskInputValidate } from '../../components/InputValidate/TaskInputValidate';
@@ -16,6 +17,7 @@ export type UploadedImage = {
 };
 
 export const useTaskCreation = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const siteService = useSiteService();
@@ -204,7 +206,7 @@ export const useTaskCreation = () => {
       );
       setUploadedImages(prev => [...prev, ...compressed]);
     } catch {
-      toast.error('An error occurred while processing images.');
+      toast.error(t('An error occurred while processing images.'));
     }
     if (e.target) e.target.value = '';
   };
@@ -236,9 +238,9 @@ export const useTaskCreation = () => {
       await taskService.createTask(form);
       resetFormFields();
       navigate(TaskUrls.list);
-      toast.success('Task created successfully');
+      toast.success(t('Task created successfully'));
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to create Task');
+      toast.error(error?.response?.data?.message || t('Failed to create Task'));
     } finally {
       setLoading(false);
     }

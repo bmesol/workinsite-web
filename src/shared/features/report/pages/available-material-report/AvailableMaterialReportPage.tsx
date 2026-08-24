@@ -5,7 +5,7 @@ import { Button } from '@/shared/components/ui/button';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { Loader } from '@/shared/components/Loader/Loader';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
 import { Header, Actions } from '@/shared/components/Header/Header';
 import {
   AlertDialog,
@@ -93,15 +93,15 @@ const AvailableMaterialReportScreen = () => {
       <div className="flex-1 overflow-y-auto mt-2">
         {refreshing && (
           <div className="text-center py-2 text-sm text-gray-400">
-            Refreshing...
+            {t('Refreshing...')}
           </div>
         )}
 
         {reportData.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-slate-400">
             <PackageSearch size={48} className="mb-4 opacity-30" />
-            <p className="font-semibold text-slate-500">No Data Found</p>
-            <p className="text-sm mt-1">Try adjusting your Search filters</p>
+            <p className="font-semibold text-slate-500">{t('No Data Found')}</p>
+            <p className="text-sm mt-1">{t('Try adjusting your Search filters')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">

@@ -7,7 +7,7 @@ const WorkerGetStartedPage = () => {
   const { t } = useLanguage();
   return (
     <GetStartedCard imgSrc={workerCreationIllustration} buttonLabel={t('Create Worker')} buttonClick={WorkersUrls.create}>
-      Simplify the management of your construction workers with WorkInSite. Get started today to ensure seamless coordination and productivity on your projects.
+      {t('Simplify the management of your construction workers with WorkInSite. Get started today to ensure seamless coordination and productivity on your projects.')}
     </GetStartedCard>
   );
 };

@@ -83,7 +83,7 @@ const WorkerEditPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -197,7 +197,7 @@ const WorkerEditPage = () => {
           {/* Notes */}
           {notes !== undefined && (
             <TextareaField
-              label="Notes"
+              label={t('Notes')}
               inputValue={`${notes ? notes : ""}`}
               setInputValue={setNotes}
               placeholder={t("Enter your notes")}

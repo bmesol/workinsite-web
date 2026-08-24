@@ -74,6 +74,7 @@ const useWorkerTransactionList = () => {
       setHasMore(response.totalPages > response.pageNumber);
     } catch (error) {
       console.error('Error fetching WorkerTransactions:', error);
+      toast.error('Failed to fetch worker transactions.');
     } finally {
       setLoading(false);
       setPaginationLoading(false);

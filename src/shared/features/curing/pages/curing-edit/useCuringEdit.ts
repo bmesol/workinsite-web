@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { toast } from 'sonner';
 import { useCuringService } from '../../service/CuringService';
 import { useCuringTypeService } from '../../service/CuringTypeService';
@@ -10,6 +11,7 @@ import type { CuringType } from '../../DTOs/CuringTypeProps';
 import { CuringUrls } from '../../utils/urls';
 
 export const useCuringEdit = (id: string) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const curingService = useCuringService();
   const curingTypeService = useCuringTypeService();
@@ -114,7 +116,7 @@ export const useCuringEdit = (id: string) => {
         endDate: endDate.trim(),
         note: note.trim(),
       });
-      toast.success('Curing updated successfully.');
+      toast.success(t('Curing updated successfully.'));
       navigate(CuringUrls.list);
     } catch (error: any) {
       toast.error(

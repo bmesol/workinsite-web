@@ -72,8 +72,7 @@ const useUserProfile = () => {
       try {
         await userService.updateProfile(userData);
         const updatedProfile = await userService.getProfile();
-        console.log("Updated Profile:", updatedProfile); // ✅ add panninen
-        AuthHelper.setUserProfile(updatedProfile);
+AuthHelper.setUserProfile(updatedProfile);
         window.location.reload();
       } catch (err: any) {
         const messages = err?.response?.data || [];

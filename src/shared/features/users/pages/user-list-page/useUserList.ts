@@ -67,13 +67,14 @@ const useUserList = () => {
   };
 
   const handleUserSelect = (id: number) => navigate(UsersUrls.edit(id));
+  const handleCreate = () => navigate(UsersUrls.create);
 
   return {
     userList,
     fetchUser,
     handleUserSelect,
+    handleCreate,
     hasSearchFilter,
-    navigate,
     loading,
     searchLoading,
   };

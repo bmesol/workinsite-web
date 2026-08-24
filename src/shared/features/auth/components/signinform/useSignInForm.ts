@@ -67,16 +67,18 @@ export const useSignInForm = () => {
   const userService = useUserService();
 
   const handleSubmission = async () => {
-    if (!phoneNumber) {
-      setError({ phoneNumber: "Phone number required" });
+    const newError: { phoneNumber?: string; pin?: string } = {};
+
+    if (!phoneNumber) newError.phoneNumber = "Phone number is required";
+    if (!pin) newError.pin = "PIN is required";
+    else if (pin.length !== 4) newError.pin = "PIN must be 4 digits";
+
+    if (Object.keys(newError).length > 0) {
+      setError(newError);
       return;
     }
 
-    if (pin.length !== 4) {
-      setError({ pin: "PIN must be 4 digits" });
-      return;
-    }
-
+    setError({});
     try {
       const { accessToken, refreshToken } = await AuthService.login(phoneNumber, pin);
       AuthHelper.setAccessToken(accessToken);

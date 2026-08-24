@@ -102,7 +102,8 @@ export const useAttendanceList = () => {
         setPageNumber(prev => prev + 1);
       }
       setHasMore(response.totalPages > response.pageNumber);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'Failed to fetch attendance records');
     } finally {
       setLoading(false);
       setPaginationLoading(false);

@@ -1,4 +1,4 @@
-import { useAttendanceSplitCreationScreen } from './useAttendanceSpilitCreation';
+import { useAttendanceSplitCreationScreen } from './useAttendanceSplitCreation';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { Button } from '@/shared/components/ui/button';

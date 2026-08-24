@@ -45,7 +45,6 @@ export const usePurchaseMaterialsCreation = ({
   const [notes, setNotes] = useState('');
   const [materialList, setMaterialList] = useState<Material[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
-  const [imageSheetOpen, setImageSheetOpen] = useState(false);
 
   const { error, validate, setError, initialError } = 
   usePurchaseMaterialInputValidate({
@@ -158,8 +157,7 @@ const resetFields = () => {
     uploadedImages,
     setUploadedImages,
     handleImageUpload,
-    imageSheetOpen,
-    setImageSheetOpen,
+
     handleAddPurchaseItem,
     error,
   };

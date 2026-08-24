@@ -1,5 +1,5 @@
 import { MapPin, Loader2, CheckCircle2, LogOut, ChevronRight, Users, ClipboardList, CalendarDays, X } from 'lucide-react';
-import { useSupervisorDashboard, type AttendanceItem, type Task, type SupervisorAttendance, type Site } from './useSupervisorDasboard';
+import { useSupervisorDashboard, type AttendanceItem, type Task, type SupervisorAttendance, type Site } from './useSupervisorDashboard';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog';

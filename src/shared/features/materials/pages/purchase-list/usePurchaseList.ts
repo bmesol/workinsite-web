@@ -21,7 +21,7 @@ export const usePurchaseList = () => {
   const [paginationLoading, setPaginationLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize] = useState();
+  const [pageSize] = useState(10);
   const [hasMore, setHasMore] = useState(true);
   const [siteId, setSiteId] = useState<{ value: string; name: string }>({ value: '', name: '' });
   const [supplierId, setSupplierId] = useState<{ value: string; name: string }>({ value: '', name: '' });

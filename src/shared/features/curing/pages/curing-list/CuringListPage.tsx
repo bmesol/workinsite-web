@@ -23,7 +23,7 @@ import { useCuringList } from './useCuringList';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { CuringUrls } from '../../utils/urls';
 import CuringCard from '@/shared/components/CuringCard/CuringCard';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
 import curingImage from '@/assets/images/client-creation-illustration.png';
 
 const CuringListPage = () => {

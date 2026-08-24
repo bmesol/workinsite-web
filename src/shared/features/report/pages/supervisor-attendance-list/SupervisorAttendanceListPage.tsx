@@ -1,7 +1,7 @@
 import { Header, Actions } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
 import SupervisorAttendanceCard from '@/shared/components/SupervisorAttendanceCard/SupervisorAttendanceCard';
 import { DateFilter } from '../../components/DateFilter/DateFilter';
 import { useSupervisorAttendanceList } from './useSuperVisorAttendanceList';

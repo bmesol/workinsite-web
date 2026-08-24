@@ -115,13 +115,12 @@ const WorkModeCreationPage = () => {
       </Card>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteId}>
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && cancelDelete()}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this work mode? This action cannot
-              be undone.
+              {t('Are you sure you want to delete this work mode? This action cannot be undone.')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -130,7 +129,7 @@ const WorkModeCreationPage = () => {
               onClick={confirmDelete}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              Delete
+              {t('Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

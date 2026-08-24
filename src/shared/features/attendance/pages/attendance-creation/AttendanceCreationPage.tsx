@@ -289,10 +289,9 @@ const AttendanceCreationPage = () => {
       <AlertDialog open={deleteConfirmIndex !== null}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove this attendance split? This action
-              cannot be undone.
+              {t('Are you sure you want to remove this attendance split? This action cannot be undone.')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -301,7 +300,7 @@ const AttendanceCreationPage = () => {
               onClick={handleDelete}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              Delete
+              {t('Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -311,11 +310,9 @@ const AttendanceCreationPage = () => {
       <AlertDialog open={isWorkTypeChangeDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Change Work Type</AlertDialogTitle>
+            <AlertDialogTitle>{t('Change Work Type')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Selected work type belongs to a different worker category. This
-              will reset the selected worker and attendance split. Do you want
-              to continue?
+              {t('Selected work type belongs to a different worker category. This will reset the selected worker and attendance split. Do you want to continue?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -326,7 +323,7 @@ const AttendanceCreationPage = () => {
               onClick={confirmWorkTypeChange}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              Continue
+              {t('Continue')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

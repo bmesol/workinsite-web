@@ -40,8 +40,6 @@ export const usePurchaseCreation = () => {
   const [supplierList, setSupplierList] = useState<Supplier[]>([]);
   const [purchaseMaterials, setPurchaseMaterials] = useState<PurchaseMaterialCreationListProps[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
-  const [imageSheetOpen, setImageSheetOpen] = useState(false);
-  const [showExitDialog, setShowExitDialog] = useState(false);
 
   const { error, validate, setError, initialError } = usePurchaseInputValidate({
     billNumber,
@@ -277,9 +275,5 @@ export const usePurchaseCreation = () => {
     uploadedImages,
     setUploadedImages,
     handleImageUpload,
-    imageSheetOpen,
-    setImageSheetOpen,
-    showExitDialog,
-    setShowExitDialog,
   };
 };

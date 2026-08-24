@@ -3,7 +3,7 @@ import sheetsIcon from '@/assets/icons/sheets.png';
 import pdfIcon from '@/assets/icons/pdf.png';
 import { Button } from '@/shared/components/ui/button';
 import { Header, Actions } from '@/shared/components/Header/Header';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { SummaryCards } from '../../components/InventoryStatCards/InventoryStatCards';
 import { SummaryTable } from '../../components/InventorySummaryTable/InventorySummaryTable';

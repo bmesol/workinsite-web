@@ -21,18 +21,20 @@ const useContactEdit = (id: string, queryString: URLSearchParams) => {
     return ContactsCount >= 5;
   });
 
- const fetchContact = async () => {
-    setLoading(true); 
-    try {
-      const contactData = await contactService.getContact(parseInt(id));
-      setContactList(contactData);
-      setName(contactData.name ?? "");
-      setPhone(contactData.phone ?? "");
-    } finally {
-      setLoading(false); 
-    }
-  };
-  useEffect(() => { fetchContact() }, []);
+  useEffect(() => {
+    const fetchContact = async () => {
+      setLoading(true);
+      try {
+        const contactData = await contactService.getContact(parseInt(id));
+        setContactList(contactData);
+        setName(contactData.name ?? "");
+        setPhone(contactData.phone ?? "");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchContact();
+  }, [id]);
 
 const handleSubmission = async () => {
   if (validate()) {

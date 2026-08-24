@@ -1,11 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { toast } from 'sonner';
 import { useCuringTypeService } from '../../service/CuringTypeService';
 import { useCuringTypeInputValidate } from '../../components/InputValidate/CuringTypeInputValidate';
 import { CuringTypeUrls } from '../../utils/urls';
 
 export const useCuringTypeEdit = (id: string) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const curingTypeService = useCuringTypeService();
 
@@ -58,7 +60,7 @@ export const useCuringTypeEdit = (id: string) => {
         curingType: curingType.trim(),
         remark: remark.trim(),
       });
-      toast.success('Curing type updated successfully.');
+      toast.success(t('Curing type updated successfully.'));
       navigate(CuringTypeUrls.list);
     } catch (error: any) {
       toast.error(

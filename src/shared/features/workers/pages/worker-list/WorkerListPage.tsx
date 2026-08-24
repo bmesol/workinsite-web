@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
-import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
+import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerListPage = () => {

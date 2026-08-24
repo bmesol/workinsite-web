@@ -7,7 +7,7 @@ const ClientGetStartedPage = () => {
   const { t } = useLanguage();
   return (
     <GetStartedCard imgSrc={clientCreationIllustration} buttonLabel={t('Create Client')} buttonClick={ClientsUrls.create}>
-      With WorkInSite, managing clients is simple and efficient. Start organizing your client relationships today to enhance communication and collaboration.
+      {t('With WorkInSite, managing clients is simple and efficient. Start organizing your client relationships today to enhance communication and collaboration.')}
     </GetStartedCard>
   );
 };
