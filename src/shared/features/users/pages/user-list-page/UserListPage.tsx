@@ -3,7 +3,6 @@ import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import { UserStatus } from "../../components/UserStatus/UserStatus";
 import { UserCard } from "@/shared/features/users/components/UserCard/UserCard";
-import { UsersUrls } from "../../utils/urls";
 import { useUserList } from "./useUserList";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
@@ -16,8 +15,8 @@ const UserListPage = () => {
     userList,
     fetchUser,
     handleUserSelect,
+    handleCreate,
     hasSearchFilter,
-    navigate,
     loading,
     searchLoading,
   } = useUserList();
@@ -41,7 +40,7 @@ const UserListPage = () => {
       <Header title={t('User List')}>
         <Actions>
           <UserStatus />
-          <Button onClick={() => navigate(UsersUrls.create)}>
+          <Button onClick={handleCreate}>
             {t('Create User')}
           </Button>
         </Actions>

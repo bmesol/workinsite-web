@@ -25,9 +25,8 @@ import {
 import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import clientcreation from "@/assets/images/client-creation-illustration.png";
 import { PurchaseUrls } from "../../utils/urls";
-import { SlidersHorizontal, X } from "lucide-react";
 import { MapPin, FileText, Calendar } from "lucide-react";
-import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
+import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const PurchaseListPage = () => {
@@ -85,10 +84,9 @@ const PurchaseListPage = () => {
       <GetStartedCard
         imgSrc={clientcreation}
         buttonClick={PurchaseUrls.create}
-        buttonLabel="New Purchase"
+        buttonLabel={t('New Purchase')}
       >
-        Manage and track your purchases seamlessly with WorkInsite. Add new
-        purchases and keep your construction materials organized.
+        {t('Manage and track your purchases seamlessly with WorkInsite. Add new purchases and keep your construction materials organized.')}
       </GetStartedCard>
     );
   }
@@ -96,10 +94,10 @@ const PurchaseListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title="Purchase List">
+      <Header title={t('Purchase List')}>
         <Actions>
           <Button onClick={() => navigate(PurchaseUrls.create)}>
-            New Purchase
+            {t('New Purchase')}
           </Button>
         </Actions>
       </Header>
@@ -144,15 +142,15 @@ const PurchaseListPage = () => {
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
-            <DialogTitle>Purchase Search</DialogTitle>
+            <DialogTitle>{t('Purchase Search')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
-            <DatePicker label="Date" date={date} onDateChange={setDate} />
+            <DatePicker label={t('Date')} date={date} onDateChange={setDate} />
             <NameField
-              label="Bill Number"
+              label={t('Bill Number')}
               inputValue={billNumber}
               setInputValue={setBillNumber}
-              placeholder="Enter bill number"
+              placeholder={t('Enter bill number')}
             />
             <ComboboxField
               id="site"
@@ -202,15 +200,15 @@ const PurchaseListPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this purchase?
+              {t('Are you sure you want to delete this purchase?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                Cancel
+                {t('Cancel')}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
@@ -218,7 +216,7 @@ const PurchaseListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleDeletePurchase(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -61,7 +61,7 @@ const useInputValidate = (props: InputValidateProps) => {
         paymentMethod as PaymentMethodEnum,
       )
     ) {
-      updateError('paymentMethod', 'Invalid paymentMethod method');
+      updateError('paymentMethod', 'Invalid payment method');
     }
 
     return isValid;

@@ -124,9 +124,9 @@ const WorkTypeList = (props: WorkTypeListProps) => {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this work type?
+              {t('Are you sure you want to delete this work type?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

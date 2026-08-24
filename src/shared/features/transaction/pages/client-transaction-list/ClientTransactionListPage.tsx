@@ -1,10 +1,10 @@
-import { Header, Actions } from '@/shared/components/Header/Header';
-import { Button } from '@/shared/components/ui/button';
-import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
-import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
-import { DatePicker } from '@/shared/components/FormFields/DatePicker';
-import TransactionCard from '@/shared/components/TransactionCard/TransactionCard';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';
+import { Header, Actions } from "@/shared/components/Header/Header";
+import { Button } from "@/shared/components/ui/button";
+import { GetStartedCard } from "@/shared/components/GetStartedCard/GetStartedCard";
+import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
+import { DatePicker } from "@/shared/components/FormFields/DatePicker";
+import TransactionCard from "@/shared/components/TransactionCard/TransactionCard";
+import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -14,26 +14,29 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
+} from "@/shared/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/shared/components/ui/dialog';
-import { useClienTransactiontList } from './useClientTransactionList';
-import { ClientTransactionUrls } from '../../utils/urls';
-import clientTransactionImage from '@/assets/images/client-creation-illustration.png';
-import { useLanguage } from '@/shared/hooks/useLanguageContext';
+} from "@/shared/components/ui/dialog";
+import { useClientTransactionList } from "./useClientTransactionList";
+import { ClientTransactionUrls } from "../../utils/urls";
+import clientTransactionImage from "@/assets/images/client-creation-illustration.png";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const ClientTransactionListPage = () => {
   const { t } = useLanguage();
 
   const {
-    client, setClient,
+    client,
+    setClient,
     clientDetails,
-    fromDate, setFromDate,
-    toDate, seToDate,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
     fetchClients,
     transactions,
     handleEdit,
@@ -51,7 +54,7 @@ const ClientTransactionListPage = () => {
     setDeleteId,
     handleDelete,
     fetchTransactions,
-  } = useClienTransactiontList();
+  } = useClientTransactionList();
 
   const isFiltered = !!(fromDate || toDate || client?.value);
 
@@ -68,7 +71,7 @@ const ClientTransactionListPage = () => {
       <GetStartedCard
         imgSrc={clientTransactionImage}
         buttonClick={ClientTransactionUrls.create}
-        buttonLabel={t('New Client Transaction')}
+        buttonLabel={t("New Client Transaction")}
       >
         Start by creating your client transactions to organize and manage your
         records efficiently.
@@ -78,11 +81,10 @@ const ClientTransactionListPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
-
       {/* ── Header ── */}
-      <Header title={t('Client Transaction List')}>
+      <Header title={t("Client Transaction List")}>
         <Actions>
-          <Button onClick={handleCreate}>{t('New Client Transaction')}</Button>
+          <Button onClick={handleCreate}>{t("New Client Transaction")}</Button>
         </Actions>
       </Header>
 
@@ -90,7 +92,7 @@ const ClientTransactionListPage = () => {
       <div className="flex justify-end">
         <SearchFilterBar
           appliedFilters={appliedFilters}
-          placeholder={t('Search client transaction')}
+          placeholder={t("Search client transaction")}
           onFilterOpen={() => setFilterOpen(true)}
           onClearSearch={handleClearSearch}
         />
@@ -103,17 +105,17 @@ const ClientTransactionListPage = () => {
             No client transaction found
           </p>
         ) : (
-          transactions.map(item => (
-          <TransactionCard
-  id={item.id}
-  name={item.client.name}
-  amount={item.totalAmount ?? item.amount}
-  date={item.date}
-  paymentMethod={item.paymentMethod}
-  onDelete={handleDeleteConfirm}
-  onPress={handleEdit}
-  permissionKey="Client Transaction"
-/>
+          transactions.map((item) => (
+            <TransactionCard
+              id={item.id}
+              name={item.client.name}
+              amount={item.totalAmount ?? item.amount}
+              date={item.date}
+              paymentMethod={item.paymentMethod}
+              onDelete={handleDeleteConfirm}
+              onPress={handleEdit}
+              permissionKey="Client Transaction"
+            />
           ))
         )}
       </div>
@@ -126,7 +128,7 @@ const ClientTransactionListPage = () => {
             onClick={() => fetchTransactions()}
             disabled={paginationLoading}
           >
-            {paginationLoading ? 'Loading...' : t('View More')}
+            {paginationLoading ? "Loading..." : t("View More")}
           </Button>
         </div>
       )}
@@ -135,18 +137,18 @@ const ClientTransactionListPage = () => {
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
-            <DialogTitle>{t('Search')}</DialogTitle>
+            <DialogTitle>{t("Search")}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
             <ComboboxField
               id="client"
-              label={t('Client')}
+              label={t("Client")}
               items={clientDetails}
-              selectedValue={client?.value ?? ''}
-              onValueChange={val =>
+              selectedValue={client?.value ?? ""}
+              onValueChange={(val) =>
                 setClient({
                   value: val,
-                  name: clientDetails.find(c => c.value === val)?.label || '',
+                  name: clientDetails.find((c) => c.value === val)?.label || "",
                 })
               }
               onSearch={fetchClients}
@@ -156,11 +158,7 @@ const ClientTransactionListPage = () => {
               date={fromDate}
               onDateChange={setFromDate}
             />
-            <DatePicker
-              label="To Date"
-              date={toDate}
-              onDateChange={seToDate}
-            />
+            <DatePicker label="To Date" date={toDate} onDateChange={setToDate} />
             <Button
               onClick={() => {
                 handleSearch();
@@ -169,7 +167,7 @@ const ClientTransactionListPage = () => {
               disabled={!isFiltered}
               className="w-full"
             >
-              {t('Search')}
+              {t("Search")}
             </Button>
           </div>
         </DialogContent>
@@ -178,21 +176,21 @@ const ClientTransactionListPage = () => {
       {/* ── Delete Dialog ── */}
       <AlertDialog
         open={!!deleteId}
-        onOpenChange={val => !val && setDeleteId(null)}
+        onOpenChange={(val) => !val && setDeleteId(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+              {t('Confirm Delete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this client transaction?
+              {t('Are you sure you want to delete this client transaction?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
               <Button variant="outline" onClick={() => setDeleteId(null)}>
-                {t('Cancel')}
+                {t("Cancel")}
               </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
@@ -200,13 +198,12 @@ const ClientTransactionListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
     </div>
   );
 };

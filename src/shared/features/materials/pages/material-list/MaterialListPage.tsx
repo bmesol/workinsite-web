@@ -61,7 +61,7 @@ const MaterialListScreen = () => {
         buttonClick="/material-create"
         buttonLabel={t("Create Materials")}
       >
-        Create your first material to get started.
+        {t('Create your first material to get started.')}
       </GetStartedCard>
     );
   }
@@ -72,7 +72,7 @@ const MaterialListScreen = () => {
       <Header title={t("Materials")}>
         <Actions>
           <Button onClick={() => navigate("/materials/create")}>
-            New Material
+            {t('New Material')}
           </Button>
         </Actions>
       </Header>
@@ -122,10 +122,10 @@ const MaterialListScreen = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+              {t('Confirm Delete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this material?
+              {t('Are you sure you want to delete this material?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -141,7 +141,7 @@ const MaterialListScreen = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleMaterialDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

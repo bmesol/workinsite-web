@@ -352,10 +352,9 @@ const AttendanceEditPage = () => {
       <AlertDialog open={deleteIndex !== null}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove this attendance split? This action
-              cannot be undone.
+              {t('Are you sure you want to remove this attendance split? This action cannot be undone.')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -364,7 +363,7 @@ const AttendanceEditPage = () => {
               onClick={() => handleDelete(deleteIndex!)}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              Delete
+              {t('Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -77,7 +77,7 @@ const ContactListPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pb-4">
         {!contactList.length ? (
           <div className="col-span-2 my-4 text-center text-muted-foreground">
-            No contacts found
+            {t('No contacts found')}
           </div>
         ) : (
           contactList.map((contact) => (
@@ -110,10 +110,10 @@ const ContactListPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+              {t('Confirm Delete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this contact?
+              {t('Are you sure you want to delete this contact?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -127,7 +127,7 @@ const ContactListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleContactDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -3,6 +3,7 @@ import type { Unit } from '../../DTOs/UnitProps';
 import { useUnitService } from '../../service/UnitService';
 import { useUnitInputValidate } from '../../components/InputValidate/UnitInputValidate';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export const useUnitCreation = () => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ export const useUnitCreation = () => {
         if (response.id) refreshList();
         resetFormFields();
       } catch (error: any) {
-        console.error(error?.response?.data?.[0]?.message || 'Failed to create unit');
+        toast.error(error?.response?.data?.message || 'Failed to create unit');
       }
     }
   };
@@ -75,7 +76,7 @@ export const useUnitCreation = () => {
           resetFormFields();
         }
       } catch (error: any) {
-        console.error(error?.response?.data?.[0]?.message || 'Failed to update unit');
+        toast.error(error?.response?.data?.message || 'Failed to update unit');
       }
     }
   };
@@ -92,7 +93,7 @@ export const useUnitCreation = () => {
       setDeleteId(null);
       refreshList(); // ✅ no full page load
     } catch (error: any) {
-      console.error(error?.response?.data?.message || 'Failed to delete unit');
+      toast.error(error?.response?.data?.message || 'Failed to delete unit');
       setDeleteId(null);
     }
   };

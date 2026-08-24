@@ -109,10 +109,10 @@ const ClientListPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+              {t('Confirm Delete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this client?
+              {t('Are you sure you want to delete this client?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -126,7 +126,7 @@ const ClientListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleClientDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

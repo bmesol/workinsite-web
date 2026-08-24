@@ -51,7 +51,7 @@ const SiteListPage = () => {
         <div className="w-full md:w-3/12">
           <SearchBar
             searchText={searchValue}
-            setSearchText={setSearchValue}
+            setSearchText={(val) => { setSearchValue(val); fetchSite(val); }}
             searchCategory={t('Search sites')}
             allowAllCharacters={true}
           />

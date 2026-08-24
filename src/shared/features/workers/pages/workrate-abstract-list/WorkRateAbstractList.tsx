@@ -70,7 +70,7 @@ const WorkRateAbstractListPage = () => {
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {filteredList.length === 0 ? (
           <p className="text-center text-gray-500 text-sm mt-10">
-            No Work Rate Abstract found
+            {t('No Work Rate Abstract found')}
           </p>
         ) : (
           filteredList.map((item: WorkRateAbstractProps) => (
@@ -90,9 +90,9 @@ const WorkRateAbstractListPage = () => {
       <AlertDialog open={!!deleteId}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this Detail?
+              {t('Are you sure you want to delete this Detail?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

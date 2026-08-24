@@ -3,6 +3,7 @@ import type { Client } from "../../DTOs/ClientProps";
 import { ClientsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { toast } from 'sonner';
 
 const useClientList = () => {
   const navigate = useNavigate();
@@ -50,9 +51,13 @@ const useClientList = () => {
   };
 
   const handleClientDelete = async (id: number) => {
-    await clientService.deleteClient(id);
-    setDeleteId(null);
-    refreshList(); 
+    try {
+      await clientService.deleteClient(id);
+      setDeleteId(null);
+      refreshList();
+    } catch {
+      toast.error('Failed to delete client. Please try again.');
+    }
   };
 
   return {

@@ -132,9 +132,9 @@ const WorkerTransactionEditPage = () => {
       <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Do you want to save them before leaving?
+              {t('You have unsaved changes. Do you want to save them before leaving?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -144,7 +144,7 @@ const WorkerTransactionEditPage = () => {
                 navigate(WorkerTransactionUrls.list);
               }}
             >
-              Exit without Saving
+              {t('Exit without Saving')}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button

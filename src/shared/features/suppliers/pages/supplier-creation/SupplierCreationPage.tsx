@@ -210,7 +210,6 @@ const SupplierCreationPage = () => {
       </Card>
 
       {/* KYC Dialog */}
-      {/* KYC Dialog */}
 <Dialog
   open={activeDialog === "kyc"}
   onOpenChange={(val) => !val && closeDialog()}

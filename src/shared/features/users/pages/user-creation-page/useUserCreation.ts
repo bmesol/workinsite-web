@@ -21,13 +21,11 @@ const useUserCreation = (queryString: URLSearchParams) => {
   const fetchRoles = async () => {
     try {
       const data = await roleService.getRoles({ ignorePagination: true });
-      console.log("Roles API response:", data); // 👈 idha add pannunga
       const rolesData = data?.items || data || [];
       const formatted = rolesData.map((item: any) => ({
         label: item.name,
         value: item.id.toString(),
       }));
-      console.log("Formatted roles:", formatted); // 👈 idhavum
       setRoleList(formatted);
     } catch (err) {
       console.error("UserCreation: failed to fetch roles", err);

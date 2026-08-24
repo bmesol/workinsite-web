@@ -127,7 +127,7 @@ const WorkerCreationPage = () => {
   errorMessage={error.gender}
   required={true}
 />
-          <TextareaField label="Notes" inputValue={notes} setInputValue={setNotes} placeholder={t('Enter your notes')} />
+          <TextareaField label={t('Notes')} inputValue={notes} setInputValue={setNotes} placeholder={t('Enter your notes')} />
 
           {/* KYC + Bank + UPI */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

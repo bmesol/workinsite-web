@@ -7,7 +7,7 @@ import type { ClientTransactionProps } from '../../DTOs/ClientTransaction';
 import type { Client } from '@/shared/features/clients/DTOs/ClientProps';
 import { ClientTransactionUrls } from '../../utils/urls';
 
-const useClienTransactiontList = () => {
+const useClientTransactionList = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const clientTransactionService = useClientTransactionService();
@@ -15,7 +15,7 @@ const useClienTransactiontList = () => {
 
   const [transactions, setTransactions] = useState<ClientTransactionProps[]>([]);
   const [fromDate, setFromDate] = useState('');
-  const [toDate, seToDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [client, setClient] = useState({ value: '', name: '' });
   const [clientList, setClientList] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +101,7 @@ const useClienTransactiontList = () => {
   const resetForm = () => {
     setClient({ value: '', name: '' });
     setFromDate('');
-    seToDate('');
+    setToDate('');
     setAppliedFilters('');
   };
 
@@ -134,7 +134,7 @@ const useClienTransactiontList = () => {
     client, setClient,
     clientDetails,
     fromDate, setFromDate,
-    toDate, seToDate,
+    toDate, setToDate,
     paginationLoading,
     hasMore,
     appliedFilters,
@@ -153,4 +153,4 @@ const useClienTransactiontList = () => {
   };
 };
 
-export { useClienTransactiontList };
+export { useClientTransactionList };

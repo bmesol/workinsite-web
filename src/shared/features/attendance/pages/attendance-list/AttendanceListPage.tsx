@@ -6,12 +6,11 @@ import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { AttendanceUrls } from '../../utils/urls';
 import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
 import workerIllustration from "@/assets/images/worker-creation-illustration.png";
-import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';  
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useState } from 'react';
 import { AttendanceCard } from '@/shared/components/AttendanceCard/AttendanceCard';
-import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SerchFilterBar';  
+import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
 import {
   Dialog,
   DialogContent,
@@ -31,7 +30,6 @@ import {
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceListPage = () => {
-  const navigate = useNavigate();
   const { canEdit } = usePermission();
   const editable = canEdit('Attendance');
   const [filterOpen, setFilterOpen] = useState(false);
@@ -82,7 +80,7 @@ const AttendanceListPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -109,7 +107,7 @@ const AttendanceListPage = () => {
       <Header title={t('Attendance List')}>
         {editable && (
           <Actions>
-            <Button onClick={handlePress}>New Attendance</Button>
+            <Button onClick={handlePress}>{t('New Attendance')}</Button>
           </Actions>
         )}
       </Header>
@@ -126,7 +124,7 @@ const AttendanceListPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         {attendance.length === 0 ? (
           <p className="text-center text-sm text-gray-500 mt-10">
-            No Attendance found
+            {t('No Attendance found')}
           </p>
         ) : (
        attendance.map(item => (
@@ -167,7 +165,7 @@ const AttendanceListPage = () => {
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
-            <DialogTitle>Attendance Search</DialogTitle>
+            <DialogTitle>{t('Attendance Search')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
             <DatePicker
@@ -238,10 +236,9 @@ const AttendanceListPage = () => {
       <AlertDialog open={deleteConfirmId !== null}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this attendance? This action
-              cannot be undone.
+              {t('Are you sure you want to delete this attendance? This action cannot be undone.')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -250,7 +247,7 @@ const AttendanceListPage = () => {
               onClick={handleDelete}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              Delete
+              {t('Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -260,10 +257,9 @@ const AttendanceListPage = () => {
       <AlertDialog open={isWorkTypeChangeDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Change Work Type</AlertDialogTitle>
+            <AlertDialogTitle>{t('Change Work Type')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Selected work type belongs to a different worker category. This
-              will reset the selected worker. Do you want to continue?
+              {t('Selected work type belongs to a different worker category. This will reset the selected worker. Do you want to continue?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -274,7 +270,7 @@ const AttendanceListPage = () => {
               onClick={confirmWorkTypeChange}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              Continue
+              {t('Continue')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

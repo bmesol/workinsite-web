@@ -345,6 +345,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { useTaskService } from '../../service/TaskService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useTaskInputValidate } from '../../components/InputValidate/TaskInputValidate';
@@ -375,6 +376,7 @@ type RemovedImages = {
 };
 
 export const useTaskEdit = (id: string) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const taskService = useTaskService();
   const siteService = useSiteService();
@@ -667,7 +669,7 @@ export const useTaskEdit = (id: string) => {
         if (fresh?.updatedOn) seedSelfUpdate(parseInt(id), fresh.updatedOn);
       } catch {}
 
-      toast.success('Task updated successfully.');
+      toast.success(t('Task updated successfully.'));
       navigate(TaskUrls.list);
     } catch (error: any) {
       toast.error(

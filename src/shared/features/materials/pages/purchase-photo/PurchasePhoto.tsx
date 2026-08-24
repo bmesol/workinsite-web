@@ -16,6 +16,7 @@ import {
   AlertDialogAction,
 } from '@/shared/components/ui/alert-dialog';
 import { Button } from '@/shared/components/ui/button';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 interface NewImage {
   uri: string;
@@ -55,6 +56,7 @@ export default function PurchasePhoto({
   permissionKey,
 }: Props) {
   const { canEdit } = usePermission();
+  const { t } = useLanguage();
   const hasPermission = permissionKey ? canEdit(permissionKey) : true;
 
   const [selected, setSelected] = useState<{
@@ -127,7 +129,7 @@ export default function PurchasePhoto({
                 className="w-24 h-24 rounded-lg object-cover border border-border"
               />
               <span className="absolute bottom-1 right-1 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded">
-                New
+                {t('New')}
               </span>
             </div>
           ))}
@@ -177,7 +179,7 @@ export default function PurchasePhoto({
               className="flex flex-col items-center gap-1 text-white"
             >
               <X className="w-7 h-7" />
-              <span className="text-xs">Close</span>
+              <span className="text-xs">{t('Close')}</span>
             </button>
 
             {/* Download */}
@@ -188,7 +190,7 @@ export default function PurchasePhoto({
               disabled={!hasPermission}
             >
               <Download className="w-7 h-7" />
-              <span className="text-xs">Download</span>
+              <span className="text-xs">{t('Download')}</span>
             </button>
 
             {/* Delete */}
@@ -199,7 +201,7 @@ export default function PurchasePhoto({
               disabled={!hasPermission}
             >
               <Trash2 className="w-7 h-7 text-red-500" />
-              <span className="text-xs text-red-500">Delete</span>
+              <span className="text-xs text-red-500">{t('Delete')}</span>
             </button>
 
           </div>
@@ -210,18 +212,18 @@ export default function PurchasePhoto({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Image</AlertDialogTitle>
+            <AlertDialogTitle>{t('Delete Image')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Do you want to delete this image?
+              {t('Do you want to delete this image?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
-              Cancel
+              {t('Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button variant="destructive" onClick={handleDelete}>
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

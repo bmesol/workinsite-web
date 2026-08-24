@@ -113,10 +113,10 @@ const SupplierListPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+              {t('Confirm Delete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this supplier?
+              {t('Are you sure you want to delete this supplier?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -130,7 +130,7 @@ const SupplierListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleSupplierDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

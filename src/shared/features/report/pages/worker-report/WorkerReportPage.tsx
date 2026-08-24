@@ -5,7 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Users } from "lucide-react";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { Header, Actions } from "@/shared/components/Header/Header";
-import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
+import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import { StatsBar } from "../../components/StatsBar/StatsBar";
 import { WorkerReportCard } from "../../components/WorkerReportCard/WorkerReportCard";
 import { DateFilter } from "../../components/DateFilter/DateFilter";
@@ -107,8 +107,8 @@ export default function WorkerReportPage() {
         ) : reports.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-slate-400">
             <Users size={48} className="mb-4 opacity-30" />
-            <p className="font-semibold text-slate-500">No Data Found</p>
-            <p className="text-sm mt-1">Try adjusting your filters</p>
+            <p className="font-semibold text-slate-500">{t('No Data Found')}</p>
+            <p className="text-sm mt-1">{t('Try adjusting your filters')}</p>
           </div>
         ) : (
           <>

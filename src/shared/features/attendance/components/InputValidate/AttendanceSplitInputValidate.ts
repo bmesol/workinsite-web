@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AttendanceSplitInputProps } from '../../DTOs/AttendanceSpilitInputProps';
+import type { AttendanceSplitInputProps } from '../../DTOs/AttendanceSplitInputProps';
 
 export const useAttendanceSplitInputValidate = (
   props: AttendanceSplitInputProps,

@@ -71,7 +71,7 @@ const WorkerCategoryListPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {filteredWorkerCategoryList.length === 0 ? (
           <p className="text-center text-gray-500 text-sm mt-10">
-            No Worker Category found
+            {t('No Worker Category found')}
           </p>
         ) : (
           filteredWorkerCategoryList.map((workerCategory) => (
@@ -98,10 +98,10 @@ const WorkerCategoryListPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-base">
-              Confirm Delete
+              {t('Confirm Delete')}
             </AlertDialogTitle>
-            <AlertDialogDescription className="test-sm">
-              Are you sure you want to delete this worker category?
+            <AlertDialogDescription className="text-sm">
+              {t('Are you sure you want to delete this worker category?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -116,7 +116,7 @@ const WorkerCategoryListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleWorkerCategoryDelete(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -193,8 +193,9 @@ const useAttendanceEditScreen = () => {
         WorkModeId: parseInt(currentWorkModeId),
       });
       setWorkQuantityReport(result?.items?.[0] ?? null);
-    } catch {
+    } catch (error: any) {
       setWorkQuantityReport(null);
+      toast.error(error?.response?.data?.message || 'Failed to fetch work quantity report');
     }
   };
 

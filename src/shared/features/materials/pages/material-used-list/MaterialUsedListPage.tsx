@@ -24,9 +24,8 @@ import {
 } from "@/shared/components/ui/dialog";
 import { useMaterialUsedList } from "./useMaterialUsedList";
 import { MaterialUsedUrls } from "../../utils/urls";
-import { SlidersHorizontal, X } from "lucide-react";
 import materialUsedImage from "@/assets/images/client-creation-illustration.png";
-import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SerchFilterBar";
+import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const MaterialUsedListPage = () => {
@@ -89,10 +88,9 @@ const MaterialUsedListPage = () => {
       <GetStartedCard
         imgSrc={materialUsedImage}
         buttonClick={MaterialUsedUrls.create}
-        buttonLabel="New Material Used"
+        buttonLabel={t('New Material Used')}
       >
-        Manage and track your material used efficiently. Start by creating a new
-        record.
+        {t('Manage and track your material used efficiently. Start by creating a new record.')}
       </GetStartedCard>
     );
   }
@@ -102,7 +100,7 @@ const MaterialUsedListPage = () => {
       {/* ── Header ── */}
       <Header title={t("Material Used List")}>
         <Actions>
-          <Button onClick={handlePress}>New Material Used</Button>
+          <Button onClick={handlePress}>{t('New Material Used')}</Button>
         </Actions>
       </Header>
 
@@ -157,7 +155,7 @@ const MaterialUsedListPage = () => {
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-[var(--card)]">
           <DialogHeader>
-            <DialogTitle>Material Used Search</DialogTitle>
+            <DialogTitle>{t('Material Used Search')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-2">
             <DatePicker label={t("Date")} date={date} onDateChange={setDate} />
@@ -230,9 +228,9 @@ const MaterialUsedListPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this material used record?
+              {t('Are you sure you want to delete this material used record?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -246,7 +244,7 @@ const MaterialUsedListPage = () => {
                 variant="destructive"
                 onClick={() => deleteId && handleDeleteMaterialUsed(deleteId)}
               >
-                Delete
+                {t('Delete')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

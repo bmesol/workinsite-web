@@ -7,7 +7,7 @@ import type { SupplierTransactionProps } from '../../DTOs/SupplierTransaction';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 import { SupplierTransactionUrls } from '../../utils/urls';
 
-const useSupplierTransactiontList = () => {
+const useSupplierTransactionList = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const supplierTransactionService = useSupplierTransactionService();
@@ -15,7 +15,7 @@ const useSupplierTransactiontList = () => {
 
   const [transactions, setTransactions] = useState<SupplierTransactionProps[]>([]);
   const [fromDate, setFromDate] = useState('');
-  const [toDate, seToDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [supplier, setSupplier] = useState({ value: '', name: '' });
   const [supplierList, setSupplierList] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +101,7 @@ const useSupplierTransactiontList = () => {
   const resetForm = () => {
     setSupplier({ value: '', name: '' });
     setFromDate('');
-    seToDate('');
+    setToDate('');
     setAppliedFilters('');
   };
 
@@ -134,7 +134,7 @@ const useSupplierTransactiontList = () => {
     supplier, setSupplier,
     supplierDetails,
     fromDate, setFromDate,
-    toDate, seToDate,
+    toDate, setToDate,
     paginationLoading,
     hasMore,
     appliedFilters,
@@ -153,4 +153,4 @@ const useSupplierTransactiontList = () => {
   };
 };
 
-export { useSupplierTransactiontList };
+export { useSupplierTransactionList };

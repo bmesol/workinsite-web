@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMaterialService } from "../../service/MaterialService";
 import { useNavigate } from "react-router-dom";
-// or your toast lib
+import { toast } from 'sonner';
 
 const useMaterialList = () => {
   const materialService = useMaterialService();
@@ -45,7 +45,7 @@ const useMaterialList = () => {
       setDeleteId(null);
       fetchMaterial(searchText);
     } catch (error: any) {
-      
+      toast.error(error?.response?.data?.message || 'Failed to delete material');
     }
   };
 

@@ -4,9 +4,11 @@ import { useWorkerCategoryService } from "@/shared/features/workers/service/Work
 import type { WorkerCategoryProps } from "../../DTOs/WorkerCategoryProps";
 import { WorkerCategoriesUrls } from "../../utils/urls";
 import { toast } from "sonner";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const useWorkerCategoryList = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const workerCategoryService = useWorkerCategoryService();
 
   const [workerCategoryDetails, setWorkerCategoryDetails] = useState<WorkerCategoryProps[]>([]);
@@ -43,9 +45,9 @@ const useWorkerCategoryList = () => {
     try {
       await workerCategoryService.deleteWorkerCategory(id);
       fetchWorkerCategory();
-      toast.success("Worker category deleted successfully");
+      toast.success(t("Worker category deleted successfully"));
     } catch (error: any) {
-      const errorMsg = error?.response?.data?.[0]?.message || "Failed to delete worker category";
+      const errorMsg = error?.response?.data?.[0]?.message || t("Failed to delete worker category");
       toast.error(errorMsg);
     } finally {
       setDeleteId(null);

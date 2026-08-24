@@ -13,9 +13,11 @@ import { ContactsUrls } from "../../../contacts/utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const useWorkerCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef({
     open: () => setIsModalOpen(true),
@@ -241,7 +243,7 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
       };
 
       await workerService.createWorker(worker); 
-      toast.success("Worker created successfully");
+      toast.success(t('Worker created successfully'));
       navigate(WorkersUrls.list); 
     } catch (error: any) {
       const errorMsg =

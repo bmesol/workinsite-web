@@ -11,8 +11,7 @@ const ContactGetStartedPage = () => {
       buttonLabel={t('New Contact')}
       buttonClick={ContactsUrls.create}
     >
-      With WorkInSite, managing contacts and facilitating collaboration is easy.
-      Start organizing your contacts today to streamline communication.
+      {t('With WorkInSite, managing contacts and facilitating collaboration is easy. Start organizing your contacts today to streamline communication.')}
     </GetStartedCard>
   );
 };

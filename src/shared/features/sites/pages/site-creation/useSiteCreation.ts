@@ -60,7 +60,7 @@ const useSiteCreation = (queryString: URLSearchParams) => {
     }
   };
   loadDefaultWageType();
-}, []);
+}, [wageTypeId]);
 
   useEffect(() => {
     const fetchClientById = async () => {

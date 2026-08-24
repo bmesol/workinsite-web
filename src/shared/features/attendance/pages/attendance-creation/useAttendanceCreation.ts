@@ -187,8 +187,6 @@ const fetchWorkers = async (WorkerName: string = '') => {
     WorkerCategoryId: workType.workerCategory.id || undefined,
   });
 
-  console.log("workers response:", workers);
-
   if (!workers) return;
   setWorkerList(WorkerName ? workers.slice(0, 3) : workers);
 };

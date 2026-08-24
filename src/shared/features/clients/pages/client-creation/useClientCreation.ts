@@ -73,7 +73,7 @@ const useClientCreation = (queryString: URLSearchParams) => {
 
   const redirectUrl = ClientsUrls.create;
   const redirectParams = new URLSearchParams({ notes, redirect: queryStringRedirectUrl });
-  if (validKycDetails) validKycDetails.map((item) => redirectParams.append(item.kycType, item.value));
+  if (validKycDetails) validKycDetails.forEach((item) => redirectParams.append(item.kycType, item.value));
 
   const handleContactCreate = (searchString: string) => {
     const contactCreateParams = new URLSearchParams({ name: searchString, redirect: `${redirectUrl}?${redirectParams.toString()}` });
