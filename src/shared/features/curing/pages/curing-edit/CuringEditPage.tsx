@@ -68,57 +68,62 @@ export const CuringEditPage = () => {
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
 
-          <ComboboxField
-            id="site"
-            label={t('Site')}
-            items={siteDetails}
-            selectedValue={siteId}
-            onValueChange={setSiteId}
-            onSearch={fetchSites}
-            required
-            error={error.siteId}
-            disabled={!editable}
-          />
+          {/* ── Row 1: Site + Curing Type ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ComboboxField
+              id="site"
+              label={t('Site')}
+              items={siteDetails}
+              selectedValue={siteId}
+              onValueChange={setSiteId}
+              onSearch={fetchSites}
+              required
+              error={error.siteId}
+              disabled={!editable}
+            />
+            <ComboboxField
+              id="curingType"
+              label={t('Curing Type')}
+              items={curingTypeDetails}
+              selectedValue={curingTypeId}
+              onValueChange={setCuringTypeId}
+              onSearch={fetchCuringTypes}
+              required
+              error={error.curingTypeId}
+              disabled={!editable}
+            />
+          </div>
 
-          <ComboboxField
-            id="curingType"
-            label={t('Curing Type')}
-            items={curingTypeDetails}
-            selectedValue={curingTypeId}
-            onValueChange={setCuringTypeId}
-            onSearch={fetchCuringTypes}
-            required
-            error={error.curingTypeId}
-            disabled={!editable}
-          />
+          {/* ── Row 2: Start Date + End Date ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DatePicker
+              label={t('Start Date')}
+              date={startDate}
+              onDateChange={date => {
+                setStartDate(date);
+                setEndDate('');
+              }}
+              required
+              errorMessage={error.startDate}
+              disable={!editable}
+            />
+            <DatePicker
+              label={t('End Date')}
+              date={endDate}
+              onDateChange={setEndDate}
+              required
+              errorMessage={error.endDate}
+              disable={!editable || !startDate}
+              minDate={
+                startDate
+                  ? formatStringToDate(startDate) ?? new Date(2020, 0, 1)
+                  : new Date(2020, 0, 1)
+              }
+              maxDate={nextYear}
+            />
+          </div>
 
-          <DatePicker
-            label={t('Start Date')}
-            date={startDate}
-            onDateChange={date => {
-              setStartDate(date);
-              setEndDate('');
-            }}
-            required
-            errorMessage={error.startDate}
-            disable={!editable}
-          />
-
-          <DatePicker
-            label={t('End Date')}
-            date={endDate}
-            onDateChange={setEndDate}
-            required
-            errorMessage={error.endDate}
-            disable={!editable || !startDate}
-            minDate={
-              startDate
-                ? formatStringToDate(startDate) ?? new Date(2020, 0, 1)
-                : new Date(2020, 0, 1)
-            }
-            maxDate={nextYear}
-          />
-
+          {/* ── Note ── */}
           <TextareaField
             label={t('Note')}
             inputValue={note}

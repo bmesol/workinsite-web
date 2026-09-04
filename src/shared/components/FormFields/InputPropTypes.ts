@@ -7,6 +7,7 @@ export type InputPropTypes = {
   placeholder?: string;
   isDisabled?: boolean;
   className?: string;
+  inputClassName?: string;
   isHideLabel?: boolean;
   items?: { label: string; value: string }[];
   required?: boolean;

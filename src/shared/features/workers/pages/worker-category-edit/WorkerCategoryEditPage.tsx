@@ -74,41 +74,48 @@ const WorkerCategoryEditPage = () => {
             required={true}
           />
 
-          {/* Work Type Section */}
+          {/* Work Type + Worker Role side by side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Work Type */}
+            <div className="flex flex-col gap-3">
+              <FormActionButton
+                heading={t('Work Type')}
+                label={t('Add')}
+                onClick={() => setWorkTypeDialogOpen(true)}
+                required={true}
+                errorMessage={error.workTypeList}
+                isColsTwo={true}
+              />
+              <WorkTypeList
+                workTypeList={workTypeList}
+                setWorkTypeList={setWorkTypeList}
+                updatedWorkTypeList={updatedWorkTypeList}
+                setUpdatedWorkTypeList={setUpdatedWorkTypeList}
+                deletedWorkTypeList={deletedWorkTypeList}
+                setDeletedWorkTypeList={setDeletedWorkTypeList}
+              />
+            </div>
 
-          <FormActionButton
-            heading={t('Work Type')}
-            label={t('Add')}
-            onClick={() => setWorkTypeDialogOpen(true)}
-            required={true}
-            errorMessage={error.workTypeList}
-            isColsTwo={true}
-          />
-          <WorkTypeList
-            workTypeList={workTypeList}
-            setWorkTypeList={setWorkTypeList}
-            updatedWorkTypeList={updatedWorkTypeList}
-            setUpdatedWorkTypeList={setUpdatedWorkTypeList}
-            deletedWorkTypeList={deletedWorkTypeList}
-            setDeletedWorkTypeList={setDeletedWorkTypeList}
-          />
-
-          <FormActionButton
-            heading={t('Worker Role')}
-            label={t('Add')}
-            onClick={() => setWorkerRoleDialogOpen(true)}
-            required={true}
-            errorMessage={error.workerRoleList}
-            isColsTwo={true}
-          />
-          <WorkerRoleList
-            workerRoleList={workerRoleList}
-            setWorkerRoleList={setWorkerRoleList}
-            updateworkerRoleList={updateworkerRoleList}
-            setUpdateWorkerRoleList={setUpdateWorkerRoleList}
-            deleteworkerRoleList={deleteworkerRoleList}
-            setDeleteWorkerRoleList={setDeleteWorkerRoleList}
-          />
+            {/* Worker Role */}
+            <div className="flex flex-col gap-3">
+              <FormActionButton
+                heading={t('Worker Role')}
+                label={t('Add')}
+                onClick={() => setWorkerRoleDialogOpen(true)}
+                required={true}
+                errorMessage={error.workerRoleList}
+                isColsTwo={true}
+              />
+              <WorkerRoleList
+                workerRoleList={workerRoleList}
+                setWorkerRoleList={setWorkerRoleList}
+                updateworkerRoleList={updateworkerRoleList}
+                setUpdateWorkerRoleList={setUpdateWorkerRoleList}
+                deleteworkerRoleList={deleteworkerRoleList}
+                setDeleteWorkerRoleList={setDeleteWorkerRoleList}
+              />
+            </div>
+          </div>
 
           <TextareaField
             label={t('Notes')}

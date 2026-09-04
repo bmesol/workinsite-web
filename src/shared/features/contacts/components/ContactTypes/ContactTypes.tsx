@@ -7,14 +7,14 @@ const ContactTypes = (props: ContactTypesProps) => {
   const { contactList, setContactList, showEditDeleteButtons = true, classNames = "" } = props;
 
   return (
-    <>
+    <div className={`flex flex-col gap-1 ${classNames}`}>
       {contactList.contactDetails.map((item, index) => (
         <React.Fragment key={index}>
           {item.value && (
             <div
               className={`
                 ${showEditDeleteButtons ? "md:w-2/3 lg:w-1/2" : "w-full"}
-                flex justify-between items-center m-0 p-0 ${classNames}
+                flex justify-between items-center
               `}
             >
               {/* Icon + Value */}
@@ -35,7 +35,7 @@ const ContactTypes = (props: ContactTypesProps) => {
           )}
         </React.Fragment>
       ))}
-    </>
+    </div>
   );
 };
 

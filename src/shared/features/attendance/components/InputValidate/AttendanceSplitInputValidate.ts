@@ -25,8 +25,8 @@ export const useAttendanceSplitInputValidate = (
       isValid = false;
     };
 
-    if (!workerRoleId) updateError('workerRoleId', 'Please select a worker role');
-    if (!shiftId) updateError('shiftId', 'Please select a shift');
+    if (!workerRoleId || workerRoleId === '0') updateError('workerRoleId', 'Please select a worker role');
+    if (!shiftId || shiftId === '0') updateError('shiftId', 'Please select a shift');
     if (!noOfPersons || isNaN(Number(noOfPersons)))
       updateError('noOfPersons', 'Enter a valid number of persons');
 

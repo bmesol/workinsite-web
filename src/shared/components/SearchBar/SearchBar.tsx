@@ -66,7 +66,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     color: "var(--foreground)",
     fontFamily: "Outfit, sans-serif",
   }}
-  className="border-none shadow-none focus-visible:ring-0 p-0 h-auto bg-transparent" 
+  className="border-none shadow-none focus-visible:ring-0 p-0 pl-2 h-auto bg-transparent"
 />
 
       {/* Clear Button */}

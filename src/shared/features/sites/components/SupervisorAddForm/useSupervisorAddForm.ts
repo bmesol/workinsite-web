@@ -10,14 +10,11 @@ const useSupervisorAddForm = (props: SupervisorAddFormProps) => {
 
   const navigate = useNavigate();
   const userService = useUserService();
-  const [error, setError] = useState("");
   const [supervisorId, setSupervisorId] = useState("");
   const [supervisor, setSupervisor] = useState<User>();
   const [supervisorList, setSupervisorList] = useState<User[]>([]);
 
   const fetchSupervisors = async (searchString: string = "") => {
-    if (!searchString) return;
-
     const supervisors = await userService.getUsers(searchString);
     if (!supervisors) return;
 
@@ -27,12 +24,10 @@ const useSupervisorAddForm = (props: SupervisorAddFormProps) => {
         : !supervisorIds.includes(item.id)
     );
 
-    const sliced = validSupervisors.slice(0, 3);
-
     setSupervisorList(
       supervisorId && supervisor
-        ? ([supervisor, ...sliced].filter(Boolean) as User[])
-        : sliced
+        ? ([supervisor, ...validSupervisors].filter(Boolean) as User[])
+        : validSupervisors
     );
   };
 
@@ -54,14 +49,6 @@ const useSupervisorAddForm = (props: SupervisorAddFormProps) => {
 
   const handleSupervisorChange = (value: string) => setSupervisorId(value);
 
-  const validate = () => {
-    if (!supervisorId) {
-      setError("Please select supervisor");
-      return false;
-    }
-    return true;
-  };
-
   const handleSupervisorCreate = (searchString: string) => {
     onClose?.(); 
     const supervisorCreateParams = new URLSearchParams({
@@ -72,16 +59,15 @@ const useSupervisorAddForm = (props: SupervisorAddFormProps) => {
   };
 
   const handleAdd = () => {
-    if (validate()) {
+    if (supervisorId) {
       setSupervisorIds((prev) => [...prev, parseInt(supervisorId)]);
-      onClose?.(); 
     }
+    onClose?.();
   };
 
   return {
     supervisorDetails,
     supervisorId,
-    error,
     handleSupervisorCreate,
     handleSupervisorChange,
     fetchSupervisors,

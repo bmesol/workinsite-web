@@ -62,9 +62,12 @@ import { useState } from "react";
 import type { WorkerRole, WorkerRoles } from "../../DTOs/WorkRoleProps";
 import type { WorkTypeNew } from "../../DTOs/WorkTypeProps";
 import type { WorkerCategoryCreationRequest } from "../../DTOs/WorkerCategoryProps";
+import { toast } from "sonner";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const redirectUrl = queryString.get("redirect");
   const workerCategoryService = useWorkerCategoryService();
 
@@ -97,21 +100,19 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
   try {
    const payload = {
   name: workerCategoryName.trim(),
-  workTypes: (workTypeList ?? []).map((wt) => wt.name), // ✅ {name} → string
+  workTypes: (workTypeList ?? []).map((wt) => ({ name: wt.name, unitId: wt.unitId })),
   workerRoles: (workerRoleList ?? []).map((wr: any) => ({
     name: wr.name,
-    salaryPerShift: wr.salaryPerShift ?? "",  
-    hoursPerShift: wr.hoursPerShift ?? "",    
+    salaryPerShift: wr.salaryPerShift ?? "",
+    hoursPerShift: wr.hoursPerShift ?? "",
   })),
   note: notes ?? "",
 };
 
-    console.log("✅ Sending payload:", payload);
-
     const response =
       await workerCategoryService.createWorkerCategory(payload);
 
-    console.log("✅ API Success:", response);
+    toast.success(t("Worker Category created successfully"));
 
     if (redirectUrl) {
       navigate(`${redirectUrl}&workerCategoryId=${response?.id}`);
@@ -119,7 +120,9 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
       navigate(WorkerCategoriesUrls.list);
     }
   } catch (error: any) {
-    console.log("❌ Full error:", error?.response?.data || error);
+    const errorMsg =
+      error?.response?.data?.[0]?.message || "Failed to create worker category. Please try again.";
+    toast.error(errorMsg);
   }
 };
 

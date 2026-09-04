@@ -55,17 +55,13 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
   );
 
   const fetchContacts = async (searchString: string = "") => {
-    if (!searchString) return;
-
-    const contacts = await contactService.getContacts(searchString); // ✅ removed false
-    if (!contacts) return;
-
-    if (contactId) {
+    const contacts = await contactService.getContacts(searchString, false);
+    if (contactId && contacts) {
       const validContacts = contacts.filter((item: Contact) => item.id !== parseInt(contactId));
-      setContactList([contact, ...validContacts.slice(0, 3)].filter(Boolean) as Contact[]);
+      setContactList([contact, validContacts].flat());
       return;
     }
-    setContactList(contacts.slice(0, 3));
+    if (contacts) setContactList(contacts);
   };
 
   useEffect(() => {

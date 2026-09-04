@@ -55,15 +55,15 @@ const useClientEdit = (id: string, queryString: URLSearchParams) => {
   }, []);
 
   const fetchContacts = async (searchString: string = "") => {
-    if (searchString) {
-      const contacts = await contactService.getContacts(searchString, false);
-      if (contactId && contacts) {
-        const validContacts = contacts.filter(
-          (item: Contact) => item.id !== parseInt(contactId),
-        );
-        setContactList([contact, validContacts.slice(0, 3)].flat());
-      }
+    const contacts = await contactService.getContacts(searchString, false);
+    if (contactId && contacts) {
+      const validContacts = contacts.filter(
+        (item: Contact) => item.id !== parseInt(contactId),
+      );
+      setContactList([contact, validContacts].flat());
+      return;
     }
+    if (contacts) setContactList(contacts);
   };
 
   useEffect(() => {

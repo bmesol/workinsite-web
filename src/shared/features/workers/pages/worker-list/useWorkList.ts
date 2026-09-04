@@ -77,12 +77,11 @@ const useWorkerList = () => {
 
   // ✅ Worker category search in combobox
   const fetchWorkerCategories = async (searchString: string = "") => {
-    if (!searchString) return;
     const categories = await workerCategoryService.getWorkerCategories(
       searchString,
       false
     );
-    if (categories) setWorkerCategoryList(categories.slice(0, 3));
+    if (categories) setWorkerCategoryList(categories);
   };
 
   const workerCategoryDetails = workerCategoryList.map((cat) => ({

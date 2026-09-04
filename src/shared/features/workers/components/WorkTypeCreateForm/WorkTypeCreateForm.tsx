@@ -69,6 +69,7 @@ const WorkTypeCreateForm = (props: WorkTypeCreateFormProps) => {
         onSearch={fetchUnits}
         required
         error={error.unit}
+        className="bg-gray-100 dark:bg-neutral-800"
       />
       <Button onClick={handleAdd}>{t('Add')}</Button>
     </div>

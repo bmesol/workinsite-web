@@ -80,66 +80,71 @@ const MaterialUsedCreationPage = () => {
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
 
-          {/* ── Date ── */}
-          <DatePicker
-            label={t("Date")}
-            required
-            date={date}
-            onDateChange={setDate}
-            errorMessage={error.date}
-            defaultDate
-          />
-
-          {/* ── Site ── */}
-          <ComboboxField
-            id="site"
-            label={t("Site")}
-            required
-            items={siteDetails}
-            selectedValue={siteId}
-            onValueChange={setSiteId}
-            onSearch={fetchSites}
-            error={error.siteId}
-          />
-
-          {/* ── Material ── */}
-          {isFetchingMaterials ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Loading available materials…</span>
-            </div>
-          ) : (
-            <ComboboxField
-              id="material"
-              label={t("Material")}
+          {/* ── Row 1: Date + Site ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DatePicker
+              label={t("Date")}
               required
-              items={materialDetails}
-              selectedValue={materialId}
-              onValueChange={setMaterialId}
-              onSearch={fetchMaterials}
-              error={error.materialId}
-              disabled={!siteId || materialDetails.length === 0}
+              date={date}
+              onDateChange={setDate}
+              errorMessage={error.date}
+              defaultDate
             />
-          )}
+            <ComboboxField
+              id="site"
+              label={t("Site")}
+              required
+              items={siteDetails}
+              selectedValue={siteId}
+              onValueChange={setSiteId}
+              onSearch={fetchSites}
+              error={error.siteId}
+            />
+          </div>
 
-          {/* ── Quantity ── */}
-          <NameField
-            label={t("Quantity")}
-            required
-            inputValue={quantity}
-            setInputValue={setQuantity}
-            placeholder={
-              availableQuantity !== null
-                ? `Max: ${availableQuantity}`
-                : t("Enter Quantity")
-            }
-            errorMessage={error.quantity}
-            isDisabled={!materialId}
-            regex="^[0-9]*\.?[0-9]*$"
-          />
+          {/* ── Row 2: Material + Quantity ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Material */}
+            <div>
+              {isFetchingMaterials ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Loading available materials…</span>
+                </div>
+              ) : (
+                <ComboboxField
+                  id="material"
+                  label={t("Material")}
+                  required
+                  items={materialDetails}
+                  selectedValue={materialId}
+                  onValueChange={setMaterialId}
+                  onSearch={fetchMaterials}
+                  error={error.materialId}
+                  disabled={!siteId || materialDetails.length === 0}
+                />
+              )}
+            </div>
 
-          {/* ── Availability Badge ── */}
-          {renderAvailabilityBadge()}
+            {/* Quantity + Availability Badge */}
+            <div className="flex flex-col gap-2">
+              <NameField
+                label={t("Quantity")}
+                required
+                inputValue={quantity}
+                setInputValue={setQuantity}
+                placeholder={
+                  availableQuantity !== null
+                    ? `Max: ${availableQuantity}`
+                    : t("Enter Quantity")
+                }
+                errorMessage={error.quantity}
+                isDisabled={!materialId}
+                regex="^[0-9]*\.?[0-9]*$"
+              />
+              {renderAvailabilityBadge()}
+            </div>
+          </div>
 
           {/* ── Work Mode ── */}
           <ComboboxField

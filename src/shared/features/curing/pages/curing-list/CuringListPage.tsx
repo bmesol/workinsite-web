@@ -74,7 +74,7 @@ const CuringListPage = () => {
   }
 
   return (
-    <div className="w-full min-h-screen px-4 pb-10">
+    <div className="w-full min-h-screen px-4 py-6">
 
       {/* ── Header ── */}
       <Header title={t('Curing List')}>

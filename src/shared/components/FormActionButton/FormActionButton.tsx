@@ -27,6 +27,7 @@ const FormActionButton = (props: {
           )}
         </div>
         <Button
+          type="button"
           variant="secondary"
           onClick={onClick}
           disabled={isAddDisabled}

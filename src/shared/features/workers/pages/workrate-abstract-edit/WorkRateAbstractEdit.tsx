@@ -53,78 +53,83 @@ const WorkRateAbstractEditPage = () => {
 
       <Card className="mt-4">
         <CardContent className="flex flex-col gap-4">
-          {/* Site */}
-          <ComboboxField
-            id="site"
-            label={t('Site')}
-            items={siteDetails}
-            selectedValue={siteId}
-            onValueChange={setSiteId}
-            onSearch={fetchSites}
-            error={error.site}
-            required
-            disabled={!editable}
-          />
 
-          {/* Work Type */}
-          <ComboboxField
-            id="workType"
-            label={t('Work Type')}
-            items={workTypeDetails}
-            selectedValue={workTypeId}
-            onValueChange={handleWorkTypeChange}   // ✅ auto-derives unit now
-            onSearch={fetchWorkTypes}
-            error={error.workType}
-            required
-            disabled={!editable}
-          />
-
-          {/* Total Rate */}
-          <div className="flex flex-col gap-1.5">
-            <Label className="text-base font-medium">
-              {t('Total Rate')} <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="number"
-              placeholder={t('Enter Total Rate')}
-              value={totalRate}
-              onChange={(e) => setTotalRate(e.target.value)}
+          {/* Row 1: Site + Work Type */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ComboboxField
+              id="site"
+              label={t('Site')}
+              items={siteDetails}
+              selectedValue={siteId}
+              onValueChange={setSiteId}
+              onSearch={fetchSites}
+              error={error.site}
+              required
               disabled={!editable}
             />
-            {error.totalRate && (
-              <p className="text-sm text-red-500">{error.totalRate}</p>
-            )}
-          </div>
 
-          {/* Total Quantity */}
-          <div className="flex flex-col gap-1.5">
-            <Label className="text-base font-medium">
-              {t('Total Quantity')} <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="number"
-              placeholder={t('Enter Total Quantity')}
-              value={totalQuantity}
-              onChange={(e) => setTotalQuantity(e.target.value)}
+            <ComboboxField
+              id="workType"
+              label={t('Work Type')}
+              items={workTypeDetails}
+              selectedValue={workTypeId}
+              onValueChange={handleWorkTypeChange}
+              onSearch={fetchWorkTypes}
+              error={error.workType}
+              required
               disabled={!editable}
             />
-            {error.totalQuantity && (
-              <p className="text-sm text-red-500">{error.totalQuantity}</p>
-            )}
           </div>
 
-          {/* Unit — read-only, always derived from the selected Work Type */}
-          <ComboboxField
-            id="unit"
-            label={t('Unit')}
-            items={unitDetails}
-            selectedValue={unitId}
-            onValueChange={() => {}}
-            onSearch={() => {}}
-            error={error.unit}
-            required
-            disabled
-          />
+          {/* Row 2: Total Rate + Total Quantity */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-base font-medium">
+                {t('Total Rate')} <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                type="number"
+                placeholder={t('Enter Total Rate')}
+                value={totalRate}
+                onChange={(e) => setTotalRate(e.target.value)}
+                disabled={!editable}
+              />
+              {error.totalRate && (
+                <p className="text-sm text-red-500">{error.totalRate}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-base font-medium">
+                {t('Total Quantity')} <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                type="number"
+                placeholder={t('Enter Total Quantity')}
+                value={totalQuantity}
+                onChange={(e) => setTotalQuantity(e.target.value)}
+                disabled={!editable}
+              />
+              {error.totalQuantity && (
+                <p className="text-sm text-red-500">{error.totalQuantity}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 3: Unit (half-width, read-only, derived from Work Type) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ComboboxField
+              id="unit"
+              label={t('Unit')}
+              items={unitDetails}
+              selectedValue={unitId}
+              onValueChange={() => {}}
+              onSearch={() => {}}
+              error={error.unit}
+              required
+              disabled
+            />
+          </div>
 
           {/* Remark */}
           <TextareaField

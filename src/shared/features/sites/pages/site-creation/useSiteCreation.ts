@@ -12,8 +12,8 @@ import { ClientsUrls } from "../../../clients/utils/urls";
 import { SiteStatus } from "../../DTOs/SiteProps";
 import { useNavigate } from "react-router-dom";
 import { SitesUrls } from "../../utils/urls";
-import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const useSiteCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -41,26 +41,15 @@ const useSiteCreation = (queryString: URLSearchParams) => {
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
 
   const fetchClients = async (searchString: string = "") => {
-    if (!searchString) return;
     const clients = await clientService.getClients(searchString);
     if (!clients) return;
     if (clientId) {
       const validClients = clients.filter((item: Client) => item.id !== parseInt(clientId));
-      setClientList([client, ...validClients.slice(0, 3)].filter(Boolean) as Client[]);
+      setClientList([client, ...validClients].filter(Boolean) as Client[]);
       return;
     }
-    setClientList(clients.slice(0, 3));
+    setClientList(clients);
   };
-
-  useEffect(() => {
-  const loadDefaultWageType = async () => {
-    const wageTypes = await wageTypeService.getWageTypes("");
-    if (wageTypes && wageTypes.length > 0 && !wageTypeId) {
-      setWageTypeId(wageTypes[0].id.toString());
-    }
-  };
-  loadDefaultWageType();
-}, [wageTypeId]);
 
   useEffect(() => {
     const fetchClientById = async () => {
@@ -74,15 +63,14 @@ const useSiteCreation = (queryString: URLSearchParams) => {
   }, [clientId]);
 
   const fetchContacts = async (searchString: string = "") => {
-    if (!searchString) return;
     const contacts = await contactService.getContacts(searchString);
     if (!contacts) return;
     if (contactId) {
       const validContacts = contacts.filter((item: Contact) => item.id !== parseInt(contactId));
-      setContactList([contact, ...validContacts.slice(0, 3)].filter(Boolean) as Contact[]);
+      setContactList([contact, ...validContacts].filter(Boolean) as Contact[]);
       return;
     }
-    setContactList(contacts.slice(0, 3));
+    setContactList(contacts);
   };
 
   useEffect(() => {
@@ -104,7 +92,7 @@ const useSiteCreation = (queryString: URLSearchParams) => {
   };
 
   const { error, validate } = useSiteInputValidate({ name, clientId, googleLocation, contactId, wageTypeId });
-  const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact);
+  const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact, true);
 
   const clientDetails = clientList.map((item) => ({ label: item.name, value: item.id.toString() }));
   const contactDetails = contactList.map((item) => ({ label: item.name, value: item.id.toString() }));
@@ -159,21 +147,21 @@ const useSiteCreation = (queryString: URLSearchParams) => {
 
   const handleSubmission = async () => {
     if (validate()) {
-      if (supervisorIds.length === 0) {
-        toast.error("Please add at least one supervisor.");
-      } else {
-        const site = {
-          name,
-          clientId: parseInt(clientId),
-          googleLocation,
-          note: notes,
-          contactId: parseInt(contactId),
-          supervisorIds,
-          status,
-          wageTypeId: parseInt(wageTypeId), // 👈
-        };
+      const site = {
+        name,
+        clientId: parseInt(clientId),
+        googleLocation,
+        note: notes,
+        contactId: parseInt(contactId),
+        supervisorIds,
+        status,
+        wageTypeId: parseInt(wageTypeId), // 👈
+      };
+      try {
         await siteService.createSite(site);
         navigate(SitesUrls.list);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.[0]?.message || 'Site already exists');
       }
     }
   };

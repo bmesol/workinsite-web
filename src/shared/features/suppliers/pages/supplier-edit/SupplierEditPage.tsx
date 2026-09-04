@@ -103,44 +103,33 @@ const SupplierEditPage = () => {
         </div>
 
         {/* Contact Details */}
-       {contactId && (
-  <>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <FormActionButton
-        heading={t('Contact detail')}
-        label={t('Edit')}
-        onClick={handleContactEdit}
-        isColsTwo={true}
-      />
-    </div>
-    <div className="flex flex-col gap-2 ">
-      <ContactTypes
-        contactList={primaryContactDetails}
-        showEditDeleteButtons={false}
-      />
-    </div>
-    {hasMoreDetails && (
-      <div>
-        <button
-          onClick={() => setIsContactOpen(true)}
-          className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
-        >
-          {t('More details...')}
-        </button>
-      </div>
-    )}
-  </>
-)}
-        {/* Notes */}
-        {notes !== undefined && (
-          <TextareaField
-            label={t('Notes')}
-            inputValue={`${notes ? notes : ""}`}
-            setInputValue={setNotes}
-            placeholder={t('Enter your notes')}
-          />
+        {contactId && (
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormActionButton
+                heading={t('Contact detail')}
+                label={t('Edit')}
+                onClick={handleContactEdit}
+                isColsTwo={true}
+              />
+            </div>
+            <ContactTypes
+              contactList={primaryContactDetails}
+              showEditDeleteButtons={false}
+              classNames="mt-2"
+            />
+            {hasMoreDetails && (
+              <div className="mt-1">
+                <button
+                  onClick={() => setIsContactOpen(true)}
+                  className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
+                >
+                  {t('More details...')}
+                </button>
+              </div>
+            )}
+          </div>
         )}
-
         {/* KYC / Bank / UPI / Switch Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* KYC */}
@@ -214,6 +203,16 @@ const SupplierEditPage = () => {
             <Switch checked={isActive} onCheckedChange={setIsActive} />
           </div>
         </div>
+
+        {/* Notes */}
+        {notes !== undefined && (
+          <TextareaField
+            label={t('Notes')}
+            inputValue={`${notes ? notes : ""}`}
+            setInputValue={setNotes}
+            placeholder={t('Enter your notes')}
+          />
+        )}
 
         {/* Form Submission Buttons */}
         <div className="col-span-12">

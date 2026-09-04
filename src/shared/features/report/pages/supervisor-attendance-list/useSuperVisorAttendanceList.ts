@@ -26,7 +26,7 @@ export function useSupervisorAttendanceList() {
   const [paginationLoading, setPaginationLoading] = useState(false);
   const [attendances, setAttendances] = useState<SupervisorAttendance[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
   const [hasSearchFilter, setHasSearchFilter] = useState(false);
   const [supervisor, setSupervisor] = useState({ name: '', value: '' });
   const [supervisorList, setSupervisorList] = useState<any[]>([]);
@@ -97,10 +97,12 @@ export function useSupervisorAttendanceList() {
   };
 
   const fetchSupervisors = async (text = '') => {
-    if (!text) return;
     try {
       const res = await userService.getUsers(text);
-      setSupervisorList(res?.slice(0, 3) || []);
+      const supervisors = (res || []).filter(
+        (u: any) => u.role?.name?.toLowerCase() === 'supervisor',
+      );
+      setSupervisorList(supervisors.slice(0, 3));
     } catch (err) {
       console.log('Fetch supervisors error:', err);
     }

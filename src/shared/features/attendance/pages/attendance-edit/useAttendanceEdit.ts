@@ -283,8 +283,7 @@ const useAttendanceEditScreen = () => {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+  const handleImageUpload = (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const newImages: UploadedImage[] = Array.from(files).map(file => ({
       uri: URL.createObjectURL(file),
@@ -293,7 +292,6 @@ const useAttendanceEditScreen = () => {
       file,
     }));
     setUploadedImages(prev => [...prev, ...newImages]);
-    e.target.value = '';
   };
 
   const handleSubmit = async () => {

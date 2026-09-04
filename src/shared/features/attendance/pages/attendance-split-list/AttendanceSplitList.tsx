@@ -124,12 +124,14 @@ const AttendanceSplitList = ({
             onClick={() => confirmDelete(i)}
             className={cn(
               'h-8 w-8',
-              !editable
-                ? 'text-[var(--disabled-text)] cursor-not-allowed pointer-events-none'
-                : 'text-destructive hover:opacity-80',
+              !editable && 'text-[var(--disabled-text)] cursor-not-allowed pointer-events-none',
             )}
           >
-            <Trash2 size={16} />
+            <Trash2
+              size={16}
+              className={!editable ? '' : 'text-destructive'}
+              style={!editable ? {} : { color: 'var(--danger-color)' }}
+            />
           </Button>
         </div>
       </div>

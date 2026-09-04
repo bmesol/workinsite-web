@@ -322,9 +322,7 @@ const fetchWorkers = async (WorkerName: string = '') => {
     setDeleteConfirmIndex(null);
   };
 
-  // Web: replace launchImageLibrary + ImageResizer with <input type="file">
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+  const handleImageUpload = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const newImages: UploadedImage[] = Array.from(files).map(file => ({
@@ -336,9 +334,6 @@ const fetchWorkers = async (WorkerName: string = '') => {
 
     setUploadedImages(prev => [...prev, ...newImages]);
     setIsImageDialogOpen(false);
-
-    // Reset input so same file can be re-selected
-    e.target.value = '';
   };
 
   const deleteImage = (index: number) => {

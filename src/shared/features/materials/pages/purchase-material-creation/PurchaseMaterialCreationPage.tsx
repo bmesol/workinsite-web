@@ -13,6 +13,7 @@ import type {
 } from '../../DTOs/PurchaseMaterialProps';
 import type { ReceivedQualityTypes } from '../../DTOs/PurchaseProps';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { UploadButton } from '@/shared/components/UploadButton/UploadButton';
 
 interface PurchaseMaterialsProps {
   purchaseMaterials: PurchaseMaterialCreationListProps[];
@@ -78,6 +79,7 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
         onSearch={fetchMaterials}
         required={true}
         error={error.materialId}
+        className="bg-transparent dark:bg-transparent"
       />
 
      <NameField
@@ -88,6 +90,7 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
         required={true}
         regex="^[0-9]*\.?[0-9]*$"
         errorMessage={error.receivedQuantity}
+        inputClassName="bg-transparent dark:bg-transparent"
       />
 
       {/* Rate */}
@@ -137,6 +140,7 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
         required={true}
         errorMessage={error.receivedDate}
         defaultDate={true}
+        className="bg-transparent dark:bg-transparent"
       />
 
       {/* Received Quantity */}
@@ -157,14 +161,10 @@ const PurchaseMaterialsCreationScreen: React.FC<PurchaseMaterialsProps> = ({
       />
 
       {/* Image Upload */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-base font-medium">{t("Upload Images")}</label>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"
-          onChange={(e) => handleImageUpload(e.target.files)}
+      <div className="flex">
+        <UploadButton
+          text={t("Upload Images")}
+          onFilesSelected={handleImageUpload}
         />
       </div>
 

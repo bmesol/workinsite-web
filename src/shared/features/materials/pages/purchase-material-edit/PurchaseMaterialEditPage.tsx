@@ -2,12 +2,6 @@ import React from "react";
 import { Button } from "@/shared/components/ui/button";
 import { SelectField } from "@/shared/components/FormFields/SelectField";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/shared/components/ui/sheet";
 import { usePurchaseMaterialsEdit } from "./usePurchaseMaterialEdit";
 import type {
   PurchaseMaterialCreationListProps,
@@ -73,9 +67,6 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
     handleImageUpload,
     handleFileChange,
     fileInputRef,
-    isImageSheetOpen,
-    handleImageSheetOpen,
-    handleImageSheetClose,
     handleSubmit,
     error,
     showImage,
@@ -198,7 +189,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
       />
 
       {/* ── Upload button ── */}
-      <Button variant="outline" onClick={handleImageSheetOpen}>
+      <Button variant="outline" onClick={handleImageUpload}>
         {t("Upload Images")}
       </Button>
 
@@ -211,24 +202,6 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         className="hidden"
         onChange={handleFileChange}
       />
-
-      {/* ── Bottom sheet ── */}
-      <Sheet open={isImageSheetOpen} onOpenChange={handleImageSheetClose}>
-        <SheetContent side="bottom" className="h-40">
-          <SheetHeader>
-            <SheetTitle>Images</SheetTitle>
-          </SheetHeader>
-          <div className="flex gap-4 mt-4">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={handleImageUpload}
-            >
-              Choose from Gallery
-            </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
 
       {/* ── Submit ── */}
       <Button onClick={handleSubmit} className="w-full">
