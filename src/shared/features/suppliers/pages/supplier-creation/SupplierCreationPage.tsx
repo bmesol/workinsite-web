@@ -25,7 +25,6 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { useSupplierCreation } from "./useSupplierCreation";
 import { SuppliersUrls } from "../../utils/urls";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
-import { Switch } from "@/shared/components/ui/switch";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 // ─── Dialog state type ────────────────────────────────────────────────────────
@@ -46,8 +45,6 @@ const SupplierCreationPage = () => {
     setName,
     notes,
     setNotes,
-    isActive,
-    setIsActive,
     supplierDetails,
     setSupplierDetails,
     error,
@@ -95,8 +92,8 @@ const SupplierCreationPage = () => {
 
         {/* Contact Details Section */}
         {contactId && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormActionButton
                 heading={t('Contact detail')}
                 label={t('Edit')}
@@ -107,9 +104,10 @@ const SupplierCreationPage = () => {
             <ContactTypes
               contactList={primaryContactDetails}
               showEditDeleteButtons={false}
+              classNames="mt-2"
             />
             {hasMoreDetails && (
-              <div>
+              <div className="mt-1">
                 <button
                   onClick={() => setActiveDialog("contactEdit")}
                   className="ml-3 text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
@@ -118,22 +116,6 @@ const SupplierCreationPage = () => {
                 </button>
               </div>
             )}
-          </>
-        )}
-
-        {/* Notes */}
-        {notes !== undefined && (
-          <div className="flex flex-col gap-1.5 mt-4">
-            <Label htmlFor="notes" className="text-base">
-              {t('Notes')}
-            </Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={t('Enter your notes')}
-              rows={4}
-            />
           </div>
         )}
 
@@ -193,12 +175,23 @@ const SupplierCreationPage = () => {
             />
           </div>
 
-          {/* Is Active Toggle */}
-          <div className="flex items-center gap-3">
-            <Label className="text-base font-medium text-black">{t('Is Active')}</Label>
-            <Switch checked={isActive} onCheckedChange={setIsActive} />
-          </div>
         </div>
+
+        {/* Notes */}
+        {notes !== undefined && (
+          <div className="flex flex-col gap-1.5 mt-4">
+            <Label htmlFor="notes" className="text-base">
+              {t('Notes')}
+            </Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder={t('Enter your notes')}
+              rows={4}
+            />
+          </div>
+        )}
 
         {/* Footer: Cancel + Save */}
         <div className="flex justify-end gap-2 pt-4  ">

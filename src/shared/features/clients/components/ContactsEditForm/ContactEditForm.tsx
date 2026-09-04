@@ -1,4 +1,5 @@
 import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
+import { ContactTypes as ContactTypeValues } from "../../../contacts/DTOs/ContactProps";
 import type { Contact } from "../../../contacts/DTOs/ContactProps";
 import { Button } from "@/shared/components/ui/button";
 import { Pencil } from "lucide-react";
@@ -7,6 +8,13 @@ import { useLanguage } from '@/shared/hooks/useLanguageContext';
 const ContactsEditForm = (props: { contact: Contact; onEdit: () => void; onClose: () => void }) => {
   const { contact, onEdit, onClose } = props;
   const { t } = useLanguage();
+
+  const filteredContact = {
+    ...contact,
+    contactDetails: contact.contactDetails.filter(
+      (d) => d.contactType !== ContactTypeValues.PHONE
+    ),
+  };
 
   return (
     <div className="flex flex-col gap-4 max-h-[300px]">
@@ -29,7 +37,7 @@ const ContactsEditForm = (props: { contact: Contact; onEdit: () => void; onClose
 
       {/* Contact Types List */}
       <div className="flex flex-col gap-4 overflow-y-auto max-h-[125px]">
-        <ContactTypes contactList={contact} showEditDeleteButtons={false} />
+        <ContactTypes contactList={filteredContact} showEditDeleteButtons={false} />
       </div>
 
       {/* Cancel Button */}

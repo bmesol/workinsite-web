@@ -150,7 +150,7 @@ const PurchaseMaterialsList: React.FC<Props> = ({
                   cursor: editable ? "pointer" : "not-allowed",
                 }}
               >
-                <Trash2 className="w-4 h-4 text-destructive" />
+                <Trash2 className="w-4 h-4" style={{ color: 'var(--danger-color)' }} />
               </button>
             </div>
 

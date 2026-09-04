@@ -7,7 +7,7 @@ import { DateFilter } from '../../components/DateFilter/DateFilter';
 import { useSupervisorAttendanceList } from './useSuperVisorAttendanceList';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import type { SupervisorAttendance } from '../../DTOs/SupervisorAttendanceProps';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ClipboardList } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -81,9 +81,11 @@ const SupervisorAttendanceListPage = () => {
       {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         {attendances.length === 0 ? (
-          <p className="col-span-full text-center text-muted-foreground mt-10">
-            No Data Found
-          </p>
+          <div className="col-span-full flex flex-col items-center justify-center py-24 text-slate-400">
+            <ClipboardList size={48} className="mb-4 opacity-30" />
+            <p className="font-semibold text-slate-500">No Data Found</p>
+            <p className="text-sm mt-1">No attendance records found. Try adjusting your filters.</p>
+          </div>
         ) : (
           attendances.map((item: SupervisorAttendance) => (
             <div key={item.id} className="relative">
@@ -106,7 +108,7 @@ const SupervisorAttendanceListPage = () => {
       </div>
 
       {/* ── View More ── */}
-      {hasMore && (
+      {hasMore && attendances.length > 0 && (
         <div className="flex justify-end mt-4">
           {paginationLoading ? (
             <Loader2 className="animate-spin" size={24} style={{ color: 'var(--secondary)' }} />

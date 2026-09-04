@@ -61,26 +61,26 @@ const AttendanceCard = ({
         </div>
 
         {/* Row 1 — Work Type + Wage Type */}
-        <div className="flex items-center gap-6 flex-wrap">
-          <div className="flex items-center gap-2 min-w-[120px]">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <Briefcase className="h-4 w-4 text-[var(--foreground)] shrink-0" />
             <span className="text-sm text-[var(--foreground)] truncate">{workTypeName}</span>
           </div>
 
-          <div className="flex items-center gap-2 min-w-[120px]">
+          <div className="flex items-center gap-2 min-w-0">
             <Banknote className="h-4 w-4 text-[var(--foreground)] shrink-0" />
             <span className="text-sm text-[var(--foreground)] truncate">{wageTypeName}</span>
           </div>
         </div>
 
         {/* Row 2 — Date + Worker */}
-        <div className="flex items-center gap-6 flex-wrap">
-          <div className="flex items-center gap-2 min-w-[120px]">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <CalendarDays className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-            <span className="text-sm text-[var(--foreground)]">{date}</span>
+            <span className="text-sm text-[var(--foreground)] truncate">{date}</span>
           </div>
 
-          <div className="flex items-center gap-2 min-w-[120px]">
+          <div className="flex items-center gap-2 min-w-0">
             <User className="h-4 w-4 text-[var(--foreground)] shrink-0" />
             <span className="text-sm text-[var(--foreground)] truncate">{worker}</span>
           </div>

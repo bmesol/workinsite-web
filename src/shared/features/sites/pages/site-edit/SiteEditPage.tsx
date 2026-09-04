@@ -179,7 +179,6 @@ const SiteEditPage = () => {
                   label={t("Add")}
                   onClick={handleSupervisorsAdd}
                   isColsTwo={true}
-                  required
                 />
                 {supervisorIds.length > 0 && (
                   <SupervisorListForm

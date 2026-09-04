@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { BankAccountCreateForm } from "@/shared/components/BankAccount/BankAccountCreateForm/BankAccountCreateForm";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
-import { DateOfBirthField } from "@/shared/components/FormFields/DateOfBirthField";
+import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
 import { RadioField } from "@/shared/components/FormFields/RadioField";
@@ -63,7 +63,14 @@ const WorkerCreationPage = () => {
           {/* Row 1: Name + DOB */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <NameField inputValue={name} setInputValue={setName} errorMessage={error.name} required={true} />
-            <DateOfBirthField inputValue={dateOfBirth} setInputValue={setDateOfBirth} errorMessage={error.dateOfBirth} required={true} />
+            <DatePicker
+              label={t('Date of Birth')}
+              date={dateOfBirth}
+              onDateChange={setDateOfBirth}
+              errorMessage={error.dateOfBirth}
+              required={true}
+              minDate={new Date(new Date().getFullYear() - 100, 0, 1)}
+            />
           </div>
 
           {/* Row 2: Contact + Worker Category */}
@@ -98,7 +105,9 @@ const WorkerCreationPage = () => {
               {contactId && (
                 <div>
                   <FormActionButton heading={t('Contact detail')} label={t('Edit')} onClick={handleContactEdit} isColsTwo={true} />
-                  <ContactTypes contactList={primaryContactDetails} showEditDeleteButtons={false} />
+                  <div className="mt-2">
+                    <ContactTypes contactList={primaryContactDetails} showEditDeleteButtons={false} />
+                  </div>
                   {hasMoreDetails && (
                     <button
                       onClick={() => setActiveDialog("contactEdit")}
@@ -127,8 +136,6 @@ const WorkerCreationPage = () => {
   errorMessage={error.gender}
   required={true}
 />
-          <TextareaField label={t('Notes')} inputValue={notes} setInputValue={setNotes} placeholder={t('Enter your notes')} />
-
           {/* KYC + Bank + UPI */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* KYC */}
@@ -167,6 +174,9 @@ const WorkerCreationPage = () => {
               />
             </div>
           </div>
+
+          {/* Notes */}
+          <TextareaField label={t('Notes')} inputValue={notes} setInputValue={setNotes} placeholder={t('Enter your notes')} />
 
           {/* Submit */}
           <FormSubmissionButtons onCancel={() => navigate(WorkersUrls.list)} onSave={handleSubmission} />

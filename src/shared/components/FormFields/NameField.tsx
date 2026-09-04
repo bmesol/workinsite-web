@@ -13,10 +13,11 @@ const NameField = (props: InputPropTypes) => {
     errorMessage,
     placeholder,
     className,
+    inputClassName,
     isDisabled,
     required = false,
     isHideLabel = false,
-    regex = "^[a-zA-Z0-9.\\s]*$", 
+    regex = "^[a-zA-Z0-9.\\s]*$",
   } = props;
 
   const { inputValue, handleInputChange } = useInputField(props);
@@ -46,10 +47,10 @@ const NameField = (props: InputPropTypes) => {
         onChange={handleChange}
         placeholder={placeholder || t("Enter name")}
         disabled={isDisabled}
-        className="w-full disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800"
+        className={`w-full disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800 ${inputClassName ?? ""}`}
         style={{
-          fontFamily: "Outfit, sans-serif", 
-          fontSize: "var(--font-sm)", 
+          fontFamily: "Outfit, sans-serif",
+          fontSize: "var(--font-sm)",
         }}
       />
     </FormInput>

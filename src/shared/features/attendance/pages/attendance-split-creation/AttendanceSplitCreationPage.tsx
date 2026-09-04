@@ -61,6 +61,7 @@ export const AttendanceSplitCreationPage = (props: AttendanceSplitProps) => {
         onSearch={fetchShifts}
         error={error.shiftId}
         required
+        className="bg-transparent"
       />
 
       {/* No Of Persons */}

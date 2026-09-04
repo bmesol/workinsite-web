@@ -91,67 +91,73 @@ export const MaterialUsedEditPage = () => {
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
-          {/* ── Date ── */}
-          <DatePicker
-            label={t("Date")}
-            date={date}
-            onDateChange={setDate}
-            required
-            errorMessage={error.date}
-            disable={!editable}
-          />
 
-          {/* ── Site ── */}
-          <ComboboxField
-            id="site"
-            label={t("Site")}
-            items={siteDetails}
-            selectedValue={siteId ?? ""}
-            onValueChange={setSiteId}
-            onSearch={fetchSites}
-            required
-            error={error.siteId}
-            disabled={!editable}
-          />
-
-          {/* ── Material ── */}
-          {isFetchingMaterials ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
-              <Loader2 className="animate-spin h-4 w-4 text-blue-600" />
-              Loading available materials…
-            </div>
-          ) : (
-            <ComboboxField
-              id="material"
-              label={t("Material")}
-              items={materialDetails}
-              selectedValue={materialId ?? ""}
-              onValueChange={setMaterialId}
-              onSearch={fetchMaterials}
+          {/* ── Row 1: Date + Site ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DatePicker
+              label={t("Date")}
+              date={date}
+              onDateChange={setDate}
               required
-              error={error.materialId}
+              errorMessage={error.date}
+              disable={!editable}
+            />
+            <ComboboxField
+              id="site"
+              label={t("Site")}
+              items={siteDetails}
+              selectedValue={siteId ?? ""}
+              onValueChange={setSiteId}
+              onSearch={fetchSites}
+              required
+              error={error.siteId}
               disabled={!editable}
             />
-          )}
+          </div>
 
-          {/* ── Quantity ── */}
-          <NameField
-            label={t("Quantity")}
-            inputValue={quantity}
-            setInputValue={setQuantity}
-            placeholder={
-              maximumAllowedQuantity !== null
-                ? `Max: ${maximumAllowedQuantity}`
-                : t("Enter Quantity")
-            }
-            required
-            regex="^[0-9]*(\.[0-9]*)?$"
-            errorMessage={error.quantity}
-            isDisabled={!editable}
-          />
+          {/* ── Row 2: Material + Quantity ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Material */}
+            <div>
+              {isFetchingMaterials ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                  <Loader2 className="animate-spin h-4 w-4 text-blue-600" />
+                  Loading available materials…
+                </div>
+              ) : (
+                <ComboboxField
+                  id="material"
+                  label={t("Material")}
+                  items={materialDetails}
+                  selectedValue={materialId ?? ""}
+                  onValueChange={setMaterialId}
+                  onSearch={fetchMaterials}
+                  required
+                  error={error.materialId}
+                  disabled={!editable}
+                />
+              )}
+            </div>
 
-          {/* ── Quantity Badge ── */}
-          <QuantityBadge />
+            {/* Quantity + Badge */}
+            <div className="flex flex-col gap-2">
+              <NameField
+                label={t("Quantity")}
+                inputValue={quantity}
+                setInputValue={setQuantity}
+                placeholder={
+                  maximumAllowedQuantity !== null
+                    ? `Max: ${maximumAllowedQuantity}`
+                    : t("Enter Quantity")
+                }
+                required
+                regex="^[0-9]*(\.[0-9]*)?$"
+                errorMessage={error.quantity}
+                isDisabled={!editable}
+              />
+              <QuantityBadge />
+            </div>
+          </div>
 
           {/* ── Work Mode ── */}
           <ComboboxField

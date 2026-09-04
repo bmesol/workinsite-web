@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Header } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
@@ -10,7 +10,9 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { usePermission } from '@/shared/hooks/usePermission';
-import { PlusCircle, Upload, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import { FormActionButton } from '@/shared/components/FormActionButton/FormActionButton';
+import { UploadButton } from '@/shared/components/UploadButton/UploadButton';
 import {
   Dialog,
   DialogContent,
@@ -30,7 +32,6 @@ import {
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceEditPage = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { canEdit } = usePermission();
   const editable = canEdit('Attendance');
   const [splitOpen, setSplitOpen] = useState(false);
@@ -97,7 +98,7 @@ const AttendanceEditPage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-10">
+    <div className="w-full min-h-screen px-4 pb-10">
 
       <Header title={t('Edit Attendance')} />
 
@@ -105,85 +106,85 @@ const AttendanceEditPage = () => {
         <CardContent className="pt-4">
           <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
 
-            {/* Date — always locked on edit, same as mobile */}
-            <DatePicker
-              date={date}
-              onDateChange={setDate}
-              errorMessage={error.date}
-              label={t('Date')}
-              required
-              disable={true}
-            />
+            {/* Row 1: Date + Site — always locked on edit */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <DatePicker
+                date={date}
+                onDateChange={setDate}
+                errorMessage={error.date}
+                label={t('Date')}
+                required
+                disable={true}
+              />
+              <ComboboxField
+                id="site"
+                label={t('Site')}
+                items={siteDetails}
+                selectedValue={siteId}
+                onValueChange={setSiteId}
+                onSearch={fetchSites}
+                error={error.site}
+                required
+                disabled={true}
+              />
+            </div>
 
-            {/* Site — always locked on edit, same as mobile */}
-            <ComboboxField
-              id="site"
-              label={t('Site')}
-              items={siteDetails}
-              selectedValue={siteId}
-              onValueChange={setSiteId}
-              onSearch={fetchSites}
-              error={error.site}
-              required
-              disabled={true}
-            />
+            {/* Row 2: Wage Type + Work Type — always locked on edit */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ComboboxField
+                id="wageType"
+                label={t('Wage Type')}
+                items={wageTypeDetails}
+                selectedValue={wageTypeId}
+                onValueChange={setWageTypeId}
+                onSearch={fetchWageTypes}
+                error={error.wageType}
+                required
+                disabled={true}
+              />
+              <ComboboxField
+                id="workType"
+                label={t('Work Type')}
+                items={workTypeDetails}
+                selectedValue={workType.id.toString()}
+                onValueChange={(val) => {
+                  const found = workTypeDetails.find(i => i.value === val);
+                  if (found?.allItems) setWorkType(found.allItems as any);
+                }}
+                onSearch={fetchWorkTypes}
+                error={error.workType}
+                required
+                disabled={true}
+              />
+            </div>
 
-            {/* Wage Type — always locked on edit, same as mobile */}
-            <ComboboxField
-              id="wageType"
-              label={t('Wage Type')}
-              items={wageTypeDetails}
-              selectedValue={wageTypeId}
-              onValueChange={setWageTypeId}
-              onSearch={fetchWageTypes}
-              error={error.wageType}
-              required
-              disabled={true}
-            />
+            {/* Row 3: Worker + Work Mode */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ComboboxField
+                id="worker"
+                label={t('Worker')}
+                items={workerDetails}
+                selectedValue={workerId}
+                onValueChange={setWorkerId}
+                onSearch={fetchWorkers}
+                error={error.worker}
+                required
+                disabled={true}
+              />
+              <ComboboxField
+                id="workMode"
+                label={t('Work Mode')}
+                items={workModeDetails}
+                selectedValue={workModeId}
+                onValueChange={setWorkModeId}
+                onSearch={fetchWorkModes}
+                error={error.workMode}
+                required
+                disabled={!editable}
+              />
+            </div>
 
-            {/* Work Type — always locked on edit, same as mobile */}
-            <ComboboxField
-              id="workType"
-              label={t('Work Type')}
-              items={workTypeDetails}
-              selectedValue={workType.id.toString()}
-              onValueChange={(val) => {
-                const found = workTypeDetails.find(i => i.value === val);
-                if (found?.allItems) setWorkType(found.allItems as any);
-              }}
-              onSearch={fetchWorkTypes}
-              error={error.workType}
-              required
-              disabled={true}
-            />
-
-            {/* Worker — always locked on edit, same as mobile */}
-            <ComboboxField
-              id="worker"
-              label={t('Worker')}
-              items={workerDetails}
-              selectedValue={workerId}
-              onValueChange={setWorkerId}
-              onSearch={fetchWorkers}
-              error={error.worker}
-              required
-              disabled={true}
-            />
-
-            {/* Work Mode — permission-based, same as mobile */}
-            <ComboboxField
-              id="workMode"
-              label={t('Work Mode')}
-              items={workModeDetails}
-              selectedValue={workModeId}
-              onValueChange={setWorkModeId}
-              onSearch={fetchWorkModes}
-              error={error.workMode}
-              required
-              disabled={!editable}
-            />
-
-            {/* Worked Quantity — permission-based, same as mobile */}
+            {/* Worked Quantity — permission-based */}
             <NameField
               label={t('Worked Quantity')}
               inputValue={workedQuantity}
@@ -206,19 +207,13 @@ const AttendanceEditPage = () => {
 
             {/* Attendance Split */}
             {editable && (
-              <div className="flex flex-col gap-1">
-                <button
-                  type="button"
-                  onClick={() => setSplitOpen(true)}
-                  className="flex items-center gap-2 text-sm font-medium text-[var(--secondary)] hover:opacity-80 w-fit"
-                >
-                  <PlusCircle size={18} />
-                  {t('Attendance Split')}
-                </button>
-                {error.attendanceSplit && (
-                  <p className="text-xs text-destructive">{error.attendanceSplit}</p>
-                )}
-              </div>
+              <FormActionButton
+                heading={t('Attendance Split')}
+                label={t('Add')}
+                onClick={() => setSplitOpen(true)}
+                isColsTwo
+                errorMessage={error.attendanceSplit}
+              />
             )}
 
             <AttendanceSplitList
@@ -284,24 +279,12 @@ const AttendanceEditPage = () => {
 
             {/* Upload Button */}
             {editable && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 text-sm font-medium text-[var(--secondary)] hover:opacity-80 w-fit"
-                >
-                  <Upload size={18} />
-                  {t('Upload Images')}
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={handleImageUpload}
+              <div className="flex">
+                <UploadButton
+                  text={t('Upload Images')}
+                  onFilesSelected={handleImageUpload}
                 />
-              </>
+              </div>
             )}
 
             <TextareaField

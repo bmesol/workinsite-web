@@ -27,9 +27,9 @@ const SupervisorListForm = (props: SupervisorListFormProps) => {
             </button>
             <button
               onClick={() => handleSupervisorDelete(supervisor.id)}
-              className="text-muted-foreground hover:text-destructive transition-colors"
+              className="transition-colors"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-4 h-4 text-destructive" style={{ color: 'var(--danger-color)' }} />
             </button>
           </div>
 

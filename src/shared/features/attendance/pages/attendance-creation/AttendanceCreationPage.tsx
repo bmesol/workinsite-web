@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Header } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
@@ -25,11 +24,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
-import { PlusCircle, Upload, X } from "lucide-react";
+import { X } from "lucide-react";
+import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
+import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceCreationPage = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useLanguage();
 
   const {
@@ -85,86 +85,86 @@ const AttendanceCreationPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-10">
+    <div className="w-full min-h-screen px-4 pb-10">
       <Header title={t('Create Attendance')} />
 
       <Card className="mt-4">
         <CardContent className="pt-4">
           <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
-            {/* Date */}
-            <DatePicker
-              date={date}
-              onDateChange={setDate}
-              errorMessage={error.date}
-              label={t('Date')}
-              required
-              defaultDate
-            />
+            {/* Row 1: Date + Site */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <DatePicker
+                date={date}
+                onDateChange={setDate}
+                errorMessage={error.date}
+                label={t('Date')}
+                required
+                defaultDate
+              />
+              <ComboboxField
+                id="site"
+                label={t('Site')}
+                items={siteDetails}
+                selectedValue={siteId}
+                onValueChange={setSiteId}
+                onSearch={fetchSites}
+                error={error.site}
+                required
+              />
+            </div>
 
-            {/* Site */}
-            <ComboboxField
-              id="site"
-              label={t('Site')}
-              items={siteDetails}
-              selectedValue={siteId}
-              onValueChange={setSiteId}
-              onSearch={fetchSites}
-              error={error.site}
-              required
-            />
+            {/* Row 2: Wage Type + Work Type */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ComboboxField
+                id="wageType"
+                label={t('Wage Type')}
+                items={wageTypeDetails}
+                selectedValue={wageTypeId}
+                onValueChange={setWageTypeId}
+                onSearch={fetchWageTypes}
+                error={error.wageType}
+                required
+              />
+              <ComboboxField
+                id="workType"
+                label={t('Work Type')}
+                items={workTypeDetails}
+                selectedValue={workType.id.toString()}
+                onValueChange={(val) => {
+                  const found = workTypeDetails.find((i) => i.value === val);
+                  if (found?.allItems)
+                    handleWorkTypeChange(found.allItems as any);
+                }}
+                onSearch={fetchWorkTypes}
+                error={error.workType}
+                required
+              />
+            </div>
 
-            {/* Wage Type */}
-            <ComboboxField
-              id="wageType"
-              label={t('Wage Type')}
-              items={wageTypeDetails}
-              selectedValue={wageTypeId}
-              onValueChange={setWageTypeId}
-              onSearch={fetchWageTypes}
-              error={error.wageType}
-              required
-            />
-
-            {/* Work Type */}
-            <ComboboxField
-              id="workType"
-              label={t('Work Type')}
-              items={workTypeDetails}
-              selectedValue={workType.id.toString()}
-              onValueChange={(val) => {
-                const found = workTypeDetails.find((i) => i.value === val);
-                if (found?.allItems)
-                  handleWorkTypeChange(found.allItems as any);
-              }}
-              onSearch={fetchWorkTypes}
-              error={error.workType}
-              required
-            />
-
-            {/* Worker */}
-            <ComboboxField
-              id="worker"
-              label={t('Worker')}
-              items={workerDetails}
-              selectedValue={workerId}
-              onValueChange={setWorkerId}
-              onSearch={fetchWorkers}
-              error={error.worker}
-              required
-              disabled={!workType.workerCategory.id}
-            />
-
-            {/* Work Mode */}
-            <ComboboxField
-              id="workMode"
-              label={t('Work Mode')}
-              items={workModeDetails}
-              selectedValue={workModeId}
-              onValueChange={setWorkModeId}
-              onSearch={fetchWorkModes}
-              error={error.workMode}
-              required
-            />
+            {/* Row 3: Worker + Work Mode */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ComboboxField
+                id="worker"
+                label={t('Worker')}
+                items={workerDetails}
+                selectedValue={workerId}
+                onValueChange={setWorkerId}
+                onSearch={fetchWorkers}
+                error={error.worker}
+                required
+                disabled={!workType.workerCategory.id}
+              />
+              <ComboboxField
+                id="workMode"
+                label={t('Work Mode')}
+                items={workModeDetails}
+                selectedValue={workModeId}
+                onValueChange={setWorkModeId}
+                onSearch={fetchWorkModes}
+                error={error.workMode}
+                required
+              />
+            </div>
 
             {/* Worked Quantity */}
             <NameField
@@ -188,21 +188,13 @@ const AttendanceCreationPage = () => {
             )}
 
             {/* Attendance Split — Add Button */}
-            <div className="flex flex-col gap-1">
-              <button
-                type="button"
-                onClick={() => setIsSplitDialogOpen(true)}
-                className="flex items-center gap-2 text-sm font-medium text-[var(--secondary)] hover:opacity-80 w-fit"
-              >
-                <PlusCircle size={18} />
-                {t('Attendance Split')}
-              </button>
-              {error.attendanceSplit && (
-                <p className="text-xs text-destructive">
-                  {error.attendanceSplit}
-                </p>
-              )}
-            </div>
+            <FormActionButton
+              heading={t('Attendance Split')}
+              label={t('Add')}
+              onClick={() => setIsSplitDialogOpen(true)}
+              isColsTwo
+              errorMessage={error.attendanceSplit}
+            />
 
             {/* Attendance Split List */}
             <AttendanceSplitList
@@ -235,22 +227,12 @@ const AttendanceCreationPage = () => {
             )}
 
             {/* Upload Images Button */}
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 text-sm font-medium text-[var(--secondary)] hover:opacity-80 w-fit"
-            >
-              <Upload size={18} />
-              {t('Upload Images')}
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={handleImageUpload}
-            />
+            <div className="flex">
+              <UploadButton
+                text={t('Upload Images')}
+                onFilesSelected={handleImageUpload}
+              />
+            </div>
 
             {/* Notes */}
             <TextareaField

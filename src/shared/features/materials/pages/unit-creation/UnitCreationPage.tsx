@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Header } from "@/shared/components/Header/Header";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
@@ -6,7 +7,8 @@ import { Card, CardContent } from "@/shared/components/ui/card";
 import { UnitList } from "../unit-list/UnitListPage";
 import { useUnitCreation } from "./useUnitCreation";
 import { usePermission } from "@/shared/hooks/usePermission";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,10 +22,27 @@ import {
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
+const PAGE_SIZE = 10;
+
+function getPageNumbers(current: number, total: number): (number | "...")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
+  if (current >= total - 3) return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "...", current - 1, current, current + 1, "...", total];
+}
+
 const UnitCreationPage = () => {
   const { canEdit } = usePermission();
   const editable = canEdit("Unit");
   const { t } = useLanguage();
+
+  const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+    setCurrentPage(1);
+  };
 
   const {
     name,
@@ -83,8 +102,18 @@ const UnitCreationPage = () => {
             </Button>
           </div>
 
-          {/* Unit List Title */}
-          <p className="text-base font-medium text-foreground">{t('Unit List')}</p>
+          {/* Unit List Header: title left, search right */}
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-base font-medium text-foreground">{t('Unit List')}</p>
+            <div className="w-56">
+              <SearchBar
+                searchText={searchText}
+                setSearchText={handleSearch}
+                placeholder={t('Search units')}
+                allowAllCharacters
+              />
+            </div>
+          </div>
 
           {/* Loader / List */}
           {loading ? (
@@ -95,14 +124,72 @@ const UnitCreationPage = () => {
                 size={28}
               />
             </div>
-          ) : (
-            <UnitList
-              unitDetails={unitDetails}
-              handleUnitDelete={confirmDelete}
-              handleUnitEdit={setEditingUnit}
-              editingUnitId={editingUnitId}
-            />
-          )}
+          ) : (() => {
+            const filtered = unitDetails.filter((u) =>
+              u.name.toLowerCase().includes(searchText.toLowerCase())
+            );
+            const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+            const safePage = Math.min(currentPage, totalPages);
+            const paginated = filtered.slice(
+              (safePage - 1) * PAGE_SIZE,
+              safePage * PAGE_SIZE
+            );
+
+            return (
+              <>
+                <UnitList
+                  unitDetails={paginated}
+                  handleUnitDelete={confirmDelete}
+                  handleUnitEdit={setEditingUnit}
+                  editingUnitId={editingUnitId}
+                />
+
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    <Button
+                      variant="outline"
+                      size="icon-sm"
+                      disabled={safePage === 1}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    >
+                      <ChevronLeft size={15} />
+                    </Button>
+
+                    {getPageNumbers(safePage, totalPages).map((p, idx) =>
+                      p === "..." ? (
+                        <span
+                          key={`ellipsis-${idx}`}
+                          className="flex h-8 w-8 items-center justify-center select-none text-muted-foreground"
+                          style={{ fontSize: "var(--font-sm)" }}
+                        >
+                          …
+                        </span>
+                      ) : (
+                        <Button
+                          key={p}
+                          size="icon-sm"
+                          variant={p === safePage ? "default" : "outline"}
+                          onClick={() => setCurrentPage(p as number)}
+                          style={{ fontSize: "var(--font-sm)" }}
+                        >
+                          {p}
+                        </Button>
+                      )
+                    )}
+
+                    <Button
+                      variant="outline"
+                      size="icon-sm"
+                      disabled={safePage === totalPages}
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    >
+                      <ChevronRight size={15} />
+                    </Button>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </CardContent>
       </Card>
 

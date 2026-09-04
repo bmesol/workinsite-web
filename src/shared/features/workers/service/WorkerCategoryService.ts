@@ -15,16 +15,10 @@ const useWorkerCategoryService = () => {
     return response.data;
   };
 
- const createWorkerCategory = async (workerCategory: any) => {
-  console.log("🔥 Service received:", workerCategory); // ✅ debug
-
-  const response = await apiHelper.post(
-    "worker-categories",
-    workerCategory // ✅ MUST PASS DATA
-  );
-
-  return response.data;
-};
+  const createWorkerCategory = async (workerCategory: any) => {
+    const response = await apiHelper.post("worker-categories", workerCategory);
+    return response.data;
+  };
   const updateWorkerCategory = async (id: number, workerCategory: WorkerCategoryEditRequest) => {
     await apiHelper.put(`worker-categories/${id}`, workerCategory);
   };

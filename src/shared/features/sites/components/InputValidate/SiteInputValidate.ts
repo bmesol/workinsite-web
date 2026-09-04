@@ -30,7 +30,7 @@ const useSiteInputValidate = (props: SiteInputValidateProps) => {
     if (!clientId) updateError("client", "Please select client");
     if (!googleLocation) updateError("googleLocation", "Please enter google location");
     if (!contactId) updateError("contact", "Please select contact");
-    if (!wageTypeId) updateError("wageType", "Please select wage type"); 
+    if (!wageTypeId) updateError("wageType", "Please select a wage type");
     return isValid;
   };
 

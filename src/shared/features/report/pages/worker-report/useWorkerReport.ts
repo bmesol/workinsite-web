@@ -150,10 +150,9 @@ export function useWorkerReport() {
   };
 
   const fetchWorkers = async (text: string) => {
-  if (!text) return;
-  const res = await workerService.getWorkers({ WorkerName: text });
-  setWorkerOptions((res ?? []).slice(0, 5));
-};
+    const res = await workerService.getWorkers(text ? { WorkerName: text } : {});
+    setWorkerOptions((res ?? []).slice(0, 5));
+  };
 
 
   const handleDateOptionChange = (option: DateRangeOption) => {

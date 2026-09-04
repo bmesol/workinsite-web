@@ -3,7 +3,7 @@ import type { WorkerRole, WorkerRoles } from "./WorkRoleProps";
 
 interface WorkerCategoryCreationRequest {
   name: string;
-  workTypes: { name: string }[];
+  workTypes: { name: string; unitId: number }[];
   workerRoles: {
     name: string;
     salaryPerShift: string;

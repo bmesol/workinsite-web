@@ -194,16 +194,6 @@ const WorkerEditPage = () => {
             </div>
           )}
 
-          {/* Notes */}
-          {notes !== undefined && (
-            <TextareaField
-              label={t('Notes')}
-              inputValue={`${notes ? notes : ""}`}
-              setInputValue={setNotes}
-              placeholder={t("Enter your notes")}
-            />
-          )}
-
           {/* KYC + Bank + UPI */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* KYC */}
@@ -277,6 +267,16 @@ const WorkerEditPage = () => {
               <Switch checked={isActive} onCheckedChange={setIsActive} />
             </div>
           </div>
+
+          {/* Notes */}
+          {notes !== undefined && (
+            <TextareaField
+              label={t('Notes')}
+              inputValue={`${notes ? notes : ""}`}
+              setInputValue={setNotes}
+              placeholder={t("Enter your notes")}
+            />
+          )}
 
           {/* Submit */}
           <FormSubmissionButtons

@@ -56,40 +56,40 @@ const WorkerCategoryCreationPage = () => {
             required={true}
           />
 
-          {/* Work Type Section */}
-          <div className="flex flex-col gap-1">
-            <FormActionButton
-              heading={t('Work Type')}
-              label={t('Add')}
-              onClick={() => setWorkTypeDialogOpen(true)}
-              required
-              isColsTwo={true} // ✅ add — full width
-              errorMessage={error.workTypeList}
-            />
-          </div>
+          {/* Work Type + Worker Role side by side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Work Type */}
+            <div className="flex flex-col gap-3">
+              <FormActionButton
+                heading={t('Work Type')}
+                label={t('Add')}
+                onClick={() => setWorkTypeDialogOpen(true)}
+                required
+                isColsTwo={true}
+                errorMessage={error.workTypeList}
+              />
+              <WorkTypeList
+                workTypeList={workTypeList}
+                setWorkTypeList={setWorkTypeList}
+              />
+            </div>
 
-          {/* Work Type List */}
-          <WorkTypeList
-            workTypeList={workTypeList}
-            setWorkTypeList={setWorkTypeList}
-          />
-
-          {/* Worker Role Section */}
-          <div className="flex flex-col gap-1">
-            <FormActionButton
-              heading={t('Worker Role')}
-              label={t('Add')}
-              onClick={() => setWorkerRoleDialogOpen(true)}
-              required
-              isColsTwo={true} // ✅ add — full width
-              errorMessage={error.workerRoleList}
-            />
+            {/* Worker Role */}
+            <div className="flex flex-col gap-3">
+              <FormActionButton
+                heading={t('Worker Role')}
+                label={t('Add')}
+                onClick={() => setWorkerRoleDialogOpen(true)}
+                required
+                isColsTwo={true}
+                errorMessage={error.workerRoleList}
+              />
+              <WorkerRoleList
+                workerRoleList={workerRoleList}
+                setWorkerRoleList={setWorkerRoleList}
+              />
+            </div>
           </div>
-          {/* Worker Role List */}
-          <WorkerRoleList
-            workerRoleList={workerRoleList}
-            setWorkerRoleList={setWorkerRoleList}
-          />
 
           {/* Notes */}
           <TextareaField

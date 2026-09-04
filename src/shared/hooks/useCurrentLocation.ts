@@ -115,14 +115,14 @@ const formatCoords = (lat: number, lng: number) => `${lat.toFixed(4)}, ${lng.toF
 const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
   const coordsFallback = formatCoords(lat, lng);
 
-  try {
-    const api = getApiInstance(import.meta.env.VITE_SITE_SERVICE_BASE_URL, true);
-    const { data } = await api.get('/geolocation', { params: { lat, lng } });
-    return data?.address || coordsFallback;
-  } catch (err) {
-    logger.warn('useCurrentLocation: backend geocode failed', err);
-    return coordsFallback;
-  }
+try {
+  const api = getApiInstance(import.meta.env.VITE_SITE_SERVICE_BASE_URL, true);
+  const { data } = await api.get('/geolocation', { params: { lat, lng } });
+  return data?.address || coordsFallback;
+} catch (err) {
+  logger.warn('useCurrentLocation: backend geocode failed', err);
+  return coordsFallback;  
+}
 };
 
 // --- Hook --------------------------------------------------------------------

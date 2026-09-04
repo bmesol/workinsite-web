@@ -105,32 +105,30 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
 
   // ─── Fetch Contacts (search) ──────────────────────────────────────────────────
   const fetchContacts = async (searchString: string = "") => {
-    if (!searchString) return;
     const contacts = await contactService.getContacts(searchString, false);
     if (!contacts) return;
     if (contactId) {
       const validContacts = contacts.filter(
         (item: Contact) => item.id !== parseInt(contactId)
       );
-      setContactList([contact, ...validContacts.slice(0, 3)]);
+      setContactList([contact, ...validContacts]);
       return;
     }
-    setContactList(contacts.slice(0, 3));
+    setContactList(contacts);
   };
 
   // ─── Fetch Worker Categories (search) ────────────────────────────────────────
   const fetchWorkerCategories = async (searchString: string = "") => {
-    if (!searchString) return;
     const workerCategories = await workerCategoryService.getWorkerCategories(searchString, false);
     if (!workerCategories) return;
     if (workerCategoryId) {
       const validCategories = workerCategories.filter(
         (item: WorkerCategoryProps) => item.id !== parseInt(workerCategoryId)
       );
-      setWorkerCategoryList([workerCategory, ...validCategories.slice(0, 3)]);
+      setWorkerCategoryList([workerCategory, ...validCategories]);
       return;
     }
-    setWorkerCategoryList(workerCategories.slice(0, 3));
+    setWorkerCategoryList(workerCategories);
   };
 
   // ─── Validation ───────────────────────────────────────────────────────────────

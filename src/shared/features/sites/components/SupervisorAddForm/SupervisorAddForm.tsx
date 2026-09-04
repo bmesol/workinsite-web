@@ -29,7 +29,6 @@ const SupervisorAddForm = (props: SupervisorAddFormProps) => {
   const {
     supervisorDetails,
     supervisorId,
-    error,
     handleSupervisorCreate,
     handleSupervisorChange,
     fetchSupervisors,
@@ -49,7 +48,7 @@ const SupervisorAddForm = (props: SupervisorAddFormProps) => {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="supervisor-combobox" className="text-base font-medium">
-          {t('Supervisor')} <span className="text-red-500">*</span>
+          {t('Supervisor')}
         </Label>
 
         <Popover
@@ -82,7 +81,7 @@ const SupervisorAddForm = (props: SupervisorAddFormProps) => {
                 value={searchValue}
                 onValueChange={handleSearch}
               />
-              <CommandList>
+              <CommandList className="max-h-[160px] overflow-y-auto">
                 <CommandEmpty>
                   <div className="flex flex-col items-center gap-2">
                     <span className="text-sm ">
@@ -133,9 +132,6 @@ const SupervisorAddForm = (props: SupervisorAddFormProps) => {
           </PopoverContent>
         </Popover>
 
-        {error && (
-          <p className="text-sm text-destructive">{error}</p>
-        )}
       </div>
 
       <FormSubmissionButtons

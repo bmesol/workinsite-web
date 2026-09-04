@@ -73,13 +73,24 @@ export default function PurchasePhoto({
     return `${img.staticBaseUrl}${img.imagePath}`;
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const uri = getImageUri();
     if (!uri) return;
-    const a = document.createElement('a');
-    a.href = uri;
-    a.download = `image_${Date.now()}.jpg`;
-    a.click();
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = `image_${Date.now()}.jpg`;
+      a.click();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      const a = document.createElement('a');
+      a.href = uri;
+      a.download = `image_${Date.now()}.jpg`;
+      a.click();
+    }
   };
 
   const handleDelete = () => {
