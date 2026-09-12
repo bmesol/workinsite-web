@@ -143,6 +143,7 @@ const WorkRateAbstractEditPage = () => {
           <FormSubmissionButtons
             onCancel={handleBackPress}
             onSave={handleSubmission}
+            disabled={!editable}
           />
 
         </CardContent>

@@ -5,6 +5,7 @@ interface GoogleLocationProps {
   classNames?: string;
   placeholder?: string;
   required?: boolean;
+  disabled?: boolean;
 }
 
 export type { GoogleLocationProps };

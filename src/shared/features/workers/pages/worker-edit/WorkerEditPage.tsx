@@ -29,6 +29,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 type DialogType = "kyc" | "bankAccount" | "upi" | "contactEdit" | null;
 
@@ -38,6 +39,8 @@ const WorkerEditPage = () => {
   const [queryString] = useSearchParams();
   const [activeDialog, setActiveDialog] = useState<DialogType>(null);
   const closeDialog = () => setActiveDialog(null);
+  const { canEdit } = usePermission();
+  const editable = canEdit('Worker');
 
   const {
     name,
@@ -101,6 +104,7 @@ const WorkerEditPage = () => {
               setInputValue={setName}
               errorMessage={error.name}
               required={true}
+              isDisabled={!editable}
             />
             <DatePicker
               label={t("Date of Birth")}
@@ -109,6 +113,7 @@ const WorkerEditPage = () => {
               errorMessage={error.dateOfBirth}
               required={true}
               minDate={new Date(1900, 0, 1)}
+              disable={!editable}
             />
           </div>
 
@@ -125,6 +130,7 @@ const WorkerEditPage = () => {
                 onCreate={handleContactCreate}
                 error={error.contact}
                 required
+                disabled={!editable}
               />
             )}
             {(workerDetails as Worker).workerCategory?.id && (
@@ -152,6 +158,7 @@ const WorkerEditPage = () => {
                     label={t("Edit")}
                     onClick={handleContactEdit}
                     isColsTwo={true}
+                    isAddDisabled={!editable}
                   />
                   <div className="flex flex-col gap-2">
                     <ContactTypes
@@ -175,6 +182,7 @@ const WorkerEditPage = () => {
                   label={t("Edit")}
                   onClick={handleWorkerRoleCostEdit}
                   isColsTwo={true}
+                  isAddDisabled={!editable}
                 />
               )}
             </div>
@@ -190,6 +198,7 @@ const WorkerEditPage = () => {
                 setInputValue={(v) => setGender(v as GenderTypes)}
                 errorMessage={error.gender}
                 required={true}
+                isDisabled={!editable}
               />
             </div>
           )}
@@ -202,7 +211,7 @@ const WorkerEditPage = () => {
                 heading={t("KYC")}
                 label={t("Add")}
                 onClick={() => setActiveDialog("kyc")}
-                isAddDisabled={isKycAddDisabled}
+                isAddDisabled={!editable || isKycAddDisabled}
                 isColsTwo={true}
               />
               <KycTypes
@@ -214,6 +223,7 @@ const WorkerEditPage = () => {
                   }))
                 }
                 isColsTwo={true}
+                disabled={!editable}
               />
             </div>
 
@@ -223,7 +233,7 @@ const WorkerEditPage = () => {
                 heading={t("Bank Accounts")}
                 label={t("Add")}
                 onClick={() => setActiveDialog("bankAccount")}
-                isAddDisabled={isBankAccountsAddDisabled}
+                isAddDisabled={!editable || isBankAccountsAddDisabled}
                 isColsTwo={true}
               />
               <BankAccounts
@@ -235,6 +245,7 @@ const WorkerEditPage = () => {
                   }))
                 }
                 isColsTwo={true}
+                disabled={!editable}
               />
             </div>
 
@@ -244,7 +255,7 @@ const WorkerEditPage = () => {
                 heading={t("UPIs")}
                 label={t("Add")}
                 onClick={() => setActiveDialog("upi")}
-                isAddDisabled={isUpiAddDisabled}
+                isAddDisabled={!editable || isUpiAddDisabled}
                 isColsTwo={true}
               />
               <UpiTypes
@@ -256,6 +267,7 @@ const WorkerEditPage = () => {
                   }))
                 }
                 isColsTwo={true}
+                disabled={!editable}
               />
             </div>
 
@@ -264,7 +276,7 @@ const WorkerEditPage = () => {
               <Label className="text-base font-medium text-black">
                 {t("Is Active")}
               </Label>
-              <Switch checked={isActive} onCheckedChange={setIsActive} />
+              <Switch checked={isActive} onCheckedChange={setIsActive} disabled={!editable} />
             </div>
           </div>
 
@@ -275,6 +287,7 @@ const WorkerEditPage = () => {
               inputValue={`${notes ? notes : ""}`}
               setInputValue={setNotes}
               placeholder={t("Enter your notes")}
+              isDisabled={!editable}
             />
           )}
 
@@ -282,6 +295,7 @@ const WorkerEditPage = () => {
           <FormSubmissionButtons
             onCancel={() => navigate(WorkersUrls.list)}
             onSave={handleSubmission}
+            disabled={!editable}
           />
         </div>
       </Card>

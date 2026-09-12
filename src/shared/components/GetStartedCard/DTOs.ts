@@ -3,6 +3,7 @@ interface GetStartedCardProps {
   buttonLabel: string;
   buttonClick: string;
   children: React.ReactNode;
+  disabled?: boolean;
 }
 
 export type { GetStartedCardProps };

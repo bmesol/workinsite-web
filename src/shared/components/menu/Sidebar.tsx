@@ -310,6 +310,7 @@ import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { useTheme } from "@/shared/context/ThemeContext";
 import { ThemeSelector } from "@/shared/components/ThemeSelector/ThemeSelector";
 import { LanguageSelector } from "@/shared/components/LanguageSelector/LanguageSelector";
+import { PermissionHelper } from "@/shared/helpers/PermissionHelper";
 
 type SidebarProps = {
   open: boolean;
@@ -372,10 +373,22 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
   const userRoleId = AuthHelper.getUserProfile()?.role?.id ?? -1;
 
   const filteredMenuItems = useMemo(() => {
-    return Object.entries(MenuItems).filter(([_, item]) =>
-      item.allowedUserRoles.includes(userRoleId),
-    );
-  }, [userRoleId]);
+    return Object.entries(MenuItems).filter(([_, item]) => {
+      // Admins (Super Admin, Admin) always see everything in their allowed roles.
+      if (PermissionHelper.hasFullAccess(userProfile)) {
+        return item.allowedUserRoles.includes(userRoleId);
+      }
+      // For non-admin roles: if the item has permissionKeys, pageRights take full
+      // control — No Rights must hide the item even when the role appears in
+      // allowedUserRoles (e.g. Engineer listed for Curing).
+      if (item.permissionKeys) {
+        return item.permissionKeys.some(key => PermissionHelper.canView(userProfile, key));
+      }
+      // Items without permissionKeys (Dashboard, Attendance, Task) are not
+      // configurable in Roles & Rights, so fall back to allowedUserRoles.
+      return item.allowedUserRoles.includes(userRoleId);
+    });
+  }, [userRoleId, userProfile]);
 
   const handleSheetOpenChange = (value: boolean) => {
     onOpenChange(value);
@@ -404,6 +417,14 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
       return isSupervisor ? "/dashboard" : "/engineer-dashboard";
     }
     return href;
+  };
+
+  const getVisibleChildren = (item: (typeof MenuItems)[string]) => {
+    if (!item.children) return [];
+    if (PermissionHelper.hasFullAccess(userProfile)) return item.children;
+    return item.children.filter(child =>
+      !child.permissionKey || PermissionHelper.canView(userProfile, child.permissionKey),
+    );
   };
 
   const isParentActive = (href: string, children?: { href: string }[]) => {
@@ -528,10 +549,10 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
             {/* Menu items */}
             <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
               {filteredMenuItems.map(([href, item]) => {
-                const hasChildren = item.children && item.children.length > 0;
+                const visibleChildren = getVisibleChildren(item);
+                const hasChildren = visibleChildren.length > 0;
                 const isActive = isParentActive(href, item.children);
                 const isOpen = openDropdowns[href] ?? false;
-
                 return (
                   <div key={href}>
                     <div
@@ -577,7 +598,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
 
                     {hasChildren && isOpen && (
                       <div className="mt-1 ml-4 space-y-1">
-                        {item.children!.map((child) => {
+                        {visibleChildren.map((child) => {
                           const isChildActive = location.pathname === child.href;
                           return (
                             <div

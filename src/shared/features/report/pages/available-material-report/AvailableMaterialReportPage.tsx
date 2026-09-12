@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePermission } from '@/shared/hooks/usePermission';
 import { ChevronLeft, X, PackageSearch } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
@@ -26,6 +27,7 @@ import type { AvailableMaterialReport } from '@/shared/features/materials/servic
 const AvailableMaterialReportScreen = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { canView } = usePermission();
 
   const {
     loading,
@@ -51,11 +53,19 @@ const AvailableMaterialReportScreen = () => {
     handleBack,
   } = useAvailableMaterialReportScreen({ navigate });
 
+  const hasViewAccess = canView('Available Material Report') || canView('Reports');
+
+  useEffect(() => {
+    if (!hasViewAccess) navigate('/dashboard', { replace: true });
+  }, []);
+
   useEffect(() => {
     const onPopState = () => handleBack();
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, [handleBack]);
+
+  if (!hasViewAccess) return null;
 
   if (loading && !refreshing) return <Loader isLoading={true} />;
 

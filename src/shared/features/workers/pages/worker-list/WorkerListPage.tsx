@@ -27,11 +27,14 @@ import {
 } from "@/shared/components/ui/alert-dialog";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const WorkerListPage = () => {
   const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Worker');
 
   const {
     workerDetails,
@@ -70,8 +73,8 @@ const WorkerListPage = () => {
       {/* Header */}
       <Header title={t('Worker List')}>
         <Actions>
-          <Button onClick={() => navigate(WorkersUrls.create)}>
-             {t('Create Worker')}
+          <Button onClick={() => navigate(WorkersUrls.create)} disabled={!editable}>
+            {t('Create Worker')}
           </Button>
         </Actions>
       </Header>
@@ -120,6 +123,7 @@ const WorkerListPage = () => {
                   onDelete={(e: React.MouseEvent) =>
                     confirmDelete(e, worker.id)
                   }
+                  permissionKey="Worker"
                 />
               </div>
             );

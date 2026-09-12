@@ -4,6 +4,7 @@ import type { SupervisorListFormProps } from "./DTOs";
 
 const SupervisorListForm = (props: SupervisorListFormProps) => {
   const { supervisorList, handleSupervisorDelete } = useSupervisorListForm(props);
+  const { isDisabled } = props;
 
   return (
     <>
@@ -26,8 +27,10 @@ const SupervisorListForm = (props: SupervisorListFormProps) => {
               <Phone className="w-4 h-4" />
             </button>
             <button
-              onClick={() => handleSupervisorDelete(supervisor.id)}
+              onClick={() => !isDisabled && handleSupervisorDelete(supervisor.id)}
+              disabled={isDisabled}
               className="transition-colors"
+              style={{ opacity: isDisabled ? 0.4 : 1, cursor: isDisabled ? 'not-allowed' : 'pointer' }}
             >
               <Trash2 className="w-4 h-4 text-destructive" style={{ color: 'var(--danger-color)' }} />
             </button>

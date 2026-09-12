@@ -235,6 +235,7 @@ const PurchaseEditScreen = () => {
             setShowImages={setShowImage}
             removeImages={removedImages}
             setRemoveImages={setRemovedImages}
+            permissionKey="Purchase"
           />
 
           {/* Image Upload */}
@@ -254,6 +255,7 @@ const PurchaseEditScreen = () => {
           <FormSubmissionButtons
             onSave={() => handleSubmission()}
             onCancel={handleBack}
+            disabled={!editable}
           />
         </Card>
       )}

@@ -20,6 +20,7 @@ interface KycTypesProps {
   setDetails: (prev: KycDetails) => void;
   onClose?: () => void;
   isColsTwo?: boolean;
+  disabled?: boolean;
 }
 
 interface KycEditFormProps extends KycTypesProps {

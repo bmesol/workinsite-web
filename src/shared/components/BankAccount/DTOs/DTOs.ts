@@ -13,6 +13,7 @@ interface BankAccountTypesProps {
   setDetails: (updated: BankAccountDetails) => void;
   onClose?: () => void;
   isColsTwo?: boolean;
+  disabled?: boolean;
 }
 
 interface BankAccountsProp extends BankAccountTypesProps {

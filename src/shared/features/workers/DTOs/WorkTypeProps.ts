@@ -114,6 +114,7 @@ interface WorkTypeListProps {
   setUpdatedWorkTypeList?: React.Dispatch<React.SetStateAction<WorkType[]>>;
   deletedWorkTypeList?: number[];
   setDeletedWorkTypeList?: React.Dispatch<React.SetStateAction<number[]>>;
+  isDisabled?: boolean;
 }
 
 interface WorkTypeEditFormProps {

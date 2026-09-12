@@ -6,6 +6,8 @@ import SupervisorAttendanceCard from '@/shared/components/SupervisorAttendanceCa
 import { DateFilter } from '../../components/DateFilter/DateFilter';
 import { useSupervisorAttendanceList } from './useSuperVisorAttendanceList';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
+import { useNavigate } from 'react-router-dom';
 import type { SupervisorAttendance } from '../../DTOs/SupervisorAttendanceProps';
 import { Loader2, ClipboardList } from 'lucide-react';
 import {
@@ -24,11 +26,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/shared/components/ui/alert-dialog';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 
 const SupervisorAttendanceListPage = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const { canView, canEdit } = usePermission();
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const {
@@ -54,6 +58,15 @@ const SupervisorAttendanceListPage = () => {
     handleDelete,
     isFiltered,
   } = useSupervisorAttendanceList();
+
+  const hasViewAccess = canView('Supervisor Attendance Report') || canView('Attendance Report') || canView('Reports');
+  const hasEditAccess = canEdit('Supervisor Attendance Report') || canEdit('Attendance Report') || canEdit('Reports');
+
+  useEffect(() => {
+    if (!hasViewAccess) navigate('/dashboard', { replace: true });
+  }, []);
+
+  if (!hasViewAccess) return null;
 
   if (loading) {
     return (
@@ -95,13 +108,15 @@ const SupervisorAttendanceListPage = () => {
                 date={item.date}
                 address={item.currentLocation?.address ?? ''}
               />
-              <button
-                type="button"
-                onClick={() => setDeleteId(item.id)}
-                className="absolute top-3 right-3 p-1.5 rounded-md hover:bg-red-50 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" style={{ color: 'var(--danger-color)' }} />
-              </button>
+              {hasEditAccess && (
+                <button
+                  type="button"
+                  onClick={() => setDeleteId(item.id)}
+                  className="absolute top-3 right-3 p-1.5 rounded-md hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" style={{ color: 'var(--danger-color)' }} />
+                </button>
+              )}
             </div>
           ))
         )}

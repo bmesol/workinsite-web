@@ -32,6 +32,7 @@ interface WorkerRoleListProps {
   setUpdateWorkerRoleList?: React.Dispatch<React.SetStateAction<WorkerRoles[]>>;
   deleteworkerRoleList?: number[];
   setDeleteWorkerRoleList?: React.Dispatch<React.SetStateAction<number[]>>;
+  isDisabled?: boolean;
 }
 
 interface WorkerRoleCreateFormProps {

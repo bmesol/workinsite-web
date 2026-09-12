@@ -19,11 +19,14 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const SupplierListPage = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Suppliers');
 
   const {
     supplierDetails,
@@ -52,7 +55,7 @@ const SupplierListPage = () => {
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
       <Header title={t('Supplier List')}>
-        <Button onClick={() => navigate(SuppliersUrls.create)}>
+        <Button onClick={() => navigate(SuppliersUrls.create)} disabled={!editable}>
           {t('New Supplier')}
         </Button>
       </Header>
@@ -99,6 +102,7 @@ const SupplierListPage = () => {
                 onDelete={(e: React.MouseEvent) =>
                   confirmDelete(e, supplier.id)
                 }
+                permissionKey="Suppliers"
               />
             </div>
           ))

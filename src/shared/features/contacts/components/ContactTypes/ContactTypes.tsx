@@ -4,7 +4,7 @@ import type { ContactTypesProps } from "./DTOs";
 import React from "react";
 
 const ContactTypes = (props: ContactTypesProps) => {
-  const { contactList, setContactList, showEditDeleteButtons = true, classNames = "" } = props;
+  const { contactList, setContactList, showEditDeleteButtons = true, classNames = "", disabled } = props;
 
   return (
     <div className={`flex flex-col gap-1 ${classNames}`}>
@@ -29,6 +29,7 @@ const ContactTypes = (props: ContactTypesProps) => {
                   contactList={contactList}
                   setContactList={setContactList}
                   selectedItem={{ id: index, item }}
+                  disabled={disabled}
                 />
               )}
             </div>

@@ -18,9 +18,12 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const WorkRateAbstractListPage = () => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const hasPermission = canEdit('Work Rate Abstract');
   const navigate = useNavigate();
 
   const {
@@ -51,7 +54,7 @@ const WorkRateAbstractListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
       <Header title={t('Work Rate Abstract List')}>
-        <Button onClick={() => navigate(WorkRateAbstractUrls.create)}>
+        <Button onClick={() => navigate(WorkRateAbstractUrls.create)} disabled={!hasPermission}>
           {t('Create Work Rate Abstract')}
         </Button>
       </Header>

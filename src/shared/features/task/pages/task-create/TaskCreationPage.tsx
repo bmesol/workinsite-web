@@ -29,12 +29,15 @@ import SupervisorSelector from "../../components/SupervisorSelector/SupervisorSe
 import SelectedSupervisorCard from "@/shared/components/SelectedSupervisorCard/SelectedSupervisorCard";
 import { useTaskCreation } from "./useTaskCreation";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 import { TaskUrls } from "../../utils/urls";
 import PurchasePhoto from "@/shared/features/materials/pages/purchase-photo/PurchasePhoto";
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
 
 const TaskCreationPage = () => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Task');
   const [supervisorDialogOpen, setSupervisorDialogOpen] = useState(false);
 
   const {
@@ -86,6 +89,7 @@ const TaskCreationPage = () => {
             onSearch={fetchSites}
             error={error.site}
             required
+            disabled={!editable}
           />
 
           {/* Task Name */}
@@ -99,6 +103,7 @@ const TaskCreationPage = () => {
               onChange={(e) => setTaskName(e.target.value)}
               placeholder={t('Enter your Task name')}
               rows={2}
+              disabled={!editable}
             />
             {error.taskName && (
               <p className="text-sm text-red-500">{error.taskName}</p>
@@ -113,6 +118,7 @@ const TaskCreationPage = () => {
             errorMessage={error.date}
             required
             defaultDate={true}
+            disable={!editable}
           />
 
           {/* Priority */}
@@ -123,6 +129,7 @@ const TaskCreationPage = () => {
             onValueChange={(val) => setPriority(val as string)}
             errorMessage={error.priority}
             required
+            isDisabled={!editable}
           />
 
           {/* Status */}
@@ -133,6 +140,7 @@ const TaskCreationPage = () => {
             onValueChange={(val) => setStatus(val as string)}
             errorMessage={error.status}
             required
+            isDisabled={!editable}
           />
 
           {/* Remarks */}
@@ -146,6 +154,7 @@ const TaskCreationPage = () => {
               onChange={(e) => setRemarks(e.target.value)}
               placeholder={t('Enter Remark')}
               rows={3}
+              disabled={!editable}
             />
           </div>
         </div>
@@ -160,6 +169,7 @@ const TaskCreationPage = () => {
               isColsTwo={true}
               required={true}
               errorMessage={error.supervisor}
+              isAddDisabled={!editable}
             />
 
             {supervisorId && (
@@ -190,6 +200,7 @@ const TaskCreationPage = () => {
               } as unknown as React.ChangeEvent<HTMLInputElement>)
             }
             buttonClassName="mt-2"
+            disabled={!editable}
           />
         </div>
 
@@ -198,7 +209,7 @@ const TaskCreationPage = () => {
           <FormSubmissionButtons
             onCancel={handleBackPress}
             onSave={handleSubmission}
-            disabled={loading}
+            disabled={loading || !editable}
           />
         </div>
       </Card>

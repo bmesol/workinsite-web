@@ -28,9 +28,12 @@ import { PurchaseUrls } from "../../utils/urls";
 import { MapPin, FileText, Calendar } from "lucide-react";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 const PurchaseListPage = () => {
   const navigate = useNavigate();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Purchase');
 
   const {
     purchaseDetails,
@@ -96,7 +99,7 @@ const PurchaseListPage = () => {
       {/* Header */}
       <Header title={t('Purchase List')}>
         <Actions>
-          <Button onClick={() => navigate(PurchaseUrls.create)}>
+          <Button onClick={() => navigate(PurchaseUrls.create)} disabled={!editable}>
             {t('New Purchase')}
           </Button>
         </Actions>

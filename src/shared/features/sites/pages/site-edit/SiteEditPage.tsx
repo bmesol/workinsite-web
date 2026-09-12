@@ -20,9 +20,12 @@ import { FormActionButton } from "@/shared/components/FormActionButton/FormActio
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 const SiteEditPage = () => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Sites');
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
   const [contactEditOpen, setContactEditOpen] = useState(false);
@@ -97,6 +100,7 @@ const SiteEditPage = () => {
                 errorMessage={error.name}
                 placeholder={t("Enter site name")}
                 required
+                isDisabled={!editable}
               />
 
               <ComboboxField
@@ -109,6 +113,7 @@ const SiteEditPage = () => {
                 onCreate={handleClientCreate}
                 error={error.client}
                 required
+                disabled={!editable}
               />
             </div>
 
@@ -122,6 +127,7 @@ const SiteEditPage = () => {
                 onSearch={fetchWageTypes}
                 error={error.wageType}
                 required
+                disabled={!editable}
               />
               <div className="flex flex-col gap-3">
                 <ComboboxField
@@ -134,6 +140,7 @@ const SiteEditPage = () => {
                   onCreate={handleContactCreate}
                   error={error.contact}
                   required
+                  disabled={!editable}
                 />
                 {contactId && (
                   <ContactDetailForm
@@ -141,6 +148,7 @@ const SiteEditPage = () => {
                     primaryContactDetails={primaryContactDetails}
                     hasMoreDetails={hasMoreDetails}
                     handleMoreDetails={handleMoreDetails}
+                    isAddDisabled={!editable}
                   />
                 )}
               </div>
@@ -154,6 +162,7 @@ const SiteEditPage = () => {
                   inputValue={googleLocation}
                   setInputValue={setGoogleLocation}
                   required
+                  disabled={!editable}
                 />
               </div>
 
@@ -167,6 +176,7 @@ const SiteEditPage = () => {
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={t("Enter your notes")}
                   rows={4}
+                  disabled={!editable}
                 />
               </div>
             </div>
@@ -179,11 +189,13 @@ const SiteEditPage = () => {
                   label={t("Add")}
                   onClick={handleSupervisorsAdd}
                   isColsTwo={true}
+                  isAddDisabled={!editable}
                 />
                 {supervisorIds.length > 0 && (
                   <SupervisorListForm
                     supervisorIds={supervisorIds}
                     setSupervisorIds={setSupervisorIds}
+                    isDisabled={!editable}
                   />
                 )}
               </div>
@@ -192,7 +204,7 @@ const SiteEditPage = () => {
                 <Label className="text-base font-medium">{t("Status")}</Label>
                 <RadioGroup
                   value={status}
-                  onValueChange={setStatus}
+                  onValueChange={editable ? setStatus : undefined}
                   className="flex flex-col gap-2 md:flex-row md:flex-wrap md:gap-4"
                 >
                   {siteStatus.map((item) => (
@@ -200,6 +212,7 @@ const SiteEditPage = () => {
                       <RadioGroupItem
                         value={item.value}
                         id={`status-${item.value}`}
+                        disabled={!editable}
                       />
                       <Label
                         htmlFor={`status-${item.value}`}
@@ -217,6 +230,7 @@ const SiteEditPage = () => {
             <FormSubmissionButtons
               onCancel={() => navigate(SitesUrls.list)}
               onSave={handleSubmission}
+              disabled={!editable}
             />
           </CardContent>
         </Card>

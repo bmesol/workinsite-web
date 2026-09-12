@@ -22,11 +22,14 @@ import {
 import { Phone } from "lucide-react";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const ClientEditPage = () => {
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Clients');
 
   const [isKycOpen, setIsKycOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -75,6 +78,7 @@ const ClientEditPage = () => {
               setInputValue={setName}
               errorMessage={error.name}
               required={true}
+              isDisabled={!editable}
             />
             {(clientDetails as Client).contact.id && (
               <ComboboxField
@@ -87,6 +91,7 @@ const ClientEditPage = () => {
                 onCreate={handleContactCreate}
                 error={error.contact}
                 required
+                disabled={!editable}
               />
             )}
           </div>
@@ -102,6 +107,7 @@ const ClientEditPage = () => {
                     label={t('Edit')}
                     onClick={handleContactEdit}
                     isColsTwo
+                    isAddDisabled={!editable}
                   />
 
                   {contact.phone && (
@@ -139,7 +145,7 @@ const ClientEditPage = () => {
                 heading={t('KYC')}
                 label={t('Add')}
                 onClick={() => setIsKycOpen(true)}
-                isAddDisabled={isAddDisabled}
+                isAddDisabled={!editable || isAddDisabled}
                 isColsTwo
               />
               <KycTypes
@@ -151,6 +157,7 @@ const ClientEditPage = () => {
                   }))
                 }
                 isColsTwo
+                disabled={!editable}
               />
             </div>
           </div>
@@ -162,6 +169,7 @@ const ClientEditPage = () => {
               inputValue={`${notes ? notes : ""}`}
               setInputValue={setNotes}
               placeholder={t('Enter your notes')}
+              isDisabled={!editable}
             />
           )}
 
@@ -169,6 +177,7 @@ const ClientEditPage = () => {
           <FormSubmissionButtons
             onCancel={() => navigate(ClientsUrls.list)}
             onSave={handleSubmission}
+            disabled={!editable}
           />
         </div>
       </Card>

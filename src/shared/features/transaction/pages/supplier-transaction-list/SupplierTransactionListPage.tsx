@@ -25,9 +25,12 @@ import { useSupplierTransactionList } from './useSupplierTransactionList';
 import { SupplierTransactionUrls } from '../../utils/urls';
 import supplierTransactionImage from '@/assets/images/client-creation-illustration.png';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const SupplierTransactionListPage = () => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const hasPermission = canEdit('Supplier Transaction');
 
   const {
     supplier, setSupplier,
@@ -69,6 +72,7 @@ const SupplierTransactionListPage = () => {
         imgSrc={supplierTransactionImage}
         buttonClick={SupplierTransactionUrls.create}
         buttonLabel={t('New Supplier Transaction')}
+        disabled={!hasPermission}
       >
         Start by creating your Supplier transactions to organize and manage
         your records efficiently.
@@ -82,7 +86,7 @@ const SupplierTransactionListPage = () => {
       {/* ── Header ── */}
       <Header title={t('Supplier Transaction List')}>
         <Actions>
-          <Button onClick={handleCreate}>{t('New Supplier Transaction')}</Button>
+          <Button onClick={handleCreate} disabled={!hasPermission}>{t('New Supplier Transaction')}</Button>
         </Actions>
       </Header>
 

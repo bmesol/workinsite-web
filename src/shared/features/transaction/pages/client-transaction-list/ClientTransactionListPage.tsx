@@ -25,9 +25,12 @@ import { useClientTransactionList } from "./useClientTransactionList";
 import { ClientTransactionUrls } from "../../utils/urls";
 import clientTransactionImage from "@/assets/images/client-creation-illustration.png";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 const ClientTransactionListPage = () => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const hasPermission = canEdit('Client Transaction');
 
   const {
     client,
@@ -72,6 +75,7 @@ const ClientTransactionListPage = () => {
         imgSrc={clientTransactionImage}
         buttonClick={ClientTransactionUrls.create}
         buttonLabel={t("New Client Transaction")}
+        disabled={!hasPermission}
       >
         Start by creating your client transactions to organize and manage your
         records efficiently.
@@ -84,7 +88,7 @@ const ClientTransactionListPage = () => {
       {/* ── Header ── */}
       <Header title={t("Client Transaction List")}>
         <Actions>
-          <Button onClick={handleCreate}>{t("New Client Transaction")}</Button>
+          <Button onClick={handleCreate} disabled={!hasPermission}>{t("New Client Transaction")}</Button>
         </Actions>
       </Header>
 

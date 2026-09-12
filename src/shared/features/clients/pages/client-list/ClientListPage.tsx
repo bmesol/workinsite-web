@@ -19,11 +19,14 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const ClientListPage = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Clients');
 
   const {
     clientDetails,
@@ -53,7 +56,7 @@ const ClientListPage = () => {
       {/* Header */}
       <Header title={t('Client List')}>
         <Actions>
-          <Button onClick={() => navigate(ClientsUrls.create)}>
+          <Button onClick={() => navigate(ClientsUrls.create)} disabled={!editable}>
             {t('Create Client')}
           </Button>
         </Actions>
@@ -96,6 +99,7 @@ const ClientListPage = () => {
                 onDelete={(e: React.MouseEvent) =>
                   confirmDelete(e, client.id)
                 }
+                permissionKey="Clients"
               />
             </div>
           ))

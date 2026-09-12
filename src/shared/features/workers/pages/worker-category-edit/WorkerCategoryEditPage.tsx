@@ -18,9 +18,12 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const WorkerCategoryEditPage = () => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Worker Category');
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
 
@@ -72,6 +75,7 @@ const WorkerCategoryEditPage = () => {
             errorMessage={error.workerCategoryName}
             placeholder={t('Enter worker category name')}
             required={true}
+            isDisabled={!editable}
           />
 
           {/* Work Type + Worker Role side by side */}
@@ -85,6 +89,7 @@ const WorkerCategoryEditPage = () => {
                 required={true}
                 errorMessage={error.workTypeList}
                 isColsTwo={true}
+                isAddDisabled={!editable}
               />
               <WorkTypeList
                 workTypeList={workTypeList}
@@ -93,6 +98,7 @@ const WorkerCategoryEditPage = () => {
                 setUpdatedWorkTypeList={setUpdatedWorkTypeList}
                 deletedWorkTypeList={deletedWorkTypeList}
                 setDeletedWorkTypeList={setDeletedWorkTypeList}
+                isDisabled={!editable}
               />
             </div>
 
@@ -105,6 +111,7 @@ const WorkerCategoryEditPage = () => {
                 required={true}
                 errorMessage={error.workerRoleList}
                 isColsTwo={true}
+                isAddDisabled={!editable}
               />
               <WorkerRoleList
                 workerRoleList={workerRoleList}
@@ -113,6 +120,7 @@ const WorkerCategoryEditPage = () => {
                 setUpdateWorkerRoleList={setUpdateWorkerRoleList}
                 deleteworkerRoleList={deleteworkerRoleList}
                 setDeleteWorkerRoleList={setDeleteWorkerRoleList}
+                isDisabled={!editable}
               />
             </div>
           </div>
@@ -122,12 +130,14 @@ const WorkerCategoryEditPage = () => {
             inputValue={notes ?? ""}
             setInputValue={setNotes}
             placeholder={t('Enter your notes')}
+            isDisabled={!editable}
           />
 
           {/* Is Active Toggle */}
           <FormSubmissionButtons
             onCancel={handleCancel}
             onSave={handleSubmission}
+            disabled={!editable}
           />
 
         </CardContent>

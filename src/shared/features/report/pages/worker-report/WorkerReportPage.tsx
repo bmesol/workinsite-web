@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { WorkerReportUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
+import { usePermission } from "@/shared/hooks/usePermission";
 import { Button } from "@/shared/components/ui/button";
 import { Users } from "lucide-react";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
@@ -41,6 +42,7 @@ function CardSkeleton() {
 export default function WorkerReportPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { canView } = usePermission();
   const {
     reports,
     totalAmount,
@@ -70,15 +72,23 @@ export default function WorkerReportPage() {
   } = useWorkerReport();
 
   const [workerSearch, setWorkerSearch] = useState("");
+  const hasViewAccess = canView('Worker Report') || canView('Reports');
 
   useEffect(() => {
+    if (!hasViewAccess) {
+      navigate('/dashboard', { replace: true });
+      return;
+    }
     fetchReports(true);
   }, []);
 
   useEffect(() => {
+    if (!hasViewAccess) return;
     const timer = setTimeout(() => fetchWorkers(workerSearch), 300);
     return () => clearTimeout(timer);
   }, [workerSearch]);
+
+  if (!hasViewAccess) return null;
 
   return (
     <div className="min-h-screen w-full py-6">

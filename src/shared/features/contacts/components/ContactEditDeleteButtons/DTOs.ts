@@ -3,6 +3,7 @@ import type { ContactDetail } from "../../DTOs/ContactProps";
 
 interface ContactEditDeleteButtonsProps extends ContactListType {
   selectedItem: { id: number, item: ContactDetail };
+  disabled?: boolean;
 }
 
 export type { ContactEditDeleteButtonsProps };

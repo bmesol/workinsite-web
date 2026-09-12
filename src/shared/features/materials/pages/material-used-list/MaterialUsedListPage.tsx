@@ -27,10 +27,13 @@ import { MaterialUsedUrls } from "../../utils/urls";
 import materialUsedImage from "@/assets/images/client-creation-illustration.png";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 const MaterialUsedListPage = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Material Used');
 
   const {
     site,
@@ -100,7 +103,7 @@ const MaterialUsedListPage = () => {
       {/* ── Header ── */}
       <Header title={t("Material Used List")}>
         <Actions>
-          <Button onClick={handlePress}>{t('New Material Used')}</Button>
+          <Button onClick={handlePress} disabled={!editable}>{t('New Material Used')}</Button>
         </Actions>
       </Header>
 

@@ -28,10 +28,13 @@ import materialShiftImage from "@/assets/images/client-creation-illustration.png
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import MaterialUsedCard from "@/shared/components/MaterialUsedCard/MaterialUsedCard";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 const MaterialShiftListPage = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Material Shift');
 
   const {
     materialShiftDetails,
@@ -100,7 +103,7 @@ const MaterialShiftListPage = () => {
       {/* ── Header ── */}
       <Header title={t("Material Shift List")}>
         <Actions>
-          <Button onClick={handleAddShift}>New Material Shift</Button>
+          <Button onClick={handleAddShift} disabled={!editable}>New Material Shift</Button>
         </Actions>
       </Header>
 

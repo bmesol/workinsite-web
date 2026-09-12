@@ -6,6 +6,7 @@ import {
 import { Card } from "@/shared/components/ui/card";
 import { Phone, Mail, Trash2, Briefcase, Users } from "lucide-react";
 import type { ContactCardProps } from "./DTOs";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 const ContactCard = (props: ContactCardProps) => {
   const {
@@ -18,8 +19,12 @@ const ContactCard = (props: ContactCardProps) => {
     workerRole,
     onDelete,
     onPress,
+    permissionKey,
     subDetails,
   } = props;
+
+  const { canEdit } = usePermission();
+  const hasPermission = permissionKey ? canEdit(permissionKey) : true;
 
   const initials = (name ?? "")
     .split(" ")
@@ -114,15 +119,20 @@ const ContactCard = (props: ContactCardProps) => {
       </div>
 
       {/* Right — Delete */}
-      <div
-        className="self-center ml-2 shrink-0 p-2 rounded-md hover:bg-destructive/10 transition-colors"
+      <button
+        disabled={!hasPermission}
+        className="self-center ml-2 shrink-0 p-2 rounded-md transition-colors hover:bg-destructive/10"
+        style={{
+          opacity: hasPermission ? 1 : 0.4,
+          cursor: hasPermission ? 'pointer' : 'not-allowed',
+        }}
         onClick={(e: React.MouseEvent) => {
           e.stopPropagation();
-          onDelete(e);
+          if (hasPermission) onDelete(e);
         }}
       >
-       <Trash2 className="h-5 w-5" style={{ color: 'var(--danger-color)' }} />
-      </div>
+        <Trash2 className="h-5 w-5" style={{ color: 'var(--danger-color)' }} />
+      </button>
     </Card>
   );
 };

@@ -120,8 +120,8 @@ const PurchaseMaterialsList: React.FC<Props> = ({
         return (
           <div
             key={key}
-            onClick={() => handleEdit(item)}
-            className="rounded-xl border cursor-pointer hover:shadow-sm transition-shadow"
+            onClick={() => editable && handleEdit(item)}
+            className={`rounded-xl border transition-shadow ${editable ? "cursor-pointer hover:shadow-sm" : "cursor-default"}`}
             style={{
               backgroundColor: "var(--card)",
               borderColor: "var(--border)",
