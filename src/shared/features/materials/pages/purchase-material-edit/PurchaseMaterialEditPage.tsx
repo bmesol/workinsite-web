@@ -15,6 +15,7 @@ import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import type { ReceivedQualityTypes } from "../../DTOs/PurchaseProps";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 interface Props {
   newPurchaseMaterials: PurchaseMaterialCreationListProps[];
@@ -40,6 +41,8 @@ interface Props {
 
 const PurchaseMaterialsEditScreen = (props: Props) => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Purchase');
 
   const {
     materialId,
@@ -109,6 +112,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         onValueChange={setMaterialId}
         onSearch={fetchMaterials}
         error={error.materialId}
+        disabled={!editable}
       />
 
       {/* ── Quantity ── */}
@@ -120,6 +124,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         placeholder={t("Enter Received Quantity")}
         errorMessage={error.receivedQuantity}
         regex="^[0-9]*\.?[0-9]*$"
+        isDisabled={!editable}
       />
       <MinQuantityBadge />
 
@@ -132,6 +137,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         placeholder={t("Enter Rate")}
         errorMessage={error.rate}
         regex="^[0-9]*\.?[0-9]*$"
+        isDisabled={!editable}
       />
       {/* ── Additional Charges ── */}
       <NameField
@@ -140,6 +146,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         setInputValue={setAdditionalCharges}
         placeholder={t("Enter Additional Charges")}
         regex="^[0-9]*\.?[0-9]*$"
+        isDisabled={!editable}
       />
       {/* ── Discount ── */}
       <NameField
@@ -148,6 +155,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         setInputValue={setDiscount}
         placeholder={t("Enter Discount")}
         regex="^[0-9]*\.?[0-9]*$"
+        isDisabled={!editable}
       />
 
       {/* ── Received Quality ── */}
@@ -159,6 +167,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         onValueChange={(val) => setReceivedQuality(val as ReceivedQualityTypes)}
         placeholder="Select Quality"
         errorMessage={error.receivedQuality}
+        isDisabled={!editable}
       />
 
       {/* ── Received Date ── */}
@@ -169,6 +178,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         onDateChange={setReceivedDate}
         errorMessage={error.receivedDate}
         defaultDate
+        disable={!editable}
       />
 
       {/* ── Notes ── */}
@@ -177,6 +187,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         inputValue={notes && notes !== "null" ? notes : ""}
         setInputValue={setNotes}
         placeholder={t("Enter your Notes")}
+        isDisabled={!editable}
       />
       {/* ── Photos ── */}
       <PurchasePhoto
@@ -186,10 +197,11 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
         setShowImages={setShowImage}
         removeImages={removedImages}
         setRemoveImages={setRemovedImages}
+        permissionKey="Purchase"
       />
 
       {/* ── Upload button ── */}
-      <Button variant="outline" onClick={handleImageUpload}>
+      <Button variant="outline" onClick={handleImageUpload} disabled={!editable}>
         {t("Upload Images")}
       </Button>
 
@@ -204,7 +216,7 @@ const PurchaseMaterialsEditScreen = (props: Props) => {
       />
 
       {/* ── Submit ── */}
-      <Button onClick={handleSubmit} className="w-full">
+      <Button onClick={handleSubmit} className="w-full" disabled={!editable}>
         Update
       </Button>
     </div>

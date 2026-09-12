@@ -5,11 +5,11 @@ import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const ContactDetailForm = (props: ContactDetailFormProps) => {
   const { t } = useLanguage();
-  const { handleContactEdit, primaryContactDetails, hasMoreDetails, handleMoreDetails, classNames = "", isColsTwo = true } = props;
+  const { handleContactEdit, primaryContactDetails, hasMoreDetails, handleMoreDetails, classNames = "", isColsTwo = true, isAddDisabled } = props;
 
   return (
     <div className={`mt-4 ${classNames}`}>
-      <FormActionButton heading={t("Contact detail")} label={t("Edit")} onClick={handleContactEdit} isColsTwo={isColsTwo} />
+      <FormActionButton heading={t("Contact detail")} label={t("Edit")} onClick={handleContactEdit} isColsTwo={isColsTwo} isAddDisabled={isAddDisabled} />
       <ContactTypes contactList={primaryContactDetails} showEditDeleteButtons={false} classNames="mt-4" />
       {hasMoreDetails && (
         <div className="mt-4">

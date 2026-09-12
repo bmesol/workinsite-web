@@ -7,7 +7,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 const ContactEditDeleteButtons = (props: ContactEditDeleteButtonsProps) => {
-  const { contactList, setContactList, selectedItem } = props;
+  const { contactList, setContactList, selectedItem, disabled } = props;
   const { handleDelete } = useContactEditDeleteButtons(props);
 
   // ✅ useModel → useState
@@ -24,16 +24,18 @@ const ContactEditDeleteButtons = (props: ContactEditDeleteButtonsProps) => {
 
       {/* Edit Button */}
       <button
-        onClick={() => handleEdit(selectedItem.id, selectedItem.item.contactType, selectedItem.item.value)}
-        className="p-1 rounded-md hover:bg-muted transition-colors"
+        onClick={() => !disabled && handleEdit(selectedItem.id, selectedItem.item.contactType, selectedItem.item.value)}
+        disabled={disabled}
+        className="p-1 rounded-md hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Pencil className="h-4 w-4 text-muted-foreground" />
       </button>
 
       {/* Delete Button */}
       <button
-        onClick={() => handleDelete(selectedItem.id)}
-        className="p-1 rounded-md hover:bg-destructive/10 transition-colors"
+        onClick={() => !disabled && handleDelete(selectedItem.id)}
+        disabled={disabled}
+        className="p-1 rounded-md hover:bg-destructive/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Trash2 className="h-4 w-4 text-destructive" style={{ color: 'var(--danger-color)' }} />
       </button>

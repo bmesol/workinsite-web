@@ -30,6 +30,7 @@ const WorkTypeList = (props: WorkTypeListProps) => {
     setUpdatedWorkTypeList,
     deletedWorkTypeList,
     setDeletedWorkTypeList,
+    isDisabled,
   } = props;
 
   const {
@@ -85,6 +86,7 @@ const WorkTypeList = (props: WorkTypeListProps) => {
               variant="ghost"
               size="icon-sm"
               onClick={() => handleEdit(entry.index, entry.item, entry.source)}
+              disabled={isDisabled}
             >
               <Pencil className="h-4 w-4 text-black" />
             </Button>
@@ -92,6 +94,7 @@ const WorkTypeList = (props: WorkTypeListProps) => {
               variant="ghost"
               size="icon-sm"
               onClick={() => handleDeleteClick(entry.index, entry.source, entry.item)}
+              disabled={isDisabled}
             >
               <Trash2 className="h-4 w-4 text-destructive" style={{ color: 'var(--danger-color)' }} />
             </Button>

@@ -28,6 +28,7 @@ import {
 import { Switch } from "@/shared/components/ui/switch";
 import { Label } from "@/shared/components/ui/label";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const SupplierEditPage = () => {
   const { id } = useParams<string>();
@@ -37,6 +38,8 @@ const SupplierEditPage = () => {
   const [isUpiOpen, setIsUpiOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Suppliers');
 
   const {
     name,
@@ -86,6 +89,7 @@ const SupplierEditPage = () => {
             setInputValue={setName}
             errorMessage={error.name}
             required={true}
+            isDisabled={!editable}
           />
           {(supplierDetails as Supplier).contact.id && (
             <ComboboxField
@@ -98,6 +102,7 @@ const SupplierEditPage = () => {
               onCreate={handleContactCreate}
               error={error.contact}
               required={true}
+              disabled={!editable}
             />
           )}
         </div>
@@ -111,6 +116,7 @@ const SupplierEditPage = () => {
                 label={t('Edit')}
                 onClick={handleContactEdit}
                 isColsTwo={true}
+                isAddDisabled={!editable}
               />
             </div>
             <ContactTypes
@@ -138,7 +144,7 @@ const SupplierEditPage = () => {
               heading={t('KYC')}
               label={t('Add')}
               onClick={() => setIsKycOpen(true)}
-              isAddDisabled={isKycAddDisabled}
+              isAddDisabled={!editable || isKycAddDisabled}
               isColsTwo={true}
             />
             <KycTypes
@@ -150,6 +156,7 @@ const SupplierEditPage = () => {
                 }))
               }
               isColsTwo={true}
+              disabled={!editable}
             />
           </div>
 
@@ -159,7 +166,7 @@ const SupplierEditPage = () => {
               heading={t('Bank Accounts')}
               label={t('Add')}
               onClick={() => setIsBankAccountOpen(true)}
-              isAddDisabled={isBankAccountsAddDisabled}
+              isAddDisabled={!editable || isBankAccountsAddDisabled}
               isColsTwo={true}
             />
             <BankAccounts
@@ -171,6 +178,7 @@ const SupplierEditPage = () => {
                 }))
               }
               isColsTwo={true}
+              disabled={!editable}
             />
           </div>
 
@@ -180,7 +188,7 @@ const SupplierEditPage = () => {
               heading={t('UPIs')}
               label={t('Add')}
               onClick={() => setIsUpiOpen(true)}
-              isAddDisabled={isUpiAddDisabled}
+              isAddDisabled={!editable || isUpiAddDisabled}
               isColsTwo={true}
             />
             <UpiTypes
@@ -192,6 +200,7 @@ const SupplierEditPage = () => {
                 }))
               }
               isColsTwo={true}
+              disabled={!editable}
             />
           </div>
 
@@ -200,7 +209,7 @@ const SupplierEditPage = () => {
             <Label className="text-base font-medium text-black">
               {t('Is Active')}
             </Label>
-            <Switch checked={isActive} onCheckedChange={setIsActive} />
+            <Switch checked={isActive} onCheckedChange={setIsActive} disabled={!editable} />
           </div>
         </div>
 
@@ -211,6 +220,7 @@ const SupplierEditPage = () => {
             inputValue={`${notes ? notes : ""}`}
             setInputValue={setNotes}
             placeholder={t('Enter your notes')}
+            isDisabled={!editable}
           />
         )}
 
@@ -219,6 +229,7 @@ const SupplierEditPage = () => {
           <FormSubmissionButtons
             onCancel={() => navigate(SuppliersUrls.list)}
             onSave={handleSubmission}
+            disabled={!editable}
           />
         </div>
       </Card>

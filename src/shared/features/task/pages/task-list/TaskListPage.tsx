@@ -6,6 +6,7 @@ import { Button } from "@/shared/components/ui/button";
 import { TaskUrls } from "../../utils/urls";
 import { useTaskList } from "./useTaskList";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 import { TaskCard } from "@/shared/components/TaskCard/TaskCard";
 import { GetStartedCard } from "@/shared/components/GetStartedCard/GetStartedCard";
 import TaskCreationIllustration from "@/assets/images/site-creation-illustration.png";
@@ -24,6 +25,8 @@ import {
 const TaskListPage = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Task');
 
   const {
     taskDetails,
@@ -65,7 +68,7 @@ const TaskListPage = () => {
     <div className="min-h-screen w-full px-4 py-6">
       <Header title={t('Task List')}>
         <Actions>
-          <Button onClick={() => navigate(TaskUrls.create)}>
+          <Button onClick={() => navigate(TaskUrls.create)} disabled={!editable}>
             {t('New Task')}
           </Button>
         </Actions>
@@ -99,6 +102,7 @@ const TaskListPage = () => {
               status={item.status}
               onPress={() => handleTaskSelect(item.id)}
               onDelete={() => confirmDelete(item.id)}
+              permissionKey="Task"
             />
           ))
         )}

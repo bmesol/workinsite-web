@@ -18,11 +18,14 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const ContactListPage = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Contacts');
 
   const {
     contactList,
@@ -52,7 +55,7 @@ const ContactListPage = () => {
       {/* Header */}
       <Header title={t('Contact List')}>
         <Actions>
-          <Button onClick={() => navigate(ContactsUrls.create)}>
+          <Button onClick={() => navigate(ContactsUrls.create)} disabled={!editable}>
             {t('New Contact')}
           </Button>
         </Actions>
@@ -96,6 +99,7 @@ const ContactListPage = () => {
                 onDelete={(e: React.MouseEvent) =>
                   confirmDelete(e, contact.id)
                 }
+                permissionKey="Contacts"
               />
             </div>
           ))

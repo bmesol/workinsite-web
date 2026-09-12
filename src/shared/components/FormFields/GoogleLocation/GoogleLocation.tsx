@@ -6,7 +6,7 @@ import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const GoogleLocation = (props: GoogleLocationProps) => {
   const { t } = useLanguage();
-  const { errorMessage, inputValue, setInputValue, classNames = "", placeholder, required = false } = props;
+  const { errorMessage, inputValue, setInputValue, classNames = "", placeholder, required = false, disabled } = props;
 
   return (
     <div className={`relative ${classNames}`}>
@@ -17,6 +17,7 @@ const GoogleLocation = (props: GoogleLocationProps) => {
           setInputValue={setInputValue}
           placeholder={placeholder || t("Enter google location")}
           required={required}
+          isDisabled={disabled}
         />
       </FormInput>
 

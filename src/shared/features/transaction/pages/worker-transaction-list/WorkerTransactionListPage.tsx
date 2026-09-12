@@ -77,6 +77,7 @@ const WorkerTransactionListPage = () => {
         imgSrc={workerTransactionImage}
         buttonClick={WorkerTransactionUrls.create}
         buttonLabel={t('New Worker Transaction')}
+        disabled={!hasPermission}
       >
         Start by creating your Worker transactions to organize and manage your
         records efficiently.
@@ -89,11 +90,9 @@ const WorkerTransactionListPage = () => {
 
       {/* ── Header ── */}
       <Header title={t('Worker Transaction List')}>
-        {hasPermission && (
-          <Actions>
-            <Button onClick={handleCreate}>{t('New Worker Transaction')}</Button>
-          </Actions>
-        )}
+        <Actions>
+          <Button onClick={handleCreate} disabled={!hasPermission}>{t('New Worker Transaction')}</Button>
+        </Actions>
       </Header>
 
       {/* ── Search Filter Bar ── */}

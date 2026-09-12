@@ -6,7 +6,7 @@ import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const BankAccounts = (props: BankAccountTypesProps) => {
   const { t } = useLanguage();
-  const { details, setDetails, isColsTwo = false } = props;
+  const { details, setDetails, isColsTwo = false, disabled } = props;
 
   return (
     <>
@@ -29,6 +29,7 @@ const BankAccounts = (props: BankAccountTypesProps) => {
                 details={details}
                 setDetails={setDetails}
                 selectedItem={{ id: index, item }}
+                disabled={disabled}
               />
             </div>
           )}

@@ -17,9 +17,12 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const WorkerCategoryListPage = () => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Worker Category');
   const navigate = useNavigate();
   const {
     workerCategoryDetails,
@@ -50,7 +53,7 @@ const WorkerCategoryListPage = () => {
       {/* Header */}
       <Header title={t('Worker Category List')}>
         <Actions>
-          <Button onClick={() => navigate(WorkerCategoriesUrls.create)}>
+          <Button onClick={() => navigate(WorkerCategoriesUrls.create)} disabled={!editable}>
             {t('Create Worker Category')}
           </Button>
         </Actions>

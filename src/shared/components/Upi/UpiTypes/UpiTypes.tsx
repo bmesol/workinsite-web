@@ -4,7 +4,7 @@ import { Icons } from "./UpiTypesIcon";
 import type { UpiTypesProps } from "../DTOs/DTOs";
 
 const UpiTypes = (props: UpiTypesProps) => {
-  const { details, setDetails, isColsTwo = false } = props;
+  const { details, setDetails, isColsTwo = false, disabled } = props;
 
   return (
     <>
@@ -20,6 +20,7 @@ const UpiTypes = (props: UpiTypesProps) => {
                 details={details}
                 setDetails={setDetails}
                 selectedItem={{ id: index, item }}
+                disabled={disabled}
               />
             </div>
           )}

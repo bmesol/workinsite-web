@@ -7,6 +7,7 @@ interface ContactDetailFormProps {
   handleMoreDetails: () => void;
   isColsTwo?: boolean;
   classNames?: string;
+  isAddDisabled?: boolean;
 }
 
 export type { ContactDetailFormProps };

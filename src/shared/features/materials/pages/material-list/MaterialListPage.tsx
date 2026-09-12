@@ -17,10 +17,13 @@ import {
   AlertDialogAction,
 } from "@/shared/components/ui/alert-dialog";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 const MaterialListScreen = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Material');
 
   const {
     materialDetails,
@@ -71,7 +74,7 @@ const MaterialListScreen = () => {
       {/* ✅ Header */}
       <Header title={t("Materials")}>
         <Actions>
-          <Button onClick={() => navigate("/materials/create")}>
+          <Button onClick={() => navigate("/materials/create")} disabled={!editable}>
             {t('New Material')}
           </Button>
         </Actions>

@@ -20,6 +20,7 @@ interface UpiTypesProps {
   setDetails: (updated: UpiDetails) => void;
   onClose?: () => void;
   isColsTwo?: boolean;
+  disabled?: boolean;
 }
 
 interface UpiTypesProp extends UpiTypesProps {

@@ -5,7 +5,7 @@ import { Icons } from "./KycTypesIcon";
 import React from "react";
 
 const KycTypes = (props: KycTypesProps) => {
-  const { details, setDetails, isColsTwo } = props;
+  const { details, setDetails, isColsTwo, disabled } = props;
 
   return (
     <>
@@ -25,6 +25,7 @@ const KycTypes = (props: KycTypesProps) => {
                 details={details}
                 setDetails={setDetails}
                 selectedItem={{ id: index, item }}
+                disabled={disabled}
               />
             </div>
           )}

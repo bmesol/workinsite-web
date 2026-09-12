@@ -16,12 +16,15 @@ import {
 import { useContactEdit } from "./useContactEdit";
 import { useState } from "react";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const ContactEditPage = () => {
   const { id } = useParams<string>();
   const [queryString] = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Contacts');
 
   const {
     name,
@@ -61,6 +64,7 @@ const ContactEditPage = () => {
               errorMessage={error.name}
               className="w-full"
               required={true}
+              isDisabled={!editable}
             />
           )}
 
@@ -71,21 +75,24 @@ const ContactEditPage = () => {
             errorMessage={error.phone}
             className="w-full"
             required={true}
+            isDisabled={!editable}
           />
           <FormActionButton
             heading={t('Additional Details')}
             label={t('Add')}
             onClick={handleAdd}
-            isAddDisabled={isAddDisabled}
+            isAddDisabled={!editable || isAddDisabled}
           />
           <ContactTypes
             contactList={contactList}
             setContactList={setContactList}
+            disabled={!editable}
           />
           <FormSubmissionButtons
             onCancel={handleCancel}
             onSave={handleSubmission}
             className="w-full"
+            disabled={!editable}
           />
         </div>
       </Card>

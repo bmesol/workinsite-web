@@ -30,6 +30,7 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
     setUpdateWorkerRoleList,
     deleteworkerRoleList,
     setDeleteWorkerRoleList,
+    isDisabled,
   } = props;
 
   const {
@@ -85,6 +86,7 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
               variant="ghost"
               size="icon-sm"
               onClick={() => handleEdit(item.index, item)}
+              disabled={isDisabled}
             >
               <Pencil className="h-4 w-4 text-black" />
             </Button>
@@ -92,6 +94,7 @@ const WorkerRoleList = (props: WorkerRoleListProps) => {
               variant="ghost"
               size="icon-sm"
               onClick={() => handleDeleteClick(item.index, item.source, item)}
+              disabled={isDisabled}
             >
               <Trash2 className="h-4 w-4 text-destructive" style={{ color: 'var(--danger-color)' }} />
             </Button>

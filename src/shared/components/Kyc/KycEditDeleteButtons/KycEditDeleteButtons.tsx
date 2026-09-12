@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 
 const KycEditDeleteButtons = (props: KycEditDeleteButtonsProps) => {
-  const { details, setDetails, selectedItem } = props;
+  const { details, setDetails, selectedItem, disabled } = props;
   const { handleDelete } = useKycEditDeleteButtons(props);
   const [isOpen, setIsOpen] = useState(false);
   const [editData, setEditData] = useState<{ id: number; type: KYCTypes; value: string } | null>(null);
@@ -26,13 +26,13 @@ const KycEditDeleteButtons = (props: KycEditDeleteButtonsProps) => {
     <>
       <div className="flex items-center gap-2">
         <Pencil
-          className="w-4 h-4 cursor-pointer text-muted-foreground hover:text-black"
-          onClick={() => handleEdit(selectedItem.id, selectedItem.item.kycType, selectedItem.item.value)}
+          className={`w-4 h-4 text-muted-foreground ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:text-black"}`}
+          onClick={() => !disabled && handleEdit(selectedItem.id, selectedItem.item.kycType, selectedItem.item.value)}
         />
         <Trash2
-          className="w-4 h-4 cursor-pointer text-destructive hover:text-destructive/80"
+          className={`w-4 h-4 text-destructive ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:text-destructive/80"}`}
           style={{ color: 'var(--danger-color)' }}
-          onClick={() => handleDelete(selectedItem.id)}
+          onClick={() => !disabled && handleDelete(selectedItem.id)}
         />
       </div>
 

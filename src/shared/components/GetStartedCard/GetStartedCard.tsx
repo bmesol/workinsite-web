@@ -4,7 +4,7 @@ import type { GetStartedCardProps } from "./DTOs";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const GetStartedCard = (props: GetStartedCardProps) => {
-  const { imgSrc, buttonLabel, buttonClick, children } = props;
+  const { imgSrc, buttonLabel, buttonClick, children, disabled } = props;
   const { t } = useLanguage();
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ const GetStartedCard = (props: GetStartedCardProps) => {
           <p className="text-muted-foreground">{children}</p>
 
           {/* Button */}
-          <Button onClick={() => navigate(buttonClick)}>
+          <Button onClick={() => navigate(buttonClick)} disabled={disabled}>
             {buttonLabel}
           </Button>
 

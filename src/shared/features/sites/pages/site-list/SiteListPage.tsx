@@ -8,9 +8,12 @@ import { useSiteList } from "./useSiteList";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { usePermission } from '@/shared/hooks/usePermission';
 
 const SiteListPage = () => {
   const { t } = useLanguage();
+  const { canEdit } = usePermission();
+  const editable = canEdit('Sites');
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
 
@@ -40,7 +43,7 @@ const SiteListPage = () => {
     <div className="min-h-screen w-full px-4 py-6">
       <Header title={t('Site List')}>
         <Actions>
-          <Button onClick={() => navigate(SitesUrls.create)}>
+          <Button onClick={() => navigate(SitesUrls.create)} disabled={!editable}>
             {t('Create Site')}
           </Button>
         </Actions>

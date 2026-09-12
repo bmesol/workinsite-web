@@ -11,6 +11,9 @@ import { MaterialDetail } from '../../components/InventoryMaterialDetail/Invento
 import { InventoryFilterDialog } from '../../components/InventoryFilterDialog/InventoryFilterDialog';
 import { useInventoryStockReport } from './useInventoryStockReport';
 import { exportToExcel, exportToPDF } from '../../utils/exportInventoryReport';
+import { usePermission } from '@/shared/hooks/usePermission';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function getPageNumbers(current: number, total: number): (number | '...')[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
@@ -39,6 +42,8 @@ function TableSkeleton() {
 }
 
 export default function InventoryStockReportPage() {
+  const navigate = useNavigate();
+  const { canView } = usePermission();
   const {
     materialSummary,
     pagedMaterials,
@@ -70,6 +75,13 @@ export default function InventoryStockReportPage() {
   } = useInventoryStockReport();
 
   const hasData = totalMaterials > 0;
+  const hasViewAccess = canView('Inventory Stock Report') || canView('Reports');
+
+  useEffect(() => {
+    if (!hasViewAccess) navigate('/dashboard', { replace: true });
+  }, []);
+
+  if (!hasViewAccess) return null;
 
   return (
     <div className="min-h-screen w-full py-6">
