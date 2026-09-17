@@ -1,0 +1,357 @@
+================================================================================
+  SUPERVISOR ATTENDANCE — LOCATION FETCHING: COMPLETE STEP-BY-STEP EXPLANATION
+  Branch: fix/location-address-display
+  Date: 2026-09-15
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+OVERVIEW
+────────────────────────────────────────────────────────────────────────────────
+
+The Supervisor Attendance feature captures the supervisor's GPS location at
+check-in time, converts those coordinates into a human-readable address via a
+backend reverse-geocoding call, stores the result, and then displays it in
+both the Supervisor Dashboard and the Supervisor Attendance List report page.
+
+The entire process is driven by a single shared hook:
+
+  src/shared/hooks/useCurrentLocation.ts
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 1 — USER INITIATES CHECK-IN (Supervisor Dashboard)
+────────────────────────────────────────────────────────────────────────────────
+
+File:  src/shared/features/dashboard/supervisor-dashboard/SupervisorDashboardPage.tsx
+Hook:  src/shared/features/dashboard/supervisor-dashboard/useSupervisorDashboard.ts
+
+1. The supervisor opens their dashboard.
+2. They click the "Check In to Site" button rendered by SupervisorDashboardPage.
+3. The click handler calls handleCheckIn() inside useSupervisorDashboard.ts,
+   which sets showSitePicker = true, opening a site-selection dialog.
+4. The dialog lists all sites assigned to that supervisor (fetched from the
+   backend at mount time).
+5. The supervisor picks a site from the list.
+6. handleSiteSelected(site) is called — this is where location capture begins.
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 2 — CALLING THE LOCATION HOOK
+────────────────────────────────────────────────────────────────────────────────
+
+File:  src/shared/hooks/useCurrentLocation.ts
+
+Inside handleSiteSelected(), the hook's getLocation() function is awaited:
+
+  const locationResult = await getLocation();
+
+getLocation() is a memoized async function (useCallback) that performs two
+sequential sub-steps:
+
+  A. Fetch GPS coordinates from the browser
+  B. Reverse-geocode those coordinates into a readable address
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 3 — GPS COORDINATE FETCHING (Browser Geolocation API)
+────────────────────────────────────────────────────────────────────────────────
+
+File:  src/shared/hooks/useCurrentLocation.ts
+Function inside hook: getCurrentPosition()
+
+The hook wraps the native browser API in a Promise:
+
+  navigator.geolocation.getCurrentPosition(resolve, reject, options)
+
+Options used:
+  - enableHighAccuracy: true   → requests the most accurate position available
+  - timeout: 15000             → fails after 15 seconds if no fix is obtained
+  - maximumAge: 10000          → accepts a cached position up to 10 seconds old
+
+On success, the callback receives a GeolocationPosition object.
+The hook reads:
+  - position.coords.latitude   → lat
+  - position.coords.longitude  → lng
+
+Error codes handled:
+  - PERMISSION_DENIED  → toasts "Location permission denied. Please allow location access."
+  - TIMEOUT            → toasts "Check-in failed. Please try again."
+  - POSITION_UNAVAILABLE → toasts "Your browser does not support location."
+
+At this point, the hook has: { lat: number, lng: number }
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 4 — REVERSE GEOCODING (Backend API Call)
+────────────────────────────────────────────────────────────────────────────────
+
+File:  src/shared/hooks/useCurrentLocation.ts
+Function inside hook: reverseGeocode(lat, lng)
+
+The hook sends the coordinates to the application's own backend endpoint:
+
+  GET /geolocation?lat={lat}&lng={lng}
+
+This call uses getApiInstance() — the shared authenticated Axios instance —
+so the request automatically includes the user's auth token and handles token
+refresh if needed. The base URL is read from the environment variable:
+  VITE_SITE_SERVICE_BASE_URL
+
+Expected response shape from the backend:
+  { address: "123 Main Street, City, State, Country" }
+
+The returned address string is stored as: address
+
+FALLBACK — If the backend call throws any error, the hook falls back to a
+formatted coordinate string instead of returning null:
+  "LAT.XXXX, LNG.XXXX"   (both values rounded to 4 decimal places)
+
+This guarantees that address is NEVER null or undefined — the UI always
+has something meaningful to show.
+
+At this point, the hook has: { lat, lng, address }
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 5 — BUILDING THE CHECK-IN PAYLOAD
+────────────────────────────────────────────────────────────────────────────────
+
+File:  src/shared/features/dashboard/supervisor-dashboard/useSupervisorDashboard.ts
+Function: handleSiteSelected()
+
+Back in the dashboard hook, after getLocation() resolves, the code:
+1. Formats the current time with formatToApiTime() → "HH:MM:SS"
+2. Reads today's date in the required API format
+3. Assembles the creation request object:
+
+  {
+    date: "YYYY-MM-DD",
+    time: "HH:MM:SS",
+    siteId: <selected site's id>,
+    supervisorId: <logged-in supervisor's id>,
+    currentLocation: {
+      lat: <number>,
+      lng: <number>,
+      address: "<resolved address string>"
+    }
+  }
+
+TypeScript type for this object:
+  SupervisorAttendanceCreationRequest
+  Defined in: src/shared/features/report/DTOs/SupervisorAttendanceProps.ts
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 6 — POSTING TO THE BACKEND
+────────────────────────────────────────────────────────────────────────────────
+
+File:  src/shared/features/report/service/SupervisorAttendanceService.ts
+
+The payload is sent to:
+
+  POST /supervisor-attendances
+
+Using the shared authenticated Axios instance. The backend persists the record,
+including the full currentLocation object (lat, lng, address).
+
+On success:
+  - A success toast is shown ("Checked in successfully" or similar)
+  - The dashboard's check-in list is refreshed (re-fetches from the backend)
+
+On failure:
+  - An error toast is shown with the error message
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 7 — DISPLAYING THE ADDRESS ON THE DASHBOARD
+────────────────────────────────────────────────────────────────────────────────
+
+File:  src/shared/features/dashboard/supervisor-dashboard/SupervisorDashboardPage.tsx
+
+After refresh, the "Today's Check-ins" section renders each attendance record.
+For each record it displays:
+  - Site name
+  - Date and time of check-in
+  - The address with a MapPin icon (green color for active records)
+    → read from: item.currentLocation.address
+  - Text is truncated if it overflows (CSS truncate / line-clamp)
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 8 — DISPLAYING THE ADDRESS IN THE ATTENDANCE LIST REPORT
+────────────────────────────────────────────────────────────────────────────────
+
+Files:
+  src/shared/features/report/pages/supervisor-attendance-list/SupervisorAttendanceListPage.tsx
+  src/shared/features/report/pages/supervisor-attendance-list/useSuperVisorAttendanceList.ts
+  src/shared/components/SupervisorAttendanceCard/SupervisorAttendanceCard.tsx
+
+The Supervisor Attendance List page:
+1. Accepts filter inputs: supervisorId, fromDate (dd-mm-yyyy), toDate (dd-mm-yyyy)
+2. Calls: GET /supervisor-attendances?supervisorId=X&fromDate=X&toDate=X&pageNumber=X&pageSize=10
+3. Receives a paginated list of SupervisorAttendance records
+4. Each record is rendered as a SupervisorAttendanceCard
+
+Inside SupervisorAttendanceCard the address is shown as:
+  <MapPin icon>  item.currentLocation.address
+  - Text is line-clamped to 2 lines (CSS: line-clamp-2)
+  - Icon and text are gray-colored
+
+The card also shows:
+  - HardHat icon + supervisor name
+  - Role badge
+  - Calendar icon + date
+
+
+────────────────────────────────────────────────────────────────────────────────
+DATA STRUCTURES (TypeScript Types)
+────────────────────────────────────────────────────────────────────────────────
+
+File: src/shared/features/report/DTOs/SupervisorAttendanceProps.ts
+
+  type CurrentLocation = {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+
+  type SupervisorAttendance = {
+    id: number;
+    date: string;
+    time?: string;
+    supervisor: User[];
+    site?: AttendanceSite;
+    currentLocation: CurrentLocation;
+  };
+
+  type SupervisorAttendanceCreationRequest = {
+    date: string;
+    time?: string;
+    siteId: number;
+    supervisorId: number;
+    currentLocation: CurrentLocation;
+  };
+
+File: src/shared/hooks/useCurrentLocation.ts
+
+  type LocationResult = {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+
+
+────────────────────────────────────────────────────────────────────────────────
+API ENDPOINTS INVOLVED
+────────────────────────────────────────────────────────────────────────────────
+
+  GET  /geolocation?lat={lat}&lng={lng}
+        → Backend reverse geocoding; returns { address: "..." }
+
+  POST /supervisor-attendances
+        → Creates a new supervisor attendance record with location embedded
+
+  GET  /supervisor-attendances?supervisorId=X&fromDate=X&toDate=X&...
+        → Fetches paginated list of attendance records for the report page
+
+
+────────────────────────────────────────────────────────────────────────────────
+COMPLETE DATA FLOW DIAGRAM
+────────────────────────────────────────────────────────────────────────────────
+
+  Supervisor Dashboard
+        │
+        │  [Click "Check In to Site"]
+        ▼
+  handleCheckIn()
+        │
+        │  [Open site picker dialog]
+        ▼
+  handleSiteSelected(site)
+        │
+        │  [Call getLocation()]
+        ▼
+  useCurrentLocation.ts — getLocation()
+        │
+        ├──► navigator.geolocation.getCurrentPosition()
+        │          Browser GPS  →  { latitude, longitude }
+        │
+        └──► GET /geolocation?lat=...&lng=...
+                   Backend API  →  { address: "..." }
+                   (fallback)   →  "LAT.XXXX, LNG.XXXX"
+        │
+        │  [Returns: { lat, lng, address }]
+        ▼
+  Build SupervisorAttendanceCreationRequest
+        │
+        │  { date, time, siteId, supervisorId, currentLocation: { lat, lng, address } }
+        ▼
+  POST /supervisor-attendances
+        │
+        │  [Record saved to database]
+        ▼
+  Refresh dashboard → Display address with MapPin icon
+        │
+        │  [Separately, in report page]
+        ▼
+  GET /supervisor-attendances (paginated)
+        │
+        ▼
+  SupervisorAttendanceCard
+        │  → Shows: currentLocation.address  (line-clamped, MapPin icon)
+
+
+────────────────────────────────────────────────────────────────────────────────
+BRANCH NOTES: fix/location-address-display
+────────────────────────────────────────────────────────────────────────────────
+
+This branch introduced the following key changes to the location system:
+
+1. useCurrentLocation hook was UPDATED:
+   - Old behavior: Used Google Maps Geocoding API directly from the frontend
+   - New behavior: Calls the project's own backend endpoint (GET /geolocation)
+     which handles the geocoding server-side. This avoids exposing the Google
+     Maps API key in the frontend bundle and lets the backend choose the
+     geocoding provider.
+
+2. SupervisorDashboardPage + useSupervisorDashboard were added as NEW files
+   implementing the multi-site check-in flow described above.
+
+3. Error handling was improved:
+   - TIMEOUT is now handled explicitly (previously only PERMISSION_DENIED
+     and POSITION_UNAVAILABLE were handled)
+   - The fallback coordinate string format is standardized to 4 decimal places.
+
+
+────────────────────────────────────────────────────────────────────────────────
+KEY FILES REFERENCE
+────────────────────────────────────────────────────────────────────────────────
+
+  src/shared/hooks/useCurrentLocation.ts
+    → Core location hook: GPS + reverse geocoding
+
+  src/shared/features/dashboard/supervisor-dashboard/useSupervisorDashboard.ts
+    → Dashboard logic: calls getLocation(), builds payload, posts to backend
+
+  src/shared/features/dashboard/supervisor-dashboard/SupervisorDashboardPage.tsx
+    → Dashboard UI: displays check-ins and address with MapPin icon
+
+  src/shared/features/report/pages/supervisor-attendance-list/SupervisorAttendanceListPage.tsx
+    → Attendance list/report page with filters and pagination
+
+  src/shared/features/report/pages/supervisor-attendance-list/useSuperVisorAttendanceList.ts
+    → Fetches paginated attendance records from backend
+
+  src/shared/components/SupervisorAttendanceCard/SupervisorAttendanceCard.tsx
+    → Card component: renders supervisor name, date, and address
+
+  src/shared/features/report/service/SupervisorAttendanceService.ts
+    → API service: POST and GET calls for supervisor attendance
+
+  src/shared/features/report/DTOs/SupervisorAttendanceProps.ts
+    → TypeScript types: SupervisorAttendance, CurrentLocation, CreationRequest
+
+================================================================================
+END OF DOCUMENT
+================================================================================

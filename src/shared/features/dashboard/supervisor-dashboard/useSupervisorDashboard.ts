@@ -93,7 +93,7 @@ const useSupervisorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [checkingIn, setCheckingIn] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showSitePicker, setShowSitePicker] = useState(false);
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
   useEffect(() => {
     isMounted.current = true;
@@ -199,53 +199,44 @@ const useSupervisorDashboard = () => {
     if (isMounted.current) setRefreshing(false);
   }, [fetchAll]);
 
-  // Opens the site picker dialog — actual submission happens in handleSiteSelected
-  const handleCheckIn = useCallback(() => {
-    setShowSitePicker(true);
+  const handleSelectSite = useCallback((site: Site) => {
+    setSelectedSite(site);
   }, []);
 
-  const closeSitePicker = useCallback(() => {
-    setShowSitePicker(false);
-  }, []);
-
-  // Called when supervisor picks a site from the dialog (mobile parity)
-  const handleSiteSelected = useCallback(
-    async (site: Site) => {
-      if (!userProfile?.id) return;
-      setShowSitePicker(false);
-      setCheckingIn(true);
-      try {
-        const location = await getLocation();
-        const checkInTime = formatToApiTime(new Date());
-        await supervisorService.createSupervisorAttendance({
-          date: today,
-          time: checkInTime,
-          siteId: site.id,
-          supervisorId: Number(userProfile.id),
-          currentLocation: {
-            lat: location.lat,
-            lng: location.lng,
-            address: location.address,
-          },
-        });
-        toast.success('Checked in successfully ✓');
-        await fetchAll();
-      } catch (err: any) {
-        if (err?.message === 'LOCATION_PERMISSION_DENIED') {
-          toast.error('Location permission denied. Please allow location access.');
-        } else if (err?.message === 'GEOLOCATION_NOT_SUPPORTED') {
-          toast.error('Your browser does not support location.');
-        } else if (err?.response?.data?.[0]?.message) {
-          toast.error(err.response.data[0].message);
-        } else {
-          toast.error('Check-in failed. Please try again.');
-        }
-      } finally {
-        if (isMounted.current) setCheckingIn(false);
+  const handleMarkAttendance = useCallback(async () => {
+    if (!userProfile?.id || !selectedSite) return;
+    setCheckingIn(true);
+    try {
+      const location = await getLocation();
+      const checkInTime = formatToApiTime(new Date());
+      await supervisorService.createSupervisorAttendance({
+        date: today,
+        time: checkInTime,
+        siteId: selectedSite.id,
+        supervisorId: Number(userProfile.id),
+        currentLocation: {
+          lat: location.lat,
+          lng: location.lng,
+          address: location.address,
+        },
+      });
+      toast.success('Checked in successfully ✓');
+      setSelectedSite(null);
+      await fetchAll();
+    } catch (err: any) {
+      if (err?.message === 'LOCATION_PERMISSION_DENIED') {
+        toast.error('Location permission denied. Please allow location access.');
+      } else if (err?.message === 'GEOLOCATION_NOT_SUPPORTED') {
+        toast.error('Your browser does not support location.');
+      } else if (err?.response?.data?.[0]?.message) {
+        toast.error(err.response.data[0].message);
+      } else {
+        toast.error('Check-in failed. Please try again.');
       }
-    },
-    [userProfile?.id, today, getLocation, fetchAll, supervisorService],
-  );
+    } finally {
+      if (isMounted.current) setCheckingIn(false);
+    }
+  }, [userProfile?.id, today, getLocation, fetchAll, supervisorService, selectedSite]);
 
   // Deletes a specific check-in record (mobile parity — per record, not global)
   const handleCheckOut = useCallback(
@@ -269,7 +260,7 @@ const useSupervisorDashboard = () => {
     mySites,
     mySite,
     availableSites,
-    showSitePicker,
+    selectedSite,
     todayWorkers,
     myTasks,
     weekHistory,
@@ -278,9 +269,8 @@ const useSupervisorDashboard = () => {
     loading,
     checkingIn,
     refreshing,
-    handleCheckIn,
-    closeSitePicker,
-    handleSiteSelected,
+    handleSelectSite,
+    handleMarkAttendance,
     handleCheckOut,
     handleRefresh,
   };

@@ -2,7 +2,6 @@ import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import {
-  ArrowLeft,
   RefreshCw,
   FileText,
   IndianRupee,
@@ -22,7 +21,7 @@ import { RecordCard } from "../../components/RecordCard/RecordCard";
 
 function DetailSkeleton() {
   return (
-    <div className="p-4 space-y-3">
+    <div className="space-y-3 mt-4">
       <div className="flex gap-3">
         <Skeleton className="flex-1 h-20 rounded-xl" />
         <Skeleton className="flex-1 h-20 rounded-xl" />
@@ -48,7 +47,6 @@ export default function WorkerReportDetailsPage() {
     refreshing,
     report,
     totalAmount,
-    handleBack,
     handleRefresh,
     handleAttendanceOpen,
     handleWorkerOpen,
@@ -63,34 +61,25 @@ export default function WorkerReportDetailsPage() {
   const firstItem = report?.items?.[0];
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen w-full px-4 py-6">
       {/* ── Header ── */}
-      <div className=" px-4 pt-4 pb-6 ">
-        <Header
-          title="Worker Report Details"
-          leading={
-            <Button size="icon" variant="ghost" onClick={handleBack}>
-              <ArrowLeft size={20} />
-            </Button>
-          }
-        >
-          <Actions>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-            >
-              <RefreshCw
-                size={14}
-                className={`mr-1 ${refreshing ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </Button>
-          </Actions>
-        </Header>
-      </div>
+      <Header title="Worker Report Details">
+        <Actions>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+          >
+            <RefreshCw
+              size={14}
+              className={`mr-1 ${refreshing ? "animate-spin" : ""}`}
+            />
+            Refresh
+          </Button>
+        </Actions>
+      </Header>
 
       {/* ── Content ── */}
       {loading ? (
@@ -108,7 +97,7 @@ export default function WorkerReportDetailsPage() {
           </p>
         </div>
       ) : (
-        <div className="p-4 space-y-4 -mt-6 pb-24">
+        <div className="space-y-4 mt-4 pb-24">
           {/* ── Summary Cards ── */}
           <div className="flex gap-3">
             {/* Total Records */}
