@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkerReportService } from '../../service/WorkerReportService';
-import { WorkerReportUrls } from '../../utils/urls';
 import type { WorkerReportResponse } from '../../DTOs/Workerreportdetails';
 
 interface Params {
@@ -12,12 +11,12 @@ interface Params {
 }
 
 export function useWorkerReportDetails({ workerId, siteId, fromDate, toDate }: Params) {
-  const navigate               = useNavigate();
-  const workerReportService    = useWorkerReportService();
+  const navigate            = useNavigate();
+  const workerReportService = useWorkerReportService();
 
-  const [loading, setLoading]   = useState(true);
+  const [loading, setLoading]       = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [report, setReport]     = useState<WorkerReportResponse | null>(null);
+  const [report, setReport]         = useState<WorkerReportResponse | null>(null);
 
   const fetchDetails = async () => {
     try {
@@ -49,18 +48,25 @@ export function useWorkerReportDetails({ workerId, siteId, fromDate, toDate }: P
     return report.items.reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
   }, [report?.items]);
 
-  const handleBack = () => navigate(WorkerReportUrls.list);
+  // "/reports/worker" - WorkerReportPage (list)
+  const handleBack = () => navigate('/reports/worker');
 
-  // Navigate to attendance edit — adjust route to your project
+  // "/attendance/:id/edit" - AttendanceEditPage
   const handleAttendanceOpen = (attendanceId: number) =>
-    navigate(`/attendance/edit/${attendanceId}`, {
-      state: { redirect: `/report/worker/${workerId}`, redirectParams: { workerId, siteId, fromDate, toDate } },
+    navigate(`/attendance/${attendanceId}/edit`, {
+      state: {
+        redirect: `/reports/worker/${workerId}`,
+        redirectParams: { workerId, siteId, fromDate, toDate },
+      },
     });
 
-  // Navigate to worker edit — adjust route to your project
+  // "/workers/:id/edit" - WorkerEditPage
   const handleWorkerOpen = (wId: number) =>
-    navigate(`/workers/edit/${wId}`, {
-      state: { redirect: `/report/worker/${workerId}`, redirectParams: { workerId, siteId, fromDate, toDate } },
+    navigate(`/workers/${wId}/edit`, {
+      state: {
+        redirect: `/reports/worker/${workerId}`,
+        redirectParams: { workerId, siteId, fromDate, toDate },
+      },
     });
 
   return {

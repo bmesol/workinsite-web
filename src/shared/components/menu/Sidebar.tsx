@@ -299,25 +299,25 @@
 
 import { Sheet, SheetContent } from "@/shared/components/ui/sheet";
 import { useMenu } from "./useMenu";
-import { LogOut, X, ChevronDown, ChevronUp, ChevronLeft, MapPin, Loader2, Check, Moon, Globe } from "lucide-react";
+import { LogOut, X, ChevronDown, ChevronUp, ChevronLeft, Moon, Globe } from "lucide-react";
 import { MenuItems } from "./MenuItems";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BaseUrls } from "@/shared/utils/UrlPages";
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
-import { useEffect, useMemo, useState } from "react";
-import { useSidebarAttendance } from "./useSidebarAttendance";
+import { useMemo, useState } from "react";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { useTheme } from "@/shared/context/ThemeContext";
 import { ThemeSelector } from "@/shared/components/ThemeSelector/ThemeSelector";
 import { LanguageSelector } from "@/shared/components/LanguageSelector/LanguageSelector";
 import { PermissionHelper } from "@/shared/helpers/PermissionHelper";
+import { ROLE_IDS } from "@/shared/features/rolesandrights/DTOs/DTOs";
 
 type SidebarProps = {
   open: boolean;
   onOpenChange: (value: boolean) => void;
 };
 
-type SidebarView = "menu" | "theme" | "language" | "site-picker";
+type SidebarView = "menu" | "theme" | "language";
 
 const getInitials = (name: string) =>
   name
@@ -353,24 +353,8 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
   const [activeView, setActiveView] = useState<SidebarView>("menu");
 
-  const {
-    isSupervisor,
-    checkedIn,
-    address,
-    loading,
-    mySites,
-    showSitePicker,
-    handleCheckIn,
-    handleSiteSelected,
-    closeSitePicker,
-  } = useSidebarAttendance(open);
-
-  // Mirror site picker state into the sidebar view stack
-  useEffect(() => {
-    if (showSitePicker) setActiveView("site-picker");
-  }, [showSitePicker]);
-
   const userRoleId = AuthHelper.getUserProfile()?.role?.id ?? -1;
+  const isSupervisor = userRoleId === ROLE_IDS.SUPERVISOR;
 
   const filteredMenuItems = useMemo(() => {
     return Object.entries(MenuItems).filter(([_, item]) => {
@@ -501,49 +485,6 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
                 </div>
               </div>
 
-              {isSupervisor && (
-                <div
-                  className="flex items-center justify-between pt-3"
-                  style={{ borderTop: "1px solid var(--border)" }}
-                >
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-xs font-medium" style={{ color: "var(--secondary)" }}>
-                      {checkedIn ? t("Attendance Marked") : t("Mark Attendance")}
-                    </span>
-                    {address && (
-                      <div className="flex items-start gap-1 mt-0.5">
-                        <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: "var(--primary)" }} />
-                        <span className="text-xs leading-tight" style={{ color: "var(--gray-color)", maxWidth: "190px" }}>
-                          {address}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    onClick={handleCheckIn}
-                    disabled={loading || checkedIn}
-                    style={{
-                      width: "26px",
-                      height: "26px",
-                      borderRadius: "7px",
-                      border: `2px solid ${checkedIn ? "#22C55E" : "var(--primary)"}`,
-                      background: checkedIn ? "#22C55E" : "transparent",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: checkedIn ? "default" : "pointer",
-                      flexShrink: 0,
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    {loading ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: "var(--primary)" }} />
-                    ) : (
-                      <Check className="w-3.5 h-3.5" style={{ color: checkedIn ? "#fff" : "transparent" }} />
-                    )}
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* Menu items */}
@@ -711,49 +652,6 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
                 <LogOut className="w-4 h-4" />
                 {t("Logout")}
               </button>
-            </div>
-          </>
-        ) : activeView === "site-picker" ? (
-          <>
-            {/* Site picker header */}
-            <div
-              className="flex items-center gap-3 px-4"
-              style={{
-                background: "var(--primary-side)",
-                borderBottom: "1.5px solid var(--primary)",
-                paddingTop: "22px",
-                paddingBottom: "16px",
-              }}
-            >
-              <button
-                onClick={() => { closeSitePicker(); setActiveView("menu"); }}
-                style={{ background: "none", border: "none", cursor: "pointer" }}
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <span className="text-base font-semibold">{t("Select Site")}</span>
-            </div>
-
-            {/* Site list */}
-            <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
-              {mySites.map((site) => (
-                <div
-                  key={site.id}
-                  onClick={() => { handleSiteSelected(site); setActiveView("menu"); }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition"
-                  style={{
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                  }}
-                >
-                  <span className="flex-1 text-sm font-medium">{site.name}</span>
-                </div>
-              ))}
-              {mySites.length === 0 && (
-                <p className="text-sm text-center" style={{ color: "var(--gray-color)", paddingTop: "24px" }}>
-                  {t("No sites assigned")}
-                </p>
-              )}
             </div>
           </>
         ) : (

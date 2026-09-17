@@ -1,8 +1,7 @@
-import { MapPin, Loader2, CheckCircle2, LogOut, ChevronRight, Users, ClipboardList, CalendarDays, X } from 'lucide-react';
+import { MapPin, Loader2, CheckCircle2, LogOut, ChevronRight, Users, ClipboardList, CalendarDays } from 'lucide-react';
 import { useSupervisorDashboard, type AttendanceItem, type Task, type SupervisorAttendance, type Site } from './useSupervisorDashboard';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
-import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
 
 // ── Section Title ──────────────────────────────────────────────────────────────
 const SectionTitle = ({
@@ -86,16 +85,15 @@ const SupervisorDashboard = () => {
     todayCheckIns,
     mySite,
     availableSites,
-    showSitePicker,
+    selectedSite,
     todayWorkers,
     myTasks,
     weekHistory,
     stats,
     loading,
     checkingIn,
-    handleCheckIn,
-    closeSitePicker,
-    handleSiteSelected,
+    handleSelectSite,
+    handleMarkAttendance,
     handleCheckOut,
   } = useSupervisorDashboard();
 
@@ -177,13 +175,50 @@ const SupervisorDashboard = () => {
           </div>
         )}
 
-        {/* ── Check In button — shown while there are unvisited assigned sites ── */}
+        {/* ── Available Sites — select the site you're working at today ── */}
         {availableSites.length > 0 && (
+          <div>
+            <SectionTitle>{t('Select Your Site')}</SectionTitle>
+            <div className="space-y-2">
+              {availableSites.map((site: Site) => {
+                const isSelected = selectedSite?.id === site.id;
+                return (
+                  <div
+                    key={site.id}
+                    onClick={() => handleSelectSite(site)}
+                    className="flex items-center gap-3 cursor-pointer"
+                    style={{
+                      borderRadius: '1rem',
+                      padding: '1rem',
+                      background: isSelected ? 'var(--primary-side)' : 'var(--card)',
+                      border: `1.5px solid ${isSelected ? 'var(--primary)' : 'var(--border)'}`,
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <SiteDot status={site.status} />
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate" style={{ fontSize: 'var(--font-sm)', fontWeight: 700, color: 'var(--foreground)' }}>
+                        {site.name}
+                      </p>
+                      <p style={{ fontSize: 'var(--font-xs)', color: '#9ca3af', marginTop: 2 }}>{site.status}</p>
+                    </div>
+                    {isSelected && (
+                      <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--primary)' }} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── Mark Attendance — shown only after a site is selected ────── */}
+        {selectedSite && (
           <button
-            onClick={handleCheckIn}
+            onClick={handleMarkAttendance}
             disabled={checkingIn}
             className="w-full flex items-center gap-4"
-            style={{ borderRadius: '1rem', padding: '1.25rem', background: 'var(--primary-side)', border: '1px solid #FDE68A', opacity: checkingIn ? 0.6 : 1 }}
+            style={{ borderRadius: '1rem', padding: '1.25rem', background: 'var(--primary-side)', border: '1.5px solid var(--primary)', opacity: checkingIn ? 0.6 : 1 }}
           >
             {checkingIn ? (
               <Loader2 className="w-6 h-6 animate-spin mx-auto" style={{ color: 'var(--secondary)' }} />
@@ -193,18 +228,14 @@ const SupervisorDashboard = () => {
                   className="flex-shrink-0 flex items-center justify-center"
                   style={{ width: 48, height: 48, borderRadius: '0.75rem', background: 'var(--card)', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#22c55e" strokeWidth={2.5}>
-                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                    <path d="M16 2v4M8 2v4M3 10h18" />
-                    <path d="M9 16l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <MapPin className="w-6 h-6" style={{ color: 'var(--primary)' }} />
                 </div>
                 <div className="text-left">
                   <p style={{ fontSize: 'var(--font-md)', fontWeight: 700, color: 'var(--foreground)' }}>
-                    {isCheckedIn ? t('Check In to Another Site') : t('Check In to Site')}
+                    {t('Mark Attendance')}
                   </p>
                   <p style={{ fontSize: 'var(--font-xs)', color: '#6b7280', marginTop: 2 }}>
-                    {t('Tap to record location & start shift')}
+                    {selectedSite.name} · {t('Tap to record your location')}
                   </p>
                 </div>
               </>
@@ -398,60 +429,6 @@ const SupervisorDashboard = () => {
         <div style={{ height: 24 }} />
       </div>
 
-      {/* ── Site Picker Dialog ───────────────────────────────────────── */}
-      {/* Dialog stays open (showing a spinner) while checkingIn is true, and
-          only closes once handleSiteSelected finishes — this avoids the
-          dialog-close animation overlapping with the page's layout shift. */}
-      <Dialog
-        open={showSitePicker}
-        onOpenChange={(v) => {
-          if (!v && !checkingIn) closeSitePicker();
-        }}
-      >
-        <DialogContent className="max-h-[65vh] overflow-y-auto rounded-2xl sm:max-w-md">
-          <div className="flex items-center justify-between mb-4">
-            <p style={{ fontSize: 'var(--font-md)', fontWeight: 700, color: 'var(--foreground)' }}>
-              {t('Select Site to Check In')}
-            </p>
-            {!checkingIn && (
-              <button onClick={closeSitePicker} aria-label={t('Close')}>
-                <X className="w-5 h-5" style={{ color: '#6b7280' }} />
-              </button>
-            )}
-          </div>
-
-          {checkingIn ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-10">
-              <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--primary)' }} />
-              <p style={{ fontSize: 'var(--font-sm)', color: '#6b7280' }}>{t('Recording your location…')}</p>
-            </div>
-          ) : availableSites.length === 0 ? (
-            <p className="text-center py-6" style={{ color: '#9ca3af', fontSize: 'var(--font-sm)' }}>
-              {t('No available sites')}
-            </p>
-          ) : (
-            <div>
-              {availableSites.map((site: Site, idx: number) => (
-                <div
-                  key={site.id}
-                  onClick={() => handleSiteSelected(site)}
-                  className="flex items-center gap-3 cursor-pointer"
-                  style={{ padding: '0.9rem 0.25rem', borderBottom: idx < availableSites.length - 1 ? '1px solid var(--border)' : undefined }}
-                >
-                  <SiteDot status={site.status} />
-                  <div className="flex-1 min-w-0">
-                    <p className="truncate" style={{ fontSize: 'var(--font-sm)', fontWeight: 700, color: 'var(--foreground)' }}>
-                      {site.name}
-                    </p>
-                    <p style={{ fontSize: 'var(--font-xs)', color: '#9ca3af', marginTop: 2 }}>{site.status}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: '#9ca3af' }} />
-                </div>
-              ))}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
