@@ -29,7 +29,7 @@ const useInputValidate = (props: { name: string; phone?: string }) => {
 }
     }
 
-    // ✅ set all errors in one call — no race condition
+    // set all errors in one call — no race condition
     setError(newError);
     return isValid;
   };

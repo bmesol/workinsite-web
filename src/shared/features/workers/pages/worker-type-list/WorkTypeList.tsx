@@ -44,8 +44,8 @@ const WorkTypeList = (props: WorkTypeListProps) => {
     setDeleteDialogOpen,
   } = useWorkTypeList(props);
 
-  // ✅ FIX: include unitName for both "new" (WorkTypeNew: flat unitId/unitName)
-  // and "update" (WorkType: nested unit object) sources — mirrors mobile's combinedList.
+  // include unitName for both "new" (WorkTypeNew: flat unitId/unitName)
+  // and "update" (WorkType: nested unit object) sources
   const combinedList = [
     ...(workTypeList || []).map((item: any, index) => ({
       name: typeof item === "string" ? item : item.name,
@@ -75,7 +75,7 @@ const WorkTypeList = (props: WorkTypeListProps) => {
         >
           <div className="flex-1 min-w-0">
             <span className="block truncate">{entry.name}</span>
-            {/* ✅ FIX: unit name now rendered, matches mobile's small grey subtitle */}
+            {/* unit name as small grey subtitle */}
             {entry.unitName ? (
               <span className="block text-xs text-gray-500">{entry.unitName}</span>
             ) : null}

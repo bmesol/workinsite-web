@@ -1,4 +1,5 @@
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type { WorkerRole, WorkerRoles } from "../DTOs/WorkRoleProps";
 import type { GetWorkerRoleCostParams, WorkerRoleCost } from "../pages/workerrole-cost-edit/DTOs";
 
@@ -17,25 +18,20 @@ export const useWorkerRoleService = () => {
     WorkerCategoryId,
     ResultLimit,
   }: GetWorkerRolesParams) => {
-    const params = new URLSearchParams();
-    if (WorkerRoleName) params.append("WorkerRoleName", WorkerRoleName);
-    if (WorkerCategoryId !== undefined)
-      params.append("WorkerCategoryId", WorkerCategoryId.toString());
-    if (ResultLimit !== undefined)
-      params.append("ResultLimit", ResultLimit.toString());
-
-    const response = await apiHelper.get(`worker-roles?${params.toString()}`);
-    return response.data;
+    const { data } = await apiHelper.get(
+      `worker-roles?${buildQueryParams({ WorkerRoleName, WorkerCategoryId, ResultLimit })}`,
+    );
+    return data;
   };
 
   const getWorkerRole = async (id: number) => {
-    const response = await apiHelper.get(`worker-roles/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`worker-roles/${id}`);
+    return data;
   };
 
   const createWorkerRole = async (workerRoles: WorkerRole) => {
-    const response = await apiHelper.post("worker-roles", workerRoles);
-    return response.data;
+    const { data } = await apiHelper.post("worker-roles", workerRoles);
+    return data;
   };
 
   const updateWorkerRole = async (id: number, workerRoles: WorkerRoles) => {
@@ -48,8 +44,8 @@ export const useWorkerRoleService = () => {
   };
 
   const getWorkerRoleUsage = async (id: number) => {
-    const response = await apiHelper.get(`worker-roles/${id}/usage`);
-    return response.data;
+    const { data } = await apiHelper.get(`worker-roles/${id}/usage`);
+    return data;
   };
 
   return {
@@ -67,18 +63,18 @@ export const useWorkerRoleCostService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkerRoleCosts = async (params: GetWorkerRoleCostParams) => {
-    const query = new URLSearchParams();
-    if (params.WorkerCategoryId !== undefined)
-      query.append("WorkerCategoryId", params.WorkerCategoryId.toString());
-    if (params.WorkerId !== undefined)
-      query.append("WorkerId", params.WorkerId.toString());
-    const response = await apiHelper.get(`worker-role-costs?${query.toString()}`);
-    return response.data;
+    const { data } = await apiHelper.get(
+      `worker-role-costs?${buildQueryParams({
+        WorkerCategoryId: params.WorkerCategoryId,
+        WorkerId: params.WorkerId,
+      })}`,
+    );
+    return data;
   };
 
   const createWorkerRoleCost = async (cost: WorkerRoleCost) => {
-    const response = await apiHelper.post("worker-role-costs", cost);
-    return response.data;
+    const { data } = await apiHelper.post("worker-role-costs", cost);
+    return data;
   };
 
   return { getWorkerRoleCosts, createWorkerRoleCost };

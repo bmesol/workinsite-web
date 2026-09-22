@@ -68,7 +68,6 @@ export const useWorkModeCreation = () => {
 
   const hasUnsavedChanges = () => name.trim() !== '';
 
-  // ✅ Alert.alert → window.confirm
   const handleBackPress = () => {
     if (hasUnsavedChanges()) {
       const confirmed = window.confirm(

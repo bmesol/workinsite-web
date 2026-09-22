@@ -37,7 +37,6 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
         setLanguage(browserLang as LanguageCode);
       }
     } catch (error) {
-      // ✅ logger.error → console.error
       console.error('LanguageContext: failed to load language', error);
     }
   }, []);
@@ -46,7 +45,6 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     document.documentElement.dataset.lang = language;
   }, [language]);
 
-  // ✅ AsyncStorage.setItem → localStorage.setItem (synchronous, no async needed)
   const setAppLanguage = (lang: LanguageCode) => {
     try {
       localStorage.setItem(STORAGE_KEY, lang);
@@ -56,7 +54,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  // ✅ Same logic — 3 level fallback
+  // 3-level fallback: language → default language → key
   const t = (key: string): string => {
     return (
       translations[language]?.[key] ||
@@ -65,7 +63,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     );
   };
 
-  // ✅ Tamil font scaling — same as React Native
+  // Tamil font scaling
   const getFontSize = (size: number): number => {
     return language === 'ta' ? size * 0.95 : size;
   };

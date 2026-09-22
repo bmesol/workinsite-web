@@ -9,21 +9,21 @@ export const useShiftService = () => {
     searchString: string = '',
     setIsLoading?: boolean,
   ) => {
-    const response = await apiHelper.get(
+    const { data } = await apiHelper.get(
       `shifts?searchString=${searchString}`,
       setIsLoading,
     );
-    return response.data;
+    return data;
   };
 
   const getShift = async (id: number) => {
-    const response = await apiHelper.get(`shifts/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`shifts/${id}`);
+    return data;
   };
 
   const createShift = async (shifts: ShiftRequest) => {
-    const response = await apiHelper.post('shifts', shifts);
-    return response.data;
+    const { data } = await apiHelper.post('shifts', shifts);
+    return data;
   };
 
   const updateShift = async (id: number, shifts: ShiftRequest) => {

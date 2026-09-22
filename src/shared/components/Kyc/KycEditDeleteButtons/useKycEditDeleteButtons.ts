@@ -1,13 +1,12 @@
+import { useListItemDelete } from "@/shared/hooks/useListItemDelete";
 import type { KycEditDeleteButtonsProps } from "./DTOs";
 
 const useKycEditDeleteButtons = (props: KycEditDeleteButtonsProps) => {
   const { details, setDetails } = props;
-
-  const handleDelete = (id: number) => {
-    const filteredKycDetails = details.kycDetails.filter((_, index) => index !== id);
-   setDetails({ kycDetails: filteredKycDetails });
-  };
-
+  const { handleDelete } = useListItemDelete(
+    details.kycDetails,
+    (filtered) => setDetails({ kycDetails: filtered })
+  );
   return { handleDelete };
 };
 

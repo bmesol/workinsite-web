@@ -33,7 +33,7 @@ const ShiftListPage = ({
       isEditing={item.id === editingShiftId}
       actions={[
         { type: "edit", onClick: () => handleShiftEdit(item), disabled: item.id === editingShiftId || !editable },
-        { type: "delete", onClick: () => handleShiftDelete(item.id), disabled: item.id === editingShiftId || !editable || isFixedMultiplier }, // ✅ now in scope
+        { type: "delete", onClick: () => handleShiftDelete(item.id), disabled: item.id === editingShiftId || !editable || isFixedMultiplier },
       ]}
     />
   );

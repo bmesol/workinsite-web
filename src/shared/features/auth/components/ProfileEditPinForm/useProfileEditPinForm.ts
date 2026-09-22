@@ -1,4 +1,4 @@
-import { useUserService } from "@/shared/features/users/services/UserService";
+import { createUserService } from "@/shared/features/users/services/UserService";
 import { useInputValidate } from "@/shared/features/auth/components/InputValidate/useInputValidate";
 import { useState } from "react";
 
@@ -7,12 +7,12 @@ const useProfileEditPinForm = (onClose: () => void) => {
   const [confirmPin, setConfirmPin] = useState("");
 
   const { error, validate } = useInputValidate({ pin, confirmPin });
-  const userService = useUserService();
+  const userService = createUserService();
 
   const handleOnSave = async () => {
     if (validate()) {
       await userService.updateProfilePin(pin);
-      onClose(); // ✅ dialog close pannuvaen
+      onClose();
     }
   };
 

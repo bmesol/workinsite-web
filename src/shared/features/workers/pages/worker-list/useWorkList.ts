@@ -24,7 +24,6 @@ const useWorkerList = () => {
 
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps[]>([]);
 
-  // ✅ Initial load only
   useEffect(() => {
     const initialLoad = async () => {
       setLoading(true);
@@ -38,7 +37,6 @@ const useWorkerList = () => {
     initialLoad();
   }, []);
 
-  // ✅ Search + filter fetch — no full page load
   const fetchWorker = async (overrideFilters?: {
     WorkerName?: string;
     WorkerCategoryId?: number;
@@ -58,7 +56,6 @@ const useWorkerList = () => {
     }
   };
 
-  // ✅ Dialog Search button press
   const handleSearch = () => {
     const filters = [searchText, workerCategory?.name]
       .filter(Boolean)
@@ -67,7 +64,6 @@ const useWorkerList = () => {
     fetchWorker();
   };
 
-  // ✅ Clear all filters
   const handleClearSearch = () => {
     setSearchText("");
     setWorkerCategory({ value: "", name: "" });
@@ -75,7 +71,6 @@ const useWorkerList = () => {
     fetchWorker({ WorkerName: undefined, WorkerCategoryId: undefined });
   };
 
-  // ✅ Worker category search in combobox
   const fetchWorkerCategories = async (searchString: string = "") => {
     const categories = await workerCategoryService.getWorkerCategories(
       searchString,

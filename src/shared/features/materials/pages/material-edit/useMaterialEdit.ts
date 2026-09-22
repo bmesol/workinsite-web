@@ -99,9 +99,7 @@ export const useMaterialEdit = (id: string) => {
   };
 
   const handleSubmission = async (redirectAfter = true) => {
-     console.log('id:', id, 'parsed:', parseInt(id!));
     if (validate()) {
-      console.log('validate passed');
       try {
         const material = {
           name: name.trim(),

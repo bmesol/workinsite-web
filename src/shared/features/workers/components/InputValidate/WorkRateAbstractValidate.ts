@@ -19,7 +19,7 @@ const useWorkRateAbstractValidate = (
   const resetErrors = () => setError(initialError);
 
   const validate = () => {
-    const newError = { ...initialError }; // ✅ single re-render instead of multiple setError calls
+    const newError = { ...initialError }; // single re-render instead of multiple setError calls
     let isValid = true;
 
     const updateError = (field: keyof typeof initialError, message: string) => {
@@ -35,7 +35,7 @@ const useWorkRateAbstractValidate = (
       updateError('totalQuantity', 'Enter a valid quantity');
     if (!unitId) updateError('unit', 'Please select a unit');
 
-    setError(newError); // ✅ single re-render
+    setError(newError);
     return isValid;
   };
 

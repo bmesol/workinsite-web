@@ -6,9 +6,10 @@ import { useMaterialShiftService } from '../../service/MaterialShiftService';
 import { useMaterialUsedService, type AvailableMaterial } from '@/shared/features/materials/service/MaterialUsedService';
 import { useMaterialShiftInputValidate } from '../../components/InputValidate/MaterialShiftInputValidate';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { MaterialShiftCreationRequest } from '../../DTOs/MaterialShiftProps';
 import { MaterialShiftUrls } from '../../utils/urls';
-import { formatDateToString } from '@/shared/utils/function';
+import { formatDateToString } from '@/shared/utils/formatters';
 
 export const useMaterialShiftCreation = () => {
   const navigate = useNavigate();
@@ -125,7 +126,7 @@ export const useMaterialShiftCreation = () => {
   // ─── Fetch helpers ────────────────────────────────────────────────────────
   const getOrFetchAllSites = async (): Promise<Site[]> => {
     if (allSites.length) return allSites;
-    const sites = await siteService.getSites({ status: 'Working' });
+    const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
     if (!sites) return [];
     setAllSites(sites);
     return sites;

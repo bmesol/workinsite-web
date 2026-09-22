@@ -38,7 +38,7 @@ const WorkRateAbstractListPage = () => {
     setSearchText,
   } = useWorkRateAbstractList();
 
-  // ✅ Client-side filter by site name
+  // client-side filter by site name
   const filteredList = workRateAbstract?.filter((item: WorkRateAbstractProps) =>
     item.site?.name?.toLowerCase().includes(searchText.trim().toLowerCase()),
   );
@@ -59,7 +59,7 @@ const WorkRateAbstractListPage = () => {
         </Button>
       </Header>
 
-      {/* ✅ Search bar — same style as WorkerCategoryListPage */}
+      {/* Search bar */}
      <div className="flex justify-end mt-4 mb-4">
   <div className="w-full md:w-3/12">
     <SearchBar
@@ -89,7 +89,7 @@ const WorkRateAbstractListPage = () => {
         )}
       </div>
 
-      {/* ✅ Delete confirm dialog */}
+      {/* Delete confirm dialog */}
       <AlertDialog open={!!deleteId}>
         <AlertDialogContent>
           <AlertDialogHeader>

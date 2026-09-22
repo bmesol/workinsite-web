@@ -46,13 +46,11 @@ const useContactList = () => {
 
   const handleContactSelect = (id: number) => navigate(ContactsUrls.edit(id));
 
-  // ✅ Confirm delete trigger
   const confirmDelete = (e: React.MouseEvent, id: number) => {
     e.stopPropagation();
     setDeleteId(id);
   };
 
-  // ✅ Actual delete
   const handleContactDelete = async (id: number) => {
     try {
       await contactService.deleteContact(id);

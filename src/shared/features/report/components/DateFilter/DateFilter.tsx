@@ -1,7 +1,7 @@
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import type { DateRange, DateRangeOption } from '../../DTOs/WorkerreportProps';
-import { toInputDate, fromInputDate } from '../../utils/DateUtils';
+import { toInputDate, fromInputDate } from '@/shared/utils/formatters';
 
 interface Props {
   selectedOption: DateRangeOption;
@@ -33,8 +33,8 @@ export function DateFilter({ selectedOption, dateRange, setDateRange, onOptionCh
             onClick={() => onOptionChange(opt.key)}
           className={`flex-1 py-2 rounded-lg border text-xs font-medium transition-colors ${
   selectedOption === opt.key
-    ? 'bg-primary text-primary-foreground border-primary'  // ✅ was blue-600
-    : 'bg-background text-slate-700 border-slate-200 hover:border-primary'  // ✅ was blue-300
+    ? 'bg-primary text-primary-foreground border-primary'
+    : 'bg-background text-slate-700 border-slate-200 hover:border-primary'
 }`}
           >
             {opt.label}

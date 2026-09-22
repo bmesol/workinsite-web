@@ -99,7 +99,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
       text: unit,
     });
     if (hsnCode) {
-      row1Items.push({ text: hsnCode, isImage: true }); // ✅ hsn beside unit
+      row1Items.push({ text: hsnCode, isImage: true });
     }
   }
 

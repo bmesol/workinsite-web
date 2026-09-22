@@ -25,7 +25,7 @@
 //  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(PaymentMethodEnum.CASH);
 //   const [clientTransaction, setClientTransaction] = useState<ClientTransactionProps>();
 //   const [loading, setLoading] = useState(true);
-//   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false); // ✅ replaces Alert
+//   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
 //   const today = new Date();
 //   const formatted = formatDateToString(today);
@@ -73,7 +73,7 @@
 
 //   const handleBack = () => {
 //     if (hasUnsavedChanges()) {
-//       setShowUnsavedDialog(true); // ✅ opens AlertDialog
+//       setShowUnsavedDialog(true);
 //     } else {
 //       resetFormFields();
 //       navigate(ClientTransactionUrls.list);
@@ -155,6 +155,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { Client } from '@/shared/features/clients/DTOs/ClientProps';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import { useClientService } from '@/shared/features/clients/service/ClientService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useInputValidate } from '../../components/InputValidate/ClientTransactionInputValidate';
@@ -220,7 +221,7 @@ const useClientTransactionEdit = () => {
   const fetchSplitSites = async (searchString: string = '') => {
     let source = allSplitSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSplitSites(sites);
       source = sites;
@@ -360,8 +361,7 @@ const useClientTransactionEdit = () => {
         })),
       );
       setClientTransaction(data);
-    } catch (error) {
-      console.error('ClientTransactionEdit: fetch failed', error);
+    } catch {
     } finally {
       setLoading(false);
     }

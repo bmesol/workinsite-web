@@ -8,7 +8,7 @@
 
 // const EnsureUnauthenticatedRoute = () => {
 //   const isAuthenticated = AuthHelper.isAuthenticated();
-//   return isAuthenticated ? <Navigate to="/sitelist" replace /> : <Outlet />; // ✅ changed from "/"
+//   return isAuthenticated ? <Navigate to="/sitelist" replace /> : <Outlet />;
 // };
 
 // export { EnsureUnauthenticatedRoute };

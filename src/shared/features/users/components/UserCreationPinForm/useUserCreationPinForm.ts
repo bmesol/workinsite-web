@@ -1,5 +1,5 @@
 import { useInputValidate } from "../InputValidate/InputValidate";
-import { useUserService } from "../../services/UserService";
+import { createUserService } from "../../services/UserService";
 import type { UserBase } from "../../DTOs/UserBase";
 import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
@@ -7,7 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 const useUserCreationPinForm = (userDetail: UserBase, onClose: () => void, queryString?: URLSearchParams) => {
-  const userService = useUserService();
+  const userService = createUserService();
   const navigate = useNavigate();
 
   const redirectUrl = queryString?.get("redirect") || "";
@@ -18,7 +18,7 @@ const useUserCreationPinForm = (userDetail: UserBase, onClose: () => void, query
   paramsArray = paramsArray?.filter((param) => !param.startsWith("supervisorIds="));
   const updatedRedirectUrl = paramsArray?.join("&");
 
-  const { name, phone, roleId } = userDetail;  // ✅ roleId is number from UserBase
+  const { name, phone, roleId } = userDetail;
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
 
@@ -43,9 +43,7 @@ const useUserCreationPinForm = (userDetail: UserBase, onClose: () => void, query
         }
         navigate(UsersUrls.list);
       } catch (error: any) {
-        error.response.data.forEach((i: any) =>
-          toast.error(i.message, { description: "Invalid Request" }) // ✅ replaces useToast
-        );
+        toast.error(error.message, { description: "Invalid Request" });
       }
     }
   };

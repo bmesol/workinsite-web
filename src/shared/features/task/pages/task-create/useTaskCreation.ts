@@ -6,6 +6,7 @@ import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useTaskService } from '../../service/TaskService';
 import { useTaskInputValidate } from '../../components/InputValidate/TaskInputValidate';
 import { priorityTaskType, statusTaskType } from '../../DTOs/TaskProps';
+import { SITE_STATUS, TASK_PRIORITY_OPTIONS, TASK_STATUS_OPTIONS } from '@/shared/constants/appEnums';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { TaskUrls } from '../../utils/urls';
 
@@ -45,16 +46,8 @@ export const useTaskCreation = () => {
     supervisorId,
   });
 
-  const priorityType = [
-    { label: 'Urgent', value: 'Urgent' },
-    { label: 'Ordinary', value: 'Ordinary' },
-  ];
-
-  const workflowStatus = [
-    { label: 'Open', value: 'Open' },
-    { label: 'Completed', value: 'Completed' },
-    { label: 'Closed', value: 'Closed' },
-  ];
+  const priorityType = TASK_PRIORITY_OPTIONS;
+  const workflowStatus = TASK_STATUS_OPTIONS;
 
   // ── Prefill from navigation state (equivalent of mobile's route.params) ──
   useEffect(() => {
@@ -76,7 +69,7 @@ export const useTaskCreation = () => {
     const requestId = ++fetchSitesRequestId.current;
     const sites = await siteService.getSites({
       searchString,
-      status: 'Working',
+      status: SITE_STATUS.WORKING,
     });
     if (!sites) return;
     // A newer request has since been fired — ignore this stale response.

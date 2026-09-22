@@ -6,6 +6,7 @@ import { useWorkModeService } from '@/shared/features/workers/service/WorkerMode
 import { useMaterialUsedService, type AvailableMaterial } from '../../service/MaterialUsedService';
 import { useMaterialUsedInputValidate } from '../../components/InputValidate/MaterialUsedInputValidate';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import type { MaterialUsed } from '@/shared/features/materials/DTOs/MaterialUsedProps';
 import { MaterialUsedUrls } from '../../utils/urls';
@@ -139,7 +140,7 @@ export const useMaterialUsedEdit = (id: string) => {
   const fetchSites = async (searchString: string = '') => {
     let source = allSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSites(sites);
       source = sites;

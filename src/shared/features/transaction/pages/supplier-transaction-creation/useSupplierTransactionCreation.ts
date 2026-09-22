@@ -5,7 +5,7 @@ import { useSupplierService } from '@/shared/features/suppliers/service/Supplier
 import { useSupplierTransactionService } from '../../service/SupplierTransactionService';
 import { useSupplierInputValidate } from '../../components/InputValidate/SupplierTransactionInputValidate';
 import { PaymentMethodEnum } from '../../DTOs/ClientTransaction';
-import { formatDateToString } from '@/shared/utils/function';
+import { formatDateToString } from '@/shared/utils/formatters';
 import { SupplierTransactionUrls } from '../../utils/urls';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 

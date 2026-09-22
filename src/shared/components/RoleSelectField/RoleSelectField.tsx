@@ -39,7 +39,6 @@ const RoleSelectField = ({
   const [open, setOpen] = useState(false);
 
   const selectedItem = items.find((i) => i.value === selectedValue);
-  console.log("role value:", selectedValue, "items:", items.map(i => i.value));
 
   return (
     <FormInput errorMessage={errorMessage}>

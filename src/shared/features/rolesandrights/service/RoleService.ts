@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type { RoleRequest } from '../DTOs/DTOs';
 
 type GetRolesParams = {
@@ -13,16 +14,12 @@ const useRoleService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getRoles = async (params: GetRolesParams = {}) => {
-    const queryParams = new URLSearchParams();
-    if (params.name) queryParams.append('name', params.name);
-    if (params.pageNumber)
-      queryParams.append('pageNumber', params.pageNumber.toString());
-    if (params.pageSize)
-      queryParams.append('pageSize', params.pageSize.toString());
-    if (params.ignorePagination)
-      queryParams.append('ignorePagination', String(params.ignorePagination));
-
-    const { data } = await apiHelper.get(`roles?${queryParams.toString()}`);
+    const { data } = await apiHelper.get(`roles?${buildQueryParams({
+      name: params.name,
+      pageNumber: params.pageNumber,
+      pageSize: params.pageSize,
+      ignorePagination: params.ignorePagination,
+    })}`);
     return data;
   };
 

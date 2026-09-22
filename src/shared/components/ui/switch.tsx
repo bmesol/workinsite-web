@@ -20,7 +20,7 @@ function Switch({
         "data-[size=default]:h-[1.15rem] data-[size=default]:w-8",
         "data-[size=sm]:h-3.5 data-[size=sm]:w-6",
         "data-[state=checked]:bg-primary data-[state=checked]:border-transparent",
-        "data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-border", // ✅ --border color
+        "data-[state=unchecked]:bg-transparent data-[state=unchecked]:border-border",
         "dark:data-[state=unchecked]:bg-input/80",
         className
       )}
@@ -34,7 +34,7 @@ function Switch({
           "group-data-[size=sm]/switch:size-3",
           "data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0",
           "data-[state=checked]:bg-background",
-          "data-[state=unchecked]:bg-[var(--gray-color)]", // ✅ --gray-color
+          "data-[state=unchecked]:bg-[var(--gray-color)]",
           "dark:data-[state=checked]:bg-primary-foreground",
           "dark:data-[state=unchecked]:bg-foreground"
         )}

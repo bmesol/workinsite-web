@@ -295,14 +295,13 @@ const AttendanceEditPage = () => {
               isDisabled={!editable}
             />
 
-            {/* ✅ Cancel + Save buttons */}
             {editable && (
               <div className="flex justify-end gap-2">
                 <Button
                   type="button"
                   variant="outline"
                   className="w-24"
-                  onClick={handleBackPress}  // ✅ Cancel — unsaved changes check பண்ணி navigate
+                  onClick={handleBackPress}
                 >
                   {t('Cancel')}
                 </Button>

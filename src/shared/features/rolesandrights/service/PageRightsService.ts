@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
 export interface PageRight {
   pageId: number;
@@ -20,9 +21,7 @@ const usePageRightsService = () => {
   };
 
   const getPageRights = async (roleId?: number) => {
-    const queryParams = new URLSearchParams();
-    if (roleId) queryParams.append('roleId', roleId.toString());
-    const { data } = await apiHelper.get(`page-rights?${queryParams.toString()}`);
+    const { data } = await apiHelper.get(`page-rights?${buildQueryParams({ roleId })}`);
     return data;
   };
 

@@ -4,7 +4,7 @@ import type { Material } from '../../DTOs/MaterialProps';
 import { ReceivedQualityTypes } from '../../DTOs/PurchaseProps';
 import { usePurchaseMaterialInputValidate } from '../../components/InputValidate/PurchaseMaterialInputValidate';
 import { useMaterialService } from '../../service/MaterialService';
-import { useMaterialPurchaseService } from '../../service/PurchaseService'; // ✅ add
+import { useMaterialPurchaseService } from '../../service/PurchaseService';
 import type {
   PurchaseMaterialCreationListProps,
   PurchaseMaterialUpdationListProps,
@@ -134,7 +134,7 @@ export const usePurchaseMaterialsEdit = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const materialService = useMaterialService();
-  const purchaseService = useMaterialPurchaseService(); // ✅ add
+  const purchaseService = useMaterialPurchaseService();
 
   const { error, validate, setError, initialError } =
     usePurchaseMaterialInputValidate({
@@ -146,7 +146,6 @@ export const usePurchaseMaterialsEdit = ({
       minQuantity,
     });
 
-  // ✅ add fetchMinQuantity
   const fetchMinQuantity = async (purchaseMaterialId: number) => {
     const result = await purchaseService.getMinimumQuantity(purchaseMaterialId);
     if (!result) return;
@@ -170,7 +169,6 @@ export const usePurchaseMaterialsEdit = ({
     validateQuantity(value, minQuantity);
   };
 
-  // ✅ add useEffect for minQuantity
   useEffect(() => {
     if (minQuantity > 0 && receivedQuantity) {
       validateQuantity(receivedQuantity, minQuantity);
@@ -240,7 +238,6 @@ export const usePurchaseMaterialsEdit = ({
       setMaterialList(prev => [v.material, ...prev]);
     }
 
-    // ✅ add fetchMinQuantity call
     if ('purchaseMaterialId' in v && v.purchaseMaterialId) {
       fetchMinQuantity(v.purchaseMaterialId);
     } else {
@@ -269,7 +266,6 @@ export const usePurchaseMaterialsEdit = ({
       setUploadedImages(prev => [...prev, ...compressed]);
     } catch (err) {
       toast.error('An error occurred while processing images.');
-      console.error(err);
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -407,6 +403,6 @@ export const usePurchaseMaterialsEdit = ({
     setShowImage,
     removedImages,
     setRemovedImages,
-    minQuantity, // ✅ add
+    minQuantity,
   };
 };

@@ -6,18 +6,18 @@ export const useWorkTypeService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkTypes = async (searchString: string = "") => {
-    const response = await apiHelper.get(`work-types?searchString=${searchString}`);
-    return response.data;
+    const { data } = await apiHelper.get(`work-types?searchString=${searchString}`);
+    return data;
   };
 
   const getWorkType = async (id: number) => {
-    const response = await apiHelper.get(`work-types/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`work-types/${id}`);
+    return data;
   };
 
   const createWorkType = async (workerRoles: string) => {
-    const response = await apiHelper.post("work-types", workerRoles);
-    return response.data;
+    const { data } = await apiHelper.post("work-types", workerRoles);
+    return data;
   };
 
   const updateWorkType = async (id: number, workerRoles: WorkType) => {
@@ -30,8 +30,8 @@ export const useWorkTypeService = () => {
   };
 
   const getWorkTypeUsage = async (id: number) => {
-    const response = await apiHelper.get(`work-types/${id}/usage`);
-    return response.data;
+    const { data } = await apiHelper.get(`work-types/${id}/usage`);
+    return data;
   };
 
   return {

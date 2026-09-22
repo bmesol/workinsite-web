@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type {
   SupervisorAttendanceCreationRequest,
   SupervisorAttendanceListParams,
@@ -13,22 +14,15 @@ const useSupervisorAttendanceService = () => {
   const getSupervisorAttendances = async (
     params?: SupervisorAttendanceListParams,
   ): Promise<SupervisorAttendanceListResponse> => {
-    const query = new URLSearchParams();
-    if (params?.SupervisorId !== undefined)
-      query.append('SupervisorId', String(params.SupervisorId));
-    if (params?.FromDate)
-      query.append('FromDate', params.FromDate);
-    if (params?.ToDate)
-      query.append('ToDate', params.ToDate);
-    if (params?.PageNumber !== undefined)
-      query.append('PageNumber', String(params.PageNumber));
-    if (params?.PageSize !== undefined)
-      query.append('PageSize', String(params.PageSize));
-    if (params?.IgnorePagination !== undefined)
-      query.append('IgnorePagination', String(params.IgnorePagination));
-
     const { data } = await apiHelper.get(
-      `/supervisor-attendances?${query.toString()}`,
+      `/supervisor-attendances?${buildQueryParams({
+        SupervisorId: params?.SupervisorId,
+        FromDate: params?.FromDate,
+        ToDate: params?.ToDate,
+        PageNumber: params?.PageNumber,
+        PageSize: params?.PageSize,
+        IgnorePagination: params?.IgnorePagination,
+      })}`,
     );
     return data;
   };

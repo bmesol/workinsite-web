@@ -38,10 +38,9 @@
 //     );
 //     const json = await response.json();
     
-//     // ✅ API key இல்லன்னாலும் lat,lng string return பண்ணும்
 //     return json.results?.[0]?.formatted_address || `${lat}, ${lng}`;
 //   } catch {
-//     return `${lat}, ${lng}`; // ✅ Always something return பண்ணும்
+//     return `${lat}, ${lng}`;
 //   }
 // };
 

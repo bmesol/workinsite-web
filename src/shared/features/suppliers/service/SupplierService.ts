@@ -6,13 +6,13 @@ const useSupplierService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getSuppliers = async (searchString: string = "") => {
-    const response = await apiHelper.get(`suppliers?searchString=${searchString}`);
-    return response.data;
+    const { data } = await apiHelper.get(`suppliers?searchString=${searchString}`);
+    return data;
   };
 
   const getSupplier = async (id: number) => {
-    const response = await apiHelper.get(`suppliers/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`suppliers/${id}`);
+    return data;
   };
 
   const createSupplier = async (supplier: SupplierRequest) => {

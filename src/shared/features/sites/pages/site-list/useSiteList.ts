@@ -16,8 +16,8 @@ const useSiteList = () => {
     const initialLoad = async () => {
       setLoading(true);
       try {
-        const siteData = await siteService.getSites({});  // ✅ empty object
-        setSiteDetails(siteData ?? []);  // ✅ undefined safe
+        const siteData = await siteService.getSites({});
+        setSiteDetails(siteData ?? []);
       } finally {
         setLoading(false);
       }
@@ -29,10 +29,10 @@ const useSiteList = () => {
     setSearchLoading(true);
     try {
       const siteData = await siteService.getSites(
-        searchString ? { searchString } : {}  // ✅ empty string-ஆ இருந்தா {} pass
+        searchString ? { searchString } : {}  // empty string-ஆ இருந்தா {} pass
       );
       setHasSearchFilter(searchString !== "");
-      setSiteDetails(siteData ?? []);  // ✅ undefined safe
+      setSiteDetails(siteData ?? []);
     } finally {
       setSearchLoading(false);
     }

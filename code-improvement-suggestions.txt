@@ -1,0 +1,612 @@
+================================================================================
+  CODE IMPROVEMENT SUGGESTIONS — workinsite-web
+  Analyzed: 519 source files across 16 feature areas
+================================================================================
+
+LEGEND
+  [DUP]  = Duplicate / redundant code
+  [CLEAN] = Code cleanup / dead code
+  [REUSE] = Reusable component or hook opportunity
+  [READ]  = Readability improvement
+  [MAINT] = Maintainability improvement
+  [PERF]  = Performance improvement
+
+================================================================================
+SECTION 1 — SHARED FORM FIELD COMPONENTS
+================================================================================
+
+[DUP] 1.1  Eight near-identical input field components
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/FormFields/AadhaarNumberField.tsx
+  src/shared/components/FormFields/EmailField.tsx
+  src/shared/components/FormFields/NameField.tsx
+  src/shared/components/FormFields/PhoneNumberField.tsx
+  src/shared/components/FormFields/GstNumberField.tsx
+  src/shared/components/FormFields/PanNumberField.tsx
+  src/shared/components/FormFields/UpiIdField.tsx
+  src/shared/components/FormFields/IfscCodeFiled.tsx
+
+Issue:
+  All eight components follow the exact same structure:
+    1. Import FormInput, Input, Label, InputPropTypes, useInputField, useLanguage
+    2. Destructure props identically
+    3. Call useInputField(props)
+    4. Define a handleChange that runs a regex check + length cap, then calls handleInputChange
+    5. Render the same FormInput > Label > Input JSX skeleton
+
+  The only differences between them are the regex pattern, max length, and optional
+  string transform (e.g., toUpperCase). ~250 lines of near-identical code.
+
+Suggestion:
+  Enhance useInputField.ts to accept a validator config:
+    { regex?: RegExp; maxLength?: number; transform?: (v: string) => string }
+  Then each field component becomes a thin wrapper:
+    export const AadhaarNumberField = (props) =>
+      <GenericInputField {...props} regex={/^\d*$/} maxLength={12} />;
+  This reduces ~250 lines to ~50 and puts all validation logic in one place.
+
+[READ] 1.2  Inconsistent label className across input fields
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/FormFields/AadhaarNumberField.tsx  (line ~24)
+  src/shared/components/FormFields/EmailField.tsx          (line ~22)
+  src/shared/components/FormFields/NameField.tsx           (line ~37)
+  src/shared/components/FormFields/PhoneNumberField.tsx    (line ~36)
+
+Issue:
+  AadhaarNumberField uses className="text-destructive" on its label while the
+  other three use "mb-1 text-base font-medium text-black flex items-center gap-0.5".
+  Inconsistent styling means required-field indicators look different across forms.
+
+Suggestion:
+  Extract a shared <RequiredLabel /> sub-component with a single consistent className.
+
+[MAINT] 1.3  InputPropTypes contains SelectField-specific property
+-------------------------------------------------------------------------------
+File: src/shared/components/FormFields/InputPropTypes.ts  (line ~12)
+
+Issue:
+  The `items` property (used only by SelectField/ComboBoxField) is defined in the
+  base InputPropTypes interface that all input fields extend. Every text-input field
+  inherits an irrelevant prop.
+
+Suggestion:
+  Extract SelectInputPropTypes that extends InputPropTypes and adds `items`.
+  Keep InputPropTypes clean for text-based fields.
+
+[CLEAN] 1.4  Typo in filename
+-------------------------------------------------------------------------------
+File: src/shared/components/FormFields/IfscCodeFiled.tsx
+
+Issue:
+  "Filed" should be "Field". All other files in this directory use "Field".
+  The typo will confuse imports and auto-complete.
+
+Suggestion:
+  Rename to IfscCodeField.tsx and update the import wherever it is used.
+
+[READ] 1.5  DateOfBirthField uses native <input> instead of UI library <Input />
+-------------------------------------------------------------------------------
+File: src/shared/components/FormFields/DateOfBirthField.tsx  (lines ~27-35)
+
+Issue:
+  All other field components use the shared <Input /> component from the UI library.
+  DateOfBirthField uses a raw native <input> element, making it visually inconsistent
+  and bypassing any shared Input behavior (focus ring, disabled state, etc.).
+
+Suggestion:
+  Replace the native <input> with the shared <Input /> component, passing type="date".
+
+
+================================================================================
+SECTION 2 — SELECT & COMBOBOX COMPONENTS
+================================================================================
+
+[DUP] 2.1  ComboBoxField and SelectField share ~150 lines of duplicated logic
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/FormFields/ComboBoxField.tsx  (lines ~36-167)
+  src/shared/components/FormFields/SelectField.tsx    (lines ~24-112)
+
+Issue:
+  Both components duplicate:
+  - Open/close state management
+  - Label rendering
+  - Trigger button JSX
+  - Selected-value display
+  - Error message display
+  - Item iteration and selection handler
+  The only meaningful difference is that ComboBoxField wraps items in shadcn's
+  Command (for keyboard search) while SelectField uses a plain div list.
+
+Suggestion:
+  Merge into a single SelectComboField.tsx with a `searchable?: boolean` prop.
+  When searchable=false, render the plain list (current SelectField behavior).
+  When searchable=true, render the Command wrapper (current ComboBoxField behavior).
+  Eliminates ~120 lines of structural duplication.
+
+
+================================================================================
+SECTION 3 — BANK ACCOUNT & KYC FORMS
+================================================================================
+
+[DUP] 3.1  BankAccount Create and Edit forms are nearly identical
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/BankAccount/BankAccountCreateForm/BankAccountCreateForm.tsx
+  src/shared/components/BankAccount/BankAccountCreateForm/useBankAccountCreateForm.ts
+  src/shared/components/BankAccount/BankAccountEditForm/BankAccountEditForm.tsx
+  src/shared/components/BankAccount/BankAccountEditForm/useBankAccountEditForm.ts
+
+Issue:
+  The two form components render the exact same fields. Their hooks follow the same
+  structure (useState → validate → submit). The only differences are:
+  - The button label ("Add" vs "Update")
+  - Initial state source (empty vs selectedItem from props)
+  - The API call invoked on submit
+
+Suggestion:
+  Merge into a single BankAccountForm.tsx + useBankAccountForm.ts.
+  Drive the mode via a prop (e.g., mode: 'create' | 'edit').
+  The hook initialises state from selectedItem when mode='edit', otherwise empty.
+
+[DUP] 3.2  KYC Create and Edit forms follow the same duplication pattern
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/Kyc/KycCreateForm/KycCreateForm.tsx
+  src/shared/components/Kyc/KycCreateForm/useKycCreateForm.ts
+  src/shared/components/Kyc/KycEditForm/KycEditForm.tsx
+  src/shared/components/Kyc/KycEditForm/useKycEditForm.ts
+
+Issue:
+  Same as item 3.1 — both wrap KycInputFields identically and share the same
+  validation/state-management pattern. Only the button label and API action differ.
+
+Suggestion:
+  Same approach as 3.1: merge into KycForm.tsx + useKycForm.ts with mode prop.
+
+[DUP] 3.3  Delete-item logic duplicated in BankAccount and KYC edit-delete hooks
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/BankAccount/BankAccountEditDeleteButton/useBankAccountEditDeleteButtons.ts
+  src/shared/components/Kyc/KycEditDeleteButtons/useKycEditDeleteButtons.ts
+
+Issue:
+  Both hooks implement handleDelete as:
+    const filtered = details.<field>.filter((_, i) => i !== id);
+    setDetails({ <field>: filtered });
+  The logic is identical; only the field name differs.
+
+Suggestion:
+  Extract a generic useListItemDelete<T> hook:
+    (items: T[], setItems: (items: T[]) => void) => { handleDelete }
+  Both hooks become one-liners that call this shared hook.
+
+
+================================================================================
+SECTION 4 — CARD & STAT COMPONENTS
+================================================================================
+
+[DUP] 4.1  StatCard, DashboardStatCard, and AttendanceCard share display logic
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/StatCard/StatCard.tsx           (~31 lines)
+  src/shared/components/DashboardStatCard/DashboardStatCard.tsx  (~50 lines)
+  src/shared/components/AttendanceCard/AttendanceCard.tsx        (~93 lines)
+
+Issue:
+  All three display a numeric value + label + background color. StatCard and
+  DashboardStatCard both render value as text-xl font-extrabold truncate (different
+  HTML tags: span vs p — inconsistent). AttendanceCard adds an icon and a click
+  handler but shares the same core value/label layout.
+
+Suggestion:
+  Extract a shared <ValueLabel /> sub-component for the value+label block.
+  The three cards can then compose it instead of duplicating the typography.
+
+[DUP] 4.2  MaterialCard, MaterialReportCard, MaterialUsedCard overlap
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/MaterialCard/MaterialCard.tsx
+  src/shared/components/MaterialReportCard/MaterialReportCard.tsx
+  src/shared/components/MaterialUsedCard/MaterialUsedCard.tsx
+
+Issue:
+  Three separate card components for material-related data. Review whether their
+  layouts share enough structure to extract a common material card shell.
+
+Suggestion:
+  Audit the three components side-by-side. If they share icon, title, and value
+  layouts, consolidate into a single MaterialCard with variant prop.
+
+
+================================================================================
+SECTION 5 — SEARCH BAR COMPONENTS
+================================================================================
+
+[DUP] 5.1  SearchBar and SearchFilterBar share icon-styling boilerplate
+-------------------------------------------------------------------------------
+Files:
+  src/shared/components/SearchBar/SearchBar.tsx        (lines ~47-54)
+  src/shared/components/SearchFilterBar/SearchFilterBar.tsx  (lines ~32-34)
+
+Issue:
+  Both components repeat the same icon style block:
+    style={{ height: '16px', width: '16px', color: 'var(--gray-color)' }}
+  Both also share focus-state handling and a clear-button pattern.
+
+Suggestion:
+  Define a shared iconStyle constant once (e.g., in a search-utils.ts or inline
+  in a shared base component) and reference it in both components.
+
+
+================================================================================
+SECTION 6 — LIST HOOKS (CRITICAL DUPLICATION)
+================================================================================
+
+[DUP] 6.1  Eight list/fetch hooks follow the same structure
+-------------------------------------------------------------------------------
+Files:
+  src/shared/features/workers/pages/worker-list/useWorkList.ts
+  src/shared/features/users/pages/user-list-page/useUserList.ts
+  src/shared/features/clients/pages/client-list/useClientList.ts
+  src/shared/features/suppliers/pages/supplier-list/useSupplierList.ts
+  src/shared/features/task/pages/task-list/useTaskList.ts
+  src/shared/features/report/pages/worker-report/useWorkerReport.ts
+  src/shared/features/report/pages/supervisor-attendance-list/useSuperVisorAttendanceList.ts
+  src/shared/features/attendance/pages/attendance-list/useAttendanceList.ts
+
+Issue:
+  Every hook duplicates the same pattern:
+    1. useState for data, loading, searchLoading, error
+    2. useEffect on mount to load initial data
+    3. A fetch function that builds URLSearchParams and calls the service
+    4. A delete handler with confirmation + refresh
+    5. A search/filter handler that re-fetches with new params
+    6. An applied-filters state + reset handler
+  This is ~60-130 lines per hook, all structurally identical.
+
+Suggestion:
+  Create a generic useListPage<T> hook (or useListWithFilters<T>) that accepts:
+    - fetchFn: (params) => Promise<{ items: T[]; total: number }>
+    - deleteFn?: (id) => Promise<void>
+    - defaultFilters?: Partial<FilterState>
+  Each feature hook then becomes ~10 lines of config wrapping the generic hook.
+  This is the highest-impact refactor in the codebase — affects 8 hooks.
+
+[MAINT] 6.2  Inconsistent loading state naming across list hooks
+-------------------------------------------------------------------------------
+Files: All list hooks listed in 6.1
+
+Issue:
+  - useWorkList uses: loading + searchLoading + deleteId
+  - useAttendanceList uses: loading + paginationLoading
+  - useClientList uses: loading only
+  - useTaskList uses: loading only
+  Different names for the same concept makes it harder to compose or reason about
+  loading states across features.
+
+Suggestion:
+  Standardize to a single naming convention, e.g.:
+    isLoading (initial fetch), isSearching (filter/search re-fetch), isDeleting
+
+
+================================================================================
+SECTION 7 — SERVICE LAYER
+================================================================================
+
+[DUP] 7.1  URLSearchParams building is repeated in 28+ service files
+-------------------------------------------------------------------------------
+Files (sample):
+  src/shared/features/attendance/service/AttendanceService.ts     (lines ~18-27)
+  src/shared/features/workers/service/WorkerService.ts
+  src/shared/features/report/service/WorkerReportService.ts       (lines ~12-23)
+  src/shared/features/transaction/service/ClientTransactionService.ts (lines ~17-27)
+  src/shared/features/materials/service/PurchaseService.ts        (lines ~17-24)
+  src/shared/features/rolesandrights/service/PageService.ts       (lines ~26-34)
+  ... and 22+ more files
+
+Issue:
+  Every service manually creates a URLSearchParams object and appends params
+  inside if/conditional blocks. This boilerplate appears 96+ times across the
+  codebase. A single misplaced `if` can silently omit a filter.
+
+Suggestion:
+  Create src/shared/utils/buildQueryParams.ts:
+    export const buildQueryParams = (params: Record<string, unknown>): string => {
+      const q = new URLSearchParams();
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') q.append(k, String(v));
+      });
+      return q.toString();
+    };
+  Replace all manual URLSearchParams blocks with a single call to this utility.
+
+[MAINT] 7.2  Inconsistent service response extraction
+-------------------------------------------------------------------------------
+Files (sample):
+  src/shared/features/users/services/UserService.ts       (line ~21: response.data)
+  src/shared/features/task/service/TaskService.ts         (line ~9:  destructured { data })
+  src/shared/features/rolesandrights/service/RoleService.ts (line ~25: destructured { data })
+  src/shared/features/workers/service/WorkerService.ts    (line ~21: response.data?.items ?? response.data)
+
+Issue:
+  Three different patterns for extracting the response body from axios calls.
+  Mixed usage makes it unclear which shape to expect, especially in error paths.
+
+Suggestion:
+  Pick one pattern and apply it consistently across all services.
+  The safest is destructured: `const { data } = await apiClient.get(...)`.
+
+[MAINT] 7.3  Inconsistent service export and naming conventions
+-------------------------------------------------------------------------------
+Files (sample):
+  src/shared/features/rolesandrights/service/PageService.ts    — exports GetPages (PascalCase)
+  src/shared/features/materials/service/MaterialService.ts     — exports useMaterialService (hook naming)
+  src/shared/features/workers/service/WorkerRoleService.ts     — exports useWorkerRoleService
+  src/shared/features/contacts/service/ContactService.ts       — exports { useContactService }
+
+Issue:
+  Service functions use three different conventions: PascalCase, camelCase,
+  and hook-style (use* prefix). Hook naming (use*) should be reserved for React
+  hooks that call useState/useEffect, not plain async service functions.
+
+Suggestion:
+  Standardize all service functions to camelCase exports (e.g., getPages, getWorkers).
+  Reserve the use* prefix for actual React hooks only.
+
+[MAINT] 7.4  API client error interceptor discards error context
+-------------------------------------------------------------------------------
+File: src/shared/services/ApiClient.ts  (lines ~17-21)
+
+Issue:
+  The response error interceptor just re-throws the raw axios error with no
+  transformation. Callers receive inconsistent error shapes (network error vs
+  HTTP 4xx vs HTTP 5xx) and each one handles it differently.
+
+Suggestion:
+  In the interceptor, normalize errors into a single AppError shape before
+  re-throwing, e.g.: { status: number; message: string; code?: string }.
+  This lets all catch blocks handle one known type instead of raw AxiosError.
+
+
+================================================================================
+SECTION 8 — CONSTANTS & ENUMS
+================================================================================
+
+[MAINT] 8.1  Status strings hardcoded in multiple files instead of shared constants
+-------------------------------------------------------------------------------
+Files (sample):
+  src/shared/features/sites/DTOs/SiteProps.ts          (lines ~5-10)
+  src/shared/features/task/DTOs/TaskProps.ts            (lines ~90-99)
+  src/shared/features/task/pages/task-create/useTaskCreation.ts  (lines ~48-57)
+
+Issue:
+  Status/enum values like "Yet to start", "Working", "Hold", "Completed",
+  and task priority levels are defined inline in component DTOs or hooks.
+  If a status string changes on the backend, it must be updated in multiple places.
+
+Suggestion:
+  Create src/shared/constants/appEnums.ts with typed const objects:
+    export const SITE_STATUS = {
+      YET_TO_START: "Yet to start",
+      WORKING: "Working",
+      HOLD: "Hold",
+      COMPLETED: "Completed",
+    } as const;
+  Import from this single source everywhere.
+
+
+================================================================================
+SECTION 9 — DATE & FORMATTING UTILITIES
+================================================================================
+
+[DUP] 9.1  Two separate date/currency formatting utility files with different formats
+-------------------------------------------------------------------------------
+Files:
+  src/shared/features/report/utils/DateUtils.ts   (formatDate → "dd-mm-yyyy")
+  src/shared/utils/function.ts                     (formatDateToString → "dd/mm/yyyy")
+
+Issue:
+  Two different utility files format dates with different separators (hyphen vs slash).
+  Both also contain overlapping functions (toInputDate, fromInputDate, getWeekRange).
+  This inconsistency silently produces different date strings depending on which
+  utility is imported. ~102 files have date formatting calls.
+
+Suggestion:
+  Merge into a single src/shared/utils/formatters.ts.
+  Define one canonical date format string as a named constant and use it everywhere.
+  Remove the redundant DateUtils.ts or re-export from it for backward compatibility
+  while migrating.
+
+
+================================================================================
+SECTION 10 — DEAD CODE & DEBUG STATEMENTS
+================================================================================
+
+[CLEAN] 10.1  console.log / console.error statements throughout production code
+-------------------------------------------------------------------------------
+Files (sample — not exhaustive):
+  src/shared/features/workers/pages/worker-creation/useWorkerCreation.ts        (line ~250)
+  src/shared/features/workers/pages/workrate-abstract-edit/useWorkRateAbstractEdit.ts (lines ~118, 137)
+  src/shared/features/users/pages/user-creation-page/useUserCreation.ts         (line ~31)
+  src/shared/features/report/pages/worker-report-details/useWorkerReportDetails.ts (line ~32)
+  src/shared/features/report/pages/worker-report/useWorkerReport.ts             (line ~130)
+  src/shared/features/auth/pages/sign-up-page/SignUpPage.tsx                    (lines ~69-75)
+  src/shared/features/report/pages/supervisor-attendance-list/useSuperVisorAttendanceList.ts (lines ~92, 107, 147)
+  src/shared/features/report/pages/available-material-report/useAvailableMaterialReport.ts  (lines ~57, 66, 113)
+  src/shared/features/report/pages/inventory-stock-report/useInventoryStockReport.ts (lines ~64, 77)
+  src/shared/features/auth/helpers/AuthHelper.ts                                (lines ~183, 235)
+  src/shared/features/transaction/pages/worker-transaction-list/useWorkerTransactionList.ts (line ~76)
+  src/shared/features/transaction/pages/worker-transaction-edit/useWorkerTransactionEdit.ts (line ~121)
+  src/shared/features/transaction/pages/client-transaction-edit/useClientTransactionEdit.ts (line ~364)
+  src/shared/features/transaction/pages/supplier-transaction-edit/useSupplierTransactionEdit.ts (line ~122)
+  src/shared/features/attendance/pages/attendance-creation/useAttendanceCreation.ts (lines ~103, 224)
+  src/shared/features/dashboard/Engineering-dashboard/useEngineeringDashboard.ts (line ~145)
+  src/shared/features/materials/pages/material-edit/useMaterialEdit.ts          (lines ~102, 104)
+  src/shared/features/materials/pages/purchase-material-edit/usePurchaseMaterialEdit.ts (line ~272)
+
+  SignUpPage.tsx is particularly notable — it logs { name, phone, pin, confirmPin }
+  which includes sensitive credential data.
+
+Issue:
+  Debug console statements expose internal state, stack traces, and potentially
+  sensitive data in browser DevTools. They also add noise that makes real runtime
+  errors harder to find.
+
+Suggestion:
+  Remove all console.log/error statements.
+  For error paths that need observability, replace with a proper error-reporting
+  service call (e.g., Sentry, or a shared logError() utility).
+
+[CLEAN] 10.2  Large blocks of commented-out old code
+-------------------------------------------------------------------------------
+Files:
+  src/shared/features/users/pages/user-list-page/useUserList.ts   (lines ~1-26)
+  src/shared/features/auth/services/AuthService.ts                (lines ~1-49)
+  src/shared/features/auth/helpers/AuthHelper.ts                  (lines ~1-106)
+
+Issue:
+  Commented code bloats files, creates confusion about which version is active,
+  and gives a false sense that the old code might be needed again.
+  Git history already preserves previous implementations.
+
+Suggestion:
+  Delete all commented-out code blocks. Use `git log` or `git blame` to recover
+  old implementations if ever needed.
+
+[CLEAN] 10.3  Emoji-based marker comments used as inline changelog
+-------------------------------------------------------------------------------
+Files (sample):
+  src/shared/features/workers/pages/workrate-abstract-edit/useWorkRateAbstractEdit.ts
+    (lines ~44, 67, 75, 125, 144, 226 — contains ✅ ❌ markers)
+  src/shared/features/users/pages/user-list-page/useUserList.ts
+    (lines ~40-57 — ✅ markers)
+  src/shared/features/workers/pages/worker-list/useWorkList.ts
+    (lines ~27, 41, 61, 70, 78 — ✅ markers)
+  src/shared/features/attendance/pages/attendance-creation/useAttendanceCreation.ts
+    (lines ~347-387 — ✅ markers)
+  src/shared/features/workers/pages/worker-edit/useWorkerEdit.ts
+    (lines ~15, 24, 46, 82, 92, 235 — ✅ markers)
+  src/shared/features/materials/pages/material-list/useMaterialList.ts
+    (lines ~36, 41 — ✅ markers)
+
+Issue:
+  60+ emoji markers (✅, ❌, ✅ FIX, ✅ NEW, ❌ REMOVED) are used to annotate
+  past changes inline. These are commit-message concerns, not code concerns.
+  They clutter the code and become misleading as the code evolves further.
+
+Suggestion:
+  Remove all emoji-based change markers. The reasoning behind changes belongs
+  in git commit messages, not in source files.
+
+  
+
+
+================================================================================
+SECTION 11 — LARGE / COMPLEX HOOKS
+================================================================================
+
+[MAINT] 11.1  useTaskNotifications hook is too large and mixes concerns
+-------------------------------------------------------------------------------
+File: src/shared/features/notifications/hooks/useTaskNotifications.ts  (~244 lines)
+
+Issue:
+  The hook handles three unrelated concerns in one file:
+  1. localStorage read/write for notification persistence  (lines ~15-65)
+  2. Building notification objects from raw task data      (lines ~67-85)
+  3. Polling, filtering, and deduplication logic           (lines ~87-242)
+  This makes it hard to test, understand, or reuse any single concern.
+
+Suggestion:
+  Split into three focused hooks:
+  - useNotificationStorage()   — handles localStorage
+  - useNotificationBuilder()   — transforms raw data into notification objects
+  - useTaskPolling()           — handles polling and filter logic
+  useTaskNotifications becomes a thin composition of the three.
+
+[MAINT] 11.2  useAttendanceCreation is very long (~390 lines)
+-------------------------------------------------------------------------------
+File: src/shared/features/attendance/pages/attendance-creation/useAttendanceCreation.ts
+
+Issue:
+  The hook combines site fetching, worker fetching, GPS/location handling,
+  attendance creation, and work-quantity reporting in one ~390-line file.
+  Any change to one concern risks breaking another.
+
+Suggestion:
+  Extract focused sub-hooks:
+  - useSiteAndWorkerLoad()   — data fetching
+  - useLocationCapture()     — GPS and address resolution
+  - useAttendanceSubmit()    — form validation and submission
+
+
+================================================================================
+SECTION 12 — ROLES & PERMISSIONS SERVICES
+================================================================================
+
+[MAINT] 12.1  Three tightly coupled RBAC services with no shared interface
+-------------------------------------------------------------------------------
+Files:
+  src/shared/features/rolesandrights/service/RoleService.ts        (~55 lines)
+  src/shared/features/rolesandrights/service/PageService.ts        (~65 lines)
+  src/shared/features/rolesandrights/service/PageRightsService.ts  (~45 lines)
+
+Issue:
+  The three services manage closely related concerns (roles, pages, and page-rights)
+  but share no interface, utility, or type definitions. Permission checks are
+  scattered across feature hooks rather than centralised.
+
+Suggestion:
+  Define a shared permissions types file (RBACTypes.ts).
+  Consider a thin RBACService facade that composes the three services so that
+  feature hooks call one place for permission data instead of three.
+
+
+================================================================================
+SECTION 13 — SHARED UTILITIES
+================================================================================
+
+[MAINT] 13.1  lib/utils.ts contains only the `cn` helper — too minimal
+-------------------------------------------------------------------------------
+File: src/shared/components/lib/utils.ts  (7 lines)
+
+Issue:
+  The utils file exists but is nearly empty. Common utility needs (response
+  normalization, pagination helpers, status-code mapping) end up duplicated
+  inline in individual hooks and services.
+
+Suggestion:
+  This file (or a dedicated src/shared/utils/ directory) should be the home for:
+  - buildQueryParams (see item 7.1)
+  - Date/number formatters (see item 9.1)
+  - AppError normalization (see item 7.4)
+  - Any other shared pure functions
+
+
+================================================================================
+PRIORITY SUMMARY
+================================================================================
+
+  Priority  | Item(s)           | Description                             | Effort
+  ----------|-------------------|-----------------------------------------|-------
+  HIGH      | 6.1               | Generic list hook (8 duplicates)        | Medium
+  HIGH      | 1.1               | Generic input field (8 duplicates)      | Medium
+  HIGH      | 10.1              | Remove console.log incl. sensitive data | Low
+  HIGH      | 7.1               | buildQueryParams utility (96+ sites)    | Low
+  MEDIUM    | 3.1, 3.2          | Merge Create/Edit form pairs            | Medium
+  MEDIUM    | 9.1               | Consolidate date formatter utilities    | Medium
+  MEDIUM    | 10.2              | Remove commented-out code blocks        | Low
+  MEDIUM    | 2.1               | Merge ComboBox/Select into one          | Medium
+  MEDIUM    | 11.1              | Split useTaskNotifications              | Medium
+  MEDIUM    | 8.1               | Centralise status/enum constants        | Low
+  LOW       | 10.3              | Remove emoji change markers             | Low
+  LOW       | 7.2, 7.3          | Standardise service patterns            | Low
+  LOW       | 1.4               | Fix IfscCodeFiled.tsx typo              | Low
+  LOW       | 4.1, 4.2          | Consolidate card components             | Low
+  LOW       | 5.1               | SearchBar shared icon style             | Low
+
+================================================================================
+END OF SUGGESTIONS
+================================================================================

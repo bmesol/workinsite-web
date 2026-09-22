@@ -6,6 +6,7 @@ import { useAttendanceService } from '@/shared/features/attendance/service/Atten
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useTaskService } from '@/shared/features/task/service/TaskService';
 import { useCurrentLocation } from '@/shared/hooks/useCurrentLocation';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 
 // Types
 export type Site = {
@@ -107,7 +108,7 @@ const useSupervisorDashboard = () => {
         .map((c) => c.site?.id)
         .filter((id): id is number => id !== undefined),
     );
-    return mySites.filter((s) => s.status === 'Working' && !checkedInIds.has(s.id));
+    return mySites.filter((s) => s.status === SITE_STATUS.WORKING && !checkedInIds.has(s.id));
   }, [mySites, todayCheckIns]);
 
   const fetchAll = useCallback(async () => {

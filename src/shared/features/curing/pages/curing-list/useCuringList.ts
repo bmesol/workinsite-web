@@ -7,6 +7,7 @@ import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import type { CuringDTO } from '../../DTOs/CuringProps';
 import type { CuringType } from '../../DTOs/CuringTypeProps';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import { CuringUrls } from '../../utils/urls';
 
 const useCuringList = () => {
@@ -37,7 +38,7 @@ const useCuringList = () => {
 
   // ── Fetch helpers ─────────────────────────────────────────────────────────
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
+    const sites = await siteService.getSites({ searchString, status: SITE_STATUS.WORKING });
     if (!sites) return;
     setSiteList(searchString ? sites.slice(0, 3) : sites);
   };

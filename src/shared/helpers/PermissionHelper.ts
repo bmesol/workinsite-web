@@ -19,7 +19,7 @@ export const PermissionHelper = {
     const right = user.pageRights?.find(
       (p) => p.name.toLowerCase() === page.toLowerCase(),
     );
-    // ✅ Fix: cast number → RoleLevel enum
+    // cast number → RoleLevel enum
     return (right?.roleLevel as RoleLevel) ?? RoleLevel.NONE;
   },
 

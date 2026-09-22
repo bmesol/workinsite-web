@@ -1,4 +1,5 @@
 import { userApiClient } from "@/shared/services/ApiClient";
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
 // DTOs
 export type RoleRequest = {
@@ -13,26 +14,25 @@ type GetRolesParams = {
   ignorePagination?: boolean;
 };
 
-const useRoleService = () => {
+const createRoleService = () => {
   const getRoles = async (params: GetRolesParams = {}) => {
-    const queryParams = new URLSearchParams();
-    if (params.name) queryParams.append("name", params.name);
-    if (params.pageNumber) queryParams.append("pageNumber", params.pageNumber.toString());
-    if (params.pageSize) queryParams.append("pageSize", params.pageSize.toString());
-    if (params.ignorePagination) queryParams.append("ignorePagination", String(params.ignorePagination));
-
-    const response = await userApiClient.get(`roles?${queryParams.toString()}`);
-    return response.data;
+    const { data } = await userApiClient.get(`roles?${buildQueryParams({
+      name: params.name,
+      pageNumber: params.pageNumber,
+      pageSize: params.pageSize,
+      ignorePagination: params.ignorePagination,
+    })}`);
+    return data;
   };
 
   const createRole = async (role: RoleRequest) => {
-    const response = await userApiClient.post("roles", role);
-    return response.data;
+    const { data } = await userApiClient.post("roles", role);
+    return data;
   };
 
   const getRole = async (id: number) => {
-    const response = await userApiClient.get(`roles/${id}`);
-    return response.data;
+    const { data } = await userApiClient.get(`roles/${id}`);
+    return data;
   };
 
   const updateRole = async (id: number, role: RoleRequest) => {
@@ -52,4 +52,4 @@ const useRoleService = () => {
   };
 };
 
-export { useRoleService };
+export { createRoleService };

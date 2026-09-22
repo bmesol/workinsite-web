@@ -7,6 +7,7 @@ import { useCuringTypeService } from '../../service/CuringTypeService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useCuringInputValidate } from '../../components/InputValidate/CuringInputValidate';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { CuringType } from '../../DTOs/CuringTypeProps';
 import { CuringUrls } from '../../utils/urls';
 
@@ -62,7 +63,7 @@ export const useCuringEdit = (id: string) => {
   const fetchSites = async (searchString: string = '') => {
     let source = allSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSites(sites);
       source = sites;

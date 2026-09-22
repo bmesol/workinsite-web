@@ -1,5 +1,5 @@
 import { useInputValidate } from "../InputValidate/InputValidate";
-import { useUserService } from "../../services/UserService";
+import { createUserService } from "../../services/UserService";
 import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
 import { useState } from "react";
@@ -11,7 +11,7 @@ const useUserEditPinForm = (userId: string, onClose: () => void) => {  // 👈 a
   
 
   const { error, validate } = useInputValidate({ pin, confirmPin });
-  const userService = useUserService();
+  const userService = createUserService();
   const navigate = useNavigate();
 
   const handleOnSave = async () => {

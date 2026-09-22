@@ -118,8 +118,7 @@ const useSupplierTransactionEdit = () => {
       setRemark(data.remark);
       setSupplierList([data.supplier]);
       setSupplierTransaction(data);
-    } catch (error) {
-      console.error('SupplierTransactionEdit: fetch failed', error);
+    } catch {
     } finally {
       setLoading(false);
     }

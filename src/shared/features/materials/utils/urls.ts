@@ -2,7 +2,7 @@ const materialsBasePath = "materials";
 const unitBasePath = "materials/unit";
 const purchaseBasePath = "materials/purchase";
 const materialUsedBasePath = "materials/used";
-const materialShiftBasePath = "materials/shift";  // ✅ added
+const materialShiftBasePath = "materials/shift";
 
 const MaterialsUrls = {
   list: `/${materialsBasePath}`,
@@ -27,7 +27,6 @@ const MaterialUsedUrls = {
   edit: (id: number) => `/${materialUsedBasePath}/${id}/edit`,
 };
 
-// ✅ added
 const MaterialShiftUrls = {
   list: `/${materialShiftBasePath}`,
   create: `/${materialShiftBasePath}/create`,

@@ -88,12 +88,12 @@ const useWorkerCategoryInputValidate = (
       updateError("workerCategoryName", "Invalid worker category name");
     }
 
-    // 2. Work Type → REQUIRED ✅
+    // 2. Work Type → REQUIRED
     if (!workTypeList || workTypeList.length === 0) {
       updateError("workTypeList", "At least one Work Type is required.");
     }
 
-    // 3. Worker Role → REQUIRED ✅
+    // 3. Worker Role → REQUIRED
     if (!workerRoleList || workerRoleList.length === 0) {
       updateError("workerRoleList", "At least one Worker Role is required.");
     }

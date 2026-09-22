@@ -67,7 +67,7 @@ const handleSubmission = async (redirectAfter = true) => {
       await materialService.createMaterial(material);
       if (redirectAfter) {
         resetFormFields();
-        navigate('/materials', { state: { refresh: true } }); // ✅ pass refresh flag
+        navigate('/materials', { state: { refresh: true } });
       }
     } catch (err: any) {
       const errorMsg =

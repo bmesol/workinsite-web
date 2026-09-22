@@ -1,4 +1,4 @@
-// import { useUserService } from "../../services/UserService";
+// import { createUserService } from "../../services/UserService";
 // import { useNavigate } from "react-router-dom";
 // import { UsersUrls } from "../../utils/urls";
 // import { useEffect, useState } from "react";
@@ -6,7 +6,7 @@
 
 // const useUserList = () => {
 //   const navigate = useNavigate();
-//   const userService = useUserService();
+//   const userService = createUserService();
 //   const [userList, setUserList] = useState<User[]>([]);
 //   const [hasSearchFilter, setHasSearchFilter] = useState<boolean>(false);
 
@@ -25,7 +25,7 @@
 
 // export { useUserList };
 
-import { useUserService } from "../../services/UserService";
+import { createUserService } from "../../services/UserService";
 import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
 import { useEffect, useState } from "react";
@@ -33,14 +33,13 @@ import type { User } from "../../DTOs/User";
 
 const useUserList = () => {
   const navigate = useNavigate();
-  const userService = useUserService();
+  const userService = createUserService();
 
   const [userList, setUserList] = useState<User[]>([]);
   const [hasSearchFilter, setHasSearchFilter] = useState(false);
-  const [loading, setLoading] = useState(true);         // ✅ initial load
-  const [searchLoading, setSearchLoading] = useState(false); // ✅ search load
+  const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
 
-  // ✅ Initial load only
   useEffect(() => {
     const initialLoad = async () => {
       setLoading(true);
@@ -54,7 +53,6 @@ const useUserList = () => {
     initialLoad();
   }, []);
 
-  // ✅ Search — full page load இல்லை
   const fetchUser = async (searchString: string = "") => {
     setSearchLoading(true);
     try {

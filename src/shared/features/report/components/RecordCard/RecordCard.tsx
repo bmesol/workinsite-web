@@ -1,5 +1,5 @@
 import { Calendar, MapPin, ChevronRight } from "lucide-react";
-import { formatINR } from "../../utils/DateUtils";
+import { formatINR } from '@/shared/utils/formatters';
 
 interface Props {
   date: string;

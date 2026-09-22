@@ -6,18 +6,18 @@ const useClientService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getClients = async (searchString: string = "", setIsLoading?: boolean) => {
-    const response = await apiHelper.get(`clients?searchString=${searchString}`, setIsLoading);
-    return response.data;
+    const { data } = await apiHelper.get(`clients?searchString=${searchString}`, setIsLoading);
+    return data;
   };
 
   const getClient = async (id: number) => {
-    const response = await apiHelper.get(`clients/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`clients/${id}`);
+    return data;
   };
 
   const createClient = async (client: ClientRequest) => {
-    const response = await apiHelper.post("clients", client);
-    return response.data;
+    const { data } = await apiHelper.post("clients", client);
+    return data;
   };
 
   const updateClient = async (id: number, client: ClientRequest) => {

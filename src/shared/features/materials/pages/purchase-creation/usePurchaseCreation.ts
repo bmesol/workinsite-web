@@ -6,6 +6,7 @@ import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useSupplierService } from '@/shared/features/suppliers/service/SupplierService';
 import { useMaterialPurchaseService } from '../../service/PurchaseService';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 import type { PurchaseMaterialCreationListProps } from '../../DTOs/PurchaseMaterialProps';
 import { formatDateToString } from '@/shared/features/attendance/utils/functions';
@@ -53,7 +54,7 @@ export const usePurchaseCreation = () => {
   const fetchSites = async (searchString: string = '') => {
     let source = allSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSites(sites);
       source = sites;
@@ -154,7 +155,7 @@ export const usePurchaseCreation = () => {
 
   const baseTotal = materials.reduce(
     (sum, item) =>
-      sum + (parseFloat(item.receivedQuantity) || 0) * (parseFloat(item.rate) || 0), // ✅ receivedQuantity
+      sum + (parseFloat(item.receivedQuantity) || 0) * (parseFloat(item.rate) || 0),
     0,
   );
 

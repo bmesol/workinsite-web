@@ -38,7 +38,6 @@ const FormActionButton = (props: {
         </Button>
       </FormInput>
 
-      {/* ✅ Error below the row, not inside flex-row */}
       {errorMessage && (
         <p className="text-sm text-red-500 mt-0.5">{errorMessage}</p>
       )}

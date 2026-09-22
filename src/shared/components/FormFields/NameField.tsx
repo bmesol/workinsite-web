@@ -1,59 +1,21 @@
-import { FormInput } from "../FormInput/FormInput";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
+import { GenericInputField } from "./GenericInputField";
 import type { InputPropTypes } from "./InputPropTypes";
-import { useInputField } from "./useInputField";
-import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const NameField = (props: InputPropTypes) => {
   const { t } = useLanguage();
-  const {
-    label,
-    length = 75,
-    errorMessage,
-    placeholder,
-    className,
-    inputClassName,
-    isDisabled,
-    required = false,
-    isHideLabel = false,
-    regex = "^[a-zA-Z0-9.\\s]*$",
-  } = props;
-
-  const { inputValue, handleInputChange } = useInputField(props);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    if (value.startsWith(" ")) return;
-    if (regex && value !== "" && !new RegExp(regex).test(value)) return; 
-    if (value.length > length) return;
-    handleInputChange(value);
-  };
-
+  const { regex = "^[a-zA-Z0-9.\\s]*$", length = 75 } = props;
   return (
-    <FormInput errorMessage={errorMessage} className={className}>
-      {!isHideLabel && (
-        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
-          {label || t("Name")}
-          {required && (
-            <span className="text-red-500 text-base leading-none">*</span>
-          )}
-        </Label>
-      )}
-      <Input
-        type="text"
-        value={inputValue}
-        onChange={handleChange}
-        placeholder={placeholder || t("Enter name")}
-        disabled={isDisabled}
-        className={`w-full disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800 ${inputClassName ?? ""}`}
-        style={{
-          fontFamily: "Outfit, sans-serif",
-          fontSize: "var(--font-sm)",
-        }}
-      />
-    </FormInput>
+    <GenericInputField
+      {...props}
+      length={length}
+      label={props.label ?? t("Name")}
+      filterRegex={new RegExp(regex)}
+      noStartSpace
+      defaultPlaceholder={t("Enter name")}
+      inputClassName={`disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800 ${props.inputClassName ?? ""}`}
+      inputStyle={{ fontFamily: "Outfit, sans-serif", fontSize: "var(--font-sm)" }}
+    />
   );
 };
 

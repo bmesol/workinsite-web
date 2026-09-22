@@ -10,6 +10,7 @@ import { useWorkQuantityReportService } from '@/shared/features/workers/service/
 import type { WorkQuantityReportItem } from '@/shared/features/workers/service/WorkQuantityReportService';
 import type { AttendanceSplit } from '../../DTOs/AttendanceProps';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { WageType, Worker } from '@/shared/features/workers/DTOs/WorkerProps';
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import { formatDateToString } from '../../utils/functions';
@@ -99,8 +100,7 @@ const useAttendanceCreation = () => {
           setSiteList([fetchedSite]);
           setWageTypeId(fetchedSite.wageType.id.toString());
           setWageTypeList([fetchedSite.wageType]);
-        } catch (error) {
-          console.error('Failed to fetch Site:', error);
+        } catch {
         }
       }
     };
@@ -164,7 +164,7 @@ const useAttendanceCreation = () => {
   const fetchSites = async (searchString: string = '') => {
     let source = allSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSites(sites);
       source = sites;
@@ -220,8 +220,7 @@ const fetchWorkers = async (WorkerName: string = '') => {
       });
       const item = result?.items?.[0] ?? null;
       setWorkQuantityReport(item);
-    } catch (error) {
-      console.error('Failed to fetch Work Quantity Report:', error);
+    } catch {
       setWorkQuantityReport(null);
     }
   };
@@ -344,7 +343,7 @@ const fetchWorkers = async (WorkerName: string = '') => {
     setUploadedImages(updated);
   };
 
-// ✅ Coordinates → Address convert பண்ற function
+// reverse-geocode coordinates to a human-readable address
 const getAddressFromCoords = async (lat: number, lng: number): Promise<string> => {
   try {
     const response = await fetch(
@@ -360,7 +359,6 @@ const getAddressFromCoords = async (lat: number, lng: number): Promise<string> =
 const handleSubmit = async () => {
   if (validate()) {
     try {
-      // ✅ Get location
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       });
@@ -368,7 +366,6 @@ const handleSubmit = async () => {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
-      // ✅ Get address
       const address = await getAddressFromCoords(lat, lng);
 
       const formData = new FormData();
@@ -381,10 +378,9 @@ const handleSubmit = async () => {
       formData.append('WorkedQuantity', workedQuantity.toString());
       formData.append('WorkModeId', String(parseInt(workModeId)));
 
-      // ✅ Location with address
       formData.append('CurrentLocation.Lat', lat.toString());
       formData.append('CurrentLocation.Lng', lng.toString());
-      formData.append('CurrentLocation.Address', address); // ✅ real address
+      formData.append('CurrentLocation.Address', address);
 
       attendanceSplit.forEach((split, index) => {
         formData.append(`AttendanceSplits[${index}].WorkerRoleId`, String(split.workerRole.id));

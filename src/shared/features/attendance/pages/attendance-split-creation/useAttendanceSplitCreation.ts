@@ -137,7 +137,7 @@ export const useAttendanceSplitCreationScreen = (props: AttendanceSplitProps) =>
 
       setAttendanceSplit([...attendanceSplit, newEntry]);
       resetFormFields();
-      onClose?.();             // ✅ replaces Ref?.current?.close()
+      onClose?.();
     }
   };
 

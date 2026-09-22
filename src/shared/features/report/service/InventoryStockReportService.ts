@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type { InventoryStockReportParams } from '../DTOs/InventoryStockReportParams';
 import type { InventoryStockReportResponse } from '../DTOs/InventoryStockReportProps';
 
@@ -9,15 +10,14 @@ const useInventoryStockReportService = () => {
   const getInventoryStockReport = async (
     params: InventoryStockReportParams,
   ): Promise<InventoryStockReportResponse> => {
-    const q = new URLSearchParams();
-    if (params.SiteId) q.append('SiteId', params.SiteId.toString());
-    q.append('FromDate', params.FromDate);
-    q.append('ToDate', params.ToDate);
-    q.append('PageNumber', params.PageNumber.toString());
-    q.append('PageSize', params.PageSize.toString());
-
-    const res = await apiHelper.get(`material-reports?${q.toString()}`);
-    return res.data;
+    const { data } = await apiHelper.get(`material-reports?${buildQueryParams({
+      SiteId: params.SiteId,
+      FromDate: params.FromDate,
+      ToDate: params.ToDate,
+      PageNumber: params.PageNumber,
+      PageSize: params.PageSize,
+    })}`);
+    return data;
   };
 
   return { getInventoryStockReport };

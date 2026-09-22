@@ -20,7 +20,7 @@ import { useCuringEdit } from './useCuringEdit';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { CuringUrls } from '../../utils/urls';
-import { formatStringToDate, nextYear } from '@/shared/utils/function';
+import { formatStringToDate, nextYear } from '@/shared/utils/formatters';
 
 export const CuringEditPage = () => {
   const { id } = useParams<{ id: string }>();
