@@ -11,6 +11,7 @@ import type { WorkQuantityReportItem } from '@/shared/features/workers/service/W
 import { toast } from 'sonner';
 import { AttendanceUrls } from '../../utils/urls';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { WageType, Worker } from '@/shared/features/workers/DTOs/WorkerProps';
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import type { AttendanceProps, AttendanceSplit } from '../../DTOs/AttendanceProps';
@@ -51,7 +52,7 @@ const defaultWorkType: WorkType = {
 };
 
 const useAttendanceEditScreen = () => {
-  const { id: attendanceId } = useParams<string>();          // ✅ route.params → useParams
+  const { id: attendanceId } = useParams<string>();
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get('redirect');
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ const useAttendanceEditScreen = () => {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [viewImages, setViewImages] = useState<ViewImages[]>([]);
   const [removeImages, setRemoveImages] = useState<RemoveImages[]>([]);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null); // ✅ Alert → dialog state
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   const siteService = useSiteService();
   const workTypeService = useWorkTypeService();
@@ -138,7 +139,7 @@ const useAttendanceEditScreen = () => {
   const fetchSites = async (searchString: string = '') => {
     let source = allSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSites(sites);
       source = sites;
@@ -204,7 +205,6 @@ const useAttendanceEditScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [siteId, workType.id, workModeId]);
 
-  // ✅ Alert.alert → deleteIndex state — UI la confirm dialog
   const confirmDelete = (index: number) => {
     setDeleteIndex(index);
   };
@@ -267,7 +267,6 @@ const useAttendanceEditScreen = () => {
     setError(initialError);
   };
 
-  // ✅ Alert.alert → window.confirm
   const handleBackPress = () => {
     if (hasUnsavedChanges()) {
       const confirmed = window.confirm(

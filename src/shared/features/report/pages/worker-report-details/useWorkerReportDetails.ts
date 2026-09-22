@@ -28,8 +28,7 @@ export function useWorkerReportDetails({ workerId, siteId, fromDate, toDate }: P
         IgnorePagination: true,
       });
       setReport(res);
-    } catch (e) {
-      console.error('fetchDetails error:', e);
+    } catch {
     } finally {
       setLoading(false);
       setRefreshing(false);

@@ -6,7 +6,6 @@
 // import { useInputValidate } from '../../components/InputValidate/ClientTransactionInputValidate';
 // import { PaymentMethodEnum } from '../../DTOs/ClientTransaction';
 
-// import { formatDateToString } from '@/shared/utils/function';
 // import { ClientTransactionUrls } from '../../utils/urls';
 // import type { Client } from '@/shared/features/clients/DTOs/ClientProps';
 
@@ -126,10 +125,11 @@ import { useClientTransactionService } from '../../service/ClientTransactionServ
 import { useInputValidate } from '../../components/InputValidate/ClientTransactionInputValidate';
 import { PaymentMethodEnum } from '../../DTOs/ClientTransaction';
 
-import { formatDateToString } from '@/shared/utils/function';
+import { formatDateToString } from '@/shared/utils/formatters';
 import { ClientTransactionUrls } from '../../utils/urls';
 import type { Client } from '@/shared/features/clients/DTOs/ClientProps';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 
 export interface SplitItem {
   siteId: string;
@@ -196,7 +196,7 @@ const useClientTransactionCreation = () => {
   const fetchSplitSites = async (searchString: string = '') => {
     let source = allSplitSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSplitSites(sites);
       source = sites;

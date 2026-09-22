@@ -5,8 +5,8 @@ const useWageTypeService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWageTypes = async (searchString: string = "") => {
-    const response = await apiHelper.get(`wage-types?searchString=${searchString}`);
-    return response.data;
+    const { data } = await apiHelper.get(`wage-types?searchString=${searchString}`);
+    return data;
   };
 
   return { getWageTypes };

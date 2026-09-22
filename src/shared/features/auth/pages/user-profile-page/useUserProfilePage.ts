@@ -1,7 +1,7 @@
 // import { useInputValidate } from "@/shared/features/auth/components/InputValidate/useInputValidate";
 // import { useUserService } from "@/shared/features/users/services/UserService";
 // import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
-// import { toast } from "sonner"; // ✅ sonner use pannuvaen
+// import { toast } from "sonner";
 // import { useState } from "react";
 
 // const useUserProfile = () => {
@@ -29,7 +29,7 @@
 //       } catch (err: any) {
 //         const messages = err?.response?.data || [];
 //         messages.map((i: any) =>
-//           toast.error(i.message) // ✅ sonner style
+//           toast.error(i.message)
 //         );
 //       }
 //     }
@@ -47,13 +47,13 @@
 // export { useUserProfile };
 
 import { useInputValidate } from "@/shared/features/auth/components/InputValidate/useInputValidate";
-import { useUserService } from "@/shared/features/users/services/UserService";
+import { createUserService } from "@/shared/features/users/services/UserService";
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
 import { toast } from "sonner";
 import { useState } from "react";
 
 const useUserProfile = () => {
-  const userService = useUserService();
+  const userService = createUserService();
   const user = AuthHelper.getUserProfile()!;
 
   const [name, setName] = useState(user.name);
@@ -75,8 +75,7 @@ const useUserProfile = () => {
 AuthHelper.setUserProfile(updatedProfile);
         window.location.reload();
       } catch (err: any) {
-        const messages = err?.response?.data || [];
-        messages.map((i: any) => toast.error(i.message));
+        toast.error(err.message || "Failed to update profile");
       }
     }
   };

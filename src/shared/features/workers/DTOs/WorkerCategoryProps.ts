@@ -12,9 +12,8 @@ interface WorkerCategoryCreationRequest {
   note: string;
 }
 
-// ✅ Matches what the backend actually reads on update — new/updated/deleted
-// work types and worker roles are separate keys, not a single merged array.
-// (Mirrors the mobile app's update payload shape.)
+// backend update payload: new/updated/deleted work types and worker roles
+// are separate keys, not a single merged array.
 interface WorkerCategoryEditRequest {
   name: string;
   note: string;

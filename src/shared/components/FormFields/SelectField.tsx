@@ -1,16 +1,11 @@
-import React, { useState } from 'react';
-import { Label } from '@/shared/components/ui/label';
-import { Button } from '@/shared/components/ui/button';
-import { Check, ChevronDown, ChevronUp } from 'lucide-react';
-import { cn } from '@/shared/components/lib/utils';
-import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SelectComboField } from "./SelectComboField";
 
-interface SelectItem {
+type SelectItem = {
   label: string;
   value: string | number;
-}
+};
 
-interface SelectFieldProps {
+type SelectFieldProps = {
   label?: string;
   items: SelectItem[];
   selectedValue?: string | number;
@@ -19,97 +14,11 @@ interface SelectFieldProps {
   isDisabled?: boolean;
   required?: boolean;
   errorMessage?: string;
-}
-
-const SelectField: React.FC<SelectFieldProps> = ({
-  label,
-  items,
-  selectedValue,
-  onValueChange,
-  placeholder,
-  isDisabled = false,
-  required = false,
-  errorMessage,
-}) => {
-  const { t } = useLanguage();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleDropdown = () => {
-    if (isDisabled) return;
-    setIsOpen(prev => !prev);
-  };
-
-  const handleSelect = (value: string | number) => {
-    onValueChange(value);
-    setIsOpen(false);
-  };
-
-  const selectedLabel = items.find(item => item.value === selectedValue)?.label;
-
-  return (
-    <div className="flex flex-col gap-1.5">
-
-      {/* Label */}
-      {label && (
-        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
-          {label}
-          {required && <span className="text-red-500 text-base leading-none">*</span>}
-        </Label>
-      )}
-
-      {/* Trigger Button */}
-      <Button
-        type="button"
-        variant="outline"
-        role="combobox"
-        disabled={isDisabled}
-        onClick={toggleDropdown}
-        className={cn(
-          'w-full justify-between font-normal bg-white text-sm',
-          !selectedLabel && 'text-muted-foreground',
-          isDisabled && 'opacity-50 cursor-not-allowed',
-          isOpen && 'border-primary',
-        )}
-      >
-        {selectedLabel ?? (placeholder ?? t('Select'))}
-        {isOpen
-          ? <ChevronUp className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          : <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        }
-      </Button>
-
-      {/* Dropdown */}
-      {isOpen && (
-        <div
-          className="w-full rounded-md border border-border bg-white shadow-md z-50 max-h-[150px] overflow-y-auto animate-in fade-in-0 zoom-in-95"
-          style={{ backgroundColor: 'var(--card)' }}
-        >
-          {items.map(item => (
-            <div
-              key={item.value}
-              onClick={() => handleSelect(item.value)}
-              className={cn(
-                'flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-accent transition-colors',
-                item.value === selectedValue && 'bg-accent font-medium',
-              )}
-            >
-              <span>{item.label}</span>
-              {item.value === selectedValue && (
-                <Check className="h-4 w-4 text-primary" />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Error */}
-      {errorMessage && (
-        <p className="text-sm text-red-500">{errorMessage}</p>
-      )}
-
-    </div>
-  );
 };
+
+const SelectField = (props: SelectFieldProps) => (
+  <SelectComboField {...props} searchable={false} />
+);
 
 export { SelectField };
 export type { SelectFieldProps };

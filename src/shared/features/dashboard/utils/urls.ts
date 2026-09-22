@@ -5,8 +5,8 @@ const AttendanceUrls = {
 };
 
 const TaskUrls = {
-  list: `/task`,           // ✅ was "/tasks" — route is "/task"
-  create: `/task/create`,  // ✅ was "/tasks/create"
+  list: `/task`,
+  create: `/task/create`,
   edit: (id: number) => `/task/${id}/edit`,
 };
 
@@ -17,8 +17,8 @@ const SiteUrls = {
 };
 
 const PurchaseUrls = {
-  list: `/materials/purchase`,           // ✅ was "/purchases" — route is "/materials/purchase"
-  create: `/materials/purchase/create`,  // ✅ was "/purchases/create"
+  list: `/materials/purchase`,
+  create: `/materials/purchase/create`,
   edit: (id: number) => `/materials/purchase/${id}/edit`,
 };
 

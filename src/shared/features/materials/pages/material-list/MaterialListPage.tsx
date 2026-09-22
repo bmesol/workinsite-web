@@ -38,12 +38,10 @@ const MaterialListScreen = () => {
     setDeleteId,
   } = useMaterialList();
 
-  // ✅ Filter
   const filteredMaterialList = materialDetails.filter((item: any) =>
     item.name.toLowerCase().includes(searchText.trim().toLowerCase()),
   );
 
-  // ✅ Initial load
   useEffect(() => {
     setSearchText("");
     fetchMaterial("");
@@ -71,7 +69,6 @@ const MaterialListScreen = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
-      {/* ✅ Header */}
       <Header title={t("Materials")}>
         <Actions>
           <Button onClick={() => navigate("/materials/create")} disabled={!editable}>
@@ -79,8 +76,6 @@ const MaterialListScreen = () => {
           </Button>
         </Actions>
       </Header>
-
-      {/* ✅ Search + Refresh */}
 
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
@@ -93,7 +88,6 @@ const MaterialListScreen = () => {
         </div>
       </div>
 
-      {/* ✅ List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
         {filteredMaterialList.length === 0 ? (
           <div className="col-span-full text-center text-muted-foreground">

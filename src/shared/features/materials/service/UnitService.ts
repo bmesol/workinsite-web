@@ -5,21 +5,21 @@ export const useUnitService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getUnits = async (searchString: string = '', setIsLoading?: boolean) => {
-    const response = await apiHelper.get(
+    const { data } = await apiHelper.get(
       `units?searchString=${searchString}`,
       setIsLoading,
     );
-    return response.data;
+    return data;
   };
 
   const getUnit = async (id: number) => {
-    const response = await apiHelper.get(`units/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`units/${id}`);
+    return data;
   };
 
   const createUnit = async (unit: UnitRequest) => {
-    const response = await apiHelper.post('units', unit);
-    return response.data;
+    const { data } = await apiHelper.post('units', unit);
+    return data;
   };
 
   const updateUnit = async (id: number, unit: UnitRequest) => {

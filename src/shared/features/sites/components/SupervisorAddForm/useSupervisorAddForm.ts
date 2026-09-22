@@ -1,4 +1,4 @@
-import { useUserService } from "../../../users/services/UserService";
+import { createUserService } from "../../../users/services/UserService";
 import { UsersUrls } from "../../../users/utils/urls";
 import type { SupervisorAddFormProps } from "./DTOs";
 import type { User } from "../../../users/DTOs/User";
@@ -9,7 +9,7 @@ const useSupervisorAddForm = (props: SupervisorAddFormProps) => {
   const { redirectUrl, redirectParams, supervisorIds, setSupervisorIds, onClose } = props;
 
   const navigate = useNavigate();
-  const userService = useUserService();
+  const userService = createUserService();
   const [supervisorId, setSupervisorId] = useState("");
   const [supervisor, setSupervisor] = useState<User>();
   const [supervisorList, setSupervisorList] = useState<User[]>([]);

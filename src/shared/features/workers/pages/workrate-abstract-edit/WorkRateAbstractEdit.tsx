@@ -31,7 +31,7 @@ const WorkRateAbstractEditPage = () => {
     handleBackPress,
     setSiteId,
     handleSubmission,
-    handleWorkTypeChange,   // ✅ was setWorkTypeId
+    handleWorkTypeChange,
     setTotalRate,
     setTotalQuantity,
     setNotes,

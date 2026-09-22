@@ -2,19 +2,19 @@ import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import type { workerRateAbstractRequest } from '../DTOs/WorkRateAbstract';
 
 const useWorkRateAbstractService = () => {
-  const baseUrl = import.meta.env.VITE_SITE_SERVICE_BASE_URL || ''; // ✅ react-native-config → import.meta.env
+  const baseUrl = import.meta.env.VITE_SITE_SERVICE_BASE_URL || '';
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkRateAbstracts = async (searchString: string = '') => {
-    const response = await apiHelper.get(
+    const { data } = await apiHelper.get(
       `work-rate-abstracts?searchString=${searchString}`,
     );
-    return response.data;
+    return data;
   };
 
   const getWorkRateAbstract = async (id: number) => {
-    const response = await apiHelper.get(`work-rate-abstracts/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`work-rate-abstracts/${id}`);
+    return data;
   };
 
   const createWorkRateAbstract = async (site: workerRateAbstractRequest) => {

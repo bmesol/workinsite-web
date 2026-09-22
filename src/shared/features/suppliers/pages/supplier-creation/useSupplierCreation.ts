@@ -125,7 +125,7 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
       redirect: `${redirectUrl}?${redirectParamsWithContactId.toString()}`,
     });
     navigate(`${ContactsUrls.edit(parseInt(contactId))}?${contactEditParams.toString()}`);
-    onClose?.(); // ✅ replaces model.close()
+    onClose?.();
   };
 
   const handleSubmission = async () => {

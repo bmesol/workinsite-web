@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type {
   MaterialShiftCreationRequest,
   MaterialShiftFilterRequest,
@@ -9,22 +10,21 @@ const useMaterialShiftService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getMaterialShifts = async (filters: MaterialShiftFilterRequest = {}) => {
-    const queryParams = new URLSearchParams();
-    if (filters.materialId) queryParams.append('materialId', filters.materialId.toString());
-    if (filters.sourceSiteId) queryParams.append('sourceSiteId', filters.sourceSiteId.toString());
-    if (filters.targetSiteId) queryParams.append('targetSiteId', filters.targetSiteId.toString());
-    if (filters.date) queryParams.append('date', filters.date);
-    if (filters.quantity) queryParams.append('quantity', filters.quantity.toString());
-    if (filters.pageNumber) queryParams.append('pageNumber', filters.pageNumber.toString());
-    if (filters.pageSize) queryParams.append('pageSize', filters.pageSize.toString());
-
-    const { data } = await apiHelper.get(`/material-shifts?${queryParams.toString()}`);
+    const { data } = await apiHelper.get(`/material-shifts?${buildQueryParams({
+      materialId: filters.materialId,
+      sourceSiteId: filters.sourceSiteId,
+      targetSiteId: filters.targetSiteId,
+      date: filters.date,
+      quantity: filters.quantity,
+      pageNumber: filters.pageNumber,
+      pageSize: filters.pageSize,
+    })}`);
     return data;
   };
 
   const getMaterialShift = async (id: number) => {
-    const response = await apiHelper.get(`material-shifts/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`material-shifts/${id}`);
+    return data;
   };
 
   const createMaterialShift = async (data: MaterialShiftCreationRequest) => {
@@ -40,8 +40,8 @@ const useMaterialShiftService = () => {
   };
 
   const getMaximumAllowedQuantity = async (id: number): Promise<string> => {
-    const response = await apiHelper.get(`material-shifts/${id}/maximum-quantity`);
-    return response.data.maximumAllowedQuantity as string;
+    const { data } = await apiHelper.get(`material-shifts/${id}/maximum-quantity`);
+    return data.maximumAllowedQuantity as string;
   };
 
   return {

@@ -50,7 +50,6 @@ const useWorkerRoleCostEdit = (
     }
   };
 
-  // ✅ useIsFocused → useEffect on mount / when route params change
   useEffect(() => {
     fetchCosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,7 +73,6 @@ const useWorkerRoleCostEdit = (
           originalCost.hoursPerShift !== editingCost.hoursPerShift);
 
       if (!hasChanges) {
-        // ✅ Alert.alert → sonner toast
         toast('No Changes', { description: 'Nothing to update' });
         setDialogOpen(false);
         setEditingCost(initalCost);
@@ -95,7 +93,6 @@ const useWorkerRoleCostEdit = (
       } catch (error: any) {
         logger.error('WorkerRoleCostEdit: operation failed', error);
         const errorMsg = parseApiError(error, 'Failed to create unit');
-        // ✅ Toast.show → sonner toast.error
         toast.error(errorMsg);
       }
     }

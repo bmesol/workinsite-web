@@ -8,6 +8,7 @@ import type { RecentPurchase } from "./useEngineeringDashboard";
 import type { Task } from "@/shared/features/task/DTOs/TaskProps";
 import type { Site } from "@/shared/features/sites/DTOs/SiteProps";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { SITE_STATUS } from "@/shared/constants/appEnums";
 
 // ── Shared components ─────────────────────────────────────────────────────────
 import DashboardStatCard from "@/shared/components/DashboardStatCard/DashboardStatCard";
@@ -30,17 +31,17 @@ import {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const STATUS_DOT_COLORS: Record<string, string> = {
-  Working: "#1D9E75",
-  Completed: "#185FA5",
-  Hold: "#A32D2D",
-  "Yet to start": "#BA7517",
+  [SITE_STATUS.WORKING]: "#1D9E75",
+  [SITE_STATUS.COMPLETED]: "#185FA5",
+  [SITE_STATUS.HOLD]: "#A32D2D",
+  [SITE_STATUS.YET_TO_START]: "#BA7517",
 };
 
 const STATUS_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
-  Working: { bg: "#dcfce7", text: "#15803d" },
-  Completed: { bg: "#dbeafe", text: "#1d4ed8" },
-  "Yet to start": { bg: "#fef9c3", text: "#854d0e" },
-  Hold: { bg: "#fee2e2", text: "#991b1b" },
+  [SITE_STATUS.WORKING]: { bg: "#dcfce7", text: "#15803d" },
+  [SITE_STATUS.COMPLETED]: { bg: "#dbeafe", text: "#1d4ed8" },
+  [SITE_STATUS.YET_TO_START]: { bg: "#fef9c3", text: "#854d0e" },
+  [SITE_STATUS.HOLD]: { bg: "#fee2e2", text: "#991b1b" },
 };
 
 // ── Inline row components ─────────────────────────────────────────────────────
@@ -269,7 +270,7 @@ const EngineerDashboard = () => {
       label: t("Active Sites"),
       bg: "#dbeafe",
       color: "#1d4ed8",
-      onClick: () => navigateToSites("Working"),
+      onClick: () => navigateToSites(SITE_STATUS.WORKING),
     },
     {
       icon: <WorkersIcon />,

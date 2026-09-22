@@ -1,5 +1,6 @@
 import axios from "axios";
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
+import { toAppError } from "@/shared/utils/parseApiError";
 
 const createApiClient = (baseURL: string) => {
   const api = axios.create({ baseURL });
@@ -17,7 +18,7 @@ const createApiClient = (baseURL: string) => {
   api.interceptors.response.use(
     (response) => response,
     (error) => {
-      throw error;
+      throw toAppError(error);
     }
   );
 

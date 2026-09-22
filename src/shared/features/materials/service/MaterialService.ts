@@ -9,21 +9,21 @@ export const useMaterialService = () => {
     searchString: string = '',
     setIsLoading?: boolean,
   ) => {
-    const response = await apiHelper.get(
+    const { data } = await apiHelper.get(
       `materials?searchString=${searchString}`,
       setIsLoading,
     );
-    return response.data;
+    return data;
   };
 
   const getMaterial = async (id: number) => {
-    const response = await apiHelper.get(`materials/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`materials/${id}`);
+    return data;
   };
 
   const createMaterial = async (material: MaterialRequest) => {
-    const response = await apiHelper.post('materials', material);
-    return response.data;
+    const { data } = await apiHelper.post('materials', material);
+    return data;
   };
 
   const updateMaterial = async (id: number, material: MaterialRequest) => {

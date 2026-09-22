@@ -1,13 +1,12 @@
+import { useListItemDelete } from "@/shared/hooks/useListItemDelete";
 import type { BankAccountEditDeleteButtonsProp } from "../DTOs/DTOs";
 
 const useBankAccountEditDeleteButtons = (props: BankAccountEditDeleteButtonsProp) => {
   const { details, setDetails } = props;
-
-  const handleDelete = (id: number) => {
-    const filteredBankAccounts = details.bankAccounts.filter((_, index) => index !== id);
-    setDetails({ bankAccounts: filteredBankAccounts });
-  };
-
+  const { handleDelete } = useListItemDelete(
+    details.bankAccounts,
+    (filtered) => setDetails({ bankAccounts: filtered })
+  );
   return { handleDelete };
 };
 

@@ -2,6 +2,7 @@ import { MapPin, Loader2, CheckCircle2, LogOut, ChevronRight, Users, ClipboardLi
 import { useSupervisorDashboard, type AttendanceItem, type Task, type SupervisorAttendance, type Site } from './useSupervisorDashboard';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 
 // ── Section Title ──────────────────────────────────────────────────────────────
 const SectionTitle = ({
@@ -72,7 +73,7 @@ const StatCard = ({
 const SiteDot = ({ status }: { status: string }) => (
   <div
     className="w-3 h-3 rounded-full flex-shrink-0"
-    style={{ background: status === 'Working' ? '#22c55e' : '#f59e0b' }}
+    style={{ background: status === SITE_STATUS.WORKING ? '#22c55e' : '#f59e0b' }}
   />
 );
 

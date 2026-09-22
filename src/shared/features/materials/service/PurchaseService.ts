@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type { AxiosRequestHeaders } from 'axios';
 
 type MaterialPurchasesfilters = {
@@ -15,21 +16,20 @@ const useMaterialPurchaseService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getMaterialPurchases = async (filters: MaterialPurchasesfilters = {}) => {
-    const queryParams = new URLSearchParams();
-    if (filters.billNumber) queryParams.append('BillNumber', filters.billNumber);
-    if (filters.siteId) queryParams.append('SiteId', filters.siteId.toString());
-    if (filters.supplierId) queryParams.append('SupplierId', filters.supplierId.toString());
-    if (filters.date) queryParams.append('Date', filters.date);
-    if (filters.pageNumber) queryParams.append('PageNumber', filters.pageNumber.toString());
-    if (filters.pageSize) queryParams.append('PageSize', filters.pageSize.toString());
-
-    const { data } = await apiHelper.get(`/purchases?${queryParams.toString()}`);
+    const { data } = await apiHelper.get(`/purchases?${buildQueryParams({
+      BillNumber: filters.billNumber,
+      SiteId: filters.siteId,
+      SupplierId: filters.supplierId,
+      Date: filters.date,
+      PageNumber: filters.pageNumber,
+      PageSize: filters.pageSize,
+    })}`);
     return data;
   };
 
   const getMaterialPurchase = async (id: number) => {
-    const response = await apiHelper.get(`purchases/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`purchases/${id}`);
+    return data;
   };
 
   const createMaterialPurchase = async (purchase: FormData) => {
@@ -47,10 +47,10 @@ const useMaterialPurchaseService = () => {
   const getMinimumQuantity = async (
   purchaseMaterialId: number
 ): Promise<{ minimumAllowedQuantity: string }> => {
-  const response = await apiHelper.get(
-    `purchases/purchase-materials/${purchaseMaterialId}/minimum-quantity`, 
+  const { data } = await apiHelper.get(
+    `purchases/purchase-materials/${purchaseMaterialId}/minimum-quantity`,
   );
-  return response.data;
+  return data;
 };
 
   const deleteMaterialPurchase = async (id: number) => {

@@ -10,13 +10,12 @@ const ContactEditDeleteButtons = (props: ContactEditDeleteButtonsProps) => {
   const { contactList, setContactList, selectedItem, disabled } = props;
   const { handleDelete } = useContactEditDeleteButtons(props);
 
-  // ✅ useModel → useState
   const [isOpen, setIsOpen] = useState(false);
   const [editItem, setEditItem] = useState<{ id: number; type: ContactTypes; value: string } | null>(null);
 
   const handleEdit = (id: number, type: ContactTypes, value: string) => {
     setEditItem({ id, type, value });
-    setIsOpen(true); // ✅ model.open → setIsOpen(true)
+    setIsOpen(true);
   };
 
   return (
@@ -40,7 +39,7 @@ const ContactEditDeleteButtons = (props: ContactEditDeleteButtonsProps) => {
         <Trash2 className="h-4 w-4 text-destructive" style={{ color: 'var(--danger-color)' }} />
       </button>
 
-      {/* ✅ useModel → shadcn Dialog */}
+      {/* Dialog */}
       {editItem && (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogContent>

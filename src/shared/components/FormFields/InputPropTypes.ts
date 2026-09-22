@@ -9,7 +9,10 @@ export type InputPropTypes = {
   className?: string;
   inputClassName?: string;
   isHideLabel?: boolean;
-  items?: { label: string; value: string }[];
   required?: boolean;
   regex?: string;
-}
+};
+
+export type SelectInputPropTypes = InputPropTypes & {
+  items?: { label: string; value: string }[];
+};

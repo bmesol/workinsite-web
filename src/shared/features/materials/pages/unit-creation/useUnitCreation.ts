@@ -51,7 +51,6 @@ export const useUnitCreation = () => {
     setName(unit.name);
   };
 
-  // ✅ Create
   const handleSubmission = async () => {
     if (validate()) {
       try {
@@ -64,7 +63,6 @@ export const useUnitCreation = () => {
     }
   };
 
-  // ✅ Update
   const handleUnitUpdate = async () => {
     if (validate() && editingUnitId !== null) {
       try {
@@ -81,24 +79,21 @@ export const useUnitCreation = () => {
     }
   };
 
-  // ✅ Delete trigger — Alert.alert → dialog state
   const confirmDelete = (id: number) => {
     setDeleteId(id);
   };
 
-  // ✅ Actual delete
   const handleUnitDelete = async (id: number) => {
     try {
       await unitService.deleteUnit(id);
       setDeleteId(null);
-      refreshList(); // ✅ no full page load
+      refreshList();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Failed to delete unit');
       setDeleteId(null);
     }
   };
 
-  // ✅ Back — window.confirm replace Alert.alert
   const handleBackPress = () => {
     if (name.trim() !== '') {
       const confirmed = window.confirm(

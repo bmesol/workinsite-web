@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useWorkerReportDetails } from "./useWorkerReportDetails";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
-import { formatINR } from "../../utils/DateUtils";
+import { formatINR } from '@/shared/utils/formatters';
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { WorkerReportCard } from "../../components/WorkerReportCard/WorkerReportCard";
 import { RecordCard } from "../../components/RecordCard/RecordCard";

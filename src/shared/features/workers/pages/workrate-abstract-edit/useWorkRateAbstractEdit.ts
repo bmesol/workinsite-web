@@ -41,7 +41,7 @@ const useWorkRateAbstractEdit = (id: string) => {
     value: item.id.toString(),
   }));
 
-  // ✅ show unit alongside work type name, like mobile: "Tile Laying [SQM]"
+  // show unit alongside work type name: "Tile Laying [SQM]"
   const workTypeDetails = workTypeList.map(item => ({
     label: `${item.name}${item.unit?.name ? ` [${item.unit.name}]` : ''}`,
     value: item.id.toString(),
@@ -64,15 +64,14 @@ const useWorkRateAbstractEdit = (id: string) => {
     setWorkTypeList(searchString ? workTypes.slice(0, 3) : workTypes);
   };
 
-  // ✅ Unit is auto-derived from work type now — no manual search needed,
-  // kept only in case it's needed elsewhere; not wired to the Unit field's onSearch anymore.
+  // Unit is auto-derived from work type; kept only in case needed elsewhere —
+  // not wired to the Unit field's onSearch anymore.
   const fetchUnits = async (searchString: string = '') => {
     const units = await unitService.getUnits(searchString, false);
     if (!units) return;
     setUnitList(searchString ? units.slice(0, 3) : units);
   };
 
-  // ✅ NEW: mirrors mobile's handleWorkTypeChange — auto-derives unit from selected work type
   const handleWorkTypeChange = (value: string) => {
     setWorkTypeId(value);
     const selected = workTypeList.find(wt => wt.id.toString() === value);
@@ -114,15 +113,14 @@ const useWorkRateAbstractEdit = (id: string) => {
         try {
           const site = await siteService.getSite(parseInt(siteId));
           setSiteList([site]);
-        } catch (error) {
-          console.error('Failed to fetch Site:', error);
+        } catch {
         }
       }
     };
     fetchSiteById();
   }, [siteId]);
 
-  // ✅ FIX: now also syncs unit from the latest work type data (matches mobile behavior)
+  // also syncs unit from the latest work type data
   useEffect(() => {
     const fetchWorkTypeById = async () => {
       if (workTypeId) {
@@ -133,17 +131,15 @@ const useWorkRateAbstractEdit = (id: string) => {
             setUnitId(workType.unit.id.toString());
             setUnitList([{ id: workType.unit.id, name: workType.unit.name } as Unit]);
           }
-        } catch (error) {
-          console.error('Failed to fetch workType:', error);
+        } catch {
         }
       }
     };
     fetchWorkTypeById();
   }, [workTypeId]);
 
-  // ❌ REMOVED: fetchUnitById useEffect that let unitId drive an independent unit fetch.
-  // Unit is now a derived/read-only field driven entirely by workTypeId, so this is no
-  // longer needed and would fight with handleWorkTypeChange's own unitList updates.
+  // Unit is a derived/read-only field driven by workTypeId — an independent
+  // unitId-driven fetch would fight with handleWorkTypeChange's unitList updates.
 
   const resetFormFields = () => {
     setSiteId('');
@@ -223,7 +219,7 @@ const useWorkRateAbstractEdit = (id: string) => {
     handleBackPress,
     setSiteId,
     handleSubmission,
-    handleWorkTypeChange,   // ✅ export instead of raw setWorkTypeId
+    handleWorkTypeChange,
     setTotalRate,
     setTotalQuantity,
     setNotes,

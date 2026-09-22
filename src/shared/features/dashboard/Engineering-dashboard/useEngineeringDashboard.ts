@@ -6,7 +6,8 @@ import { useWorkerReportService } from '@/shared/features/report/service/WorkerR
 import { useMaterialPurchaseService } from '@/shared/features/materials/service/PurchaseService';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import type { Task } from '@/shared/features/task/DTOs/TaskProps';
-import { formatDateToString, getWeekRange } from '@/shared/utils/function';
+import { formatDateToString, getWeekRange } from '@/shared/utils/formatters';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import { AttendanceUrls, TaskUrls, SiteUrls, PurchaseUrls } from '../utils/urls';
 
 export type EngineerStats = {
@@ -33,10 +34,10 @@ export type ChartDataItem = {
 };
 
 const SITE_STATUS_COLORS: Record<string, string> = {
-  Working: '#1D9E75',
-  Completed: '#185FA5',
-  'Yet to start': '#BA7517',
-  Hold: '#A32D2D',
+  [SITE_STATUS.WORKING]: '#1D9E75',
+  [SITE_STATUS.COMPLETED]: '#185FA5',
+  [SITE_STATUS.YET_TO_START]: '#BA7517',
+  [SITE_STATUS.HOLD]: '#A32D2D',
 };
 
 const useEngineerDashboard = () => {
@@ -128,7 +129,7 @@ const useEngineerDashboard = () => {
       const weekReport =
         weekRes.status === 'fulfilled' ? weekRes.value : null;
       setStats({
-        activeSiteCount: allSites.filter((s) => s.status === 'Working').length,
+        activeSiteCount: allSites.filter((s) => s.status === SITE_STATUS.WORKING).length,
         workersToday: todayReport?.items?.length ?? 0,
         wagesToday: todayReport?.totalAmount ?? 0,
         wagesWeek: weekReport?.totalAmount ?? 0,
@@ -141,8 +142,7 @@ const useEngineerDashboard = () => {
           ? (purchasesRes.value?.items ?? [])
           : [];
       setRecentPurchases(rawPurchases.slice(0, 3));
-    } catch (err) {
-      console.error('EngineerDashboard: fetchAll failed', err);
+    } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);

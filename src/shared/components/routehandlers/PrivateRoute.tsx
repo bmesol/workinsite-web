@@ -22,7 +22,7 @@
 //   return (
 //     <div>
 //       <Navbar />
-//       <main className="pt-18"> {/* ✅ added padding so content not hidden behind navbar */}
+//       <main className="pt-18">
 //         <Outlet />
 //       </main>
 //     </div>

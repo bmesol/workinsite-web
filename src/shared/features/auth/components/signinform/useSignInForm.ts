@@ -56,7 +56,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthService } from "@/shared/features/auth/services/AuthService";
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
-import { useUserService } from "@/shared/features/users/services/UserService";
+import { createUserService } from "@/shared/features/users/services/UserService";
 import { ROLE_IDS } from "@/shared/features/rolesandrights/DTOs/DTOs";
 
 export const useSignInForm = () => {
@@ -64,7 +64,7 @@ export const useSignInForm = () => {
   const [pin, setPin] = useState("");
   const [error, setError] = useState<{ phoneNumber?: string; pin?: string }>({});
   const navigate = useNavigate();
-  const userService = useUserService();
+  const userService = createUserService();
 
   const handleSubmission = async () => {
     const newError: { phoneNumber?: string; pin?: string } = {};

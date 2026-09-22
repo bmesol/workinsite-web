@@ -108,7 +108,7 @@
 
 //   // ── Fetch sites ───────────────────────────────────────────────────────
 //   const fetchSites = async (searchString: string = '') => {
-//     const sites = await siteService.getSites({ searchString, status: 'Working' });
+//     const sites = await siteService.getSites({ searchString, status: SITE_STATUS.WORKING });
 //     if (!sites) return;
 //     setSiteList(searchString ? sites.slice(0, 3) : sites);
 //   };
@@ -350,6 +350,7 @@ import { useTaskService } from '../../service/TaskService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useTaskInputValidate } from '../../components/InputValidate/TaskInputValidate';
 import { priorityTaskType, statusTaskType } from '../../DTOs/TaskProps';
+import { SITE_STATUS, TASK_PRIORITY_OPTIONS, TASK_STATUS_OPTIONS } from '@/shared/constants/appEnums';
 import type { Task } from '../../DTOs/TaskProps';
 import { TaskUrls } from '../../utils/urls';
 import { useUser } from '@/shared/hooks/useUserContact';
@@ -402,16 +403,8 @@ export const useTaskEdit = (id: string) => {
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [isImageSheetOpen, setIsImageSheetOpen] = useState(false);
 
-  const priorityType = [
-    { label: 'Urgent', value: 'Urgent' },
-    { label: 'Ordinary', value: 'Ordinary' },
-  ];
-
-  const workflowStatus = [
-    { label: 'Open', value: 'Open' },
-    { label: 'Completed', value: 'Completed' },
-    { label: 'Closed', value: 'Closed' },
-  ];
+  const priorityType = TASK_PRIORITY_OPTIONS;
+  const workflowStatus = TASK_STATUS_OPTIONS;
 
   const { error, validate, setError, initialError } = useTaskInputValidate({
     taskName,
@@ -461,7 +454,7 @@ export const useTaskEdit = (id: string) => {
 
   // ── Fetch sites ───────────────────────────────────────────────────────
   const fetchSites = async (searchString: string = '') => {
-    const sites = await siteService.getSites({ searchString, status: 'Working' });
+    const sites = await siteService.getSites({ searchString, status: SITE_STATUS.WORKING });
     if (!sites) return;
     setSiteList(searchString ? sites.slice(0, 3) : sites);
   };

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useInputValidate } from "../../components/InputValidate/InputValidate";
 import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
-import { useRoleService } from "../../services/RoleService";
+import { createRoleService } from "../../services/RoleService";
 
 const useUserCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const useUserCreation = (queryString: URLSearchParams) => {
   const [roleList, setRoleList] = useState<{ label: string; value: string }[]>([]);
 
   const { error, validate } = useInputValidate({ name, phoneNumber, role });
-  const roleService = useRoleService();
+  const roleService = createRoleService();
   const userDetail = { name, phone: phoneNumber, roleId: Number(role) };
 
  useEffect(() => {
@@ -27,8 +27,7 @@ const useUserCreation = (queryString: URLSearchParams) => {
         value: item.id.toString(),
       }));
       setRoleList(formatted);
-    } catch (err) {
-      console.error("UserCreation: failed to fetch roles", err);
+    } catch {
       setRoleList([]);
     }
   };

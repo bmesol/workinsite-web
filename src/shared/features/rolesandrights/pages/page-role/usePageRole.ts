@@ -8,16 +8,16 @@ export const usePageRole = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
-  const role = location.state?.role;  // ✅ replaces route.params
+  const role = location.state?.role;
 
-  const { GetPages } = usePageService();
+  const { getPages } = usePageService();
   const { getPageRights, createPageRights } = usePageRightsService();
 
   const [pages, setPages] = useState<any[]>([]);
   const [pageRights, setPageRights] = useState<Record<number, number>>({});
   const [originalRights, setOriginalRights] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
-  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false); // ✅ replaces Alert
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const fetchPageData = async () => {
     if (!role) return;
@@ -25,7 +25,7 @@ export const usePageRole = () => {
       setLoading(true);
 
       const [pagesRes, rightsRes] = await Promise.all([
-        GetPages({ ignorePagination: true }),
+        getPages({ ignorePagination: true }),
         getPageRights(role.id),
       ]);
 
@@ -88,7 +88,7 @@ export const usePageRole = () => {
 
   const handleBackPress = () => {
     if (hasUnsavedChanges()) {
-      setShowUnsavedDialog(true); // ✅ opens AlertDialog instead of Alert
+      setShowUnsavedDialog(true);
     } else {
       navigate('/roles-rights');
     }
@@ -114,8 +114,8 @@ export const usePageRole = () => {
     pages,
     pageRights,
     loading,
-    showUnsavedDialog,      // ✅ for AlertDialog
-    setShowUnsavedDialog,   // ✅ for AlertDialog
+    showUnsavedDialog,
+    setShowUnsavedDialog,
     handleSelectRight,
     handleSave,
     handleSaveAndBack,

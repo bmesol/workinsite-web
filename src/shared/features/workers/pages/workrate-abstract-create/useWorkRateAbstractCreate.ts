@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';        
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import { useWorkTypeService } from '../../service/WorkerTypeService';
 import { useWorkRateAbstractService } from '../../service/WorkRateAbstractService';
 import { WorkRateAbstractUrls } from '../../utils/urls';  
@@ -68,7 +69,7 @@ const useWorkRateAbstractCreate = () => {
   const fetchSites = async (searchString: string = '') => {
     let source = allSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSites(sites);
       source = sites;

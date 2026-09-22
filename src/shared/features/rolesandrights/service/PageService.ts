@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
 export interface Pages {
   name: string;
@@ -23,17 +24,13 @@ const usePageService = () => {
   const baseUrl = import.meta.env.VITE_USER_SERVICE_BASE_URL || '';
   const apiHelper = useAPIHelper(baseUrl, true);
 
-  const GetPages = async (params: GetPagesParams = {}) => {
-    const queryParams = new URLSearchParams();
-    if (params.name) queryParams.append('name', params.name);
-    if (params.pageNumber)
-      queryParams.append('pageNumber', params.pageNumber.toString());
-    if (params.pageSize)
-      queryParams.append('pageSize', params.pageSize.toString());
-    if (params.ignorePagination)
-      queryParams.append('ignorePagination', String(params.ignorePagination));
-
-    const { data } = await apiHelper.get(`pages?${queryParams.toString()}`);
+  const getPages = async (params: GetPagesParams = {}) => {
+    const { data } = await apiHelper.get(`pages?${buildQueryParams({
+      name: params.name,
+      pageNumber: params.pageNumber,
+      pageSize: params.pageSize,
+      ignorePagination: params.ignorePagination,
+    })}`);
     return data;
   };
 
@@ -56,7 +53,7 @@ const usePageService = () => {
   };
 
   return {
-    GetPages,
+    getPages,
     createPage,
     getPage,
     updatePage,

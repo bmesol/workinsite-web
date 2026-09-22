@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type { WorkerTransactionRequest } from '../DTOs/WorkerTransaction';
 
 interface WorkerTransactionParams {
@@ -15,26 +16,22 @@ const useWorkerTransactionService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkerTransactions = async (params: WorkerTransactionParams) => {
-    const query = new URLSearchParams();
-    if (params.workerId) query.append('WorkerId', params.workerId.toString());
-    if (params.fromDate) query.append('FromDate', params.fromDate);
-    if (params.toDate) query.append('ToDate', params.toDate);
-    if (params.pageNumber !== undefined)
-      query.append('PageNumber', params.pageNumber.toString());
-    if (params.pageSize !== undefined)
-      query.append('PageSize', params.pageSize.toString());
-    if (params.ignorePagination !== undefined)
-      query.append('IgnorePagination', String(params.ignorePagination));
-
-    const response = await apiHelper.get(
-      `worker-transactions?${query.toString()}`,
+    const { data } = await apiHelper.get(
+      `worker-transactions?${buildQueryParams({
+        WorkerId: params.workerId,
+        FromDate: params.fromDate,
+        ToDate: params.toDate,
+        PageNumber: params.pageNumber,
+        PageSize: params.pageSize,
+        IgnorePagination: params.ignorePagination,
+      })}`,
     );
-    return response.data;
+    return data;
   };
 
   const getWorkerTransaction = async (id: number) => {
-    const response = await apiHelper.get(`worker-transactions/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`worker-transactions/${id}`);
+    return data;
   };
 
   const createWorkerTransaction = async (

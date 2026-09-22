@@ -1,5 +1,6 @@
 import type { SiteCreationRequest, SiteUpdationRequest } from "../DTOs/SiteProps";
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
 type GetSitesParams = {
   searchString?: string;
@@ -11,16 +12,16 @@ const useSiteService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getSites = async (params: GetSitesParams = {}) => {
-    const queryParams = new URLSearchParams();
-    if (params.searchString) queryParams.append('searchString', params.searchString);
-    if (params.status)       queryParams.append('status', params.status);
-    const response = await apiHelper.get(`sites?${queryParams.toString()}`);
-    return response.data;
+    const { data } = await apiHelper.get(`sites?${buildQueryParams({
+      searchString: params.searchString,
+      status: params.status,
+    })}`);
+    return data;
   };
 
   const getSite = async (id: number) => {
-    const response = await apiHelper.get(`sites/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`sites/${id}`);
+    return data;
   };
 
   const createSite = async (site: SiteCreationRequest) => {

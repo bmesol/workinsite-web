@@ -33,12 +33,10 @@ const useMaterialList = () => {
   navigate(`/materials/${id}/edit`);
 };
 
-  // ✅ OPEN DIALOG
   const confirmDelete = (id: number) => {
     setDeleteId(id);
   };
 
-  // ✅ ACTUAL DELETE
   const handleMaterialDelete = async (id: number) => {
     try {
       await materialService.deleteMaterial(id);

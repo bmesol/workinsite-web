@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
 export interface WorkQuantityReportItem {
   workType: {
@@ -33,13 +34,12 @@ const useWorkQuantityReportService = () => {
   const getWorkQuantityReports = async (
     params: WorkQuantityReportParams,
   ): Promise<WorkQuantityReportResponse> => {
-    const query = new URLSearchParams();
-    query.append('SiteId', params.SiteId.toString());
-    if (params.WorkTypeId) query.append('WorkTypeId', params.WorkTypeId.toString());
-    if (params.WorkModeId) query.append('WorkModeId', params.WorkModeId.toString());
-
-    const response = await apiHelper.get(`work-quantity-reports?${query.toString()}`);
-    return response.data as WorkQuantityReportResponse;
+    const { data } = await apiHelper.get(`work-quantity-reports?${buildQueryParams({
+      SiteId: params.SiteId,
+      WorkTypeId: params.WorkTypeId,
+      WorkModeId: params.WorkModeId,
+    })}`);
+    return data as WorkQuantityReportResponse;
   };
 
   return { getWorkQuantityReports };

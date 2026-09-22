@@ -1,12 +1,19 @@
-import { useLanguage } from '@/shared/hooks/useLanguageContext'; // ✅ add
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 
-const SITE_STATUSES = ['All', 'Working', 'Completed', 'Yet to start', 'Hold'];
+const SITE_STATUSES = [
+  'All',
+  SITE_STATUS.WORKING,
+  SITE_STATUS.COMPLETED,
+  SITE_STATUS.YET_TO_START,
+  SITE_STATUS.HOLD,
+];
 
 const STATUS_DOT_COLORS: Record<string, string> = {
-  Working: '#1D9E75',
-  Completed: '#185FA5',
-  Hold: '#A32D2D',
-  'Yet to start': '#BA7517',
+  [SITE_STATUS.WORKING]: '#1D9E75',
+  [SITE_STATUS.COMPLETED]: '#185FA5',
+  [SITE_STATUS.HOLD]: '#A32D2D',
+  [SITE_STATUS.YET_TO_START]: '#BA7517',
 };
 
 type StatusFilterChipsProps = {

@@ -18,7 +18,7 @@ import { cn } from '@/shared/components/lib/utils';
 import { useLanguage } from '@/shared/hooks/useLanguageContext'; 
 
 const PageRolePage = () => {
-  const { t } = useLanguage(); // ✅ ADD
+  const { t } = useLanguage();
 
   const ROLE_LEVELS = [
     { label: t('No Rights'), value: 0, icon: <Ban className="w-4 h-4" />,    color: '#EF4444' },
@@ -53,7 +53,6 @@ const PageRolePage = () => {
     <div className="min-h-screen w-full px-4 py-6 pb-24">
 
       {/* ── Header ── */}
-      {/* ✅ dynamic: role name + translated "Rights" */}
       <Header title={`${role?.name} ${t('Rights')}`} />
 
       {/* ── Page Cards ── */}
@@ -96,7 +95,6 @@ const PageRolePage = () => {
                       >
                         {level.icon}
                       </span>
-                      {/* ✅ label already t() apply பண்ணியிருக்கோம் — ROLE_LEVELS ல் */}
                       {level.label}
                     </button>
                   );
@@ -114,7 +112,7 @@ const PageRolePage = () => {
         style={{ borderColor: 'var(--border)' }}
       >
         <FormSubmissionButtons
-          label={t('Save Rights')} // ✅
+          label={t('Save Rights')}
           onSave={handleSave}
           onCancel={handleBackPress}
         />
@@ -124,21 +122,21 @@ const PageRolePage = () => {
       <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle> {/* ✅ */}
+            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('You have unsaved changes. What would you like to do?')} {/* ✅ */}
+              {t('You have unsaved changes. What would you like to do?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
             <AlertDialogCancel onClick={() => setShowUnsavedDialog(false)}>
-              {t('Cancel')} {/* ✅ */}
+              {t('Cancel')}
             </AlertDialogCancel>
             <Button variant="destructive" onClick={handleDiscardAndBack}>
-              {t('Discard')} {/* ✅ */}
+              {t('Discard')}
             </Button>
             <AlertDialogAction asChild>
               <Button onClick={handleSaveAndBack}>
-                {t('Save')} {/* ✅ */}
+                {t('Save')}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

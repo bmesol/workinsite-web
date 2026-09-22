@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/components/lib/utils';
+import { iconStyle } from '../SearchBar/searchutils';
 
 interface SearchFilterBarProps {
   appliedFilters: string;
@@ -31,7 +32,7 @@ const SearchFilterBar = ({
         >
           <SlidersHorizontal
             className="shrink-0"
-            style={{ height: '16px', width: '16px', color: 'var(--gray-color)' }}
+            style={iconStyle}
           />
           <span
             className="truncate flex-1"
@@ -64,7 +65,7 @@ const SearchFilterBar = ({
         >
           <SlidersHorizontal
             className="shrink-0"
-            style={{ height: '16px', width: '16px', color: 'var(--gray-color)' }}
+            style={iconStyle}
           />
           <span
             style={{
@@ -81,7 +82,7 @@ const SearchFilterBar = ({
       {appliedFilters && (
         <Button variant="outline" size="icon" onClick={onFilterOpen}>
           <SlidersHorizontal
-            style={{ height: '16px', width: '16px', color: 'var(--gray-color)' }}
+            style={iconStyle}
           />
         </Button>
       )}

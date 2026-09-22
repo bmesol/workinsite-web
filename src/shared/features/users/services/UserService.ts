@@ -14,21 +14,21 @@ export type UserUpdationRequest = {
   phone: string;
 };
 
-const useUserService = () => {
+const createUserService = () => {
 
   const getUsers = async (searchString: string = "") => {
-    const response = await userApiClient.get(`users?searchString=${searchString}`);
-    return response.data;
+    const { data } = await userApiClient.get(`users?searchString=${searchString}`);
+    return data;
   };
 
   const getUser = async (id: number) => {
-    const response = await userApiClient.get(`users/${id}`);
-    return response.data;
+    const { data } = await userApiClient.get(`users/${id}`);
+    return data;
   };
 
   const createUser = async (user: UserCreationRequest) => {
-    const response = await userApiClient.post("users", user);
-    return response.data;
+    const { data } = await userApiClient.post("users", user);
+    return data;
   };
 
   const updateUser = async (id: number, user: UserUpdationRequest) => {
@@ -40,8 +40,8 @@ const useUserService = () => {
   };
 
   const getProfile = async () => {
-    const response = await userApiClient.get("users/profile");
-    return response.data;
+    const { data } = await userApiClient.get("users/profile");
+    return data;
   };
 
   const updateProfile = async (user: ProfileUpdationRequest) => {
@@ -64,4 +64,4 @@ const useUserService = () => {
   };
 };
 
-export { useUserService };
+export { createUserService };

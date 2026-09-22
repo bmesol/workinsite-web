@@ -93,11 +93,11 @@
 --primary-bg-text: black;
 --secondary-bg-text: white;
 
-/* ✅ Payment text colors */
+/* Payment text colors */
   --payment-green-text: white;
   --payment-blue-text: white;
 
-  /* ✅ Disabled border */
+  /* Disabled border */
   --disabled-border: #E5E5EA;
   --table-header-bg: #f8fafc;
 }

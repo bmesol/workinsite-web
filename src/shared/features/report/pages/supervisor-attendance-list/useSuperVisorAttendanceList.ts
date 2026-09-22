@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupervisorAttendanceService } from '../../service/SupervisorAttendanceService';
-import { useUserService } from '@/shared/features/users/services/UserService';
-import { getWeekRange } from '../../utils/DateUtils';
+import { createUserService } from '@/shared/features/users/services/UserService';
+import { getWeekRangeHyphen as getWeekRange } from '@/shared/utils/formatters';
 import type { SupervisorAttendance } from '../../DTOs/SupervisorAttendanceProps';
 import { useSupervisorAttendanceInputValidate } from '../../components/InputValidate/SupervisorAttendanceInputValidate';
 
@@ -20,7 +20,7 @@ export function useSupervisorAttendanceList() {
   const navigate = useNavigate();
 
   const supervisorAttendanceService = useSupervisorAttendanceService();
-  const userService = useUserService();
+  const userService = createUserService();
 
   const [loading, setLoading] = useState(true);
   const [paginationLoading, setPaginationLoading] = useState(false);
@@ -36,7 +36,6 @@ export function useSupervisorAttendanceList() {
     'lastWeek' | 'currentWeek' | 'custom'
   >('currentWeek');
 
-  // ✅ Now returns dd-mm-yyyy, consistent with toInputDate / fromInputDate
   const [dateRange, setDateRange] = useState(getWeekRange('currentWeek'));
 
   const { validate, error, initialError, setError } =
@@ -50,11 +49,11 @@ export function useSupervisorAttendanceList() {
     [supervisor, dateRange],
   );
 
-  // ✅ Updates both the label AND the dateRange when switching presets
+  // updates both label and dateRange when switching presets
   const handleOptionChange = (opt: 'lastWeek' | 'currentWeek' | 'custom') => {
     setSelectedOption(opt);
     if (opt !== 'custom') {
-      setDateRange(getWeekRange(opt)); // dd-mm-yyyy from DateUtils
+      setDateRange(getWeekRange(opt)); // dd-mm-yyyy from formatters
     }
   };
 
@@ -88,8 +87,7 @@ export function useSupervisorAttendanceList() {
 
       setHasMore(response.totalPages > response.pageNumber);
       setHasSearchFilter(Boolean(isFiltered));
-    } catch (err) {
-      console.log('Fetch error:', err);
+    } catch {
     } finally {
       setLoading(false);
       setPaginationLoading(false);
@@ -103,8 +101,7 @@ export function useSupervisorAttendanceList() {
         (u: any) => u.role?.name?.toLowerCase() === 'supervisor',
       );
       setSupervisorList(supervisors.slice(0, 3));
-    } catch (err) {
-      console.log('Fetch supervisors error:', err);
+    } catch {
     }
   };
 
@@ -143,8 +140,7 @@ export function useSupervisorAttendanceList() {
     try {
       await supervisorAttendanceService.deleteSupervisorAttendance(id);
       setAttendances(prev => prev.filter(a => a.id !== id));
-    } catch (err) {
-      console.log('Delete error:', err);
+    } catch {
     }
   };
 

@@ -1,6 +1,6 @@
 import { Trash2, Wrench, Calendar } from 'lucide-react';
 import { usePermission } from '@/shared/hooks/usePermission';
-import { getStatusFromDates } from '@/shared/utils/function';
+import { getStatusFromDates } from '@/shared/utils/formatters';
 
 const STATUS_CONFIG: Record <
   'On Going' | 'Completed',

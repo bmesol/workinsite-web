@@ -86,17 +86,10 @@
 
 
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { TASK_PRIORITY, TASK_STATUS } from '@/shared/constants/appEnums';
 
-const priorityTaskType = {
-  Urgent: 1,
-  Ordinary: 2,
-};
-
-const statusTaskType = {
-  Open: 1,
-  Completed: 2,
-  Closed: 3,
-};
+const priorityTaskType = TASK_PRIORITY;
+const statusTaskType = TASK_STATUS;
 
 interface Role {
   id: number;

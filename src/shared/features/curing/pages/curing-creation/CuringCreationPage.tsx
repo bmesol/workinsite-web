@@ -7,7 +7,7 @@ import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmis
 import { useCuringCreate } from './useCuringCreation';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
-import { formatStringToDate, nextYear } from '@/shared/utils/function';
+import { formatStringToDate, nextYear } from '@/shared/utils/formatters';
 
 export const CuringCreationPage = () => {
   const { canEdit } = usePermission();

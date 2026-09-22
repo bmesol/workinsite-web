@@ -1,5 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
-
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
 type GetAttendanceParams = {
   siteId?: number;
@@ -16,23 +16,21 @@ const useAttendanceService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getAttendances = async (params: GetAttendanceParams = {}) => {
-    const queryParams = new URLSearchParams();
-
-    if (params.siteId)      queryParams.append('SiteId', params.siteId.toString());
-    if (params.wageTypeId)  queryParams.append('WageTypeId', params.wageTypeId.toString());
-    if (params.workTypeId)  queryParams.append('WorkTypeId', params.workTypeId.toString());
-    if (params.workerId)    queryParams.append('WorkerId', params.workerId.toString());
-    if (params.date)        queryParams.append('Date', params.date);
-    if (params.pageNumber)  queryParams.append('PageNumber', params.pageNumber.toString());
-    if (params.pageSize)    queryParams.append('PageSize', params.pageSize.toString());
-
-    const { data } = await apiHelper.get(`/attendances?${queryParams.toString()}`);
+    const { data } = await apiHelper.get(`/attendances?${buildQueryParams({
+      SiteId: params.siteId,
+      WageTypeId: params.wageTypeId,
+      WorkTypeId: params.workTypeId,
+      WorkerId: params.workerId,
+      Date: params.date,
+      PageNumber: params.pageNumber,
+      PageSize: params.pageSize,
+    })}`);
     return data;
   };
 
   const getAttendance = async (id: number) => {
-    const response = await apiHelper.get(`attendances/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`attendances/${id}`);
+    return data;
   };
 
   const createAttendance = async (attendance: FormData) => {

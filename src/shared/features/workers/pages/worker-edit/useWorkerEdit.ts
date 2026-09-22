@@ -12,7 +12,6 @@ import { KYCTypes } from "../../../clients/DTOs/ClientProps";
 import { ContactsUrls } from "../../../contacts/utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-// ✅ new import — matches mobile's useWorkerRoleCostService usage
 import { useWorkerRoleCostService } from "../../service/WorkerRoleService";
 
 const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
@@ -21,7 +20,6 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   const workerService = useWorkerService();
   const workerCategoryService = useWorkerCategoryService();
   const contactService = useContactService();
-  // ✅ new service hook — matches mobile's { getWorkerRoleCosts }
   const { getWorkerRoleCosts } = useWorkerRoleCostService();
 
   const newContactId = queryString.get("contactId") || "";
@@ -43,7 +41,6 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   });
   const [loading, setLoading] = useState(true);
 
-  // ✅ new state — matches mobile's workerRoleCost
   const [workerRoleCost, setWorkerRoleCost] = useState<any>([]);
 
   const [workerDetails, setWorkerDetails] = useState<Worker | WorkerRequest>({
@@ -79,7 +76,6 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
 
   useEffect(() => { fetchWorker(); }, []);
 
-  // ✅ new — matches mobile's fetchWorkerRoleCost
   const fetchWorkerRoleCost = async () => {
     if (!workerCategoryId) return;
     const roleCost = await getWorkerRoleCosts({
@@ -89,8 +85,7 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
     setWorkerRoleCost(roleCost);
   };
 
-  // ✅ new — refetch whenever workerCategoryId or id changes
-  // (web has no isFocused, so we key off the actual values instead)
+  // refetch whenever workerCategoryId or id changes (web has no isFocused)
   useEffect(() => {
     fetchWorkerRoleCost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -232,7 +227,6 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
     fetchContacts, fetchWorkerCategories,
     contact, workerCategory,
     primaryContactDetails, hasMoreDetails,
-    // ✅ new returns
     workerRoleCost, handleWorkerRoleCostEdit,
   };
 };

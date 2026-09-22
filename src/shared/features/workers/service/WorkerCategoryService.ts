@@ -6,18 +6,18 @@ const useWorkerCategoryService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkerCategories = async (searchString: string = "", setIsLoading?: boolean) => {
-    const response = await apiHelper.get(`worker-categories?searchString=${searchString}`, setIsLoading);
-    return response.data;
+    const { data } = await apiHelper.get(`worker-categories?searchString=${searchString}`, setIsLoading);
+    return data;
   };
 
   const getWorkerCategory = async (id: number) => {
-    const response = await apiHelper.get(`worker-categories/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`worker-categories/${id}`);
+    return data;
   };
 
   const createWorkerCategory = async (workerCategory: any) => {
-    const response = await apiHelper.post("worker-categories", workerCategory);
-    return response.data;
+    const { data } = await apiHelper.post("worker-categories", workerCategory);
+    return data;
   };
   const updateWorkerCategory = async (id: number, workerCategory: WorkerCategoryEditRequest) => {
     await apiHelper.put(`worker-categories/${id}`, workerCategory);

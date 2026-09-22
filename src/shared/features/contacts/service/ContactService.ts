@@ -6,18 +6,18 @@ const useContactService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getContacts = async (searchString: string = "", setIsLoading?: boolean) => {
-    const response = await apiHelper.get(`contacts?searchString=${searchString}`, setIsLoading);
-    return response.data;
+    const { data } = await apiHelper.get(`contacts?searchString=${searchString}`, setIsLoading);
+    return data;
   };
 
   const getContact = async (id: number) => {
-    const response = await apiHelper.get(`contacts/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`contacts/${id}`);
+    return data;
   };
 
   const createContact = async (contact: ContactRequest) => {
-    const response = await apiHelper.post("contacts", contact);
-    return response.data;
+    const { data } = await apiHelper.post("contacts", contact);
+    return data;
   };
 
   const updateContact = async (id: number, contact: ContactRequest) => {

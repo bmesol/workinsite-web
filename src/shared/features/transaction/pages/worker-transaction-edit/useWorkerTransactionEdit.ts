@@ -117,8 +117,7 @@ const fetchWorkers = async (WorkerName: string = '') => {
       setRemark(data.remark);
       setWorkerList([data.worker]);
       setWorkerTransaction(data);
-    } catch (error) {
-      console.error('WorkerTransactionEdit: fetch failed', error);
+    } catch {
     } finally {
       setLoading(false);
     }

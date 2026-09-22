@@ -111,7 +111,7 @@ const ClientEditPage = () => {
                   />
 
                   {contact.phone && (
-                    <div className="flex items-center gap-2 ml-1">
+                    <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-black" />
                       <a
                         href={`tel:${contact.phone}`}

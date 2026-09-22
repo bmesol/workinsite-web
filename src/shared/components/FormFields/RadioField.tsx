@@ -1,11 +1,11 @@
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import { Label } from "@/shared/components/ui/label";
 import { FormInput } from "../FormInput/FormInput";
-import type { InputPropTypes } from "./InputPropTypes";
+import type { SelectInputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
 import { cn } from "@/shared/components/lib/utils";
 
-const RadioField = (props: InputPropTypes) => {
+const RadioField = (props: SelectInputPropTypes) => {
   const {
     label,
     errorMessage,

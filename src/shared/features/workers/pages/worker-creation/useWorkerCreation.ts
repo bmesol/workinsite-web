@@ -247,7 +247,6 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
       const errorMsg =
         error?.response?.data?.[0]?.message || "Failed to create worker. Please try again.";
       toast.error(errorMsg);
-      console.error("Worker creation error:", errorMsg);
     }
   };
 

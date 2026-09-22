@@ -156,7 +156,6 @@
 //             >
 //               <div className="flex flex-col gap-0.5">
 //                 <span className="text-xs font-medium" style={{ color: "var(--secondary)" }}>
-//                   {/* ✅ FIX 1: Attendance labels translate */}
 //                   {checkedIn ? t('Attendance Marked') : t('Mark Attendance')}
 //                 </span>
 //                 {address && (
@@ -285,7 +284,6 @@
 //             style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
 //           >
 //             <LogOut className="w-4 h-4" />
-//             {/* ✅ FIX 4: Logout translate */}
 //             {t('Logout')}
 //           </button>
 //         </div>

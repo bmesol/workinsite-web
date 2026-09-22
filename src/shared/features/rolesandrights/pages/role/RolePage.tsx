@@ -24,7 +24,7 @@ import {
 import RoleCard from '../../components/RoleCard/RoleCard';
 import { useRolesScreen } from './useRole';
 import type { Roles } from '../../DTOs/DTOs';
-import { useLanguage } from '@/shared/hooks/useLanguageContext'; // ✅ ADD
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 // ── Empty State ──
 const EmptyState = ({ t }: { t: (key: string) => string }) => (
@@ -41,7 +41,7 @@ const EmptyState = ({ t }: { t: (key: string) => string }) => (
 
 const RolesPage = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage(); // ✅ ADD
+  const { t } = useLanguage();
 
   const {
     roles,

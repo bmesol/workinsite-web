@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { AuthHelper } from '@/shared/features/auth/helpers/AuthHelper'; // ✅ useUser → AuthHelper directly
+import { AuthHelper } from '@/shared/features/auth/helpers/AuthHelper';
 import { PermissionHelper } from '@/shared/helpers/PermissionHelper';
 
 export const usePermission = () => {
-  const user = AuthHelper.getUserProfile(); // ✅ useUser() hook → AuthHelper.getUserProfile()
+  const user = AuthHelper.getUserProfile();
 
   const isSuperAdmin = PermissionHelper.hasFullAccess(user) && user?.role?.id === 1;
   const isAdmin = PermissionHelper.hasFullAccess(user) && user?.role?.id === 2;

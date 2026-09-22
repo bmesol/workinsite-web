@@ -3,6 +3,7 @@ import { useMaterialService } from '@/shared/features/materials/service/Material
 import { useMaterialUsedService } from '@/shared/features/materials/service/MaterialUsedService';
 import type { AvailableMaterialReport } from '@/shared/features/materials/service/MaterialUsedService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 
 export type SelectedMaterial = {
     id: number;
@@ -44,7 +45,7 @@ export function useAvailableMaterialReportScreen({ navigate }: { navigate: (path
         try {
             let source = allSites;
             if (!source.length) {
-                const sites = await siteService.getSites({ status: 'Working' });
+                const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
                 if (!sites) return;
                 setAllSites(sites);
                 source = sites;
@@ -53,8 +54,7 @@ export function useAvailableMaterialReportScreen({ navigate }: { navigate: (path
             setSiteList(
                 text ? source.filter((s: any) => s.name.toLowerCase().includes(lower)) : source,
             );
-        } catch (err) {
-            console.log('fetchSites error:', err);
+        } catch {
         }
     };
 
@@ -62,8 +62,7 @@ export function useAvailableMaterialReportScreen({ navigate }: { navigate: (path
         try {
             const res = await materialService.getMaterials(text);
             setMaterialList(res || []);
-        } catch (err) {
-            console.log('fetchMaterials error:', err);
+        } catch {
         }
     };
 
@@ -109,8 +108,7 @@ export function useAvailableMaterialReportScreen({ navigate }: { navigate: (path
                         : undefined,
             });
             setReportData(data || []);
-        } catch (err) {
-            console.log('fetchReport error:', err);
+        } catch {
             setReportData([]);
         } finally {
             setLoading(false);

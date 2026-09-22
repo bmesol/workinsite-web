@@ -1,15 +1,10 @@
 import type { Contact } from "../../contacts/DTOs/ContactProps";
 import type { Client } from "../../clients/DTOs/ClientProps";
 import type { User } from "../../users/DTOs/User";
+import { SITE_STATUS } from "@/shared/constants/appEnums";
 
-const SiteStatus = {
-  YET_TO_START: "Yet to start",
-  WORKING: "Working",
-  HOLD: "Hold",
-  COMPLETED: "Completed",
-} as const;
-
-type SiteStatus = (typeof SiteStatus)[keyof typeof SiteStatus];
+const SiteStatus = SITE_STATUS;
+type SiteStatus = (typeof SITE_STATUS)[keyof typeof SITE_STATUS];
 
 interface SiteCreationRequest {
   name: string;

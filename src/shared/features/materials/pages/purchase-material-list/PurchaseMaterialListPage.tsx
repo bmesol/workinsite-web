@@ -100,7 +100,7 @@ const PurchaseMaterialsList: React.FC<Props> = ({
             ? item.purchaseMaterialId
             : index;
 
-        // ✅ Use receivedQuantity for display and total calculation
+        // use receivedQuantity for display and total calculation
         const receivedQty =
           item.receivedQuantity != null && item.receivedQuantity !== ""
             ? parseFloat(item.receivedQuantity)

@@ -37,7 +37,6 @@ const ContactCreationPage = () => {
             required={true}
           />
 
-          {/* ✅ added PhoneNumberField */}
           <PhoneNumberField
             label={t('Phone Number')}
             inputValue={phone}
@@ -64,7 +63,6 @@ const ContactCreationPage = () => {
         </div>
       </Card>
 
-      {/* ✅ replaced useModel with shadcn Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="border overflow-y-auto max-h-[90vh]">
           <DialogHeader>

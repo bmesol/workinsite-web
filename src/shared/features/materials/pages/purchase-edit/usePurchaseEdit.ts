@@ -6,6 +6,7 @@ import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useSupplierService } from '@/shared/features/suppliers/service/SupplierService';
 import { usePurchaseInputValidate } from '../../components/InputValidate/PurchaseInputValidate';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 import type { Purchase } from '../../DTOs/PurchaseProps';
 import type {
@@ -125,7 +126,7 @@ export const usePurchaseEdit = (id: string) => {
   const fetchSites = async (searchString: string = '') => {
     let source = allSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSites(sites);
       source = sites;

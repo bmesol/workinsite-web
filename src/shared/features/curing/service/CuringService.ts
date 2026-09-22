@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type {
   CuringCreationRequest,
   CuringUpdationRequest,
@@ -15,18 +16,17 @@ const useCuringService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getCurings = async (params: GetCuringParams = {}) => {
-    const queryParams = new URLSearchParams();
-    if (params.SiteName) queryParams.append('SiteName', params.SiteName);
-    if (params.Status) queryParams.append('Status', params.Status.toString());
-    if (params.CuringTypeId) queryParams.append('CuringTypeId', params.CuringTypeId.toString());
-
-    const { data } = await apiHelper.get(`/curings?${queryParams.toString()}`);
+    const { data } = await apiHelper.get(`/curings?${buildQueryParams({
+      SiteName: params.SiteName,
+      Status: params.Status,
+      CuringTypeId: params.CuringTypeId,
+    })}`);
     return data;
   };
 
   const getCuring = async (id: number) => {
-    const response = await apiHelper.get(`/curings/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`/curings/${id}`);
+    return data;
   };
 
   const createCuring = async (curing: CuringCreationRequest) => {

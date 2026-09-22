@@ -12,7 +12,7 @@ const useWorkerInputValidate = (props: WorkerInputValidateProps) => {
 
   const resetErrors = () => setError(initialError);
 
- // ✅ Cleaner: batch all errors in one setError call instead of multiple
+ // batch all errors in one setError call instead of multiple
 const validate = () => {
   const newError = { ...initialError };
   let isValid = true;

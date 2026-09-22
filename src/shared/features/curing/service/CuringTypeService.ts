@@ -11,8 +11,8 @@ const useCuringTypeService = () => {
   };
 
   const getCuringType = async (id: number) => {
-    const response = await apiHelper.get(`/curings-types/${id}`);
-    return response.data;
+    const { data } = await apiHelper.get(`/curings-types/${id}`);
+    return data;
   };
 
   const createCuringType = async (curingType: CuringTypeCreationRequest) => {

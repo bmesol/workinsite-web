@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useInventoryStockReportService } from '../../service/InventoryStockReportService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
-import { getWeekRange } from '../../utils/DateUtils';
+import { getWeekRangeHyphen as getWeekRange } from '@/shared/utils/formatters';
 import { buildMaterialSummary } from '../../utils/TransformInventorySummary';
 import type { DateRange, DateRangeOption, SelectOption } from '../../DTOs/WorkerreportProps';
 import type { InventoryReportItem } from '../../DTOs/InventoryStockReportProps';
@@ -60,8 +60,7 @@ export function useInventoryStockReport() {
       }
 
       setAllItems(collected);
-    } catch (e) {
-      console.error('fetchReport error:', e);
+    } catch {
       setAllItems([]);
     } finally {
       setLoading(false);
@@ -73,8 +72,7 @@ export function useInventoryStockReport() {
     try {
       const res = await siteService.getSites({ searchString: text });
       setSiteOptions((res ?? []).slice(0, 5));
-    } catch (e) {
-      console.error('fetchSites error:', e);
+    } catch {
     }
   };
 

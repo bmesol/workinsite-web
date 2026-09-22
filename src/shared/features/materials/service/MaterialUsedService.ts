@@ -3,6 +3,7 @@ import type {
   MaterialUsedUpdationRequest,
 } from '../DTOs/MaterialUsedProps';
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
 type GetMaterialsUsedParams = {
   date?: string;
@@ -55,17 +56,15 @@ export const useMaterialUsedService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getMaterialsUsed = async (params: GetMaterialsUsedParams = {}) => {
-    const queryParams = new URLSearchParams();
-
-    if (params.date)       queryParams.append('Date', params.date);
-    if (params.siteId)     queryParams.append('SiteId', params.siteId.toString());
-    if (params.materialId) queryParams.append('MaterialId', params.materialId.toString());
-    if (params.quantity)   queryParams.append('Quantity', params.quantity);
-    if (params.workModeId) queryParams.append('WorkModeId', params.workModeId.toString());
-    if (params.pageNumber) queryParams.append('PageNumber', params.pageNumber.toString());
-    if (params.pageSize)   queryParams.append('PageSize', params.pageSize.toString());
-
-    const { data } = await apiHelper.get(`material-usages?${queryParams.toString()}`);
+    const { data } = await apiHelper.get(`material-usages?${buildQueryParams({
+      Date: params.date,
+      SiteId: params.siteId,
+      MaterialId: params.materialId,
+      Quantity: params.quantity,
+      WorkModeId: params.workModeId,
+      PageNumber: params.pageNumber,
+      PageSize: params.pageSize,
+    })}`);
     return data;
   };
 
@@ -104,26 +103,19 @@ export const useMaterialUsedService = () => {
   const getAvailableMaterialReport = async (
     params: GetAvailableMaterialReportParams,
   ): Promise<AvailableMaterialReport[]> => {
-    const queryParams = new URLSearchParams();
-
-    queryParams.append('SiteId', params.siteId.toString());
-    queryParams.append('Date', params.date);
-
-    if (params.materialIds && params.materialIds.length > 0) {
-      params.materialIds.forEach(id =>
-        queryParams.append('MaterialIds', id.toString()),
-      );
-    }
-
     const { data } = await apiHelper.get(
-      `purchases/available-material-report?${queryParams.toString()}`,
+      `purchases/available-material-report?${buildQueryParams({
+        SiteId: params.siteId,
+        Date: params.date,
+        MaterialIds: params.materialIds,
+      })}`,
     );
     return data as AvailableMaterialReport[];
   };
 
   const getMaximumAllowedQuantity = async (id: number): Promise<string> => {
-    const response = await apiHelper.get(`material-usages/${id}/maximum-quantity`);
-    return response.data.maximumAllowedQuantity as string;
+    const { data } = await apiHelper.get(`material-usages/${id}/maximum-quantity`);
+    return data.maximumAllowedQuantity as string;
   };
 
   return {

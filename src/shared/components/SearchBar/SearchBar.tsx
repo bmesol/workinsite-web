@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Input } from "@/shared/components/ui/input";
 import { Search, X } from "lucide-react";
 import { cn } from "@/shared/components/lib/utils";
+import { iconStyle } from "./searchutils";
 
 interface SearchBarProps {
   searchText: string;
@@ -44,14 +45,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       onClick={() => inputRef.current?.focus()}
     >
       {/* Search Icon */}
-      <Search
-        className="shrink-0"
-        style={{
-          height: "16px",
-          width: "16px",
-          color: "var(--gray-color)",
-        }}
-      />
+      <Search className="shrink-0" style={iconStyle} />
 
       {/* Input */}
      <Input

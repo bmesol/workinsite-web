@@ -65,14 +65,6 @@ export const SignUpPage = () => {
     e.preventDefault();
 
     if (!validateForm()) return;
-
-    console.log({
-      name,
-      phone,
-      organization,
-      pin,
-      confirmPin,
-    });
   };
   return (
     <div>

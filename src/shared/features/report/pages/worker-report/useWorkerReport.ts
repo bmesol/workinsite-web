@@ -1,4 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
+import { SITE_STATUS } from '@/shared/constants/appEnums';
+import { getWeekRangeHyphen as getWeekRange, validateDates } from '@/shared/utils/formatters';
 import { useWorkerReportService } from '../../service/WorkerReportService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useWorkerService } from '@/shared/features/workers/service/WorkerService';
@@ -14,55 +16,10 @@ import type {
 
 const PAGE_SIZE = 10;
 
-
-const formatDate = (date: Date): string => {
-  const d = String(date.getDate()).padStart(2, '0');
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const y = date.getFullYear();
-  return `${d}-${m}-${y}`;
-};
-
-export const getWeekRange = (option: 'currentWeek' | 'lastWeek'): DateRange => {
-  const today = new Date();
-  const day = today.getDay(); // 0=Sun
-  const diffToMon = day === 0 ? -6 : 1 - day;
-
-  if (option === 'currentWeek') {
-    const from = new Date(today);
-    from.setDate(today.getDate() + diffToMon);
-    const to = new Date(from);
-    to.setDate(from.getDate() + 6);
-    return { from: formatDate(from), to: formatDate(to) };
-  } else {
-    const from = new Date(today);
-    from.setDate(today.getDate() + diffToMon - 7);
-    const to = new Date(from);
-    to.setDate(from.getDate() + 6);
-    return { from: formatDate(from), to: formatDate(to) };
-  }
-};
-
-
 interface ValidationError {
   fromDate: string;
   toDate: string;
 }
-
-const validateDates = (from: string, to: string): ValidationError => {
-  const err: ValidationError = { fromDate: '', toDate: '' };
-  if (!from && !to) { err.fromDate = 'Date is required'; return err; }
-  if (!from) { err.fromDate = 'From Date is required'; return err; }
-  if (!to)   { err.toDate  = 'To Date is required';   return err; }
-
-  // parse dd-mm-yyyy
-  const [fd, fm, fy] = from.split('-').map(Number);
-  const [td, tm, ty] = to.split('-').map(Number);
-  const fromDate = new Date(fy, fm - 1, fd);
-  const toDate   = new Date(ty, tm - 1, td);
-  if (fromDate > toDate)
-    err.toDate = 'To Date must be on or after From Date';
-  return err;
-};
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -126,8 +83,7 @@ export function useWorkerReport() {
       }
       setTotalAmount(res.totalAmount ?? 0);
       setHasMore(res.totalPages > res.pageNumber);
-    } catch (e) {
-      console.error('fetchReports error:', e);
+    } catch {
     } finally {
       setLoading(false);
       setPaginationLoading(false);
@@ -138,7 +94,7 @@ export function useWorkerReport() {
   const fetchSites = async (text: string) => {
     let source = allSites;
     if (!source.length) {
-      const sites = await siteService.getSites({ status: 'Working' });
+      const sites = await siteService.getSites({ status: SITE_STATUS.WORKING });
       if (!sites) return;
       setAllSites(sites);
       source = sites;

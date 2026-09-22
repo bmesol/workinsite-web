@@ -60,7 +60,7 @@ const SupplierListPage = () => {
         </Button>
       </Header>
 
-      {/* SearchBar ✅ */}
+      {/* SearchBar */}
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
           <SearchBar
@@ -109,7 +109,7 @@ const SupplierListPage = () => {
         )}
       </div>
 
-      {/* ✅ Delete Confirm Dialog */}
+      {/* Delete Confirm Dialog */}
       <AlertDialog
         open={!!deleteId}
         onOpenChange={(val) => !val && setDeleteId(null)}

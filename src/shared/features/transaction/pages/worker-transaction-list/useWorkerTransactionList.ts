@@ -72,8 +72,7 @@ const useWorkerTransactionList = () => {
         setPageNumber(prev => prev + 1);
       }
       setHasMore(response.totalPages > response.pageNumber);
-    } catch (error) {
-      console.error('Error fetching WorkerTransactions:', error);
+    } catch {
       toast.error('Failed to fetch worker transactions.');
     } finally {
       setLoading(false);
@@ -96,7 +95,7 @@ const useWorkerTransactionList = () => {
   const handleSearch = () => {
     const filters = [worker?.name, fromDate, toDate].filter(Boolean).join(', ');
     setAppliedFilters(filters || 'Search');
-    setFilterOpen(false); // ✅ close dialog
+    setFilterOpen(false);
     fetchWorkerTransactions(true);
   };
 

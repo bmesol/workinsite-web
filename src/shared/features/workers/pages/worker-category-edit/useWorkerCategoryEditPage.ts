@@ -30,7 +30,6 @@
 
 //   const [loading, setLoading] = useState(false);
 
-//   // ✅ Pass all 3 args — now validate checks name + workType + workerRole
 //   const { error, validate } = useWorkerCategoryInputValidate(
 //     name,
 //     [...workTypeList, ...updatedWorkTypeList],           // combined new + existing
@@ -140,26 +139,23 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
   const [isActive, setIsActive] = useState(true);
   const [workerCategoryList, setWorkerCategoryList] = useState<WorkerCategoryProps>();
 
-  // ✅ WorkType states — workTypeList holds locally-added (unsaved) items
+  // workTypeList holds locally-added (unsaved) items
   const [workTypeList, setWorkTypeList] = useState<WorkTypeNew[]>([]);
   const [updatedWorkTypeList, setUpdatedWorkTypeList] = useState<WorkType[]>([]);
   const [deletedWorkTypeList, setDeletedWorkTypeList] = useState<number[]>([]);
 
-  // ✅ WorkerRole states
   const [workerRoleList, setWorkerRoleList] = useState<WorkerRole[]>([]);
   const [updateworkerRoleList, setUpdateWorkerRoleList] = useState<WorkerRoles[]>([]);
   const [deleteworkerRoleList, setDeleteWorkerRoleList] = useState<number[]>([]);
 
   const [loading, setLoading] = useState(false);
 
-  // ✅ Validation (name + workTypes + workerRoles)
   const { error, validate } = useWorkerCategoryInputValidate(
     name,
     [...workTypeList, ...updatedWorkTypeList],
     [...workerRoleList, ...updateworkerRoleList],
   );
 
-  // ✅ Fetch existing data
   const fetchWorkerCategory = async () => {
     setLoading(true);
     try {
@@ -188,7 +184,6 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     fetchWorkerCategory();
   }, [id]);
 
-  // ✅ Cancel
   const handleCancel = () => {
     if (redirectUrl) {
       navigate(redirectUrl);
@@ -197,11 +192,8 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     navigate(WorkerCategoriesUrls.list);
   };
 
-  // ✅ SUBMIT — payload shape now matches mobile exactly:
-  // backend silently ignores unrecognized "workTypes"/"workerRoles" keys, so nested
-  // updates (unit change, salary change) were never actually persisted before.
-  // Sending newWorkTypes/updatedWorkTypes/deletedWorkTypes (and the worker-role
-  // equivalents) is what the backend actually reads.
+  // backend ignores flat "workTypes"/"workerRoles" keys; use newWorkTypes/updatedWorkTypes/
+  // deletedWorkTypes (and worker-role equivalents) which the backend actually reads.
   const handleSubmission = async () => {
     if (validate()) {
       try {
@@ -260,7 +252,6 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     handleSubmission,
     loading,
 
-    // ✅ WorkType
     workTypeList,
     setWorkTypeList,
     updatedWorkTypeList,
@@ -268,7 +259,6 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     deletedWorkTypeList,
     setDeletedWorkTypeList,
 
-    // ✅ WorkerRole
     workerRoleList,
     setWorkerRoleList,
     updateworkerRoleList,

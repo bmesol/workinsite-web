@@ -1,4 +1,4 @@
-import { Briefcase, Banknote, CalendarDays, User, Trash2 } from "lucide-react";
+import { Briefcase, Banknote, CalendarDays, User, Trash2, type LucideIcon } from "lucide-react";
 import { Card } from "@/shared/components/ui/card";
 import { usePermission } from "@/shared/hooks/usePermission";
 
@@ -13,6 +13,13 @@ interface AttendanceCardProps {
   onPress: () => void;
   permissionKey: string;
 }
+
+const IconRow = ({ Icon, text }: { Icon: LucideIcon; text: string }) => (
+  <div className="flex items-center gap-2 min-w-0">
+    <Icon className="h-4 w-4 text-[var(--foreground)] shrink-0" />
+    <span className="text-sm text-[var(--foreground)] truncate">{text}</span>
+  </div>
+);
 
 const AttendanceCard = ({
   siteName,
@@ -62,28 +69,14 @@ const AttendanceCard = ({
 
         {/* Row 1 — Work Type + Wage Type */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <Briefcase className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-            <span className="text-sm text-[var(--foreground)] truncate">{workTypeName}</span>
-          </div>
-
-          <div className="flex items-center gap-2 min-w-0">
-            <Banknote className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-            <span className="text-sm text-[var(--foreground)] truncate">{wageTypeName}</span>
-          </div>
+          <IconRow Icon={Briefcase} text={workTypeName} />
+          <IconRow Icon={Banknote} text={wageTypeName} />
         </div>
 
         {/* Row 2 — Date + Worker */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <CalendarDays className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-            <span className="text-sm text-[var(--foreground)] truncate">{date}</span>
-          </div>
-
-          <div className="flex items-center gap-2 min-w-0">
-            <User className="h-4 w-4 text-[var(--foreground)] shrink-0" />
-            <span className="text-sm text-[var(--foreground)] truncate">{worker}</span>
-          </div>
+          <IconRow Icon={CalendarDays} text={date} />
+          <IconRow Icon={User} text={worker} />
         </div>
       </div>
     </Card>

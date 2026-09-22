@@ -2,17 +2,17 @@ import { useInputValidate } from "../../components/InputValidate/InputValidate";
 import { ContactTypes } from "../../DTOs/ContactProps";
 import type { ContactRequest} from "../../DTOs/ContactProps"
 import { useContactService } from "../../service/ContactService";
-import { toast } from "sonner";  // ✅ replaced useToast
+import { toast } from "sonner";
 import { ContactsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const useContactCreation = (queryString: URLSearchParams) => {
   const [name, setName] = useState(queryString.get("name") || "");
-  const [phone, setPhone] = useState("");  // ✅ added phone
+  const [phone, setPhone] = useState("");
   const [contactList, setContactList] = useState<ContactRequest>({ name: "", contactDetails: [] });
 
-  const { error, validate } = useInputValidate({ name, phone });  // ✅ added phone
+  const { error, validate } = useInputValidate({ name, phone });
   const redirectUrl = queryString.get("redirect");
   const contactService = useContactService();
   const navigate = useNavigate();
@@ -43,7 +43,6 @@ const useContactCreation = (queryString: URLSearchParams) => {
   };
 
   return { name, phone, setName, setPhone, error, contactList, setContactList, handleSubmission, handleCancel, isAddDisabled };
-  // ✅ expose phone and setPhone
 };
 
 export { useContactCreation };

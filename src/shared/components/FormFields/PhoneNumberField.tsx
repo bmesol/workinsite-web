@@ -1,54 +1,18 @@
-import { FormInput } from "../FormInput/FormInput";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
+import { GenericInputField } from "./GenericInputField";
 import type { InputPropTypes } from "./InputPropTypes";
-import { useInputField } from "./useInputField";
-import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 export const PhoneNumberField = (props: InputPropTypes) => {
   const { t } = useLanguage();
-  const {
-    label,
-    length = 10,
-    errorMessage,
-    placeholder,
-    className,
-    isDisabled,
-    required = false,
-    isHideLabel,
-    regex = "^\\d*$",
-  } = props;
-
-  const { inputValue, handleInputChange } = useInputField(props);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // regex validation
-    if (regex && !new RegExp(regex).test(value)) return;
-    if (value.length > length) return;
-    handleInputChange(value);
-  };
-
+  const { regex = "^\\d*$", length = 10 } = props;
   return (
-    <FormInput errorMessage={errorMessage} className={className}>
-      {/* Label */}
-      {!isHideLabel && (
-        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
-          {label || t("Phone Number")}
-          {required && <span className="text-red-500">*</span>}
-        </Label>
-      )}
-
-      {/* Input */}
-      <Input
-        type="tel"
-        value={inputValue}
-        onChange={handleChange}
-        placeholder={placeholder || t("Enter phone number")}
-        disabled={isDisabled}
-        required={required}
-        className="w-full"
-      />
-    </FormInput>
+    <GenericInputField
+      {...props}
+      length={length}
+      label={props.label ?? t("Phone Number")}
+      filterRegex={new RegExp(regex)}
+      inputType="tel"
+      defaultPlaceholder={t("Enter phone number")}
+    />
   );
 };

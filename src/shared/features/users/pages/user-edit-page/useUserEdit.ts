@@ -1,6 +1,6 @@
 import { useInputValidate } from "@/shared/features/users/components/InputValidate/InputValidate";
-import { useUserService } from "../../services/UserService";
-import { useRoleService } from "../../services/RoleService";
+import { createUserService } from "../../services/UserService";
+import { createRoleService } from "../../services/RoleService";
 import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
 import { useEffect, useState } from "react";
@@ -21,8 +21,8 @@ const useUserEdit = (id: string) => {
 
   const { error, validate } = useInputValidate({ name, phoneNumber, role });
   const navigate = useNavigate();
-  const userService = useUserService();
-  const roleService = useRoleService();
+  const userService = createUserService();
+  const roleService = createRoleService();
 
   // ── Fetch user and roles on mount ──
 
@@ -87,12 +87,7 @@ const useUserEdit = (id: string) => {
       await userService.updateUser(parseInt(id, 10), payload);
       navigate(UsersUrls.list);
     } catch (err: any) {
-      const errors = Array.isArray(err?.response?.data) ? err.response.data : [];
-      if (errors.length > 0) {
-        errors.forEach((i: any) => toast.error(i.message ?? "Failed to update user"));
-      } else {
-        toast.error("Failed to update user");
-      }
+      toast.error(err.message ?? "Failed to update user");
     }
   };
 

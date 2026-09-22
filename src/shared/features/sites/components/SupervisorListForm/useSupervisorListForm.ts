@@ -1,11 +1,11 @@
-import { useUserService } from "../../../users/services/UserService";
+import { createUserService } from "../../../users/services/UserService";
 import type { SupervisorListFormProps } from "./DTOs";
 import type { User } from "@/shared/features/users/DTOs/User";
 import { useEffect, useState } from "react";
 
 const useSupervisorListForm = (props: SupervisorListFormProps) => {
   const { supervisorIds, setSupervisorIds } = props;
-  const userService = useUserService();
+  const userService = createUserService();
 
   const [supervisorList, setSupervisorList] = useState<User[]>([]);
 
