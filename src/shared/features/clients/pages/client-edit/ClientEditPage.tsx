@@ -2,11 +2,11 @@ import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmis
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { ContactsEditForm } from "@/shared/features/clients/components/ContactsEditForm/ContactEditForm";
-import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { KycCreateForm } from "@/shared/components/Kyc/KycCreateForm/KycCreateForm";
 import { Header } from "@/shared/components/Header/Header";
 import { KycTypes } from "@/shared/components/Kyc/KycTypes/KycTypes";
+import { ContactDetailForm } from "@/shared/components/ContactDetailForm/ContactDetailForm";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Card } from "@/shared/components/ui/card";
 import type { Client } from "../../DTOs/ClientProps";
@@ -19,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import { Phone } from "lucide-react";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
@@ -101,41 +100,13 @@ const ClientEditPage = () => {
             {/* Contact Details */}
             <div className="flex flex-col gap-3">
               {contact.id ? (
-                <>
-                  <FormActionButton
-                    heading={t('Contact detail')}
-                    label={t('Edit')}
-                    onClick={handleContactEdit}
-                    isColsTwo
-                    isAddDisabled={!editable}
-                  />
-
-                  {contact.phone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-black" />
-                      <a
-                        href={`tel:${contact.phone}`}
-                        className="text-sm text-black hover:underline"
-                      >
-                        {contact.phone}
-                      </a>
-                    </div>
-                  )}
-
-                  <ContactTypes
-                    contactList={primaryContactDetails}
-                    showEditDeleteButtons={false}
-                  />
-
-                  {hasMoreDetails && (
-                    <button
-                      className="text-sm text-secondary underline text-left ml-3"
-                      onClick={() => setIsContactOpen(true)}
-                    >
-                      {t('More details...')}
-                    </button>
-                  )}
-                </>
+                <ContactDetailForm
+                  handleContactEdit={handleContactEdit}
+                  primaryContactDetails={primaryContactDetails}
+                  hasMoreDetails={hasMoreDetails}
+                  handleMoreDetails={() => setIsContactOpen(true)}
+                  isAddDisabled={!editable}
+                />
               ) : null}
             </div>
 
