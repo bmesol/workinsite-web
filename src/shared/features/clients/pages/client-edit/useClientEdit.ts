@@ -36,7 +36,7 @@ const useClientEdit = (id: string, queryString: URLSearchParams) => {
   const [isContactEditOpen, setIsContactEditOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const { error, validate } = useInputValidate({ name });
-  const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact);
+  const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact, true);
 
   const fetchClient = async () => {
     setLoading(true);

@@ -677,7 +677,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-4">
-              {activeView === "theme" && <ThemeSelector />}
+              {activeView === "theme" && <ThemeSelector onClose={() => handleSheetOpenChange(false)} />}
               {activeView === "language" && <LanguageSelector />}
             </div>
           </>

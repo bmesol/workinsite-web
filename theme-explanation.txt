@@ -1,0 +1,147 @@
+HOW THE THEME SELECTOR WORKS
+==============================
+
+OVERVIEW
+--------
+The theme system is built around a React context, a CSS custom-property bridge, and
+localStorage persistence. Choosing a colour in the UI rewrites two CSS variables on
+the document root, which cascade to every component in the app.
+
+---
+
+1. THE COLOUR PALETTE  (src/shared/utils/color.ts)
+---------------------------------------------------
+A named export called `colorCombinations` holds an array of 20 objects. Each object
+has exactly two keys:
+
+  { primaryColor: string, secondaryColor: string }
+
+These are plain hex strings, e.g. { primaryColor: '#16A085', secondaryColor: '#1A1A1A' }.
+The first entry in the array is visually labelled "Default" in the UI, though the
+actual default theme (used before any selection is made) is defined separately in
+ThemeContext (yellow #fad427 / dark brown #4f430f).
+
+---
+
+2. THE THEME CONTEXT  (src/shared/context/ThemeContext.tsx)
+-----------------------------------------------------------
+ThemeContext is a standard React context that holds the active Theme object and exposes
+three operations: setTheme, resetTheme, and the current theme value.
+
+Type definition:
+  type Theme = { primaryColor: string; secondaryColor: string }
+
+Default theme:
+  { primaryColor: '#fad427', secondaryColor: '#4f430f' }
+
+Key internal function — applyThemeToDOM(theme):
+  This is the bridge between React state and the browser's visual output. It directly
+  sets two CSS custom properties on the <html> element:
+
+    document.documentElement.style.setProperty('--primary', theme.primaryColor);
+    document.documentElement.style.setProperty('--secondary', theme.secondaryColor);
+
+  Any element in the page that reads var(--primary) or var(--secondary) immediately
+  reflects the new colour, with no re-render required.
+
+On mount (useEffect):
+  ThemeProvider checks localStorage for a previously saved theme under the key "theme".
+  If one is found, it is parsed and applied via applyThemeToDOM. If nothing is stored,
+  the default theme is applied instead.
+
+setTheme(newTheme):
+  1. Updates the React state (triggers a re-render of context consumers).
+  2. Calls applyThemeToDOM to update the CSS variables immediately.
+  3. Saves the new theme to localStorage as JSON so it survives a page refresh.
+
+resetTheme():
+  Restores the default theme object, re-applies it to the DOM, and removes the
+  "theme" key from localStorage.
+
+---
+
+3. THE THEME SELECTOR COMPONENT
+   (src/shared/components/ThemeSelector/ThemeSelector.tsx)
+---------------------------------------------------------
+ThemeSelector is a pure presentational + interaction component. It reads theme and
+setTheme from useTheme() and the current language from useLanguage().
+
+Rendering:
+  It maps over the full colorCombinations array and renders a small rectangular button
+  for each entry in a 4-column grid. Each button is a miniature mockup of the colour
+  scheme:
+    - Top 55% of the button: filled with the combo's primaryColor.
+    - Bottom 45%: split equally between solid black (#111111) on the left and solid
+      white (#ffffff) on the right, representing dark and light UI surfaces.
+
+Active state:
+  The isActive() helper compares the current theme's primaryColor (lowercased) against
+  each combo's primaryColor. The matching button gets a thicker border
+  (2px solid var(--foreground)) so the user can see which theme is selected.
+
+Default label:
+  The very first swatch (index 0) renders a small "Default" badge in the top-right
+  corner.
+
+On click:
+  Clicking any swatch calls setTheme(combo), which triggers the full context flow
+  described in section 2 above.
+
+---
+
+4. HOW THE THEME PROPAGATES THROUGHOUT THE APP
+-----------------------------------------------
+The propagation happens through two complementary mechanisms:
+
+A) CSS Custom Properties (the primary mechanism)
+   global.css defines a :root block with default values for --primary and --secondary
+   (and many other design tokens). Every component that references var(--primary) or
+   var(--secondary) in its inline styles or CSS will automatically pick up the new
+   colour whenever applyThemeToDOM is called, because the variables are overwritten at
+   the document root level.
+
+B) Tailwind CSS Bridge
+   global.css includes a @theme inline block that maps Tailwind's design-token
+   variables to the CSS custom properties:
+
+     --color-primary: var(--primary)
+     --color-secondary: var(--secondary)
+
+   This means Tailwind utility classes like bg-primary, text-primary, border-secondary,
+   etc. also reflect the active theme automatically. No Tailwind configuration change is
+   needed when the theme changes.
+
+---
+
+5. APP ENTRY POINT  (src/main.tsx)
+-----------------------------------
+ThemeProvider wraps the entire React tree at the very root:
+
+  <ThemeProvider>
+    <LanguageProvider>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </LanguageProvider>
+  </ThemeProvider>
+
+This guarantees that every component in the application — no matter how deeply nested —
+can call useTheme() to read or update the active theme.
+
+---
+
+6. END-TO-END FLOW SUMMARY
+---------------------------
+User clicks a colour swatch
+  → ThemeSelector calls setTheme(combo)
+    → ThemeContext updates React state
+    → applyThemeToDOM writes --primary and --secondary on <html>
+    → All inline styles using var(--primary) / var(--secondary) update instantly
+    → All Tailwind bg-primary / text-secondary classes update instantly
+    → New theme is serialised to localStorage
+  → ThemeSelector re-renders: the clicked swatch gets the active border style
+
+On next page load:
+  → ThemeProvider mounts and reads localStorage["theme"]
+  → applyThemeToDOM is called with the stored value before anything is painted
+  → The user's last-chosen theme is restored seamlessly
