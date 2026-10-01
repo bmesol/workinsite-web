@@ -80,13 +80,13 @@ export function buildMaterialSummary(
         siteId,
         siteName,
         purchaseQuantity: row.purchaseQuantity,
-        purchaseDetails: row.purchaseDetails,
+        purchaseDetails: row.purchaseDetails ?? [],
         usedQuantity: row.usedQuantity,
-        usedDetails: row.usedDetails,
+        usedDetails: row.usedDetails ?? [],
         transferInQuantity: row.transferInQuantity,
-        transferInDetails: row.transferInDetails,
+        transferInDetails: row.transferInDetails ?? [],
         transferOutQuantity: row.transferOutQuantity,
-        transferOutDetails: row.transferOutDetails,
+        transferOutDetails: row.transferOutDetails ?? [],
         availableStock: row.availableStock,
       });
     }

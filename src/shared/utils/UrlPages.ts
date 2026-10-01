@@ -47,6 +47,7 @@ import { MaterialShiftEditPage } from "../features/materials/pages/material-shif
 import SupervisorAttendanceListPage from "../features/report/pages/supervisor-attendance-list/SupervisorAttendanceListPage";
 import AvailableMaterialReportPage from "../features/report/pages/available-material-report/AvailableMaterialReportPage";
 import InventoryStockReportPage from "../features/report/pages/inventory-stock-report/InventoryStockReportPage";
+import SiteExpenseReportPage from "../features/report/pages/site-expense-report/SiteExpenseReportPage";
 import RolesPage from "@/shared/features/rolesandrights/pages/role/RolePage";
 import PageRolePage from "@/shared/features/rolesandrights/pages/page-role/PageRole";
 import CuringTypeListPage from "../features/curing/pages/curing-type-list/CuringTypeListPage";
@@ -99,6 +100,7 @@ const UrlPages = {
   "/reports/supervisor-attendance":    { page: SupervisorAttendanceListPage,   allowedUserRoles: ALL_USERS },
   "/reports/available-material":       { page: AvailableMaterialReportPage,    allowedUserRoles: ALL_USERS },
   "/reports/inventory-stock":          { page: InventoryStockReportPage,       allowedUserRoles: ALL_USERS },
+  "/reports/site-expense":             { page: SiteExpenseReportPage,          allowedUserRoles: ALL_USERS },
   "/workers":                          { page: WorkerListPage,                 allowedUserRoles: ALL_USERS },
   "/workers/create":                   { page: WorkerCreationPage,             allowedUserRoles: ALL_USERS },
   "/workers/:id/edit":                 { page: WorkerEditPage,                 allowedUserRoles: ALL_USERS },

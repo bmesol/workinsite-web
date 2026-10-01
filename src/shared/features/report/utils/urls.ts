@@ -20,4 +20,8 @@ const InventoryStockReportUrls = {
   list: `/${inventoryStockReportBasePath}`,
 };
 
-export { WorkerReportUrls, AvailableMaterialReportUrls, SupervisorAttendanceUrls, InventoryStockReportUrls };
+const SiteExpenseReportUrls = {
+  list: '/reports/site-expense',
+};
+
+export { WorkerReportUrls, AvailableMaterialReportUrls, SupervisorAttendanceUrls, InventoryStockReportUrls, SiteExpenseReportUrls };
