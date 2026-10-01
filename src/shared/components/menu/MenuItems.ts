@@ -140,12 +140,14 @@ const MenuItems: Record<string, MenuItem> = {
       "Supervisor Attendance Report",
       "Available Material Report",
       "Inventory Stock Report",
+      "Site Expense Report",
     ],
     children: [
       { label: "Worker Report", href: "/reports/worker", permissionKey: "Worker Report" },
       { label: "Supervisor Attendance Report", href: "/reports/supervisor-attendance", permissionKey: "Supervisor Attendance Report" },
       { label: "Available Material Report", href: "/reports/available-material", permissionKey: "Available Material Report" },
       { label: "Inventory Stock Report", href: "/reports/inventory-stock", permissionKey: "Inventory Stock Report" },
+      { label: "Site Expense Report", href: "/reports/site-expense", permissionKey: "Site Expense Report" },
     ],
   },
   "/task": {

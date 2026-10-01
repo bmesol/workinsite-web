@@ -12,6 +12,7 @@ import { InventoryFilterDialog } from '../../components/InventoryFilterDialog/In
 import { useInventoryStockReport } from './useInventoryStockReport';
 import { exportToExcel, exportToPDF } from '../../utils/exportInventoryReport';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
@@ -86,46 +87,112 @@ export default function InventoryStockReportPage() {
   return (
     <div className="min-h-screen w-full py-6">
       <div className="px-4">
-        <Header title="Inventory Stock Report">
-          <Actions>
-            <div className="flex items-center gap-2 flex-wrap justify-end">
-              <div className="-mt-4">
-                <SearchFilterBar
-                  appliedFilters={appliedFilters}
-                  placeholder="Search inventory report"
-                  onFilterOpen={() => {
-                    fetchSites('');
-                    setFilterOpen(true);
-                  }}
-                  onClearSearch={handleClearFilters}
-                />
+        {/* ── Desktop / tablet: title + filter bar + export buttons on one row ── */}
+        <div className="hidden sm:block">
+          <Header title="Inventory Stock Report">
+            <Actions>
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                <div className="-mt-4">
+                  <SearchFilterBar
+                    appliedFilters={appliedFilters}
+                    placeholder="Search inventory report"
+                    onFilterOpen={() => {
+                      fetchSites('');
+                      setFilterOpen(true);
+                    }}
+                    onClearSearch={handleClearFilters}
+                  />
+                </div>
+                {hasData && (
+                  <>
+                    <Button
+                      onClick={async () => {
+                        try {
+                          await exportToExcel(materialSummary, dateRange);
+                        } catch (err) {
+                          console.error('[Export Excel]', err);
+                          toast.error('Excel export failed. Please try again.');
+                        }
+                      }}
+                      className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
+                      style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
+                    >
+                      <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                      Export Excel
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={async () => {
+                        try {
+                          await exportToPDF(materialSummary, dateRange);
+                        } catch (err) {
+                          console.error('[Export PDF]', err);
+                          toast.error('PDF export failed. Please try again.');
+                        }
+                      }}
+                      className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
+                    >
+                      <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                      Download PDF
+                    </Button>
+                  </>
+                )}
               </div>
-              {hasData && (
-                <>
-                  <Button
-                    onClick={() => void exportToExcel(materialSummary)}
-                    className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                    style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
-                  >
-                    <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
-                    Export Excel
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      exportToPDF(materialSummary, 'Inventory_Stock_Report', site.label || undefined, dateRange)
-                    }
-                    className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
-                  >
-                    <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
-                    Download PDF
-                  </Button>
-                </>
-              )}
+            </Actions>
+          </Header>
+        </div>
+
+        {/* ── Mobile: 2-line heading → full-width filter → equal-width export buttons ── */}
+        <div className="sm:hidden">
+          <h2 className="text-secondary font-bold text-xl leading-tight pt-4">
+            Inventory Stock<br />Report
+          </h2>
+          <SearchFilterBar
+            appliedFilters={appliedFilters}
+            placeholder="Search inventory report"
+            onFilterOpen={() => {
+              fetchSites('');
+              setFilterOpen(true);
+            }}
+            onClearSearch={handleClearFilters}
+          />
+          {hasData && (
+            <div className="flex gap-3 mt-4">
+              <Button
+                onClick={async () => {
+                  try {
+                    await exportToExcel(materialSummary, dateRange);
+                  } catch (err) {
+                    console.error('[Export Excel]', err);
+                    toast.error('Excel export failed. Please try again.');
+                  }
+                }}
+                className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
+                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
+              >
+                <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                Export Excel
+              </Button>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    await exportToPDF(materialSummary, dateRange);
+                  } catch (err) {
+                    console.error('[Export PDF]', err);
+                    toast.error('PDF export failed. Please try again.');
+                  }
+                }}
+                className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
+                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
+              >
+                <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                Download PDF
+              </Button>
             </div>
-          </Actions>
-        </Header>
+          )}
+        </div>
       </div>
 
       {hasData && (

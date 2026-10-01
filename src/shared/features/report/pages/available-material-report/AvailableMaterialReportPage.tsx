@@ -72,20 +72,37 @@ const AvailableMaterialReportScreen = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
-      {/* Header */}
+      {/* Responsive header row:
+            sm+  → title left, filter bar right on the SAME row  (like Inventory Stock Report)
+            <sm  → title on top, filter bar below right-aligned  */}
       <Header title="Available Material Report">
         <Actions>
-          <SearchFilterBar
-            appliedFilters={appliedFilters}
-            placeholder={t('Search material report')}
-            onFilterOpen={() => {
-              fetchMaterials('');
-              setIsFilterOpen(true);
-            }}
-            onClearSearch={handleClearSearch}
-          />
+          <div className="hidden sm:block -mt-4">
+            <SearchFilterBar
+              appliedFilters={appliedFilters}
+              placeholder={t('Search material report')}
+              onFilterOpen={() => {
+                fetchMaterials('');
+                setIsFilterOpen(true);
+              }}
+              onClearSearch={handleClearSearch}
+            />
+          </div>
         </Actions>
       </Header>
+
+      {/* Mobile-only filter bar — below the heading */}
+      <div className="sm:hidden">
+        <SearchFilterBar
+          appliedFilters={appliedFilters}
+          placeholder={t('Search material report')}
+          onFilterOpen={() => {
+            fetchMaterials('');
+            setIsFilterOpen(true);
+          }}
+          onClearSearch={handleClearSearch}
+        />
+      </div>
 
       {/* Availability Badge — SearchFilterBar கீழே, right corner */}
       {reportData.length > 0 && (
