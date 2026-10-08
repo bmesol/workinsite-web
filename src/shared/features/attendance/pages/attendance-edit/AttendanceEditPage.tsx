@@ -226,10 +226,10 @@ const AttendanceEditPage = () => {
             {/* View Images */}
             {viewImages && viewImages.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {viewImages.map((img, index) => (
+                {viewImages.filter(img => img?.staticBaseUrl && img?.imagePath).map((img, index) => (
                   <div key={img.id} className="relative w-20 h-20">
                     <img
-                      src={`${img.staticBaseUrl}/${img.imagePath}`}
+                      src={`${img.staticBaseUrl}${img.imagePath}`}
                       alt={img.imagePath}
                       className="w-full h-full object-cover rounded-md border"
                     />

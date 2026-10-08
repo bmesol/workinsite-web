@@ -1,14 +1,11 @@
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import {
   RefreshCw,
   FileText,
   IndianRupee,
-  Calendar,
-  MapPin,
-  ChevronRight,
-  HardHat,
+  ArrowLeft,
 } from "lucide-react";
 import { useWorkerReportDetails } from "./useWorkerReportDetails";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
@@ -40,7 +37,21 @@ export default function WorkerReportDetailsPage() {
   const { workerId } = useParams<{ workerId: string }>();
   const { t } = useLanguage();
   const location = useLocation();
-  const { fromDate, toDate, siteId } = location.state ?? {};
+  const navigate = useNavigate();
+  const { fromDate, toDate, siteId, referrer } = (location.state ?? {}) as {
+    fromDate: string;
+    toDate: string;
+    siteId?: string;
+    referrer?: string;
+  };
+
+  const handleBack = () => {
+    if (referrer === 'site-expense' || referrer === 'worker-report') {
+      navigate(-1);
+    } else {
+      navigate('/reports/worker');
+    }
+  };
 
   const {
     loading,
@@ -63,7 +74,18 @@ export default function WorkerReportDetailsPage() {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* ── Header ── */}
-      <Header title="Worker Report Details">
+      <Header
+        title="Worker Report Details"
+        leading={
+          <button
+            onClick={handleBack}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+            aria-label="Go back"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        }
+      >
         <Actions>
           <Button
             size="sm"

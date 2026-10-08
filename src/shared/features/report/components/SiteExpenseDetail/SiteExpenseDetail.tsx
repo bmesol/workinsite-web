@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { SiteExpenseReportItem } from '../../DTOs/SiteExpenseReportProps';
 import { formatINR } from '@/shared/utils/formatters';
 import { EmptyState } from '@/shared/components/EmptyState/EmptyState';
+import { WorkerReportUrls } from '../../utils/urls';
 
 type TabKey = 'purchases' | 'materials' | 'clientTransactions' | 'workers';
 
@@ -34,10 +36,14 @@ function MiniStat({ label, value, color }: { label: string; value: string; color
 interface SiteExpenseDetailProps {
   site: SiteExpenseReportItem;
   onBack: () => void;
+  dateRange: { from: string; to: string };
+  filterSiteId?: number;
+  defaultTab?: TabKey;
 }
 
-export function SiteExpenseDetail({ site, onBack }: SiteExpenseDetailProps) {
-  const [activeTab, setActiveTab] = useState<TabKey>('purchases');
+export function SiteExpenseDetail({ site, onBack, dateRange, filterSiteId, defaultTab }: SiteExpenseDetailProps) {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<TabKey>(defaultTab ?? 'purchases');
 
   const th = 'px-3 py-2.5 font-semibold text-slate-600 whitespace-nowrap';
   const thStyle = { fontSize: 'var(--font-xs)' };
@@ -211,21 +217,55 @@ export function SiteExpenseDetail({ site, onBack }: SiteExpenseDetailProps) {
                     <th className={`${th} text-left`} style={thStyle}>Worker Name</th>
                     <th className={`${th} text-left`} style={thStyle}>Category</th>
                     <th className={`${th} text-right`} style={thStyle}>Total Amount</th>
+                    <th className={`${th}`} style={thStyle}></th>
                   </tr>
                 </thead>
                 <tbody>
                   {site.workers.map((w, i) => (
-                    <tr key={i} className="hover:bg-slate-50 transition-colors">
+                    <tr
+                      key={i}
+                      className="hover:bg-amber-50 cursor-pointer transition-colors"
+                      onClick={() => {
+                        // Embed restore context in the current history entry so that browser back
+                        // (or navigate(-1)) returns to this site's detail view on the Workers tab.
+                        const hs = window.history.state as { idx?: number; key?: string; usr?: unknown };
+                        window.history.replaceState(
+                          {
+                            ...hs,
+                            usr: {
+                              ...(hs?.usr != null && typeof hs.usr === 'object' ? hs.usr : {}),
+                              restore: {
+                                fromDate: dateRange.from,
+                                toDate: dateRange.to,
+                                filterSiteId,
+                                selectedSiteId: site.siteId,
+                                activeTab: 'workers',
+                              },
+                            },
+                          },
+                          ''
+                        );
+                        navigate(WorkerReportUrls.details(w.id), {
+                          state: {
+                            fromDate: dateRange.from,
+                            toDate: dateRange.to,
+                            siteId: String(site.siteId),
+                            referrer: 'site-expense',
+                          },
+                        });
+                      }}
+                    >
                       <td className={`${tdClass} text-slate-500`} style={{ fontSize: 'var(--font-xs)' }}>{i + 1}</td>
                       <td className={`${tdClass} font-medium text-slate-800`}>{w.name}</td>
                       <td className={`${tdClass} text-slate-600`}>{w.workerCategoryName}</td>
                       <td className={`${tdClass} text-right tabular-nums text-amber-700 font-medium`}>{formatINR(w.totalAmount)}</td>
+                      <td className={`${tdClass} text-slate-400`}><ChevronRight size={14} /></td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td className={tfClass} colSpan={3}>Total</td>
+                    <td className={tfClass} colSpan={4}>Total</td>
                     <td className={`${tfClass} text-right tabular-nums`}>{formatINR(workerTotal)}</td>
                   </tr>
                 </tfoot>

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { WorkerReportUrls } from "../../utils/urls";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { usePermission } from "@/shared/hooks/usePermission";
 import { Button } from "@/shared/components/ui/button";
 import { Users } from "lucide-react";
+import sheetsIcon from '@/assets/icons/sheets.png';
+import pdfIcon from '@/assets/icons/pdf.png';
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
@@ -13,6 +15,7 @@ import { DateFilter } from "../../components/DateFilter/DateFilter";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useWorkerReport } from "./useWorkerReport";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { exportWorkerReportToExcel, exportWorkerReportToPDF } from '../../utils/exportWorkerReport';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +44,7 @@ function CardSkeleton() {
 
 export default function WorkerReportPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useLanguage();
   const { canView } = usePermission();
   const {
@@ -69,9 +73,11 @@ export default function WorkerReportPage() {
     handleDateOptionChange,
     handleSearch,
     handleClearFilters,
+    restoreView,
   } = useWorkerReport();
 
   const [workerSearch, setWorkerSearch] = useState("");
+  const hasData = reports.length > 0;
   const hasViewAccess = canView('Worker Report') || canView('Reports');
 
   useEffect(() => {
@@ -79,7 +85,13 @@ export default function WorkerReportPage() {
       navigate('/dashboard', { replace: true });
       return;
     }
-    fetchReports(true);
+    const restore = (location.state as { restore?: { fromDate: string; toDate: string; siteId?: string; siteLabel?: string; workerId?: string; workerLabel?: string; appliedFilters?: string } } | null)?.restore;
+    if (restore) {
+      void restoreView(restore);
+      navigate(location.pathname, { replace: true, state: {} });
+    } else {
+      fetchReports(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -93,18 +105,79 @@ export default function WorkerReportPage() {
   return (
     <div className="min-h-screen w-full py-6">
 
-      {/* ── Header + SearchFilterBar ── */}
+      {/* ── Header + SearchFilterBar (desktop) ── */}
       <div className="px-4">
-        <Header title={t('Worker Report')}>
-          <Actions>
-            <SearchFilterBar
-              appliedFilters={appliedFilters}
-              placeholder={t('Search worker report')}
-              onFilterOpen={() => setFilterOpen(true)}
-              onClearSearch={handleClearFilters}
-            />
-          </Actions>
-        </Header>
+        <div className="hidden sm:block">
+          <Header title={t('Worker Report')}>
+            <Actions>
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                <div className="-mt-4">
+                  <SearchFilterBar
+                    appliedFilters={appliedFilters}
+                    placeholder={t('Search worker report')}
+                    onFilterOpen={() => setFilterOpen(true)}
+                    onClearSearch={handleClearFilters}
+                  />
+                </div>
+                {hasData && (
+                  <>
+                    <Button
+                      onClick={() => void exportWorkerReportToExcel(reports, dateRange, 'Worker_Report')}
+                      className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
+                      style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
+                    >
+                      <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                      Export Excel
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => void exportWorkerReportToPDF(reports, dateRange, 'Worker_Report')}
+                      className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
+                    >
+                      <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                      Download PDF
+                    </Button>
+                  </>
+                )}
+              </div>
+            </Actions>
+          </Header>
+        </div>
+
+        {/* ── Mobile: title → filter bar → export buttons ── */}
+        <div className="sm:hidden">
+          <h2 className="text-secondary font-bold text-xl leading-tight pt-4">
+            {t('Worker Report')}
+          </h2>
+          <SearchFilterBar
+            appliedFilters={appliedFilters}
+            placeholder={t('Search worker report')}
+            onFilterOpen={() => setFilterOpen(true)}
+            onClearSearch={handleClearFilters}
+          />
+          {hasData && (
+            <div className="flex gap-3 mt-4">
+              <Button
+                onClick={() => void exportWorkerReportToExcel(reports, dateRange, 'Worker_Report')}
+                className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
+                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
+              >
+                <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                Export Excel
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => void exportWorkerReportToPDF(reports, dateRange, 'Worker_Report')}
+                className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
+                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
+              >
+                <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
+                Download PDF
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Stats ── */}
@@ -128,15 +201,35 @@ export default function WorkerReportPage() {
                 workerName={item.workerName}
                 workerCategoryName={item.workerCategoryName}
                 amount={item.amount}
-                onPress={() =>
+                onPress={() => {
+                  const hs = window.history.state as { idx?: number; key?: string; usr?: unknown };
+                  window.history.replaceState(
+                    {
+                      ...hs,
+                      usr: {
+                        ...(hs?.usr != null && typeof hs.usr === 'object' ? hs.usr : {}),
+                        restore: {
+                          fromDate: dateRange.from,
+                          toDate: dateRange.to,
+                          siteId: site.value || undefined,
+                          siteLabel: site.label || undefined,
+                          workerId: worker.value || undefined,
+                          workerLabel: worker.label || undefined,
+                          appliedFilters,
+                        },
+                      },
+                    },
+                    ''
+                  );
                   navigate(WorkerReportUrls.details(item.workerId), {
                     state: {
                       fromDate: dateRange.from,
                       toDate: dateRange.to,
                       siteId: site.value,
+                      referrer: 'worker-report',
                     },
-                  })
-                }
+                  });
+                }}
               />
             ))}
             {hasMore && (
@@ -212,7 +305,8 @@ export default function WorkerReportPage() {
           <AlertDialogFooter className="pt-2">
             <AlertDialogAction asChild>
               <Button
-                className="w-full h-12 text-base font-semibold"
+                className="w-full h-11 font-semibold"
+                style={{ fontSize: 'var(--font-md)' }}
                 onClick={handleSearch}
               >
                 Search

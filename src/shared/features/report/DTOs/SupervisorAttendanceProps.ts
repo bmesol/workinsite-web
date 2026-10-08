@@ -56,6 +56,7 @@ export type AttendanceSite = {
 export type SupervisorAttendance = {
     id: number;
     date: string;
+    time?: string;
     supervisor: User[];
     site?: AttendanceSite;              // ← NEW: which site this check-in belongs to
     currentLocation: CurrentLocation;

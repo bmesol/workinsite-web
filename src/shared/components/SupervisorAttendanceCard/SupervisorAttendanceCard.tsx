@@ -1,9 +1,10 @@
-import { Calendar, MapPin, HardHat } from 'lucide-react';
+import { Calendar, Clock, MapPin, HardHat } from 'lucide-react';
 
 type Props = {
   supervisorName: string;
   supervisorRole: string;
   date: string;
+  time?: string;
   address: string;
   onPress?: () => void;
 };
@@ -12,6 +13,7 @@ const SupervisorAttendanceCard: React.FC<Props> = ({
   supervisorName,
   supervisorRole,
   date,
+  time,
   address,
   onPress,
 }) => {
@@ -23,7 +25,6 @@ const SupervisorAttendanceCard: React.FC<Props> = ({
     >
       {/* ── Header Row ── */}
       <div className="flex items-center gap-3 mb-3">
-
         {/* Avatar */}
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
@@ -34,24 +35,15 @@ const SupervisorAttendanceCard: React.FC<Props> = ({
 
         {/* Name + Role */}
         <div className="flex flex-col min-w-0">
-          {/* Only render name if non-empty */}
-          {supervisorName ? (
-            <span
-              className="text-sm font-semibold truncate"
-              style={{ color: 'var(--foreground)' }}
-            >
-              {supervisorName}
-            </span>
-          ) : (
-            <span
-              className="text-sm font-semibold truncate"
-              style={{ color: 'var(--gray-color)' }}
-            >
-              Unknown Supervisor
-            </span>
-          )}
+          <span
+            className="text-sm font-semibold truncate"
+            style={{
+              color: supervisorName ? 'var(--foreground)' : 'var(--gray-color)',
+            }}
+          >
+            {supervisorName || 'Unknown Supervisor'}
+          </span>
 
-          {/* Only render role badge if non-empty */}
           {supervisorRole && (
             <span
               className="text-xs font-semibold px-2 py-0.5 rounded-full self-start mt-1"
@@ -71,19 +63,43 @@ const SupervisorAttendanceCard: React.FC<Props> = ({
 
       {/* ── Detail Rows ── */}
       <div className="flex flex-col gap-2">
-
         {/* Date */}
         <div className="flex items-center gap-2">
-          <Calendar className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--gray-color)' }} />
-          <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+          <Calendar
+            className="w-3.5 h-3.5 shrink-0"
+            style={{ color: 'var(--gray-color)' }}
+          />
+          <span
+            className="text-sm font-medium"
+            style={{ color: 'var(--foreground)' }}
+          >
             {date}
           </span>
         </div>
 
+        {/* Time (optional) */}
+        {!!time && (
+          <div className="flex items-center gap-2">
+            <Clock
+              className="w-3.5 h-3.5 shrink-0"
+              style={{ color: 'var(--gray-color)' }}
+            />
+            <span
+              className="text-sm font-medium"
+              style={{ color: 'var(--foreground)' }}
+            >
+              {time}
+            </span>
+          </div>
+        )}
+
         {/* Address */}
         {!!address && (
           <div className="flex items-start gap-2">
-            <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: 'var(--gray-color)' }} />
+            <MapPin
+              className="w-3.5 h-3.5 shrink-0 mt-0.5"
+              style={{ color: 'var(--gray-color)' }}
+            />
             <span
               className="text-sm leading-snug line-clamp-2"
               style={{ color: 'var(--gray-color)' }}
@@ -92,7 +108,6 @@ const SupervisorAttendanceCard: React.FC<Props> = ({
             </span>
           </div>
         )}
-
       </div>
     </div>
   );

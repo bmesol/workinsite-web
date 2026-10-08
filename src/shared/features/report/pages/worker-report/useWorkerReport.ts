@@ -146,6 +146,43 @@ export function useWorkerReport() {
     });
   };
 
+  const restoreView = useCallback(async (params: {
+    fromDate: string;
+    toDate: string;
+    siteId?: string;
+    siteLabel?: string;
+    workerId?: string;
+    workerLabel?: string;
+    appliedFilters?: string;
+  }) => {
+    const restoredSite   = { label: params.siteLabel   ?? '', value: params.siteId   ?? '' };
+    const restoredWorker = { label: params.workerLabel ?? '', value: params.workerId ?? '' };
+    setSite(restoredSite);
+    setWorker(restoredWorker);
+    setDateRange({ from: params.fromDate, to: params.toDate });
+    setAppliedFilters(params.appliedFilters ?? '');
+
+    setLoading(true);
+    try {
+      const res = await workerReportService.getAttendanceReportSummary({
+        SiteId:     params.siteId   ? Number(params.siteId)   : undefined,
+        WorkerId:   params.workerId ? Number(params.workerId) : undefined,
+        FromDate:   params.fromDate,
+        ToDate:     params.toDate,
+        PageNumber: 1,
+        PageSize:   PAGE_SIZE,
+      });
+      const items = res.items ?? [];
+      setReports(items);
+      setPageNumber(2);
+      setTotalAmount(res.totalAmount ?? 0);
+      setHasMore(res.totalPages > res.pageNumber);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
+  }, [workerReportService]);
+
   // computed
   const totalWorkers = reports.length;
 
@@ -178,5 +215,6 @@ export function useWorkerReport() {
     handleDateOptionChange,
     handleSearch,
     handleClearFilters,
+    restoreView,
   };
 }
