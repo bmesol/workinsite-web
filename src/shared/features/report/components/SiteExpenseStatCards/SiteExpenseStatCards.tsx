@@ -3,7 +3,7 @@ import {
   ShoppingCart,
   Wallet,
   HardHat,
-  TrendingDown,
+  IndianRupee,
   type LucideIcon,
 } from 'lucide-react';
 import { formatINR } from '@/shared/utils/formatters';
@@ -129,7 +129,7 @@ export function SiteExpenseStatCards({
       label: 'Total Expense',
       value: formatINR(totalExpense),
       sub: 'Purchase + Worker salary',
-      icon: TrendingDown,
+      icon: IndianRupee,
       card: 'bg-red-50/50 border-red-100',
       iconWrap: 'bg-red-100',
       iconColor: 'text-red-600',

@@ -5,6 +5,16 @@ import { getWeekRangeHyphen as getWeekRange } from '@/shared/utils/formatters';
 import type { DateRange, DateRangeOption, SelectOption } from '../../DTOs/WorkerreportProps';
 import type { SiteExpenseReportItem } from '../../DTOs/SiteExpenseReportProps';
 
+type TabKey = 'purchases' | 'materials' | 'clientTransactions' | 'workers';
+
+interface RestoreParams {
+  fromDate: string;
+  toDate: string;
+  filterSiteId?: number;
+  selectedSiteId: number;
+  activeTab?: TabKey;
+}
+
 interface ValidationError {
   fromDate: string;
   toDate: string;
@@ -28,6 +38,7 @@ export function useSiteExpenseReport() {
   const [errors, setErrors] = useState<ValidationError>({ fromDate: '', toDate: '' });
 
   const [siteOptions, setSiteOptions] = useState<{ id: number; name: string }[]>([]);
+  const [restoredDefaultTab, setRestoredDefaultTab] = useState<TabKey | undefined>();
 
   const fetchReport = useCallback(async (
     params: { SiteId?: number; FromDate: string; ToDate: string },
@@ -92,9 +103,8 @@ export function useSiteExpenseReport() {
     setSelectedOption('currentWeek');
     setAppliedFilters('');
     setErrors({ fromDate: '', toDate: '' });
-    setAllItems([]);
     setSelectedSiteId(null);
-    setHasSearched(false);
+    fetchReport({ FromDate: week.from, ToDate: week.to });
   };
 
   const overallTotals = useMemo(
@@ -130,6 +140,31 @@ export function useSiteExpenseReport() {
 
   const siteSelectOptions = siteOptions.map((s) => ({ label: s.name, value: String(s.id) }));
 
+  const filterSiteId = sites.length > 0 ? Number(sites[0].value) : undefined;
+
+  const restoreView = useCallback(async (params: RestoreParams) => {
+    setDateRange({ from: params.fromDate, to: params.toDate });
+    setLoading(true);
+    setSelectedSiteId(null);
+    if (params.activeTab) setRestoredDefaultTab(params.activeTab);
+    try {
+      const res = await service.getSiteExpenseReport({
+        SiteId: params.filterSiteId,
+        FromDate: params.fromDate,
+        ToDate: params.toDate,
+      });
+      const items = Array.isArray(res) ? res : [];
+      setAllItems(items);
+      setSelectedSiteId(params.selectedSiteId);
+      setHasSearched(true);
+      setAppliedFilters(`${params.fromDate} – ${params.toDate}`);
+    } catch {
+      setAllItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [service]);
+
   return {
     allItems,
     overallTotals,
@@ -148,9 +183,13 @@ export function useSiteExpenseReport() {
     setFilterOpen,
     errors,
     siteSelectOptions,
+    fetchReport,
     fetchSites,
     handleDateOptionChange,
     handleSearch,
     handleClearFilters,
+    filterSiteId,
+    restoreView,
+    restoredDefaultTab,
   };
 }

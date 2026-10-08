@@ -101,7 +101,11 @@ export function buildMaterialSummary(
 }
 
 /** Indian-grouped quantity formatting, trimming needless decimals. */
-export const fmtQty = (n: number): string =>
-  (Math.round(n * 100) / 100).toLocaleString('en-IN', {
+export const fmtQty = (n: number): string => {
+  const formatted = (Math.round(n * 100) / 100).toLocaleString('en-IN', {
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   });
+  // Some en-IN implementations leave a trailing "." for whole numbers — strip it.
+  return formatted.replace(/\.$/, '');
+};

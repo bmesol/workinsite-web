@@ -204,40 +204,40 @@ const useSupervisorDashboard = () => {
     setSelectedSite(site);
   }, []);
 
-  const handleMarkAttendance = useCallback(async () => {
-    if (!userProfile?.id || !selectedSite) return;
-    setCheckingIn(true);
-    try {
-      const location = await getLocation();
-      const checkInTime = formatToApiTime(new Date());
-      await supervisorService.createSupervisorAttendance({
-        date: today,
-        time: checkInTime,
-        siteId: selectedSite.id,
-        supervisorId: Number(userProfile.id),
-        currentLocation: {
-          lat: location.lat,
-          lng: location.lng,
-          address: location.address,
-        },
-      });
-      toast.success('Checked in successfully ✓');
-      setSelectedSite(null);
-      await fetchAll();
-    } catch (err: any) {
-      if (err?.message === 'LOCATION_PERMISSION_DENIED') {
-        toast.error('Location permission denied. Please allow location access.');
-      } else if (err?.message === 'GEOLOCATION_NOT_SUPPORTED') {
-        toast.error('Your browser does not support location.');
-      } else if (err?.response?.data?.[0]?.message) {
-        toast.error(err.response.data[0].message);
-      } else {
-        toast.error('Check-in failed. Please try again.');
-      }
-    } finally {
-      if (isMounted.current) setCheckingIn(false);
+const handleMarkAttendance = useCallback(async () => {
+  if (!userProfile?.id || !selectedSite) return;
+  setCheckingIn(true);
+  try {
+    const location = await getLocation(selectedSite.id);   // 👈 maathunathu
+    const checkInTime = formatToApiTime(new Date());
+    await supervisorService.createSupervisorAttendance({
+      date: today,
+      time: checkInTime,
+      siteId: selectedSite.id,
+      supervisorId: Number(userProfile.id),
+      currentLocation: {
+        lat: location.lat,
+        lng: location.lng,
+        address: location.address,
+      },
+    });
+    toast.success('Checked in successfully ✓');
+    setSelectedSite(null);
+    await fetchAll();
+  } catch (err: any) {
+    if (err?.message === 'LOCATION_PERMISSION_DENIED') {
+      toast.error('Location permission denied. Please allow location access.');
+    } else if (err?.message === 'GEOLOCATION_NOT_SUPPORTED') {
+      toast.error('Your browser does not support location.');
+    } else if (err?.response?.data?.[0]?.message) {
+      toast.error(err.response.data[0].message);
+    } else {
+      toast.error('Check-in failed. Please try again.');
     }
-  }, [userProfile?.id, today, getLocation, fetchAll, supervisorService, selectedSite]);
+  } finally {
+    if (isMounted.current) setCheckingIn(false);
+  }
+}, [userProfile?.id, today, getLocation, fetchAll, supervisorService, selectedSite]);
 
   // Deletes a specific check-in record (mobile parity — per record, not global)
   const handleCheckOut = useCallback(

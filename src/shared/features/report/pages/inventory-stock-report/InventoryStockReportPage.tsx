@@ -69,6 +69,7 @@ export default function InventoryStockReportPage() {
     setFilterOpen,
     errors,
     siteSelectOptions,
+    fetchReport,
     fetchSites,
     handleDateOptionChange,
     handleSearch,
@@ -79,7 +80,8 @@ export default function InventoryStockReportPage() {
   const hasViewAccess = canView('Inventory Stock Report') || canView('Reports');
 
   useEffect(() => {
-    if (!hasViewAccess) navigate('/dashboard', { replace: true });
+    if (!hasViewAccess) { navigate('/dashboard', { replace: true }); return; }
+    void fetchReport({ FromDate: dateRange.from, ToDate: dateRange.to });
   }, []);
 
   if (!hasViewAccess) return null;

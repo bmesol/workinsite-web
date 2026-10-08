@@ -100,7 +100,7 @@ export function SiteExpenseFilterDialog({
         <AlertDialogFooter className="pt-2">
           <AlertDialogAction asChild>
             <Button
-              className="w-full h-12 font-semibold"
+              className="w-full h-11 font-semibold"
               style={{ fontSize: 'var(--font-md)' }}
               onClick={handleSearch}
             >

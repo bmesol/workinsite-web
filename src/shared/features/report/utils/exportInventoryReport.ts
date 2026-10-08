@@ -11,10 +11,14 @@ import {
   loadFontBinaryStr,
 } from './reportExportHelpers';
 
-const QTY_FMT = '#,##0.##';
-
 function roundQty(n: number): number {
   return Math.round(n * 100) / 100;
+}
+
+// Use '#,##0' for whole numbers so no trailing decimal point is ever rendered.
+// Some Excel versions and other apps show "70." with '#,##0.##' for integers.
+function qtyNumFmt(n: number): string {
+  return Number.isInteger(n) ? '#,##0' : '#,##0.##';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -65,7 +69,7 @@ export async function exportToExcel(
     row.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
     [2, 3].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
     [4, 5, 6, 7, 8].forEach((c) => {
-      row.getCell(c).numFmt = QTY_FMT;
+      row.getCell(c).numFmt = qtyNumFmt(row.getCell(c).value as number);
       row.getCell(c).alignment = { horizontal: 'right', vertical: 'middle' };
     });
     row.getCell(9).alignment = { horizontal: 'right', vertical: 'middle' };
@@ -87,7 +91,7 @@ export async function exportToExcel(
     cell.border = THIN_BORDER;
     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0F9FF' } };
     if (col >= 4 && col <= 8) {
-      cell.numFmt = QTY_FMT;
+      cell.numFmt = qtyNumFmt(cell.value as number);
       cell.alignment = { horizontal: 'right', vertical: 'middle' };
     } else {
       cell.alignment = {
@@ -98,123 +102,133 @@ export async function exportToExcel(
   });
 
   // ── Sheet 2: Site Breakdown ─────────────────────────────────────────────────
-  const siteSheet = makeSheet(
-    'Site Breakdown',
-    [32, 28, 16, 14, 16, 16, 18],
-    ['Material', 'Site', 'Purchased', 'Used', 'Transfer In', 'Transfer Out', 'Available Stock'],
-    'Inventory Stock Report – Site Breakdown',
-  );
+  if (materials.some((m) => m.sites.length > 0)) {
+    const siteSheet = makeSheet(
+      'Site Breakdown',
+      [32, 28, 16, 14, 16, 16, 18],
+      ['Material', 'Site', 'Purchased', 'Used', 'Transfer In', 'Transfer Out', 'Available Stock'],
+      'Inventory Stock Report – Site Breakdown',
+    );
 
-  materials.forEach((m) => {
-    m.sites.forEach((site) => {
-      const row = siteSheet.addRow([
-        m.materialName, site.siteName,
-        roundQty(toNum(site.purchaseQuantity)),
-        roundQty(toNum(site.usedQuantity)),
-        roundQty(toNum(site.transferInQuantity)),
-        roundQty(toNum(site.transferOutQuantity)),
-        roundQty(toNum(site.availableStock)),
-      ]);
-      styleDataRow(row);
-      [1, 2].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
-      [3, 4, 5, 6, 7].forEach((c) => {
-        row.getCell(c).numFmt = QTY_FMT;
-        row.getCell(c).alignment = { horizontal: 'right', vertical: 'middle' };
+    materials.forEach((m) => {
+      m.sites.forEach((site) => {
+        const row = siteSheet.addRow([
+          m.materialName, site.siteName,
+          roundQty(toNum(site.purchaseQuantity)),
+          roundQty(toNum(site.usedQuantity)),
+          roundQty(toNum(site.transferInQuantity)),
+          roundQty(toNum(site.transferOutQuantity)),
+          roundQty(toNum(site.availableStock)),
+        ]);
+        styleDataRow(row);
+        [1, 2].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
+        [3, 4, 5, 6, 7].forEach((c) => {
+          row.getCell(c).numFmt = qtyNumFmt(row.getCell(c).value as number);
+          row.getCell(c).alignment = { horizontal: 'right', vertical: 'middle' };
+        });
       });
     });
-  });
+  }
 
   // ── Sheet 3: Purchases ──────────────────────────────────────────────────────
-  const purchasesSheet = makeSheet(
-    'Purchases',
-    [32, 28, 14, 14],
-    ['Material', 'Site', 'Date', 'Quantity'],
-    'Inventory Stock Report – Purchases',
-  );
+  if (materials.some((m) => m.sites.some((s) => (s.purchaseDetails ?? []).length > 0))) {
+    const purchasesSheet = makeSheet(
+      'Purchases',
+      [32, 28, 14, 14],
+      ['Material', 'Site', 'Date', 'Quantity'],
+      'Inventory Stock Report – Purchases',
+    );
 
-  materials.forEach((m) => {
-    m.sites.forEach((site) => {
-      (site.purchaseDetails ?? []).forEach((d) => {
-        const row = purchasesSheet.addRow([
-          m.materialName, site.siteName, d.date, roundQty(toNum(d.quantity)),
-        ]);
-        styleDataRow(row);
-        [1, 2].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
-        row.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
-        row.getCell(4).numFmt = QTY_FMT;
-        row.getCell(4).alignment = { horizontal: 'right', vertical: 'middle' };
+    materials.forEach((m) => {
+      m.sites.forEach((site) => {
+        (site.purchaseDetails ?? []).forEach((d) => {
+          const row = purchasesSheet.addRow([
+            m.materialName, site.siteName, d.date, roundQty(toNum(d.quantity)),
+          ]);
+          styleDataRow(row);
+          [1, 2].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
+          row.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
+          row.getCell(4).numFmt = qtyNumFmt(row.getCell(4).value as number);
+          row.getCell(4).alignment = { horizontal: 'right', vertical: 'middle' };
+        });
       });
     });
-  });
+  }
 
   // ── Sheet 4: Used ──────────────────────────────────────────────────────────
-  const usedSheet = makeSheet(
-    'Used',
-    [32, 28, 14, 14],
-    ['Material', 'Site', 'Date', 'Quantity'],
-    'Inventory Stock Report – Used',
-  );
+  if (materials.some((m) => m.sites.some((s) => (s.usedDetails ?? []).length > 0))) {
+    const usedSheet = makeSheet(
+      'Used',
+      [32, 28, 14, 14],
+      ['Material', 'Site', 'Date', 'Quantity'],
+      'Inventory Stock Report – Used',
+    );
 
-  materials.forEach((m) => {
-    m.sites.forEach((site) => {
-      (site.usedDetails ?? []).forEach((d) => {
-        const row = usedSheet.addRow([
-          m.materialName, site.siteName, d.date, roundQty(toNum(d.quantity)),
-        ]);
-        styleDataRow(row);
-        [1, 2].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
-        row.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
-        row.getCell(4).numFmt = QTY_FMT;
-        row.getCell(4).alignment = { horizontal: 'right', vertical: 'middle' };
+    materials.forEach((m) => {
+      m.sites.forEach((site) => {
+        (site.usedDetails ?? []).forEach((d) => {
+          const row = usedSheet.addRow([
+            m.materialName, site.siteName, d.date, roundQty(toNum(d.quantity)),
+          ]);
+          styleDataRow(row);
+          [1, 2].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
+          row.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
+          row.getCell(4).numFmt = qtyNumFmt(row.getCell(4).value as number);
+          row.getCell(4).alignment = { horizontal: 'right', vertical: 'middle' };
+        });
       });
     });
-  });
+  }
 
   // ── Sheet 5: Transfer In ───────────────────────────────────────────────────
-  const tranInSheet = makeSheet(
-    'Transfer In',
-    [32, 28, 14, 14, 28],
-    ['Material', 'Site', 'Date', 'Quantity', 'From Site'],
-    'Inventory Stock Report – Transfer In',
-  );
+  if (materials.some((m) => m.sites.some((s) => (s.transferInDetails ?? []).length > 0))) {
+    const tranInSheet = makeSheet(
+      'Transfer In',
+      [32, 28, 14, 14, 28],
+      ['Material', 'Site', 'Date', 'Quantity', 'From Site'],
+      'Inventory Stock Report – Transfer In',
+    );
 
-  materials.forEach((m) => {
-    m.sites.forEach((site) => {
-      (site.transferInDetails ?? []).forEach((d) => {
-        const row = tranInSheet.addRow([
-          m.materialName, site.siteName, d.date, roundQty(toNum(d.quantity)), d.siteName,
-        ]);
-        styleDataRow(row);
-        [1, 2, 5].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
-        row.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
-        row.getCell(4).numFmt = QTY_FMT;
-        row.getCell(4).alignment = { horizontal: 'right', vertical: 'middle' };
+    materials.forEach((m) => {
+      m.sites.forEach((site) => {
+        (site.transferInDetails ?? []).forEach((d) => {
+          const row = tranInSheet.addRow([
+            m.materialName, site.siteName, d.date, roundQty(toNum(d.quantity)), d.siteName,
+          ]);
+          styleDataRow(row);
+          [1, 2, 5].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
+          row.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
+          row.getCell(4).numFmt = qtyNumFmt(row.getCell(4).value as number);
+          row.getCell(4).alignment = { horizontal: 'right', vertical: 'middle' };
+        });
       });
     });
-  });
+  }
 
   // ── Sheet 6: Transfer Out ──────────────────────────────────────────────────
-  const tranOutSheet = makeSheet(
-    'Transfer Out',
-    [32, 28, 14, 14, 28],
-    ['Material', 'Site', 'Date', 'Quantity', 'To Site'],
-    'Inventory Stock Report – Transfer Out',
-  );
+  if (materials.some((m) => m.sites.some((s) => (s.transferOutDetails ?? []).length > 0))) {
+    const tranOutSheet = makeSheet(
+      'Transfer Out',
+      [32, 28, 14, 14, 28],
+      ['Material', 'Site', 'Date', 'Quantity', 'To Site'],
+      'Inventory Stock Report – Transfer Out',
+    );
 
-  materials.forEach((m) => {
-    m.sites.forEach((site) => {
-      (site.transferOutDetails ?? []).forEach((d) => {
-        const row = tranOutSheet.addRow([
-          m.materialName, site.siteName, d.date, roundQty(toNum(d.quantity)), d.siteName,
-        ]);
-        styleDataRow(row);
-        [1, 2, 5].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
-        row.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
-        row.getCell(4).numFmt = QTY_FMT;
-        row.getCell(4).alignment = { horizontal: 'right', vertical: 'middle' };
+    materials.forEach((m) => {
+      m.sites.forEach((site) => {
+        (site.transferOutDetails ?? []).forEach((d) => {
+          const row = tranOutSheet.addRow([
+            m.materialName, site.siteName, d.date, roundQty(toNum(d.quantity)), d.siteName,
+          ]);
+          styleDataRow(row);
+          [1, 2, 5].forEach((c) => { row.getCell(c).alignment = { horizontal: 'left', vertical: 'middle' }; });
+          row.getCell(3).alignment = { horizontal: 'center', vertical: 'middle' };
+          row.getCell(4).numFmt = qtyNumFmt(row.getCell(4).value as number);
+          row.getCell(4).alignment = { horizontal: 'right', vertical: 'middle' };
+        });
       });
     });
-  });
+  }
 
   // ── Download ───────────────────────────────────────────────────────────────
   const buffer = await workbook.xlsx.writeBuffer();

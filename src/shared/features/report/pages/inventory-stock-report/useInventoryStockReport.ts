@@ -113,10 +113,9 @@ export function useInventoryStockReport() {
     setSelectedOption('currentWeek');
     setAppliedFilters('');
     setErrors({ fromDate: '', toDate: '' });
-    setAllItems([]);
     setSelectedMaterialId(null);
     setCurrentPage(1);
-    setHasSearched(false);
+    fetchReport({ FromDate: week.from, ToDate: week.to });
   };
 
   const materialSummary = useMemo(() => buildMaterialSummary(allItems), [allItems]);
@@ -189,6 +188,7 @@ export function useInventoryStockReport() {
     errors,
     siteSelectOptions,
     // actions
+    fetchReport,
     fetchSites,
     handleDateOptionChange,
     handleSearch,

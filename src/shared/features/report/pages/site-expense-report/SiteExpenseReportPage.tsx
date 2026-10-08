@@ -12,7 +12,7 @@ import { SiteExpenseFilterDialog } from '../../components/SiteExpenseFilterDialo
 import { useSiteExpenseReport } from './useSiteExpenseReport';
 import { exportToExcel, exportToPDF } from '../../utils/exportSiteExpenseReport';
 import { usePermission } from '@/shared/hooks/usePermission';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
 function TableSkeleton() {
@@ -36,6 +36,7 @@ function TableSkeleton() {
 
 export default function SiteExpenseReportPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { canView } = usePermission();
   const {
     allItems,
@@ -55,17 +56,33 @@ export default function SiteExpenseReportPage() {
     setFilterOpen,
     errors,
     siteSelectOptions,
+    fetchReport,
     fetchSites,
     handleDateOptionChange,
     handleSearch,
     handleClearFilters,
+    filterSiteId,
+    restoreView,
+    restoredDefaultTab,
   } = useSiteExpenseReport();
 
   const hasData = allItems.length > 0;
   const hasViewAccess = canView('Site Expense Report') || canView('Reports');
 
   useEffect(() => {
-    if (!hasViewAccess) navigate('/dashboard', { replace: true });
+    if (!hasViewAccess) {
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+    const state = location.state as { restore?: { fromDate: string; toDate: string; filterSiteId?: number; selectedSiteId: number; activeTab?: 'purchases' | 'materials' | 'clientTransactions' | 'workers' } } | null;
+    if (state?.restore) {
+      void restoreView(state.restore);
+      // Clear restore flag from location so refresh doesn't re-trigger it
+      navigate(location.pathname, { replace: true, state: {} });
+    } else {
+      // Auto-load current week on initial open
+      void fetchReport({ FromDate: dateRange.from, ToDate: dateRange.to });
+    }
   }, []);
 
   if (!hasViewAccess) return null;
@@ -177,7 +194,13 @@ export default function SiteExpenseReportPage() {
             </p>
           </div>
         ) : selectedSite ? (
-          <SiteExpenseDetail site={selectedSite} onBack={backToOverview} />
+          <SiteExpenseDetail
+            site={selectedSite}
+            onBack={backToOverview}
+            dateRange={dateRange}
+            filterSiteId={filterSiteId}
+            defaultTab={restoredDefaultTab}
+          />
         ) : (
           <SiteExpenseSummaryTable sites={allItems} onView={viewSite} />
         )}
