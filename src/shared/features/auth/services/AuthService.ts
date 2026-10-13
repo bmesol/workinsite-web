@@ -53,6 +53,7 @@ import axios from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
 
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
+import { refreshTokensShared } from "@/shared/helpers/tokenRefresh";
 
 export interface AuthTokens {
   accessToken: string;
@@ -160,78 +161,81 @@ const AuthService = {
    *
    * Scenario 1:
    * Access token is still valid
-   * → continue immediately.
+   * → continue immediately (no network call).
    *
    * Scenario 2:
    * Access token expired but refresh token exists
-   * → request new tokens.
+   * → refreshTokensShared() handles the network call, Web Lock, and
+   *   cross-tab deduplication.
    *
    * Scenario 3:
-   * No refresh token / refresh token expired
+   * No refresh token / refresh token expired or revoked
    * → authentication fails.
    */
   restoreSession: async (): Promise<boolean> => {
     const accessToken = AuthHelper.getAccessToken();
 
     /*
-     * Access token still valid.
+     * Access token still valid — fast path, no lock needed.
      */
     if (AuthHelper.isAccessTokenValid(accessToken)) {
       return true;
     }
 
-    const refreshToken = AuthHelper.getRefreshToken();
-
     /*
-     * No refresh token means there is no recoverable session.
+     * refreshTokensShared() handles:
+     *   • no RT in storage  → returns null
+     *   • Web Lock          → cross-tab serialisation
+     *   • re-read inside lock → skips network call if another tab refreshed
+     *   • 401/403 on /auth/refresh with fresh AT in storage → returns stored tokens
      */
-    if (!refreshToken) {
-      AuthHelper.clearAuthData();
-      return false;
-    }
-
     try {
-      /*
-       * Access token is expired/missing,
-       * but the refresh token still exists.
-       */
-      const newTokens =
-        await AuthService.refreshAccessToken(refreshToken);
+      const newTokens = await refreshTokensShared();
 
-      if (
-        !newTokens.accessToken ||
-        !newTokens.refreshToken
-      ) {
-        throw new Error(
-          "Refresh response did not contain both tokens",
+      if (!newTokens) {
+        /*
+         * No refresh token in storage — session is unrecoverable.
+         */
+        console.debug(
+          "[Auth DEBUG] restoreSession: no refresh token — clearing auth data",
         );
+        AuthHelper.clearAuthData();
+        return false;
       }
 
-      /*
-       * Store BOTH because backend rotates refresh tokens.
-       */
-      AuthHelper.setAccessToken(newTokens.accessToken);
-      AuthHelper.setRefreshToken(newTokens.refreshToken);
-
+      console.debug(
+        "[Auth DEBUG] restoreSession: refresh succeeded",
+      );
       return true;
     } catch (error) {
       const axiosError = error as AxiosError;
-
       const status = axiosError.response?.status;
 
-      /*
-       * Only clear the session when the backend tells us
-       * the refresh credentials are invalid/unauthorized.
-       */
       if (status === 401 || status === 403) {
+        /*
+         * Server explicitly rejected the refresh token —
+         * the session is genuinely invalid.
+         */
+        console.debug(
+          "[Auth DEBUG] restoreSession: refresh rejected by server",
+          { status },
+          "— clearing auth data",
+        );
         AuthHelper.clearAuthData();
+        return false;
       }
 
       /*
-       * A network failure or temporary server error should NOT
-       * automatically destroy the 7-day refresh token.
+       * Network failure, server 5xx, or any other transient error.
+       * The refresh token is almost certainly still valid; do not
+       * destroy it.  Return true so PrivateRoute keeps the user on
+       * their current page instead of redirecting to sign-in.
        */
-      return false;
+      console.debug(
+        "[Auth DEBUG] restoreSession: refresh failed (transient), keeping session",
+        { status },
+      );
+      return true;
     }
   },
 };

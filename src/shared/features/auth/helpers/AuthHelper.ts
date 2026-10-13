@@ -238,6 +238,26 @@ const AuthHelper = {
   },
 
   /**
+   * Returns true when the stored AT expires within `thresholdMs` milliseconds
+   * (or is absent / unparseable).  Used by SessionWatcher to decide whether
+   * to issue a proactive refresh before the token actually expires.
+   */
+  isAccessTokenExpiringSoon: (
+    thresholdMs: number,
+    token?: string | null,
+  ): boolean => {
+    const accessToken = token ?? AuthHelper.getAccessToken();
+    if (!accessToken) return true;
+    try {
+      const decoded = jwtDecode<DecodedToken>(accessToken);
+      if (!decoded.exp) return true;
+      return decoded.exp * 1000 <= Date.now() + thresholdMs;
+    } catch {
+      return true;
+    }
+  },
+
+  /**
    * Synchronous check only.
    *
    * This does NOT attempt refresh.
