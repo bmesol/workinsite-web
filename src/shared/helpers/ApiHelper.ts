@@ -157,48 +157,44 @@ import type {
 } from "axios";
 
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
-import { AuthService } from "@/shared/features/auth/services/AuthService";
+import { refreshTokensShared } from "@/shared/helpers/tokenRefresh";
 import { useLoading } from "@/shared/hooks/useLoading";
 
 const apiCache = new Map<string, AxiosInstance>();
 
 /**
- * Prevent several simultaneous 401 responses from
- * triggering several refresh API calls.
- */
-let isRefreshing = false;
-
-let pendingQueue: Array<{
-  resolve: (token: string) => void;
-  reject: (err: unknown) => void;
-}> = [];
-
-const flushQueue = (
-  token: string | null,
-  error: unknown = null,
-) => {
-  pendingQueue.forEach(({ resolve, reject }) => {
-    if (token) {
-      resolve(token);
-    } else {
-      reject(error);
-    }
-  });
-
-  pendingQueue = [];
-};
-
-/**
- * Prevent multiple logout redirects at the same time.
+ * Prevent multiple logout redirects from firing concurrently.
+ * Module-level; reset automatically on page reload (which forceLogout triggers).
  */
 let isLoggingOut = false;
 
-const forceLogout = () => {
+/**
+ * Call this whenever the server explicitly confirms the session is dead
+ * (401 / 403 on a refresh attempt, or no refresh token available).
+ *
+ * @param caller - short label shown in the debug log so you can trace which
+ *   code path triggered the logout.
+ *
+ * TEMP DEBUG — console.debug lines are intentional; remove once the
+ * refresh-race fix is confirmed in production.
+ */
+const forceLogout = (caller = "unknown") => {
+  console.debug(
+    `[Auth DEBUG] forceLogout called — caller: ${caller}`,
+  );
+
   if (isLoggingOut) {
+    console.debug(
+      "[Auth DEBUG] forceLogout: already in progress, skipping",
+    );
     return;
   }
 
   isLoggingOut = true;
+
+  console.debug(
+    "[Auth DEBUG] forceLogout: clearing auth data and redirecting to /",
+  );
 
   AuthHelper.logout();
 };
@@ -280,6 +276,9 @@ function getApiInstance(
 
   /**
    * RESPONSE INTERCEPTOR
+   *
+   * TEMP DEBUG — console.debug lines are intentional; remove once the
+   * refresh-race fix is confirmed in production.
    */
   api.interceptors.response.use(
     (response: AxiosResponse<any>) => response,
@@ -304,130 +303,85 @@ function getApiInstance(
       }
 
       /*
-       * Normally login/refresh use AuthService's own Axios instance,
-       * so they shouldn't arrive here.
-       *
-       * This guard is retained for safety.
+       * Safety guard: login/refresh use AuthService's own Axios instance
+       * and should never reach this interceptor.  If they somehow do,
+       * treat it as a genuinely dead session.
        */
       if (
         url.includes("/auth/login") ||
         url.includes("/auth/refresh")
       ) {
-        forceLogout();
+        console.debug(
+          "[Auth DEBUG] 401 interceptor: 401 on auth endpoint — forcing logout",
+          { url },
+        );
+        forceLogout("401-on-auth-endpoint");
         return Promise.reject(error);
       }
 
       /*
-       * If this request has ALREADY been retried after a successful
-       * refresh and still gets a 401, don't refresh forever.
-       *
-       * The new access token is not accepted by the backend,
-       * so end the authentication session.
+       * If this request was already retried after a successful refresh and
+       * is STILL getting 401, the fresh token itself is rejected by the
+       * backend — the session is genuinely dead.
        */
       if (originalRequest._retry) {
-        forceLogout();
+        console.debug(
+          "[Auth DEBUG] 401 interceptor: retried request still 401 — forcing logout",
+        );
+        forceLogout("retried-request-still-401");
         return Promise.reject(error);
       }
 
-      /**
-       * A refresh request is already running because another API
-       * request received 401 first.
-       *
-       * Wait for that refresh instead of making another refresh call.
+      /*
+       * Mark the request as retried before the async refresh so that if
+       * the retry itself returns 401, the guard above catches it.
        */
-      if (isRefreshing) {
-        return new Promise<string>(
-          (resolve, reject) => {
-            pendingQueue.push({
-              resolve,
-              reject,
-            });
-          },
-        ).then((newToken) => {
-          originalRequest._retry = true;
-
-          setAuthenticationHeaders(
-            originalRequest,
-            newToken,
-          );
-
-          return api(originalRequest);
-        });
-      }
-
       originalRequest._retry = true;
-      isRefreshing = true;
+
+      /*
+       * Pass the AT that was on the failed request so that inside the Web
+       * Lock, doRefresh can distinguish "another tab already refreshed this
+       * exact token" from "this token is still current but the server
+       * rejected it anyway" (clock skew / server-side invalidation).
+       * Without this, doRefresh would see the AT as valid (exp still in the
+       * future) and return it unchanged — causing the retry to get 401 again,
+       * which triggers forceLogout("retried-request-still-401").
+       */
+      const failedAt = originalRequest.headers._at as string | undefined;
+
+      console.debug(
+        "[Auth DEBUG] 401 interceptor: calling refreshTokensShared",
+        { url },
+      );
 
       try {
-        const refreshToken =
-          AuthHelper.getRefreshToken();
-
         /*
-         * If there is no refresh token, there is nothing
-         * the frontend can use to recover the session.
+         * refreshTokensShared(failedAt):
+         *   • deduplicates concurrent callers within this tab via an
+         *     in-flight promise,
+         *   • serialises across tabs via the Web Locks API,
+         *   • re-reads AT inside the lock; skips the network call only when
+         *     stored AT is valid AND differs from failedAt (another tab
+         *     already refreshed it).
          */
-        if (!refreshToken) {
-          flushQueue(
-            null,
-            new Error("No refresh token stored"),
-          );
+        const newTokens = await refreshTokensShared(failedAt, true);
 
-          forceLogout();
-
-          return Promise.reject(
-            new Error("No refresh token stored"),
+        if (!newTokens) {
+          /*
+           * refreshTokensShared returns null only when there is no
+           * refresh token in storage — the session is unrecoverable.
+           */
+          console.debug(
+            "[Auth DEBUG] 401 interceptor: no refresh token — forcing logout",
           );
+          forceLogout("no-refresh-token");
+          return Promise.reject(new Error("No refresh token stored"));
         }
 
-        /**
-         * POST /auth/refresh
-         *
-         * Request:
-         *
-         * {
-         *   refreshToken: "..."
-         * }
-         *
-         * AuthService automatically sends:
-         *
-         * Accept-Language: ta | en-GB
-         */
-        const newTokens =
-          await AuthService.refreshAccessToken(
-            refreshToken,
-          );
-
-        if (
-          !newTokens.accessToken ||
-          !newTokens.refreshToken
-        ) {
-          throw new Error(
-            "Refresh response did not contain both tokens",
-          );
-        }
-
-        /**
-         * Backend rotates both tokens,
-         * therefore BOTH must be replaced.
-         */
-        AuthHelper.setAccessToken(
-          newTokens.accessToken,
+        console.debug(
+          "[Auth DEBUG] 401 interceptor: refresh succeeded, retrying original request",
         );
 
-        AuthHelper.setRefreshToken(
-          newTokens.refreshToken,
-        );
-
-        /**
-         * Give the new access token to every API call
-         * waiting behind this refresh operation.
-         */
-        flushQueue(newTokens.accessToken);
-
-        /**
-         * Retry the original request using
-         * the newly generated access token.
-         */
         setAuthenticationHeaders(
           originalRequest,
           newTokens.accessToken,
@@ -435,19 +389,30 @@ function getApiInstance(
 
         return api(originalRequest);
       } catch (refreshError) {
-        flushQueue(null, refreshError);
+        const refreshStatus =
+          (refreshError as AxiosError).response?.status;
 
         /*
-         * The access token was already confirmed expired (backend returned 401
-         * on the original request). If the refresh attempt also fails for any
-         * reason — rejected token, network error, server error — we cannot
-         * recover the session, so always redirect to sign-in.
+         * Only destroy the session when the server explicitly rejects the
+         * refresh token (401 or 403).  Network errors, 5xx, and other
+         * transient failures must NOT log the user out — the refresh token
+         * is likely still valid and the next user action will retry.
          */
-        forceLogout();
+        if (refreshStatus === 401 || refreshStatus === 403) {
+          console.debug(
+            "[Auth DEBUG] 401 interceptor: refresh rejected by server",
+            { refreshStatus },
+            "— forcing logout",
+          );
+          forceLogout(`refresh-rejected-${refreshStatus}`);
+        } else {
+          console.debug(
+            "[Auth DEBUG] 401 interceptor: refresh failed (transient), not forcing logout",
+            { refreshStatus, refreshError },
+          );
+        }
 
         return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
       }
     },
   );
@@ -534,4 +499,5 @@ const useAPIHelper = (
 export {
   useAPIHelper,
   getApiInstance,
+  forceLogout,
 };

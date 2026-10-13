@@ -43,6 +43,7 @@ import {
 
 import { AuthService } from "@/shared/features/auth/services/AuthService";
 import { Navbar } from "@/shared/components/navbar/Navbar";
+import { SessionWatcher } from "@/shared/features/auth/components/SessionWatcher/SessionWatcher";
 
 const PrivateRoute = () => {
   const [checkingSession, setCheckingSession] =
@@ -120,6 +121,7 @@ const PrivateRoute = () => {
 
   return (
     <div>
+      <SessionWatcher />
       <Navbar />
 
       <main className="pt-18">
