@@ -90,6 +90,7 @@ const SupplierEditPage = () => {
             errorMessage={error.name}
             required={true}
             isDisabled={!editable}
+            className="gap-1.5"
           />
           {(supplierDetails as Supplier).contact.id && (
             <ComboboxField

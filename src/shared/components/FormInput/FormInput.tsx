@@ -12,7 +12,7 @@ const FormInput = ({
   errorMessage,
 }: FormInputProps) => {
   return (
-    <div className={`flex flex-col ${className}`}>
+    <div className={`flex flex-col gap-1.5 ${className ?? ''}`}>
       {children}
       {errorMessage && (
         <p className="text-sm text-red-500 mt-1">

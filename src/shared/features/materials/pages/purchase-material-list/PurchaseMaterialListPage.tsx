@@ -7,16 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { Button } from "@/shared/components/ui/button";
 import { usePurchaseMaterialList } from "./usePurchaseMaterialList";
 import PurchaseMaterialsEditScreen from "../purchase-material-edit/PurchaseMaterialEditPage";
@@ -234,29 +225,12 @@ const PurchaseMaterialsList: React.FC<Props> = ({
       </Dialog>
 
       {/* Delete Confirm Dialog */}
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteDialogItem}
-        onOpenChange={(val) => !val && setDeleteDialogItem(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this material?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteDialogItem(null)}>
-              {t("Cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button variant="destructive" onClick={handleDelete}>
-                Delete
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteDialogItem(null)}
+        onConfirm={handleDelete}
+        description={t("Are you sure you want to delete this material?")}
+      />
     </div>
   );
 };

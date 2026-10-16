@@ -158,13 +158,13 @@ export async function exportWorkerReportToPDF(
     ],
     margin: { left: margin, right: margin },
     styles: {
-      font: fontName, fontSize: 9,
+      font: fontName, fontSize: 8,
       cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
       lineColor: [203, 213, 225], lineWidth: 0.25, valign: 'middle', textColor: [30, 41, 59],
     },
     headStyles: {
       fillColor: [37, 99, 235], textColor: [255, 255, 255],
-      fontStyle: 'bold', fontSize: 9.5, halign: 'center',
+      fontStyle: 'bold', fontSize: 8.5, halign: 'center',
     },
     alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: {

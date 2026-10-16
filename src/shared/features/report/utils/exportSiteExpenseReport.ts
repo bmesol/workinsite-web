@@ -376,9 +376,17 @@ export async function exportToPDF(
       body,
       foot: [foot],
       margin: { left: margin, right: margin },
-      styles: { font: fontName, fontSize: 7.5, textColor: [30, 41, 59] },
-      headStyles: { fillColor: [37, 99, 235], textColor: [255, 255, 255], fontStyle: 'bold' },
-      footStyles: { fillColor: [248, 250, 252], textColor: [30, 41, 59], fontStyle: 'bold' },
+      styles: {
+        font: fontName, fontSize: 7.5,
+        cellPadding: { top: 2, bottom: 2, left: 3, right: 3 },
+        lineColor: [203, 213, 225], lineWidth: 0.25, valign: 'middle', textColor: [30, 41, 59],
+      },
+      headStyles: {
+        fillColor: [37, 99, 235], textColor: [255, 255, 255],
+        fontStyle: 'bold', fontSize: 8, halign: 'center',
+      },
+      footStyles: { fillColor: [226, 232, 240], textColor: [30, 41, 59], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
       didDrawPage: drawPageNumber,
     });
 

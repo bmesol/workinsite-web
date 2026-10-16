@@ -27,6 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/shared/components/ui/alert-dialog';
+import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceListPage = () => {
@@ -233,25 +234,12 @@ const AttendanceListPage = () => {
       </Dialog>
 
       {/* ── Delete Confirm Dialog ── */}
-      <AlertDialog open={deleteConfirmId !== null}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to delete this attendance? This action cannot be undone.')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-white hover:bg-destructive/90"
-            >
-              {t('Delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={deleteConfirmId !== null}
+        onClose={cancelDelete}
+        onConfirm={handleDelete}
+        description={t('Are you sure you want to delete this attendance? This action cannot be undone.')}
+      />
 
       {/* ── Work Type Change Confirm Dialog ── */}
       <AlertDialog open={isWorkTypeChangeDialogOpen}>

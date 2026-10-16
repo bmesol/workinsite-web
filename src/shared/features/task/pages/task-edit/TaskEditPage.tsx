@@ -3,7 +3,6 @@ import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { Header } from '@/shared/components/Header/Header';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
-import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { SelectField } from '@/shared/components/FormFields/SelectField';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
@@ -102,7 +101,7 @@ export const TaskEditPage = () => {
       <Header title={t('Edit Task')} />
 
       <Card className="mt-4 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
 
           {/* Site */}
           <ComboboxField
@@ -118,15 +117,20 @@ export const TaskEditPage = () => {
           />
 
           {/* Task Name */}
-          <TextareaField
-            label={t('Task Name')}
-            inputValue={taskName}
-            setInputValue={setTaskName}
-            placeholder={t('Enter your Task name')}
-            required
-            errorMessage={error.taskName}
-            isDisabled={!taskFieldPermissions.canEditCoreFields}
-          />
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-base font-medium flex items-center gap-0.5">
+              {t('Task Name')}<span className="text-red-500 text-base leading-none">*</span>
+            </Label>
+            <Textarea
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+              placeholder={t('Enter your Task name')}
+              rows={2}
+              disabled={!taskFieldPermissions.canEditCoreFields}
+              className="disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800"
+            />
+            {error.taskName && <p className="text-sm text-red-500">{error.taskName}</p>}
+          </div>
 
           {/* Date */}
           <DatePicker

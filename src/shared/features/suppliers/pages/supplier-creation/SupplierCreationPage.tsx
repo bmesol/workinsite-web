@@ -76,6 +76,7 @@ const SupplierCreationPage = () => {
             setInputValue={setName}
             errorMessage={error.name}
             required={true}
+            className="gap-1.5"
           />
           <ComboboxField
             id="contact-combobox"

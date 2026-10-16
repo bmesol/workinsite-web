@@ -350,6 +350,7 @@ export async function exportToPDF(
         textColor: [255, 255, 255],
         fontStyle: 'bold',
         fontSize: 8,
+        halign: 'center',
       },
       alternateRowStyles: { fillColor: [248, 250, 252] },
       didDrawPage: drawPageNumber,

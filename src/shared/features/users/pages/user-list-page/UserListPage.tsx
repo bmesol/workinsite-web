@@ -1,7 +1,7 @@
 import { UserGetStartedPage } from "../user-get-started-page/UserGetStartedPage";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
-import { UserStatus } from "../../components/UserStatus/UserStatus";
+import { UserStatusLegend } from "../../components/UserStatus/UserStatus";
 import { UserCard } from "@/shared/features/users/components/UserCard/UserCard";
 import { useUserList } from "./useUserList";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
@@ -18,7 +18,6 @@ const UserListPage = () => {
     handleCreate,
     hasSearchFilter,
     loading,
-    searchLoading,
   } = useUserList();
 
   const [searchValue, setSearchValue] = useState("");
@@ -39,7 +38,7 @@ const UserListPage = () => {
       {/* ── Header ── */}
       <Header title={t('User List')}>
         <Actions>
-          <UserStatus />
+          <UserStatusLegend />
           <Button onClick={handleCreate}>
             {t('Create User')}
           </Button>
@@ -47,7 +46,7 @@ const UserListPage = () => {
       </Header>
 
       {/* ── SearchBar ── */}
-      <div className="flex justify-end mb-4 mt-4">
+      <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
           <SearchBar
             searchText={searchValue}
@@ -57,16 +56,11 @@ const UserListPage = () => {
             }}
             searchCategory={t('Search users')}
           />
-          {searchLoading && (
-            <p className="text-xs text-muted-foreground mt-1 text-right">
-              {t('Searching...')}
-            </p>
-          )}
         </div>
       </div>
 
       {/* ── User Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {!userList.length ? (
           <div className="col-span-2 text-center text-sm text-muted-foreground my-4">
             {t('No users found')}

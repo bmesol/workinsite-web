@@ -7,7 +7,7 @@ interface FieldLabelProps {
 }
 
 const FieldLabel = ({ required, children }: FieldLabelProps) => (
-  <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
+  <Label className="text-base font-medium text-black flex items-center gap-0.5">
     {children}
     {required && <span className="text-red-500 text-base leading-none">*</span>}
   </Label>

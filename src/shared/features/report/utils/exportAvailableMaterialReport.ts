@@ -146,7 +146,7 @@ export async function exportAvailableMaterialToPDF(
     margin: { left: margin, right: margin },
     styles: {
       font: fontName,
-      fontSize: 9,
+      fontSize: 8,
       cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
       lineColor: [203, 213, 225],
       lineWidth: 0.25,
@@ -157,7 +157,7 @@ export async function exportAvailableMaterialToPDF(
       fillColor: [37, 99, 235],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
-      fontSize: 9.5,
+      fontSize: 8.5,
       halign: 'center',
     },
     alternateRowStyles: { fillColor: [248, 250, 252] },
@@ -165,7 +165,7 @@ export async function exportAvailableMaterialToPDF(
       0: { halign: 'center', cellWidth: 16 },
       1: { halign: 'left', cellWidth: 'auto' },
       2: { halign: 'center', cellWidth: 26 },
-      3: { halign: 'right', cellWidth: 36 },
+      3: { halign: 'right', cellWidth: 44 },
     },
     didDrawPage: drawPageNumber,
   });

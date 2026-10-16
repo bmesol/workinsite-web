@@ -24,6 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { X } from "lucide-react";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
@@ -268,25 +269,12 @@ const AttendanceCreationPage = () => {
       </Dialog>
 
       {/* Delete Split Confirm Dialog */}
-      <AlertDialog open={deleteConfirmIndex !== null}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to remove this attendance split? This action cannot be undone.')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-white hover:bg-destructive/90"
-            >
-              {t('Delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={deleteConfirmIndex !== null}
+        onClose={cancelDelete}
+        onConfirm={handleDelete}
+        description={t('Are you sure you want to remove this attendance split? This action cannot be undone.')}
+      />
 
       {/* Work Type Change Confirm Dialog */}
       <AlertDialog open={isWorkTypeChangeDialogOpen}>

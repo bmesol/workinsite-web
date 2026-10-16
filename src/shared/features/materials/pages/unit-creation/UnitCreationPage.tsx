@@ -9,16 +9,7 @@ import { useUnitCreation } from "./useUnitCreation";
 import { usePermission } from "@/shared/hooks/usePermission";
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
@@ -194,36 +185,12 @@ const UnitCreationPage = () => {
       </Card>
 
       {/* Delete Confirm Dialog */}
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={(val) => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base">
-              Confirm Delete
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
-              Are you sure you want to delete this unit?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                {t('Cancel')}
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={() => deleteId && handleUnitDelete(deleteId)}
-              >
-                Delete
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && handleUnitDelete(deleteId)}
+        description={t('Are you sure you want to delete this unit?')}
+      />
     </div>
   );
 };

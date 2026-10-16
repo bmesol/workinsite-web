@@ -3,8 +3,8 @@ import { MapPin, Share2, Phone, ChevronRight, User, Copy, Check } from "lucide-r
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { ContactTypes } from "../../../contacts/DTOs/ContactProps";
 import type { Site } from "../../DTOs/SiteProps.ts";
-import { SiteStatus } from "../../DTOs/SiteProps.ts";
 import React, { useState } from "react";
+import { getSiteStatusColor } from "../../utils/siteStatus";
 
 const socialApps = [
   { label: "WhatsApp",  url: "https://web.whatsapp.com",  icon: "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/whatsapp.svg",  bg: "#25D366" },
@@ -81,18 +81,7 @@ const SiteCard = (props: { site: Site }) => {
             {/* Status Dot */}
             <span
               className="w-3 h-3 rounded-full shrink-0"
-              style={{
-                background:
-                  props.site.status === SiteStatus.YET_TO_START
-                    ? "var(--warning-color)"
-                    : props.site.status === SiteStatus.WORKING
-                      ? "var(--success-color)"
-                      : props.site.status === SiteStatus.HOLD
-                        ? "var(--danger-color)"
-                        : props.site.status === SiteStatus.COMPLETED
-                          ? "var(--complete-color)"
-                          : "var(--gray-color)",
-              }}
+              style={{ background: getSiteStatusColor(props.site.status) }}
             />
           </div>
         </div>

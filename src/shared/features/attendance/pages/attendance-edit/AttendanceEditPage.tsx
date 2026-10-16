@@ -19,16 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/components/ui/alert-dialog';
+import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceEditPage = () => {
@@ -331,25 +322,12 @@ const AttendanceEditPage = () => {
       </Dialog>
 
       {/* Delete Confirm Dialog */}
-      <AlertDialog open={deleteIndex !== null}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to remove this attendance split? This action cannot be undone.')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => handleDelete(deleteIndex!)}
-              className="bg-destructive text-white hover:bg-destructive/90"
-            >
-              {t('Delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={deleteIndex !== null}
+        onClose={cancelDelete}
+        onConfirm={() => handleDelete(deleteIndex!)}
+        description={t('Are you sure you want to remove this attendance split? This action cannot be undone.')}
+      />
 
     </div>
   );

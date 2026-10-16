@@ -46,6 +46,7 @@ export const AttendanceSplitCreationPage = (props: AttendanceSplitProps) => {
         error={error.workerRoleId}
         disabled={!props.workerCategoryId}
         required
+        className="bg-transparent disabled:bg-gray-200 dark:disabled:bg-neutral-800"
       />
 
       {/* Shift */}

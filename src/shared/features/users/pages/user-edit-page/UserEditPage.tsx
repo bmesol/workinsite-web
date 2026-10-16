@@ -98,6 +98,13 @@ const UserEditPage = () => {
   errorMessage={error.role}
   required
 />
+            <div className="flex items-center gap-3">
+              <Label className="text-base font-medium text-black">
+                {t("Is Active")}
+              </Label>
+              <Switch checked={isActive} onCheckedChange={setIsActive} />
+            </div>
+
             <div className="flex flex-col gap-2">
               <Label className="text-base font-medium text-black flex items-center gap-0.5">
                 {t("Notes")}

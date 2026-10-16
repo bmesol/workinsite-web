@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Label } from '@/shared/components/ui/label';
 import { Button } from '@/shared/components/ui/button';
-import { Calendar } from '@/shared/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
@@ -19,7 +18,20 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from 'lucide-react';
-import { format, addMonths, startOfMonth, setYear } from 'date-fns';
+import {
+  format,
+  addMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameDay,
+  isSameMonth,
+  startOfDay,
+  endOfDay,
+  setYear,
+} from 'date-fns';
 
 type DateFieldProps = {
   date: string;
@@ -33,6 +45,12 @@ type DateFieldProps = {
   maxDate?: Date;
   className?: string;
 };
+
+// Reference-design tokens
+const BRAND_YELLOW = '#F5C720';
+const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+// Year list height (≈ a 5-row month) — calendar grid itself sizes to its content
+const YEAR_LIST_HEIGHT = 'h-[196px]';
 
 const DatePicker = ({
   date,
@@ -91,18 +109,22 @@ const DatePicker = ({
   );
 
   const currentDisplayYear = viewMonth.getFullYear();
+  const yearListRef = useRef<HTMLDivElement>(null);
   const selectedYearRef = useRef<HTMLButtonElement>(null);
 
-  // Auto-scroll the highlighted year into view when the year list opens.
+  // Auto-scroll the highlighted year to the middle when the year list opens.
+  // Uses scrollTop on the list itself (not scrollIntoView) so it works reliably
+  // inside the popover animation.
   useEffect(() => {
     if (!showYearPicker) return;
-    const timer = setTimeout(() => {
-      selectedYearRef.current?.scrollIntoView({
-        block: 'center',
-        behavior: 'auto',
-      });
-    }, 0);
-    return () => clearTimeout(timer);
+    const raf = requestAnimationFrame(() => {
+      const list = yearListRef.current;
+      const el = selectedYearRef.current;
+      if (list && el) {
+        list.scrollTop = el.offsetTop - list.clientHeight / 2 + el.clientHeight / 2;
+      }
+    });
+    return () => cancelAnimationFrame(raf);
   }, [showYearPicker]);
 
   const clampDate = (d: Date): Date =>
@@ -116,6 +138,9 @@ const DatePicker = ({
     return d;
   };
 
+  const isDayDisabled = (d: Date) =>
+    d < startOfDay(minDate) || d > endOfDay(maxDate);
+
   const handleYearSelect = (year: number) => {
     if (draftDate) {
       const moved = clampDate(setYear(draftDate, year));
@@ -127,16 +152,36 @@ const DatePicker = ({
     setShowYearPicker(false);
   };
 
+  const handleDayClick = (d: Date) => {
+    if (isDayDisabled(d)) return;
+    setDraftDate(d);
+    // Clicking a leading/trailing day jumps to that month
+    if (!isSameMonth(d, viewMonth)) setViewMonth(startOfMonth(d));
+  };
+
   const atMinMonth = startOfMonth(viewMonth) <= startOfMonth(minDate);
   const atMaxMonth = startOfMonth(viewMonth) >= startOfMonth(maxDate);
   const goToMonth = (delta: number) =>
     setViewMonth((m) => clampMonth(addMonths(m, delta)));
+
+  // All days shown in the grid (incl. leading / trailing days of neighbouring months)
+  const days = useMemo(
+    () =>
+      eachDayOfInterval({
+        start: startOfWeek(startOfMonth(viewMonth)),
+        end: endOfWeek(endOfMonth(viewMonth)),
+      }),
+    [viewMonth],
+  );
 
   const handleCancel = () => setOpen(false);
   const handleOk = () => {
     if (draftDate) onDateChange(formatDateToString(draftDate));
     setOpen(false);
   };
+
+  const navBtn =
+    'inline-flex h-7 w-7 items-center justify-center rounded-full text-foreground hover:bg-black/5 dark:hover:bg-white/10 disabled:pointer-events-none disabled:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -177,7 +222,7 @@ const DatePicker = ({
             )}
             style={{
               fontFamily: 'Outfit, sans-serif',
-              fontSize: 'var(--font-sm)',
+              fontSize: 'var(--font-xs)',
               color: committedDate ? 'var(--foreground)' : 'var(--gray-color)',
             }}
           >
@@ -190,47 +235,47 @@ const DatePicker = ({
         </PopoverTrigger>
 
         <PopoverContent
-          className="w-[268px] overflow-hidden p-0 bg-white dark:bg-background"
+          className="w-[260px] overflow-hidden rounded-xl border-0 bg-white p-0 shadow-2xl dark:bg-background"
           align="start"
+          collisionPadding={8}
+          style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-xs)' }}
         >
-          <div className="flex flex-col max-h-[480px]">
-            {/* Header band — selected date (mirrors mobile) */}
-            <div className="bg-primary px-4 pt-3 pb-4 text-primary-foreground shrink-0">
-              <div className="text-xs font-medium opacity-80">
-                {draftDate ? format(draftDate, 'yyyy') : 'Date'}
-              </div>
-              <div className="text-2xl font-semibold leading-tight">
-                {draftDate ? format(draftDate, 'EEE, d MMM') : 'Select date'}
+          <div className="flex flex-col">
+            {/* Header band */}
+            <div
+              className="shrink-0 px-3 pt-2 pb-2.5 text-black"
+              style={{ backgroundColor: BRAND_YELLOW }}
+            >
+              <div className="text-[length:var(--font-xs)] font-medium text-black/60">Date</div>
+              <div className="text-[length:var(--font-sm)] font-semibold leading-tight">
+                {draftDate ? format(draftDate, 'EEE, d MMM yyyy') : 'Select date'}
               </div>
             </div>
 
-            {/* Month/year toggle + month nav */}
-            <div className="bg-white dark:bg-background flex items-center px-3 pt-2 shrink-0">
+            {/* Month nav: arrows on the edges, month/year toggle centred */}
+            <div className="flex shrink-0 items-center justify-between bg-white px-2.5 py-1.5 dark:bg-background">
               <button
                 type="button"
                 onClick={() => goToMonth(-1)}
                 disabled={atMinMonth}
                 aria-label="Previous month"
-                className={cn(
-                  'inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                  showYearPicker && 'invisible',
-                )}
+                className={cn(navBtn, showYearPicker && 'invisible')}
               >
-                <ChevronLeftIcon className="h-4 w-4" />
+                <ChevronLeftIcon className="h-3.5 w-3.5" />
               </button>
 
               <button
                 type="button"
                 onClick={() => setShowYearPicker((v) => !v)}
                 aria-label="Toggle year selection"
-                className="flex flex-1 items-center justify-center gap-1 rounded px-2 py-1 text-sm font-medium hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex items-center gap-1.5 rounded-md px-2 py-0.5 !text-[length:var(--font-xs)] font-medium hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 style={{ color: 'var(--foreground)' }}
               >
                 {format(viewMonth, 'MMMM yyyy')}
                 {showYearPicker ? (
-                  <ChevronUpIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                  <ChevronUpIcon className="h-3 w-3" />
                 ) : (
-                  <ChevronDownIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                  <ChevronDownIcon className="h-3 w-3" />
                 )}
               </button>
 
@@ -239,69 +284,99 @@ const DatePicker = ({
                 onClick={() => goToMonth(1)}
                 disabled={atMaxMonth}
                 aria-label="Next month"
-                className={cn(
-                  'inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                  showYearPicker && 'invisible',
-                )}
+                className={cn(navBtn, showYearPicker && 'invisible')}
               >
-                <ChevronRightIcon className="h-4 w-4" />
+                <ChevronRightIcon className="h-3.5 w-3.5" />
               </button>
             </div>
 
-            {/* Body: year column OR calendar grid — scrollable only here */}
-            <div className="flex-1 overflow-y-auto">
-              {showYearPicker ? (
-                <div className="py-1">
-                  {years.map((year) => {
-                    const isCurrent = year === currentDisplayYear;
+            {/* Body: year list OR calendar grid (same fixed height) */}
+            {showYearPicker ? (
+              <div
+                ref={yearListRef}
+                className={cn('relative overflow-y-auto py-1', YEAR_LIST_HEIGHT)}
+              >
+                {years.map((year) => {
+                  const isCurrent = year === currentDisplayYear;
+                  return (
+                    <button
+                      key={year}
+                      ref={isCurrent ? selectedYearRef : undefined}
+                      type="button"
+                      onClick={() => handleYearSelect(year)}
+                      aria-pressed={isCurrent}
+                      className={cn(
+                        'w-full py-1.5 text-center transition-colors hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                        isCurrent
+                          ? '!text-[length:var(--font-xs)] font-semibold text-foreground'
+                          : '!text-[length:var(--font-xs)] text-foreground/60',
+                      )}
+                    >
+                      {year}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div>
+                {/* Weekday strip */}
+                <div className="grid h-6 grid-cols-7 items-center bg-gray-100/80 dark:bg-neutral-800">
+                  {WEEKDAYS.map((d) => (
+                    <div
+                      key={d}
+                      className="text-center text-[length:var(--font-xs)] font-normal text-foreground/70"
+                    >
+                      {d}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Day grid */}
+                <div className="grid grid-cols-7 px-1 py-1">
+                  {days.map((d) => {
+                    const disabled = isDayDisabled(d);
+                    const selected = !!draftDate && isSameDay(d, draftDate);
+                    const today = isSameDay(d, new Date());
                     return (
-                      <button
-                        key={year}
-                        ref={isCurrent ? selectedYearRef : undefined}
-                        type="button"
-                        onClick={() => handleYearSelect(year)}
-                        aria-pressed={isCurrent}
-                        className={cn(
-                          'w-full py-2.5 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
-                          isCurrent
-                            ? 'text-lg font-semibold text-primary'
-                            : 'text-base text-foreground/70 hover:text-foreground',
-                        )}
+                      <div
+                        key={d.toISOString()}
+                        className="flex h-7 items-center justify-center"
                       >
-                        {year}
-                      </button>
+                        <button
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => handleDayClick(d)}
+                          aria-label={format(d, 'EEEE, d MMMM yyyy')}
+                          aria-pressed={selected}
+                          className={cn(
+                            'flex h-6 w-6 items-center justify-center rounded-full !text-[length:var(--font-xs)] font-normal transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                            disabled
+                              ? 'cursor-not-allowed text-gray-300 dark:text-neutral-600'
+                              : 'text-foreground/85 hover:bg-black/5 dark:hover:bg-white/10',
+                            today && !selected && 'ring-1 ring-inset ring-black/30',
+                            selected &&
+                              'font-medium text-black hover:brightness-95',
+                          )}
+                          style={
+                            selected ? { backgroundColor: BRAND_YELLOW } : undefined
+                          }
+                        >
+                          {format(d, 'd')}
+                        </button>
+                      </div>
                     );
                   })}
                 </div>
-              ) : (
-                <div className="px-2">
-                  <Calendar
-                    mode="single"
-                    selected={draftDate}
-                    month={viewMonth}
-                    onMonthChange={setViewMonth}
-                    startMonth={minDate}
-                    endMonth={maxDate}
-                    onSelect={(d) => {
-                      if (d) setDraftDate(d);
-                    }}
-                    disabled={(d) => d < minDate || d > maxDate}
-                    // We render our own header above; hide RDP's.
-                    hideNavigation
-                    className="p-0 [--cell-size:--spacing(7)]"
-                    classNames={{ day_button: 'text-xs', month_caption: 'hidden' }}
-                    components={{ MonthCaption: () => <></> }}
-                  />
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Footer: CANCEL / OK */}
-            <div className="flex items-center justify-end gap-1 border-t border-border px-2 py-2 shrink-0">
+            <div className="flex shrink-0 items-center justify-end gap-2 border-t border-border px-3 py-2">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="rounded px-2 py-1 text-xs font-medium uppercase tracking-wide text-primary hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded px-2 py-0.5 !text-[length:var(--font-xs)] font-medium uppercase tracking-wide hover:bg-yellow-50 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                style={{ color: BRAND_YELLOW }}
               >
                 Cancel
               </button>
@@ -309,7 +384,8 @@ const DatePicker = ({
                 type="button"
                 onClick={handleOk}
                 disabled={!draftDate}
-                className="rounded px-2 py-1 text-xs font-medium uppercase tracking-wide text-primary hover:bg-accent disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-md px-3 py-1 !text-[length:var(--font-xs)] font-medium uppercase text-black transition hover:brightness-95 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                style={{ backgroundColor: BRAND_YELLOW }}
               >
                 OK
               </button>

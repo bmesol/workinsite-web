@@ -6,6 +6,7 @@ import {
 import { Card } from "@/shared/components/ui/card";
 import { Phone, Briefcase } from "lucide-react";
 import type { UserCardProps } from "./DTOs";
+import { getUserStatusColor } from "../../utils/userStatus";
 
 const UserCard = (props: UserCardProps) => {
   const { name, imgURL, role, phoneNumber, isActive } = props;
@@ -31,11 +32,7 @@ const UserCard = (props: UserCardProps) => {
         {/* Status Dot */}
         <span
           className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white"
-          style={{
-            background: isActive
-              ? "var(--success-color)"
-              : "var(--danger-color)",
-          }}
+          style={{ background: getUserStatusColor(isActive) }}
         />
       </div>
 

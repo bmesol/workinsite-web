@@ -9,7 +9,7 @@ import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
-
+import { SiteStatusLegend } from "../../components/SiteStatusLegend/SiteStatusLegend";
 const SiteListPage = () => {
   const { t } = useLanguage();
   const { canEdit } = usePermission();
@@ -42,12 +42,13 @@ const SiteListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       <Header title={t('Site List')}>
-        <Actions>
-          <Button onClick={() => navigate(SitesUrls.create)} disabled={!editable}>
-            {t('Create Site')}
-          </Button>
-        </Actions>
-      </Header>
+  <Actions>
+    <SiteStatusLegend />
+    <Button onClick={() => navigate(SitesUrls.create)} disabled={!editable}>
+      {t('Create Site')}
+    </Button>
+  </Actions>
+</Header>
 
       {/* SearchBar */}
       <div className="flex justify-end mt-4 mb-4">

@@ -7,16 +7,7 @@ import { WorkRateAbstractUrls } from "../../utils/urls";
 import { useWorkRateAbstractList } from "./useWorkRateAbstractList";
 import type { WorkRateAbstractProps } from "../../DTOs/WorkRateAbstract";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
 
@@ -90,27 +81,12 @@ const WorkRateAbstractListPage = () => {
       </div>
 
       {/* Delete confirm dialog */}
-      <AlertDialog open={!!deleteId}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to delete this Detail?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelDelete}>
-              {t('Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-white hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={!!deleteId}
+        onClose={handleCancelDelete}
+        onConfirm={handleDelete}
+        description={t('Are you sure you want to delete this Detail?')}
+      />
     </div>
   );
 };
