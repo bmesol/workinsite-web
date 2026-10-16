@@ -11,16 +11,7 @@ import { TaskCard } from "@/shared/components/TaskCard/TaskCard";
 import { GetStartedCard } from "@/shared/components/GetStartedCard/GetStartedCard";
 import TaskCreationIllustration from "@/assets/images/site-creation-illustration.png";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 
 const TaskListPage = () => {
   const navigate = useNavigate();
@@ -108,36 +99,12 @@ const TaskListPage = () => {
         )}
       </div>
 
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={val => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base">
-              {t('Confirm Delete')}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
-              {t('Are you sure you want to delete this task?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                {t('Cancel')}
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={() => deleteId && handleTaskDelete(deleteId)}
-              >
-                {t('Delete')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && handleTaskDelete(deleteId)}
+        description={t('Are you sure you want to delete this task?')}
+      />
     </div>
   );
 };

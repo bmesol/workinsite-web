@@ -6,16 +6,7 @@ import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import MaterialUsedCard from "@/shared/components/MaterialUsedCard/MaterialUsedCard";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import {
   Dialog,
   DialogContent,
@@ -225,34 +216,12 @@ const MaterialUsedListPage = () => {
       </Dialog>
 
       {/* ── Delete Dialog ── */}
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={(val) => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to delete this material used record?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                {t("Cancel")}
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={() => deleteId && handleDeleteMaterialUsed(deleteId)}
-              >
-                {t('Delete')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && handleDeleteMaterialUsed(deleteId)}
+        description={t('Are you sure you want to delete this material used record?')}
+      />
     </div>
   );
 };

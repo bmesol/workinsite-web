@@ -6,16 +6,7 @@ import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { usePurchaseList } from "./usePurchaseList";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import {
   Dialog,
   DialogContent,
@@ -197,34 +188,12 @@ const PurchaseListPage = () => {
       </Dialog>
 
       {/* Delete Dialog */}
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={(val) => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to delete this purchase?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                {t('Cancel')}
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={() => deleteId && handleDeletePurchase(deleteId)}
-              >
-                {t('Delete')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && handleDeletePurchase(deleteId)}
+        description={t('Are you sure you want to delete this purchase?')}
+      />
     </div>
   );
 };

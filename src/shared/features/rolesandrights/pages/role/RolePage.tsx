@@ -11,16 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/components/ui/alert-dialog';
+import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import RoleCard from '../../components/RoleCard/RoleCard';
 import { useRolesScreen } from './useRole';
 import type { Roles } from '../../DTOs/DTOs';
@@ -167,34 +158,13 @@ const RolesPage = () => {
       </Dialog>
 
       {/* ── Delete Confirm Dialog ── */}
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={(val) => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Delete Role')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to delete this role?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteId(null)}>
-              {t('Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  if (deleteId) handleDeleteRole(deleteId);
-                }}
-              >
-                {t('Delete')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => { if (deleteId) handleDeleteRole(deleteId); }}
+        title={t('Delete Role')}
+        description={t('Are you sure you want to delete this role?')}
+      />
 
     </div>
   );

@@ -61,7 +61,7 @@ const SelectComboField = ({
   const labelNode = label ? (
     <Label
       htmlFor={id}
-      className="mb-1 text-base font-medium flex items-center gap-0.5"
+      className="text-base font-medium flex items-center gap-0.5"
       style={{ color: "var(--foreground)" }}
     >
       {label}

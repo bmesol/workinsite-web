@@ -5,16 +5,7 @@ import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import TransactionCard from '@/shared/components/TransactionCard/TransactionCard';
 import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
+import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import {
   Dialog,
   DialogContent,
@@ -181,36 +172,12 @@ const SupplierTransactionListPage = () => {
       </Dialog>
 
       {/* ── Delete Dialog ── */}
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={val => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base">
-              {t('Confirm Delete')}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
-              {t('Are you sure you want to delete this supplier transaction?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                {t('Cancel')}
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={() => deleteId && handleDelete(deleteId)}
-              >
-                {t('Delete')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && handleDelete(deleteId)}
+        description={t('Are you sure you want to delete this supplier transaction?')}
+      />
 
     </div>
   );

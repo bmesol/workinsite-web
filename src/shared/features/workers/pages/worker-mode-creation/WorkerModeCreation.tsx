@@ -5,16 +5,7 @@ import { Card, CardContent } from "@/shared/components/ui/card";
 import { useWorkModeCreation } from "./useWorkerModeCreation";
 import { WorkModeList } from "../worker-mode-list/WorkerModeList";
 import { usePermission } from "@/shared/hooks/usePermission";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkModeCreationPage = () => {
@@ -115,25 +106,12 @@ const WorkModeCreationPage = () => {
       </Card>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && cancelDelete()}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to delete this work mode? This action cannot be undone.')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelDelete}>{t('Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-white hover:bg-destructive/90"
-            >
-              {t('Delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={!!deleteId}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        description={t('Are you sure you want to delete this work mode? This action cannot be undone.')}
+      />
     </div>
   );
 };

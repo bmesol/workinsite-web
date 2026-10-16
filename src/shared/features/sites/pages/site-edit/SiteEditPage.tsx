@@ -149,6 +149,7 @@ const SiteEditPage = () => {
                     hasMoreDetails={hasMoreDetails}
                     handleMoreDetails={handleMoreDetails}
                     isAddDisabled={!editable}
+                    classNames="mt-4"
                   />
                 )}
               </div>

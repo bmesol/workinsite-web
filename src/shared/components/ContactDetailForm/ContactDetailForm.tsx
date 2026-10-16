@@ -8,7 +8,7 @@ const ContactDetailForm = (props: ContactDetailFormProps) => {
   const { handleContactEdit, primaryContactDetails, hasMoreDetails, handleMoreDetails, classNames = "", isColsTwo = true, isAddDisabled } = props;
 
   return (
-    <div className={`mt-4 ${classNames}`}>
+    <div className={classNames}>
       <FormActionButton heading={t("Contact detail")} label={t("Edit")} onClick={handleContactEdit} isColsTwo={isColsTwo} isAddDisabled={isAddDisabled} />
       <ContactTypes contactList={primaryContactDetails} showEditDeleteButtons={false} classNames="mt-4" />
       {hasMoreDetails && (

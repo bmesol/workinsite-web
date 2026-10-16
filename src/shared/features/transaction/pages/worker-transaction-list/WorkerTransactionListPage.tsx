@@ -11,16 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/components/ui/alert-dialog';
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { Loader2 } from 'lucide-react';
 import { useWorkerTransactionList } from './useWorkerTransactionList';
 import type { WorkerTransactionProps } from '../../DTOs/WorkerTransaction';
@@ -186,29 +177,12 @@ const WorkerTransactionListPage = () => {
       </Dialog>
 
       {/* ── Delete Confirm Dialog ── */}
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={(val) => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Confirm Delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Are you sure you want to delete this worker transaction?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteId(null)}>
-              {t('Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button variant="destructive" onClick={handleDeleteConfirm}>
-                {t('Delete')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDeleteConfirm}
+        description={t('Are you sure you want to delete this worker transaction?')}
+      />
 
     </div>
   );

@@ -12,6 +12,9 @@ export type ProfileUpdationRequest = {
 export type UserUpdationRequest = {
   name: string;
   phone: string;
+  roleId: number;
+  isActive: boolean;
+  note: string;
 };
 
 const createUserService = () => {

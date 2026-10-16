@@ -5,16 +5,7 @@ import {
   Dialog,
   DialogContent,
 } from '@/shared/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
+import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import { Button } from '@/shared/components/ui/button';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
@@ -220,26 +211,13 @@ export default function PurchasePhoto({
       </Dialog>
 
       {/* Delete Confirm Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Delete Image')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('Do you want to delete this image?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
-              {t('Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button variant="destructive" onClick={handleDelete}>
-                {t('Delete')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDelete}
+        title={t('Delete Image')}
+        description={t('Do you want to delete this image?')}
+      />
 
     </div>
   );

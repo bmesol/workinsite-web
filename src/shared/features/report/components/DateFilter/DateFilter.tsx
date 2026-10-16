@@ -1,7 +1,6 @@
-import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
+import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import type { DateRange, DateRangeOption } from '../../DTOs/WorkerreportProps';
-import { toInputDate, fromInputDate } from '@/shared/utils/formatters';
 
 interface Props {
   selectedOption: DateRangeOption;
@@ -45,26 +44,22 @@ export function DateFilter({ selectedOption, dateRange, setDateRange, onOptionCh
       {/* Custom pickers */}
       {selectedOption === 'custom' && (
         <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label className="text-base font-medium mb-1 block">From Date</Label>
-            <Input
-              type="date"
-              value={toInputDate(dateRange.from)}
-              onChange={e =>
-                setDateRange(prev => ({ ...prev, from: fromInputDate(e.target.value) }))
-              }
-            />
-          </div>
-          <div>
-            <Label className="text-base font-medium mb-1 block">To Date</Label>
-            <Input
-              type="date"
-              value={toInputDate(dateRange.to)}
-              onChange={e =>
-                setDateRange(prev => ({ ...prev, to: fromInputDate(e.target.value) }))
-              }
-            />
-          </div>
+          <DatePicker
+            label="From Date"
+            date={dateRange.from.replace(/-/g, '/')}
+            onDateChange={(val) =>
+              setDateRange(prev => ({ ...prev, from: val.replace(/\//g, '-') }))
+            }
+            errorMessage={errors.fromDate}
+          />
+          <DatePicker
+            label="To Date"
+            date={dateRange.to.replace(/-/g, '/')}
+            onDateChange={(val) =>
+              setDateRange(prev => ({ ...prev, to: val.replace(/\//g, '-') }))
+            }
+            errorMessage={errors.toDate}
+          />
         </div>
       )}
 
@@ -73,11 +68,6 @@ export function DateFilter({ selectedOption, dateRange, setDateRange, onOptionCh
         <p className="text-xs text-slate-500  rounded-lg px-3 py-2 text-center">
           {dateRange.from} — {dateRange.to}
         </p>
-      )}
-
-      {/* Errors */}
-      {(errors.fromDate || errors.toDate) && (
-        <p className="text-xs text-red-500">{errors.fromDate || errors.toDate}</p>
       )}
     </div>
   );

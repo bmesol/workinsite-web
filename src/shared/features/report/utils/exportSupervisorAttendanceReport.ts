@@ -186,7 +186,7 @@ export async function exportSupervisorAttendanceToPDF(
   ]);
 
   const tableWidth = pageW - 2 * margin;
-  const fixedColsWidth = 12 + 22 + 20 + 40 + 34;
+  const fixedColsWidth = 12 + 26 + 20 + 40 + 34;
   const locationColWidth = tableWidth - fixedColsWidth;
 
   autoTable(doc, {
@@ -208,7 +208,7 @@ export async function exportSupervisorAttendanceToPDF(
     alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: {
       0: { halign: 'center', cellWidth: 12 },
-      1: { halign: 'center', cellWidth: 22 },
+      1: { halign: 'center', cellWidth: 26 },
       2: { halign: 'center', cellWidth: 20 },
       3: { halign: 'left', cellWidth: 40 },
       4: { halign: 'left', cellWidth: 34 },

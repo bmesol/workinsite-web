@@ -6,16 +6,7 @@ import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import MaterialCard from "@/shared/components/MaterialCard/MaterialCard";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/shared/components/ui/alert-dialog";
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import {
   Dialog,
   DialogContent,
@@ -224,34 +215,12 @@ const MaterialShiftListPage = () => {
       </Dialog>
 
       {/* ── Delete Dialog ── */}
-      <AlertDialog
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={(val) => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this material shift?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                {t("Cancel")}
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={() => deleteId && handleDeleteMaterialShift(deleteId)}
-              >
-                Delete
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && handleDeleteMaterialShift(deleteId)}
+        description={t("Are you sure you want to delete this material shift?")}
+      />
     </div>
   );
 };

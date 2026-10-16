@@ -8,25 +8,16 @@ import { ClientsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/shared/components/ui/alert-dialog";
-import { useLanguage } from '@/shared/hooks/useLanguageContext';
-import { usePermission } from '@/shared/hooks/usePermission';
+import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { usePermission } from "@/shared/hooks/usePermission";
 
 const ClientListPage = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const { t } = useLanguage();
   const { canEdit } = usePermission();
-  const editable = canEdit('Clients');
+  const editable = canEdit("Clients");
 
   const {
     clientDetails,
@@ -54,10 +45,13 @@ const ClientListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title={t('Client List')}>
+      <Header title={t("Client List")}>
         <Actions>
-          <Button onClick={() => navigate(ClientsUrls.create)} disabled={!editable}>
-            {t('Create Client')}
+          <Button
+            onClick={() => navigate(ClientsUrls.create)}
+            disabled={!editable}
+          >
+            {t("Create Client")}
           </Button>
         </Actions>
       </Header>
@@ -70,7 +64,7 @@ const ClientListPage = () => {
               setSearchValue(val);
               fetchClient(val);
             }}
-            searchCategory={t('Search clients')}
+            searchCategory={t("Search clients")}
           />
         </div>
       </div>
@@ -79,7 +73,7 @@ const ClientListPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {!clientDetails.length ? (
           <div className="col-span-2 my-4 text-center text-sm text-muted-foreground">
-            {t('No clients found')}
+            {t("No clients found")}
           </div>
         ) : (
           clientDetails.map((client) => (
@@ -96,9 +90,7 @@ const ClientListPage = () => {
                     (item) => item.contactType === ContactTypes.EMAIL,
                   )?.value
                 }
-                onDelete={(e: React.MouseEvent) =>
-                  confirmDelete(e, client.id)
-                }
+                onDelete={(e: React.MouseEvent) => confirmDelete(e, client.id)}
                 permissionKey="Clients"
               />
             </div>
@@ -106,36 +98,13 @@ const ClientListPage = () => {
         )}
       </div>
 
-      <AlertDialog
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
         open={!!deleteId}
-        onOpenChange={(val) => !val && setDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-base">
-              {t('Confirm Delete')}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm">
-              {t('Are you sure you want to delete this client?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={() => setDeleteId(null)}>
-                {t('Cancel')}
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                onClick={() => deleteId && handleClientDelete(deleteId)}
-              >
-                {t('Delete')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && handleClientDelete(deleteId)}
+        description={t("Are you sure you want to delete this client?")}
+      />
     </div>
   );
 };
