@@ -16,6 +16,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useWorkerReport } from "./useWorkerReport";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { exportWorkerReportToExcel, exportWorkerReportToPDF } from '../../utils/exportWorkerReport';
+import { trackEvent } from '@/shared/utils/analytics';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -122,7 +123,7 @@ export default function WorkerReportPage() {
                 {hasData && (
                   <>
                     <Button
-                      onClick={() => void exportWorkerReportToExcel(reports, dateRange, 'Worker_Report')}
+                      onClick={() => { trackEvent('download_report', { report_type: 'worker_report', format: 'excel' }); void exportWorkerReportToExcel(reports, dateRange, 'Worker_Report'); }}
                       className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
                       style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                     >
@@ -131,7 +132,7 @@ export default function WorkerReportPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => void exportWorkerReportToPDF(reports, dateRange, 'Worker_Report')}
+                      onClick={() => { trackEvent('download_report', { report_type: 'worker_report', format: 'pdf' }); void exportWorkerReportToPDF(reports, dateRange, 'Worker_Report'); }}
                       className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
                       style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                     >
@@ -159,7 +160,7 @@ export default function WorkerReportPage() {
           {hasData && (
             <div className="flex gap-3 mt-4">
               <Button
-                onClick={() => void exportWorkerReportToExcel(reports, dateRange, 'Worker_Report')}
+                onClick={() => { trackEvent('download_report', { report_type: 'worker_report', format: 'excel' }); void exportWorkerReportToExcel(reports, dateRange, 'Worker_Report'); }}
                 className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
                 style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >
@@ -168,7 +169,7 @@ export default function WorkerReportPage() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => void exportWorkerReportToPDF(reports, dateRange, 'Worker_Report')}
+                onClick={() => { trackEvent('download_report', { report_type: 'worker_report', format: 'pdf' }); void exportWorkerReportToPDF(reports, dateRange, 'Worker_Report'); }}
                 className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
                 style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >

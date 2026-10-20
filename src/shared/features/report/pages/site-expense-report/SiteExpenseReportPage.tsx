@@ -11,6 +11,7 @@ import { SiteExpenseDetail } from '../../components/SiteExpenseDetail/SiteExpens
 import { SiteExpenseFilterDialog } from '../../components/SiteExpenseFilterDialog/SiteExpenseFilterDialog';
 import { useSiteExpenseReport } from './useSiteExpenseReport';
 import { exportToExcel, exportToPDF } from '../../utils/exportSiteExpenseReport';
+import { trackEvent } from '@/shared/utils/analytics';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -109,7 +110,7 @@ export default function SiteExpenseReportPage() {
               {hasData && (
                 <>
                   <Button
-                    onClick={() => void exportToExcel(allItems, 'Site_Expense_Report', dateRange)}
+                    onClick={() => { trackEvent('download_report', { report_type: 'site_expense', format: 'excel' }); void exportToExcel(allItems, 'Site_Expense_Report', dateRange); }}
                     className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
                     style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                   >
@@ -118,7 +119,7 @@ export default function SiteExpenseReportPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => void exportToPDF(allItems, 'Site_Expense_Report', dateRange)}
+                    onClick={() => { trackEvent('download_report', { report_type: 'site_expense', format: 'pdf' }); void exportToPDF(allItems, 'Site_Expense_Report', dateRange); }}
                     className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
                     style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                   >
@@ -149,7 +150,7 @@ export default function SiteExpenseReportPage() {
           {hasData && (
             <div className="flex gap-3 mt-4">
               <Button
-                onClick={() => void exportToExcel(allItems, 'Site_Expense_Report', dateRange)}
+                onClick={() => { trackEvent('download_report', { report_type: 'site_expense', format: 'excel' }); void exportToExcel(allItems, 'Site_Expense_Report', dateRange); }}
                 className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
                 style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >
@@ -158,7 +159,7 @@ export default function SiteExpenseReportPage() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => void exportToPDF(allItems, 'Site_Expense_Report', dateRange)}
+                onClick={() => { trackEvent('download_report', { report_type: 'site_expense', format: 'pdf' }); void exportToPDF(allItems, 'Site_Expense_Report', dateRange); }}
                 className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
                 style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >

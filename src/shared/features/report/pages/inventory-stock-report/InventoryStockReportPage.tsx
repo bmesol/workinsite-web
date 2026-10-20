@@ -11,6 +11,7 @@ import { MaterialDetail } from '../../components/InventoryMaterialDetail/Invento
 import { InventoryFilterDialog } from '../../components/InventoryFilterDialog/InventoryFilterDialog';
 import { useInventoryStockReport } from './useInventoryStockReport';
 import { exportToExcel, exportToPDF } from '../../utils/exportInventoryReport';
+import { trackEvent } from '@/shared/utils/analytics';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -109,6 +110,7 @@ export default function InventoryStockReportPage() {
                   <>
                     <Button
                       onClick={async () => {
+                        trackEvent('download_report', { report_type: 'inventory_stock', format: 'excel' });
                         try {
                           await exportToExcel(materialSummary, dateRange);
                         } catch (err) {
@@ -125,6 +127,7 @@ export default function InventoryStockReportPage() {
                     <Button
                       variant="outline"
                       onClick={async () => {
+                        trackEvent('download_report', { report_type: 'inventory_stock', format: 'pdf' });
                         try {
                           await exportToPDF(materialSummary, dateRange);
                         } catch (err) {
@@ -163,6 +166,7 @@ export default function InventoryStockReportPage() {
             <div className="flex gap-3 mt-4">
               <Button
                 onClick={async () => {
+                  trackEvent('download_report', { report_type: 'inventory_stock', format: 'excel' });
                   try {
                     await exportToExcel(materialSummary, dateRange);
                   } catch (err) {
@@ -179,6 +183,7 @@ export default function InventoryStockReportPage() {
               <Button
                 variant="outline"
                 onClick={async () => {
+                  trackEvent('download_report', { report_type: 'inventory_stock', format: 'pdf' });
                   try {
                     await exportToPDF(materialSummary, dateRange);
                   } catch (err) {
