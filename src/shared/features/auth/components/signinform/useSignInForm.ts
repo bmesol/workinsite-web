@@ -58,6 +58,7 @@ import { AuthService } from "@/shared/features/auth/services/AuthService";
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
 import { createUserService } from "@/shared/features/users/services/UserService";
 import { ROLE_IDS } from "@/shared/features/rolesandrights/DTOs/DTOs";
+import { trackEvent, setUserProperties } from "@/shared/utils/analytics";
 
 export const useSignInForm = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -87,12 +88,16 @@ export const useSignInForm = () => {
       const user = await userService.getProfile();
       AuthHelper.setUserProfile(user);
 
+      trackEvent('login', { method: 'phone_pin' });
+      setUserProperties({ user_role: user.role.name });
+
       if (user.role.id === ROLE_IDS.SUPERVISOR) {
         navigate("/dashboard");
       } else {
         navigate("/engineer-dashboard");
       }
     } catch (err) {
+      trackEvent('login_failed', { reason: 'invalid_credentials' });
       alert("Invalid phone number or PIN");
     }
   };

@@ -1,6 +1,7 @@
 import { Label } from '@/shared/components/ui/label';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import type { DateRange, DateRangeOption } from '../../DTOs/WorkerreportProps';
+import { trackEvent } from '@/shared/utils/analytics';
 
 interface Props {
   selectedOption: DateRangeOption;
@@ -29,7 +30,7 @@ export function DateFilter({ selectedOption, dateRange, setDateRange, onOptionCh
           <button
             key={opt.key}
             type="button"
-            onClick={() => onOptionChange(opt.key)}
+            onClick={() => { trackEvent('filter_applied', { filter_type: 'date_range', option: opt.key }); onOptionChange(opt.key); }}
           className={`flex-1 py-2 rounded-lg border text-xs font-medium transition-colors ${
   selectedOption === opt.key
     ? 'bg-primary text-primary-foreground border-primary'

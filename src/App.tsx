@@ -43,6 +43,7 @@
 
 
 import { Routes, Route } from "react-router-dom";
+import { usePageTracking } from '@/shared/hooks/usePageTracking';
 import SignInPage from "@/shared/features/auth/pages/sign-in-page/SignInPage";
 import { SignUpPage } from "@/shared/features/auth/pages/sign-up-page/SignUpPage";
 import { ForgetPinPage } from "@/shared/features/auth/pages/forget-pin-page/ForgetPinPage";
@@ -56,6 +57,8 @@ import SupervisorDashboard from "@/shared/features/dashboard/supervisor-dashboar
 import EngineerDashboard from "@/shared/features/dashboard/Engineering-dashboard/EngineeringDasboardPage";
 
 const App = () => {
+  usePageTracking();
+
   return (
     <Routes>
       {/* Public routes */}

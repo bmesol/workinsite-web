@@ -24,6 +24,7 @@ import { MaterialMultiSelect } from '@/shared/components/MaterialMultiSelect/Mat
 import { cn } from '@/shared/components/lib/utils';
 import type { AvailableMaterialReport } from '@/shared/features/materials/service/MaterialUsedService';
 import { exportAvailableMaterialToExcel, exportAvailableMaterialToPDF } from '../../utils/exportAvailableMaterialReport';
+import { trackEvent } from '@/shared/utils/analytics';
 import sheetsIcon from '@/assets/icons/sheets.png';
 import pdfIcon from '@/assets/icons/pdf.png';
 import { toast } from 'sonner';
@@ -99,6 +100,7 @@ const AvailableMaterialReportScreen = () => {
                   <>
                     <Button
                       onClick={async () => {
+                        trackEvent('download_report', { report_type: 'available_material', format: 'excel' });
                         try {
                           await exportAvailableMaterialToExcel(reportData, exportFilters);
                         } catch (err) {
@@ -115,6 +117,7 @@ const AvailableMaterialReportScreen = () => {
                     <Button
                       variant="outline"
                       onClick={async () => {
+                        trackEvent('download_report', { report_type: 'available_material', format: 'pdf' });
                         try {
                           await exportAvailableMaterialToPDF(reportData, exportFilters);
                         } catch (err) {
@@ -153,6 +156,7 @@ const AvailableMaterialReportScreen = () => {
             <div className="flex gap-3 mt-4">
               <Button
                 onClick={async () => {
+                  trackEvent('download_report', { report_type: 'available_material', format: 'excel' });
                   try {
                     await exportAvailableMaterialToExcel(reportData, exportFilters);
                   } catch (err) {
@@ -169,6 +173,7 @@ const AvailableMaterialReportScreen = () => {
               <Button
                 variant="outline"
                 onClick={async () => {
+                  trackEvent('download_report', { report_type: 'available_material', format: 'pdf' });
                   try {
                     await exportAvailableMaterialToPDF(reportData, exportFilters);
                   } catch (err) {

@@ -16,6 +16,7 @@ import {
   exportSupervisorAttendanceToExcel,
   exportSupervisorAttendanceToPDF,
 } from "../../utils/exportSupervisorAttendanceReport";
+import { trackEvent } from '@/shared/utils/analytics';
 import {
   Dialog,
   DialogContent,
@@ -105,13 +106,14 @@ const SupervisorAttendanceListPage = () => {
                 {hasData && (
                   <>
                     <Button
-                      onClick={() =>
+                      onClick={() => {
+                        trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'excel' });
                         void exportSupervisorAttendanceToExcel(
                           attendances,
                           dateRange,
                           "Supervisor_Attendance_Report",
-                        )
-                      }
+                        );
+                      }}
                       className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
                       style={{
                         fontSize: "var(--font-sm)",
@@ -127,13 +129,14 @@ const SupervisorAttendanceListPage = () => {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() =>
+                      onClick={() => {
+                        trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'pdf' });
                         void exportSupervisorAttendanceToPDF(
                           attendances,
                           dateRange,
                           "Supervisor_Attendance_Report",
-                        )
-                      }
+                        );
+                      }}
                       className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
                       style={{
                         fontSize: "var(--font-sm)",
@@ -168,13 +171,14 @@ const SupervisorAttendanceListPage = () => {
           {hasData && (
             <div className="flex gap-3 mt-4">
               <Button
-                onClick={() =>
+                onClick={() => {
+                  trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'excel' });
                   void exportSupervisorAttendanceToExcel(
                     attendances,
                     dateRange,
                     "Supervisor_Attendance_Report",
-                  )
-                }
+                  );
+                }}
                 className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
                 style={{
                   fontSize: "var(--font-sm)",
@@ -190,13 +194,14 @@ const SupervisorAttendanceListPage = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={() =>
+                onClick={() => {
+                  trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'pdf' });
                   void exportSupervisorAttendanceToPDF(
                     attendances,
                     dateRange,
                     "Supervisor_Attendance_Report",
-                  )
-                }
+                  );
+                }}
                 className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
                 style={{
                   fontSize: "var(--font-sm)",
