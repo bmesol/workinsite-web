@@ -107,6 +107,7 @@
 
 
 import { jwtDecode } from "jwt-decode";
+import * as Sentry from "@sentry/react";
 
 type DecodedToken = {
   Name?: string;
@@ -300,6 +301,7 @@ const AuthHelper = {
    * User/forced logout.
    */
   logout: () => {
+    Sentry.setUser(null);
     AuthHelper.clearAuthData();
     window.location.href = "/";
   },

@@ -159,6 +159,7 @@ import type {
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
 import { refreshTokensShared } from "@/shared/helpers/tokenRefresh";
 import { useLoading } from "@/shared/hooks/useLoading";
+import logger from "@/shared/utils/logger";
 
 const apiCache = new Map<string, AxiosInstance>();
 
@@ -179,22 +180,16 @@ let isLoggingOut = false;
  * refresh-race fix is confirmed in production.
  */
 const forceLogout = (caller = "unknown") => {
-  console.debug(
-    `[Auth DEBUG] forceLogout called — caller: ${caller}`,
-  );
+  logger.info(`forceLogout called — caller: ${caller}`);
 
   if (isLoggingOut) {
-    console.debug(
-      "[Auth DEBUG] forceLogout: already in progress, skipping",
-    );
+    logger.info("forceLogout: already in progress, skipping");
     return;
   }
 
   isLoggingOut = true;
 
-  console.debug(
-    "[Auth DEBUG] forceLogout: clearing auth data and redirecting to /",
-  );
+  logger.warn("forceLogout: clearing auth data and redirecting");
 
   AuthHelper.logout();
 };
@@ -299,6 +294,10 @@ function getApiInstance(
        * Only handle authentication failures here.
        */
       if (status !== 401) {
+        logger.error(
+          `API error [${status ?? "network"}] ${originalRequest.method?.toUpperCase()} ${url}`,
+          error,
+        );
         return Promise.reject(error);
       }
 
@@ -311,10 +310,7 @@ function getApiInstance(
         url.includes("/auth/login") ||
         url.includes("/auth/refresh")
       ) {
-        console.debug(
-          "[Auth DEBUG] 401 interceptor: 401 on auth endpoint — forcing logout",
-          { url },
-        );
+        logger.warn(`401 on auth endpoint — forcing logout: ${url}`);
         forceLogout("401-on-auth-endpoint");
         return Promise.reject(error);
       }
@@ -325,9 +321,7 @@ function getApiInstance(
        * backend — the session is genuinely dead.
        */
       if (originalRequest._retry) {
-        console.debug(
-          "[Auth DEBUG] 401 interceptor: retried request still 401 — forcing logout",
-        );
+        logger.warn("retried request still 401 — forcing logout");
         forceLogout("retried-request-still-401");
         return Promise.reject(error);
       }
@@ -349,10 +343,7 @@ function getApiInstance(
        */
       const failedAt = originalRequest.headers._at as string | undefined;
 
-      console.debug(
-        "[Auth DEBUG] 401 interceptor: calling refreshTokensShared",
-        { url },
-      );
+      logger.info(`calling refreshTokensShared for: ${url}`);
 
       try {
         /*
@@ -371,16 +362,12 @@ function getApiInstance(
            * refreshTokensShared returns null only when there is no
            * refresh token in storage — the session is unrecoverable.
            */
-          console.debug(
-            "[Auth DEBUG] 401 interceptor: no refresh token — forcing logout",
-          );
+          logger.warn("no refresh token — forcing logout");
           forceLogout("no-refresh-token");
           return Promise.reject(new Error("No refresh token stored"));
         }
 
-        console.debug(
-          "[Auth DEBUG] 401 interceptor: refresh succeeded, retrying original request",
-        );
+        logger.info("refresh succeeded, retrying original request");
 
         setAuthenticationHeaders(
           originalRequest,
@@ -399,17 +386,10 @@ function getApiInstance(
          * is likely still valid and the next user action will retry.
          */
         if (refreshStatus === 401 || refreshStatus === 403) {
-          console.debug(
-            "[Auth DEBUG] 401 interceptor: refresh rejected by server",
-            { refreshStatus },
-            "— forcing logout",
-          );
+          logger.warn(`refresh rejected by server (${refreshStatus}) — forcing logout`);
           forceLogout(`refresh-rejected-${refreshStatus}`);
         } else {
-          console.debug(
-            "[Auth DEBUG] 401 interceptor: refresh failed (transient), not forcing logout",
-            { refreshStatus, refreshError },
-          );
+          logger.info(`refresh failed (transient) — not forcing logout: status ${refreshStatus}`);
         }
 
         return Promise.reject(refreshError);

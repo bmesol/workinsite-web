@@ -25,6 +25,7 @@
 import axios from "axios";
 import type { AxiosError } from "axios";
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
+import logger from "@/shared/utils/logger";
 
 const LOCK_NAME = "workinsite_token_refresh";
 const LAST_REFRESH_KEY = "_last_refresh_at";
@@ -77,9 +78,7 @@ export const refreshTokensShared = (
   bypassThrottle?: boolean,
 ): Promise<AuthTokens | null> => {
   if (activeRefreshPromise) {
-    console.debug(
-      "[Auth DEBUG] refreshTokensShared: joining in-flight refresh (same tab)",
-    );
+    logger.info("refreshTokensShared: joining in-flight refresh (same tab)");
     return activeRefreshPromise;
   }
 
@@ -100,9 +99,7 @@ export const refreshTokensShared = (
       AuthHelper.isAccessTokenValid(currentAt) &&
       currentAt !== failedAccessToken
     ) {
-      console.debug(
-        "[Auth DEBUG] refreshTokensShared: AT already valid — skipping network call (refreshed by another tab/caller)",
-      );
+      logger.info("refreshTokensShared: AT already valid — skipping network call");
       return {
         accessToken: currentAt!,
         refreshToken: AuthHelper.getRefreshToken() ?? "",
@@ -116,9 +113,7 @@ export const refreshTokensShared = (
     if (!bypassThrottle && AuthHelper.isAccessTokenValid(currentAt)) {
       const lastRaw = localStorage.getItem(LAST_REFRESH_KEY);
       if (lastRaw && Date.now() - parseInt(lastRaw, 10) < THROTTLE_MS) {
-        console.debug(
-          "[Auth DEBUG] refreshTokensShared: throttled — a refresh completed recently, returning stored tokens",
-        );
+        logger.info("refreshTokensShared: throttled — returning stored tokens");
         return {
           accessToken: currentAt!,
           refreshToken: AuthHelper.getRefreshToken() ?? "",
@@ -128,15 +123,11 @@ export const refreshTokensShared = (
 
     const rt = AuthHelper.getRefreshToken();
     if (!rt) {
-      console.debug(
-        "[Auth DEBUG] refreshTokensShared: no refresh token in storage",
-      );
+      logger.warn("refreshTokensShared: no refresh token in storage");
       return null;
     }
 
-    console.debug(
-      "[Auth DEBUG] refreshTokensShared: sending POST /auth/refresh",
-    );
+    logger.info("refreshTokensShared: sending POST /auth/refresh");
 
     try {
       const response = await refreshApi.post(
@@ -159,9 +150,7 @@ export const refreshTokensShared = (
       AuthHelper.setRefreshToken(newTokens.refreshToken);
       localStorage.setItem(LAST_REFRESH_KEY, String(Date.now()));
 
-      console.debug(
-        "[Auth DEBUG] refreshTokensShared: tokens stored, refresh complete",
-      );
+      logger.info("refreshTokensShared: tokens stored, refresh complete");
 
       return newTokens;
     } catch (error) {
@@ -178,9 +167,7 @@ export const refreshTokensShared = (
         if (storedRt !== rt) {
           const freshAt = AuthHelper.getAccessToken();
           if (AuthHelper.isAccessTokenValid(freshAt)) {
-            console.debug(
-              "[Auth DEBUG] doRefresh: 401/403 on /auth/refresh but another tab rotated the RT — returning stored tokens",
-            );
+            logger.info("doRefresh: 401/403 but another tab rotated RT — returning stored tokens");
             return {
               accessToken: freshAt!,
               refreshToken: storedRt ?? "",
@@ -203,10 +190,7 @@ export const refreshTokensShared = (
       "locks" in navigator &&
       navigator.locks
     ) {
-      console.debug(
-        "[Auth DEBUG] refreshTokensShared: acquiring Web Lock",
-        LOCK_NAME,
-      );
+      logger.info("refreshTokensShared: acquiring Web Lock");
       // navigator.locks.request is typed as Promise<any>; two-step cast is
       // needed because TS 5.x infers Promise<Promise<T>> before any cast.
       return navigator.locks.request(
@@ -217,9 +201,7 @@ export const refreshTokensShared = (
 
     // Fallback for browsers without Web Locks (HTTP, older browsers).
     // Same-tab deduplication via activeRefreshPromise still applies.
-    console.debug(
-      "[Auth DEBUG] refreshTokensShared: Web Locks unavailable, running without cross-tab lock",
-    );
+    logger.warn("refreshTokensShared: Web Locks unavailable, running without cross-tab lock");
     return doRefresh();
   };
 

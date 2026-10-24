@@ -1,0 +1,472 @@
+================================================================================
+  LOG MONITORING WORKFLOW — WorkInsite Web
+  Project: workinsite-web (React 19 + TypeScript + Vite + Axios)
+  Date: 2026-10-21
+================================================================================
+
+--------------------------------------------------------------------------------
+OVERVIEW
+--------------------------------------------------------------------------------
+
+Log monitoring in this project is built on Sentry (sentry.io). Every log,
+error, performance trace, and session replay flows through a single pipeline:
+
+  App code → logger.ts → Sentry SDK → Sentry cloud dashboard
+
+The logger.ts file is the only place in the codebase that imports Sentry
+directly (except for two specific calls: Sentry.setUser in auth files). All
+other app code calls logger.info / logger.warn / logger.error. This keeps
+Sentry isolated behind one abstraction layer.
+
+--------------------------------------------------------------------------------
+RELATED FILES AND THEIR RESPONSIBILITIES
+--------------------------------------------------------------------------------
+
+FILE                                              RESPONSIBILITY
+------------------------------------------------  ----------------------------
+src/instrument.ts                                 Sentry SDK initialisation.
+                                                  Runs before anything else.
+
+src/main.tsx                                      App entry point. Imports
+                                                  instrument.ts first.
+                                                  Wraps app in ErrorBoundary.
+
+src/shared/utils/logger.ts                        Logging abstraction layer.
+                                                  The only file that calls
+                                                  Sentry breadcrumb/exception
+                                                  APIs (except setUser).
+
+src/shared/components/ErrorBoundary/              React render-crash boundary.
+  AppErrorBoundary.tsx                            Catches errors thrown during
+                                                  component rendering.
+
+src/shared/helpers/ApiHelper.ts                   Axios interceptor. Logs all
+                                                  non-401 API failures.
+                                                  Drives token refresh and
+                                                  force-logout paths, each
+                                                  logged via logger.
+
+src/shared/helpers/tokenRefresh.ts                Token refresh logic with
+                                                  in-tab and cross-tab
+                                                  deduplication. Uses logger
+                                                  throughout the refresh flow.
+
+src/shared/features/auth/helpers/AuthHelper.ts    Manages tokens in
+                                                  localStorage. Calls
+                                                  Sentry.setUser(null) on
+                                                  logout.
+
+src/shared/features/auth/components/             Login form hook. Calls
+  signinform/useSignInForm.ts                    Sentry.setUser({id, role})
+                                                  after successful login.
+                                                  Calls logger.error on
+                                                  login failure.
+
+vite.config.ts                                    Build config. Runs
+                                                  sentryVitePlugin to upload
+                                                  source maps to Sentry after
+                                                  each production build.
+
+.env                                              Holds VITE_SENTRY_DSN and
+                                                  VITE_APP_ENV. Both are set
+                                                  and active.
+
+--------------------------------------------------------------------------------
+STEP-BY-STEP WORKFLOW
+--------------------------------------------------------------------------------
+
+STEP 1 — SDK INITIALISATION (before first render)
+  File: src/instrument.ts, imported at the top of src/main.tsx
+
+  The very first line of main.tsx is:
+    import "./instrument";
+
+  instrument.ts calls Sentry.init() with:
+    - dsn:                    read from VITE_SENTRY_DSN (.env)
+    - enabled:                true only when import.meta.env.PROD is true
+                              (no events sent from local dev)
+    - environment:            read from VITE_APP_ENV (.env) — "production"
+    - release:                read from VITE_APP_VERSION (.env, optional)
+    - tracesSampleRate:       0.1  (10% of sessions traced for performance)
+    - replaysSessionSampleRate: 0.05  (5% of sessions recorded)
+    - replaysOnErrorSampleRate: 1.0  (100% of sessions where an error occurs)
+    - enableLogs:             true  (Sentry structured log forwarding enabled)
+    - integrations:
+        reactRouterV7BrowserTracingIntegration  (auto-instruments page nav)
+        replayIntegration (maskAllText: true, blockAllMedia: true)
+    - ignoreErrors:           "ResizeObserver loop limit exceeded",
+                              "Non-Error promise rejection captured"
+
+  After this step, Sentry passively catches all unhandled JS exceptions and
+  unhandled promise rejections automatically — no extra code needed.
+
+STEP 2 — REACT ROOT SETUP WITH ERROR HANDLERS
+  File: src/main.tsx
+
+  createRoot is called with three error hooks wired to reactErrorHandler():
+    - onUncaughtError:    fires on errors React cannot recover from
+    - onCaughtError:      fires on errors caught by an Error Boundary
+    - onRecoverableError: fires on errors React recovered from automatically
+
+  All three forward errors into Sentry automatically via the Sentry React
+  integration.
+
+STEP 3 — ERROR BOUNDARY WRAPS THE ENTIRE APP
+  File: src/shared/components/ErrorBoundary/AppErrorBoundary.tsx
+
+  The root component tree inside main.tsx is wrapped in AppErrorBoundary:
+
+    <AppErrorBoundary>
+      <ThemeProvider>
+        <LanguageProvider>
+          <HashRouter>
+            <App />
+          </HashRouter>
+        </LanguageProvider>
+      </ThemeProvider>
+    </AppErrorBoundary>
+
+  AppErrorBoundary uses Sentry.ErrorBoundary internally. When any component
+  throws during render, Sentry automatically captures the error and the
+  boundary renders a fallback:
+
+    "Something went wrong. The error has been reported. Please refresh the page."
+
+  showDialog is set to false, so no Sentry user-feedback popup appears.
+
+STEP 4 — ALL APP LOGGING GOES THROUGH logger.ts
+  File: src/shared/utils/logger.ts
+
+  The logger object has three methods:
+
+    logger.info(message, ...args)
+      DEV:  console.log("[INFO] message")
+      PROD: Sentry.addBreadcrumb({ level: "info", message, data: { args } })
+            Breadcrumbs appear in the context of the next error event.
+
+    logger.warn(message, ...args)
+      DEV:  console.warn("[WARN] message")
+      PROD: Sentry.addBreadcrumb({ level: "warning", message, data: { args } })
+
+    logger.error(message, error?, ...args)
+      DEV:  console.error("[ERROR] message", error)
+      PROD: Sentry.addBreadcrumb({ level: "error", message })
+            + Sentry.captureException(error)   if error is an Error instance
+            + Sentry.captureException(new Error("message: serialised-error"))
+              if error is not an Error instance
+
+  All Sentry calls are wrapped in try/catch so logger itself never throws.
+
+STEP 5 — API FAILURE LOGGING (all five microservices)
+  File: src/shared/helpers/ApiHelper.ts
+
+  Every API call in the app goes through useAPIHelper, which creates one cached
+  Axios instance per base URL. All five AWS App Runner services share this path:
+    user-service, master-data-service, site-service, supplier-service, worker-service
+
+  The Axios response interceptor handles two categories:
+
+  a) Non-401 errors (4xx except 401, 5xx, network errors):
+       logger.error(
+         "API error [STATUS] METHOD /url",
+         error
+       )
+       then Promise.reject(error) — the component layer sees the error.
+
+  b) 401 errors — token refresh flow (see Step 6).
+
+  This means every API failure from every service is automatically logged to
+  Sentry with the HTTP method, status code, and endpoint URL.
+
+STEP 6 — TOKEN REFRESH LOGGING
+  Files: src/shared/helpers/ApiHelper.ts, src/shared/helpers/tokenRefresh.ts
+
+  When a 401 is received on a non-auth endpoint, ApiHelper calls
+  refreshTokensShared(failedAt, true). The refresh flow emits logger calls
+  at each decision point:
+
+  In ApiHelper.ts:
+    logger.info("forceLogout called — caller: ...")  — on forced logout
+    logger.info("forceLogout: already in progress, skipping")
+    logger.warn("forceLogout: clearing auth data and redirecting")
+    logger.warn("401 on auth endpoint — forcing logout: ...")
+    logger.warn("retried request still 401 — forcing logout")
+    logger.info("calling refreshTokensShared for: /url")
+    logger.info("refresh succeeded, retrying original request")
+    logger.warn("no refresh token — forcing logout")
+    logger.warn("refresh rejected by server (401/403) — forcing logout")
+    logger.info("refresh failed (transient) — not forcing logout: status ...")
+
+  In tokenRefresh.ts:
+    logger.info("refreshTokensShared: joining in-flight refresh (same tab)")
+    logger.info("refreshTokensShared: AT already valid — skipping network call")
+    logger.info("refreshTokensShared: throttled — returning stored tokens")
+    logger.warn("refreshTokensShared: no refresh token in storage")
+    logger.info("refreshTokensShared: sending POST /auth/refresh")
+    logger.info("refreshTokensShared: tokens stored, refresh complete")
+    logger.info("refreshTokensShared: acquiring Web Lock")
+    logger.warn("refreshTokensShared: Web Locks unavailable, ...")
+    logger.info("doRefresh: 401/403 but another tab rotated RT — returning stored tokens")
+
+  In PROD these all become Sentry breadcrumbs. Any error event that follows
+  will include the full refresh trail as context.
+
+STEP 7 — USER IDENTITY TAGGING IN SENTRY
+  Files: useSignInForm.ts, AuthHelper.ts
+
+  After a successful login (useSignInForm.ts):
+    Sentry.setUser({ id: user.id, role: user.role.name })
+    Only the UUID and role name are sent — no phone number or PII.
+
+  After logout (AuthHelper.ts → logout()):
+    Sentry.setUser(null)
+    This clears the user tag so subsequent events are not linked to
+    a previous session.
+
+  Effect: all Sentry error events captured while the user is logged in are
+  tagged with their user ID and role, making it easy to trace a session.
+
+STEP 8 — LOGIN FAILURE LOGGING
+  File: src/shared/features/auth/components/signinform/useSignInForm.ts
+
+  On login failure (catch block):
+    trackEvent('login_failed', { reason: 'invalid_credentials' })  — GA4
+    logger.error('Login failed', err)                              — Sentry
+
+  logger.error sends a Sentry breadcrumb + captureException, so every failed
+  login attempt is an error event in Sentry.
+
+STEP 9 — SOURCE MAPS FOR READABLE STACK TRACES
+  File: vite.config.ts
+
+  The build is configured with:
+    build: { sourcemap: "hidden" }
+
+  "hidden" means source maps are generated but not referenced in the JS bundle
+  (so they are not publicly accessible). The sentryVitePlugin reads SENTRY_ORG,
+  SENTRY_PROJECT, and SENTRY_AUTH_TOKEN from the environment and uploads the
+  source maps to Sentry after each production build.
+
+  Effect: stack traces in Sentry show the original TypeScript file names and
+  line numbers instead of minified/bundled code.
+
+--------------------------------------------------------------------------------
+LOG GENERATION SUMMARY
+--------------------------------------------------------------------------------
+
+SOURCE                        LOG TYPE      SENTRY ACTION
+----------------------------  ----------    ----------------------------
+Unhandled JS exceptions       Automatic     captureException (auto)
+Unhandled promise rejections  Automatic     captureException (auto)
+React render crash            onCaughtError captureException via root hooks
+                              + ErrorBound  captureException via ErrorBoundary
+API failure (non-401)         logger.error  breadcrumb + captureException
+API 401 → refresh flow        logger.info/  breadcrumbs (context trail)
+                              logger.warn
+Token refresh error (401/403) logger.warn   breadcrumb (before forceLogout)
+Login failure                 logger.error  breadcrumb + captureException
+Login success                 Sentry.setUser tags all future events with user
+Logout                        Sentry.setUser(null) clears user tag
+
+--------------------------------------------------------------------------------
+ERROR HANDLING ARCHITECTURE
+--------------------------------------------------------------------------------
+
+Three layers catch errors before they reach the user silently:
+
+  Layer 1 — Sentry global handlers (instrument.ts)
+    Catches: unhandled exceptions, unhandled promise rejections.
+    Scope: everything, no code changes needed.
+
+  Layer 2 — React root error hooks (main.tsx)
+    Catches: React-specific errors (recoverable, caught by boundaries, uncaught).
+    Scope: entire React component tree.
+
+  Layer 3 — AppErrorBoundary (main.tsx wrapping App)
+    Catches: render-time component crashes.
+    Shows: fallback UI ("Something went wrong") instead of blank screen.
+
+  Layer 4 — Axios response interceptor (ApiHelper.ts)
+    Catches: all HTTP errors from all five microservices.
+    Action: logs via logger.error, then re-throws so UI can show error state.
+
+  Layer 5 — try/catch in specific hooks (useSignInForm.ts)
+    Catches: login failures.
+    Action: logs via logger.error, shows user-facing error message.
+
+--------------------------------------------------------------------------------
+API INTEGRATION
+--------------------------------------------------------------------------------
+
+Sentry receives data via two paths:
+
+  Browser → Sentry ingest endpoint (HTTPS)
+    All events (errors, breadcrumbs, replays, traces) are sent directly from
+    the user's browser to Sentry's cloud using the DSN configured in .env:
+      VITE_SENTRY_DSN=https://cd7d94010fcea9...@o4512288520077312.ingest.us.sentry.io/...
+
+  Build server → Sentry source maps API (during CI/CD)
+    The sentryVitePlugin posts source maps to Sentry after production builds.
+    This uses SENTRY_AUTH_TOKEN (not exposed to the browser).
+
+No backend microservice sends data to Sentry — only the frontend.
+
+--------------------------------------------------------------------------------
+STORAGE
+--------------------------------------------------------------------------------
+
+Sentry stores all data on their cloud infrastructure:
+  - Error events and stack traces: retained per your Sentry plan quota
+  - Session replays: retained per plan (typically 30–90 days)
+  - Performance traces: retained per plan
+  - Breadcrumbs: attached to the parent error event, stored with it
+
+On the client side, the Sentry SDK uses a small in-memory buffer for
+breadcrumbs (last 100 by default). This buffer is flushed to Sentry when
+an error event is sent or the page unloads. Nothing is written to localStorage
+or IndexedDB by Sentry. The application's own auth tokens (_at, _rt,
+userProfile) are stored in localStorage by AuthHelper — that is unrelated
+to logging.
+
+--------------------------------------------------------------------------------
+WORKFLOW DIAGRAM
+--------------------------------------------------------------------------------
+
+USER ACTION / BROWSER EVENT
+         |
+         v
+  +------+----------------------------------------------+
+  |  App code (component, service, hook)               |
+  |  calls logger.info / logger.warn / logger.error    |
+  +------+----------------------------------------------+
+         |
+         | DEV environment
+         |---------> console.log / warn / error   (stops here in dev)
+         |
+         | PROD environment
+         v
+  +------+----------------------------------------------+
+  |  logger.ts                                         |
+  |  info/warn  --> Sentry.addBreadcrumb()             |
+  |  error      --> Sentry.addBreadcrumb()             |
+  |               + Sentry.captureException()          |
+  +------+----------------------------------------------+
+         |
+         v
+  +------+----------------------------------------------+
+  |  @sentry/react SDK (initialised in instrument.ts)  |
+  |  Manages in-memory breadcrumb buffer (last 100)    |
+  |  Bundles breadcrumbs + error + user context        |
+  +------+----------------------------------------------+
+         |
+         v
+  +------+----------------------------------------------+
+  |  HTTPS POST to Sentry ingest endpoint              |
+  |  (o4512288520077312.ingest.us.sentry.io)           |
+  +------+----------------------------------------------+
+         |
+         v
+  +------+----------------------------------------------+
+  |  Sentry cloud dashboard                            |
+  |  Issues, Performance, Replays, Alerts              |
+  +------+----------------------------------------------+
+
+PARALLEL PATHS (automatic, no logger.ts involved):
+
+  React component crash
+         |
+         v
+  AppErrorBoundary (Sentry.ErrorBoundary)
+         |
+         +---> Sentry.captureException (automatic)
+         +---> Fallback UI shown to user
+
+  Unhandled JS exception / promise rejection
+         |
+         v
+  Sentry global error handler (set up by Sentry.init)
+         |
+         +---> Sentry.captureException (automatic)
+
+  Navigation / page load (React Router)
+         |
+         v
+  reactRouterV7BrowserTracingIntegration
+         |
+         +---> Sentry performance transaction (automatic)
+
+  Production build (CI/CD)
+         |
+         v
+  sentryVitePlugin
+         |
+         +---> uploads source maps to Sentry (build time only)
+
+--------------------------------------------------------------------------------
+CURRENT IMPLEMENTATION STATUS
+--------------------------------------------------------------------------------
+
+IMPLEMENTED AND ACTIVE:
+  [x] Sentry SDK initialised in instrument.ts (runs before first render)
+  [x] Sentry DSN and environment variables set in .env
+  [x] SDK enabled only in production (import.meta.env.PROD)
+  [x] logger.ts fully wired to Sentry (breadcrumbs + captureException)
+  [x] AppErrorBoundary wrapping the entire app
+  [x] React 19 root error hooks (onUncaughtError, onCaughtError, onRecoverableError)
+  [x] All non-401 API errors logged via Axios interceptor in ApiHelper.ts
+  [x] Full token refresh flow logged (info/warn breadcrumbs)
+  [x] User identity tagging on login (Sentry.setUser) and cleared on logout
+  [x] Login failure logged via logger.error
+  [x] Session replay (masked text, blocked media)
+  [x] React Router performance tracing
+  [x] Source map upload via sentryVitePlugin in vite.config.ts
+  [x] sourcemap: "hidden" — maps generated but not exposed in the bundle
+  [x] ignoreErrors list to reduce noise
+
+--------------------------------------------------------------------------------
+LIMITATIONS
+--------------------------------------------------------------------------------
+
+1. VITE_APP_VERSION not set in .env
+   The Sentry config reads release: import.meta.env.VITE_APP_VERSION but the
+   variable is not present in .env. All events will show "release: undefined"
+   in Sentry. To fix: add VITE_APP_VERSION=1.0.0 (or a git commit hash from CI)
+   to .env.
+
+2. SENTRY_ORG and SENTRY_PROJECT not documented
+   vite.config.ts reads process.env.SENTRY_ORG and process.env.SENTRY_PROJECT
+   for the source map upload plugin. These must be set in the CI/CD environment
+   or in .env.local (not committed). If they are missing, source maps will not
+   upload and stack traces in Sentry will remain minified.
+
+3. No logger calls in individual service or component files (outside of auth)
+   Only ApiHelper.ts, tokenRefresh.ts, and useSignInForm.ts call logger
+   explicitly. Application-level service files (e.g. WorkerService, SiteService)
+   do not call logger.error in their catch blocks. Errors from those services
+   will only appear in Sentry if they propagate all the way up to an unhandled
+   exception. Intentional business errors (empty responses, unexpected shapes)
+   will not be logged.
+
+4. No Sentry Alerts configured (as far as this codebase shows)
+   Alert rules (email on new issue, error rate thresholds) must be configured
+   inside the Sentry web dashboard — they are not in this codebase. Without
+   them, the team will not be notified of new errors automatically.
+
+5. Monitoring is frontend-only
+   No backend microservice is instrumented. Errors inside the five AWS App
+   Runner services are invisible in this Sentry project unless the API returns
+   a 4xx/5xx that the Axios interceptor then logs.
+
+6. Performance sample rate is low (10%)
+   tracesSampleRate: 0.1 means only 10% of user sessions contribute performance
+   data. This is intentional to reduce cost, but means performance issues on
+   low-traffic pages may not produce enough data to be visible.
+
+7. Session replay sample rate is low (5% normal, 100% on error)
+   Most sessions are not recorded. Only sessions where an error occurs are
+   always recorded. This is intentional but means UX issues that do not cause
+   errors will rarely appear in replays.
+
+--------------------------------------------------------------------------------
+END OF DOCUMENT
+--------------------------------------------------------------------------------

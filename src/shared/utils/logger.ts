@@ -1,4 +1,6 @@
-const isDev = import.meta.env.DEV; // Vite; use process.env.NODE_ENV === 'development' for CRA/Next.js
+import * as Sentry from "@sentry/react";
+
+const isDev = import.meta.env.DEV;
 
 const logger = {
   info: (message: string, ...args: unknown[]): void => {
@@ -7,8 +9,7 @@ const logger = {
       return;
     }
     try {
-      // TODO: replace with your web monitoring tool (e.g. Sentry, Datadog)
-      // Sentry example: Sentry.addBreadcrumb({ message: `[INFO] ${message}`, level: 'info' });
+      Sentry.addBreadcrumb({ message, level: "info", data: { args } });
     } catch {}
   },
 
@@ -18,7 +19,7 @@ const logger = {
       return;
     }
     try {
-      // Sentry example: Sentry.addBreadcrumb({ message: `[WARN] ${message}`, level: 'warning' });
+      Sentry.addBreadcrumb({ message, level: "warning", data: { args } });
     } catch {}
   },
 
@@ -28,15 +29,14 @@ const logger = {
       return;
     }
     try {
-      // Sentry example:
-      // Sentry.addBreadcrumb({ message: `[ERROR] ${message}`, level: 'error' });
-      // if (error instanceof Error) {
-      //   Sentry.captureException(error);
-      // } else {
-      //   Sentry.captureException(
-      //     new Error(`${message}: ${JSON.stringify(error ?? 'unknown')}`)
-      //   );
-      // }
+      Sentry.addBreadcrumb({ message, level: "error" });
+      if (error instanceof Error) {
+        Sentry.captureException(error);
+      } else {
+        Sentry.captureException(
+          new Error(`${message}: ${JSON.stringify(error ?? "unknown")}`),
+        );
+      }
     } catch {}
   },
 };

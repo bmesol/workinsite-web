@@ -1,0 +1,445 @@
+================================================================================
+  LOG MONITORING IMPLEMENTATION GUIDE — WorkInsite Web
+  Project: workinsite-web (React 19 + TypeScript + Vite + Axios)
+  Date: 2026-10-17
+================================================================================
+
+--------------------------------------------------------------------------------
+1. WHAT IS LOG MONITORING AND WHY IS IT NEEDED
+--------------------------------------------------------------------------------
+
+Log monitoring is the practice of capturing, centralising, and alerting on
+runtime events (errors, warnings, performance data) from your application so
+you can detect and fix problems before users report them.
+
+Why WorkInsite needs it:
+  - The app calls five separate AWS App Runner microservices (user-service,
+    master-data-service, site-service, supplier-service, worker-service).
+    Any of those can fail silently without the frontend team knowing.
+  - Auth token-refresh logic (ApiHelper.ts, tokenRefresh.ts) is complex.
+    Session bugs in production are hard to reproduce without breadcrumbs.
+  - Report pages (worker, inventory, site-expense, supervisor-attendance,
+    available-material) fetch large datasets; slowness or failures are
+    invisible without monitoring.
+  - logger.ts already exists at src/shared/utils/logger.ts with TODO stubs
+    for Sentry — the project is ready for this, it just needs wiring up.
+
+--------------------------------------------------------------------------------
+2. RECOMMENDED TOOLS / LIBRARIES
+--------------------------------------------------------------------------------
+
+PRIMARY — Sentry (sentry.io)
+  Why: Best-in-class for React + TypeScript. Captures unhandled exceptions,
+  promise rejections, network errors, and performance traces automatically.
+  Has a generous free tier (5 000 errors / month). Integrates directly with
+  Vite via an official plugin that uploads source maps so stack traces point
+  to your TypeScript source, not minified JS.
+
+  npm package : @sentry/react
+  vite plugin : @sentry/vite-plugin   (for source maps in production)
+
+SECONDARY — keep logger.ts as the internal abstraction layer
+  The existing logger.ts in src/shared/utils/ is the right pattern.
+  All calls in app code use logger.info / logger.warn / logger.error.
+  Sentry is wired once inside logger.ts, nowhere else.
+  This means you can swap Sentry for another service later with a one-file
+  change.
+
+ANALYTICS (already in place)
+  react-ga4 / Google Analytics 4 is already integrated (analytics.ts,
+  usePageTracking.ts). GA4 is for page views and user-behaviour events, NOT
+  for error monitoring. Do not use GA4 for errors — use Sentry.
+
+DO NOT NEED (for this project):
+  - Datadog, LogRocket, Rollbar — overlap with Sentry, add cost and complexity.
+  - Winston / Pino — these are Node.js server loggers, not relevant to a Vite
+    browser app.
+
+--------------------------------------------------------------------------------
+3. STEP-BY-STEP IMPLEMENTATION FLOW
+--------------------------------------------------------------------------------
+
+STEP 1 — Create a Sentry project
+  a. Go to sentry.io and sign in (or create a free account).
+  b. Create a new project → choose "React".
+  c. Copy the DSN (looks like https://abc123@o123.ingest.sentry.io/456).
+  d. Note your organisation slug and project slug (needed for the Vite plugin).
+  e. Generate an Auth Token under Settings > Auth Tokens > Create New Token.
+     Give it the scope: project:releases, org:read, project:write.
+     This token is only for the vite plugin during CI/CD builds — never ship it
+     to the browser.
+
+STEP 2 — Install packages
+  Run in the project root:
+
+    npm install @sentry/react
+    npm install --save-dev @sentry/vite-plugin
+
+STEP 3 — Add environment variables
+  Add to your .env file (see Section 6 for full variable list):
+
+    VITE_SENTRY_DSN=https://<key>@<org>.ingest.sentry.io/<project-id>
+    VITE_APP_ENV=production
+
+  Add to .env.local (never commit this file):
+
+    SENTRY_AUTH_TOKEN=<the auth token from Step 1e>
+
+  Keep the DSN in VITE_SENTRY_DSN (prefix VITE_ makes Vite expose it to the
+  browser bundle). The auth token must NOT have the VITE_ prefix — it is only
+  read by the build tool.
+
+STEP 4 — Configure vite.config.ts
+  Open vite.config.ts and add the Sentry plugin. The plugin uploads source
+  maps to Sentry after each production build so stack traces are readable.
+
+  import { defineConfig } from 'vite';
+  import react from '@vitejs/plugin-react';
+  import { sentryVitePlugin } from '@sentry/vite-plugin';
+
+  export default defineConfig({
+    plugins: [
+      react(),
+      sentryVitePlugin({
+        org: '<your-sentry-org-slug>',
+        project: '<your-sentry-project-slug>',
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        // Only run during production builds; skip in dev
+        disable: process.env.NODE_ENV !== 'production',
+      }),
+    ],
+    build: {
+      sourcemap: true,  // required for readable stack traces in Sentry
+    },
+  });
+
+STEP 5 — Initialise Sentry in main.tsx
+  In src/main.tsx, call Sentry.init() BEFORE createRoot so it catches
+  errors in the initial render. Call it right after initAnalytics().
+
+  Example block to add at the top of main.tsx (after existing imports):
+
+  import * as Sentry from '@sentry/react';
+
+  const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN as string | undefined;
+
+  if (SENTRY_DSN) {
+    Sentry.init({
+      dsn: SENTRY_DSN,
+      environment: import.meta.env.VITE_APP_ENV ?? 'development',
+      // Only send events in production/staging — silence local dev noise
+      enabled: import.meta.env.PROD,
+      // Capture 10% of sessions for performance tracing (adjust as needed)
+      tracesSampleRate: 0.1,
+      integrations: [
+        Sentry.browserTracingIntegration(),
+        Sentry.replayIntegration({
+          maskAllText: true,
+          blockAllMedia: true,
+        }),
+      ],
+      replaysSessionSampleRate: 0.05,
+      replaysOnErrorSampleRate: 1.0,
+    });
+  }
+
+  Note: maskAllText: true is important — WorkInsite handles phone numbers and
+  site data. This prevents Sentry Session Replay from recording sensitive text.
+
+STEP 6 — Wire Sentry into the existing logger.ts
+  Replace the TODO stubs in src/shared/utils/logger.ts with real Sentry calls.
+  The file already has the correct structure — just fill in the try blocks:
+
+  import * as Sentry from '@sentry/react';
+
+  const isDev = import.meta.env.DEV;
+
+  const logger = {
+    info: (message: string, ...args: unknown[]): void => {
+      if (isDev) {
+        console.log(`[INFO] ${message}`, ...args);
+        return;
+      }
+      try {
+        Sentry.addBreadcrumb({ message, level: 'info', data: { args } });
+      } catch {}
+    },
+
+    warn: (message: string, ...args: unknown[]): void => {
+      if (isDev) {
+        console.warn(`[WARN] ${message}`, ...args);
+        return;
+      }
+      try {
+        Sentry.addBreadcrumb({ message, level: 'warning', data: { args } });
+      } catch {}
+    },
+
+    error: (message: string, error?: unknown, ...args: unknown[]): void => {
+      if (isDev) {
+        console.error(`[ERROR] ${message}`, error, ...args);
+        return;
+      }
+      try {
+        Sentry.addBreadcrumb({ message, level: 'error' });
+        if (error instanceof Error) {
+          Sentry.captureException(error);
+        } else {
+          Sentry.captureException(
+            new Error(`${message}: ${JSON.stringify(error ?? 'unknown')}`)
+          );
+        }
+      } catch {}
+    },
+  };
+
+  export default logger;
+
+STEP 7 — Add a React Error Boundary
+  React Error Boundaries catch render-time errors in child components.
+  Sentry provides a ready-made one.
+
+  Create src/shared/components/ErrorBoundary/AppErrorBoundary.tsx:
+
+  import * as Sentry from '@sentry/react';
+  import { type ReactNode } from 'react';
+
+  interface Props {
+    children: ReactNode;
+  }
+
+  export function AppErrorBoundary({ children }: Props) {
+    return (
+      <Sentry.ErrorBoundary
+        fallback={
+          <div style={{ padding: '2rem', textAlign: 'center' }}>
+            <h2>Something went wrong.</h2>
+            <p>The error has been reported. Please refresh the page.</p>
+          </div>
+        }
+        showDialog={false}
+      >
+        {children}
+      </Sentry.ErrorBoundary>
+    );
+  }
+
+  Wrap the root in main.tsx:
+
+  <StrictMode>
+    <AppErrorBoundary>
+      <ThemeProvider>
+        <LanguageProvider>
+          <HashRouter>
+            <App />
+            <Toaster position="top-center" />
+          </HashRouter>
+        </LanguageProvider>
+      </ThemeProvider>
+    </AppErrorBoundary>
+  </StrictMode>
+
+STEP 8 — Capture API failures in ApiHelper.ts
+  The response interceptor in src/shared/helpers/ApiHelper.ts already handles
+  401 logic. Add logger.error calls for non-401 errors so every API failure
+  reaches Sentry. In the response interceptor's error handler, before the
+  final Promise.reject, add:
+
+  if (status !== 401) {
+    logger.error(
+      `API error [${status ?? 'network'}] ${originalRequest.method?.toUpperCase()} ${url}`,
+      error,
+    );
+    return Promise.reject(error);
+  }
+
+  This logs every 4xx (except 401, which is handled separately) and 5xx from
+  all five microservices into Sentry automatically.
+
+STEP 9 — Tag the logged-in user in Sentry
+  After a successful login in src/shared/features/auth/components/
+  signinform/useSignInForm.ts, after the existing setUserProperties call,
+  add a Sentry user tag so errors are linked to that user's session:
+
+  import * as Sentry from '@sentry/react';
+
+  // After login succeeds:
+  Sentry.setUser({ id: user.id, role: user.role.name });
+
+  On logout, clear it:
+  Sentry.setUser(null);
+
+  IMPORTANT: Only set id and role. Never pass phone numbers, real names, or
+  any PII. user.id (a UUID) is safe.
+
+STEP 10 — Track auth failures as Sentry events
+  In the catch block of useSignInForm.ts, after the existing trackEvent call:
+
+  import * as Sentry from '@sentry/react';
+
+  catch (err) {
+    trackEvent('login_failed', { reason: 'invalid_credentials' });
+    logger.error('Login failed', err);  // this sends to Sentry via logger
+    alert("Invalid phone number or PIN");
+  }
+
+--------------------------------------------------------------------------------
+4. HOW TO CAPTURE ERRORS AND MONITOR API FAILURES
+--------------------------------------------------------------------------------
+
+Unhandled JS errors
+  After Sentry.init() in main.tsx, all unhandled exceptions and unhandled
+  promise rejections are captured automatically — no extra code needed.
+
+React render errors
+  Handled by AppErrorBoundary (Step 7). Any component that throws during
+  render will be caught, logged, and show the fallback UI.
+
+API failures (Axios)
+  The response interceptor in ApiHelper.ts is the single point where all five
+  microservice calls pass through. Adding logger.error there (Step 8) means
+  every API failure is logged once, regardless of which service or endpoint
+  failed.
+
+Specific business errors
+  In service files and form hooks, wrap operations in try/catch and call
+  logger.error with a descriptive message:
+
+    try {
+      const { data } = await apiHelper.get('/workers');
+    } catch (err) {
+      logger.error('Failed to load worker list', err);
+      throw err;   // re-throw so the component can show an error state
+    }
+
+Token refresh failures
+  ApiHelper.ts and AuthService.ts already have console.debug calls in the
+  token refresh paths. Replace console.debug with logger.info / logger.warn
+  in the sensitive paths so they appear as Sentry breadcrumbs. For example:
+
+    // Replace:
+    console.debug("[Auth DEBUG] forceLogout called — caller:", caller);
+    // With:
+    logger.warn(`forceLogout called — caller: ${caller}`);
+
+Performance (slow API calls)
+  Once Sentry.init has browserTracingIntegration(), Sentry automatically
+  instruments Axios requests and records their durations. No extra code needed.
+  Check the Performance tab in Sentry to see which endpoints are slow.
+
+--------------------------------------------------------------------------------
+5. REQUIRED CONFIGURATION AND ENVIRONMENT VARIABLES
+--------------------------------------------------------------------------------
+
+File: .env (committed, safe — no secrets)
+  VITE_SENTRY_DSN=https://<key>@<org>.ingest.sentry.io/<project-id>
+  VITE_APP_ENV=production
+
+  Existing variables (already present — do not remove):
+  VITE_USER_SERVICE_BASE_URL=...
+  VITE_MASTER_DATA_SERVICE_BASE_URL=...
+  VITE_SITE_SERVICE_BASE_URL=...
+  VITE_SUPPLIER_SERVICE_BASE_URL=...
+  VITE_WORKER_SERVICE_BASE_URL=...
+  VITE_GOOGLE_MAPS_API_KEY=...
+  VITE_GA_MEASUREMENT_ID=...
+
+File: .env.local (not committed — add to .gitignore if not already there)
+  SENTRY_AUTH_TOKEN=<sentry-auth-token>
+
+  This token is read only by the @sentry/vite-plugin during builds.
+  It never ends up in the browser bundle because it does NOT have the VITE_
+  prefix.
+
+File: .env.development (optional — for a staging/dev Sentry project)
+  VITE_SENTRY_DSN=https://<dev-key>@<org>.ingest.sentry.io/<dev-project-id>
+  VITE_APP_ENV=development
+
+  Sentry.init has enabled: import.meta.env.PROD, so events from local dev
+  are dropped even if the DSN is set. The development env file is useful
+  for staging deployments where you want to capture events.
+
+Vite environment note:
+  Any variable prefixed VITE_ is injected into the browser bundle by Vite.
+  Variables without that prefix are only available at build time (Node.js
+  context, e.g. vite.config.ts).
+
+--------------------------------------------------------------------------------
+6. HOW TO TEST LOG MONITORING
+--------------------------------------------------------------------------------
+
+Test 1 — Verify Sentry receives events (development smoke test)
+  a. Temporarily override enabled in Sentry.init:
+       enabled: true   (instead of import.meta.env.PROD)
+  b. Add a test button anywhere in the UI:
+       <button onClick={() => { throw new Error('Sentry smoke test'); }}>
+         Test Sentry
+       </button>
+  c. Click the button. Go to your Sentry project dashboard.
+     The error should appear within ~30 seconds.
+  d. Remove the test button and restore enabled: import.meta.env.PROD.
+
+Test 2 — Verify the Error Boundary
+  a. In any component, add:
+       throw new Error('Error Boundary test');
+  b. The AppErrorBoundary fallback UI should appear instead of a white screen.
+  c. Sentry should receive a "Error Boundary test" event.
+  d. Remove the throw.
+
+Test 3 — Verify API failure logging
+  a. Temporarily break a URL in .env (append -broken to one VITE_*_BASE_URL).
+  b. Navigate to the page that calls that service.
+  c. Check the Sentry Issues tab — you should see the API error with the
+     method, status code, and URL.
+  d. Restore the correct URL.
+
+Test 4 — Verify login error tracking
+  a. Enter a wrong phone number or PIN on the sign-in page.
+  b. In Sentry, check Issues — you should see a "Login failed" event or
+     breadcrumb tied to the login_failed analytics event.
+
+Test 5 — Source maps (production builds only)
+  a. Run: npm run build
+  b. In vite.config.ts, confirm sourcemap: true is set.
+  c. Deploy to staging. Trigger a real error.
+  d. In Sentry, the stack trace should show TypeScript file names and line
+     numbers (e.g. useSignInForm.ts:99), not minified code.
+
+Test 6 — Performance traces
+  a. After a production build, open the app and navigate between pages.
+  b. In Sentry → Performance, you should see page load and API transaction
+     data within a few minutes.
+
+--------------------------------------------------------------------------------
+7. MAINTENANCE NOTES
+--------------------------------------------------------------------------------
+
+Noise reduction
+  Set ignoreErrors in Sentry.init to filter out irrelevant browser errors:
+
+  ignoreErrors: [
+    'ResizeObserver loop limit exceeded',   // harmless Chrome bug
+    'Non-Error promise rejection captured', // common in third-party scripts
+  ],
+
+Release tracking
+  Pass a release identifier to Sentry.init so each deployment is tagged:
+
+  release: import.meta.env.VITE_APP_VERSION,
+
+  Add VITE_APP_VERSION to .env (or inject it in CI using the git commit hash):
+  VITE_APP_VERSION=1.0.0
+
+Alert rules
+  In Sentry → Alerts, create rules for:
+  - Any new issue → email immediately
+  - Error rate > 10 per minute → email immediately
+  - API 5xx errors (filter by url containing "apprunner.com") → email
+
+Daily/weekly digest
+  Enable the weekly email digest in Sentry → Settings → Notifications so the
+  team sees a summary of recurring issues.
+
+--------------------------------------------------------------------------------
+END OF GUIDE
+--------------------------------------------------------------------------------
