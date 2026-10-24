@@ -59,6 +59,8 @@ import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
 import { createUserService } from "@/shared/features/users/services/UserService";
 import { ROLE_IDS } from "@/shared/features/rolesandrights/DTOs/DTOs";
 import { trackEvent, setUserProperties } from "@/shared/utils/analytics";
+import * as Sentry from "@sentry/react";
+import logger from "@/shared/utils/logger";
 
 export const useSignInForm = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -90,6 +92,7 @@ export const useSignInForm = () => {
 
       trackEvent('login', { method: 'phone_pin' });
       setUserProperties({ user_role: user.role.name });
+      Sentry.setUser({ id: user.id, role: user.role.name });
 
       if (user.role.id === ROLE_IDS.SUPERVISOR) {
         navigate("/dashboard");
@@ -98,6 +101,7 @@ export const useSignInForm = () => {
       }
     } catch (err) {
       trackEvent('login_failed', { reason: 'invalid_credentials' });
+      logger.error('Login failed', err);
       alert("Invalid phone number or PIN");
     }
   };
