@@ -1,5 +1,6 @@
 import type { InputValidateProps } from "./DTOs";
 import { useState } from "react";
+import { NAME_REGEX } from "@/shared/utils/nameValidation";
 
 const useInputValidate = (props: InputValidateProps) => {
   const { name, contactId } = props;
@@ -19,7 +20,7 @@ const useInputValidate = (props: InputValidateProps) => {
     };
 
     if (name?.length === 0) updateError("name", "Please enter name");
-    if (name?.length && (name?.length < 2 || !/^[a-zA-Z]+ ?[a-zA-Z]+ ?[a-zA-Z]*$/.test(name as string))) updateError("name", "Invalid name");
+    if (name?.length && (name?.length < 2 || !NAME_REGEX.test(name as string))) updateError("name", "Invalid name");
 
     if (contactId?.length === 0) updateError("contact", "Please select contact");
 

@@ -113,10 +113,16 @@ export const useMaterialUsedService = () => {
     return data as AvailableMaterialReport[];
   };
 
-  const getMaximumAllowedQuantity = async (id: number): Promise<string> => {
-    const { data } = await apiHelper.get(`material-usages/${id}/maximum-quantity`);
-    return data.maximumAllowedQuantity as string;
-  };
+ const getMaximumAllowedQuantity = async (
+  id: number,
+  materialId: number,
+  siteId: number,
+): Promise<string> => {
+  const { data } = await apiHelper.get(
+    `material-usages/${id}/maximum-allowed-quantity?${buildQueryParams({ materialId, siteId })}`,
+  );
+  return data.maximumAllowedQuantity as string;
+};
 
   return {
     getMaterialsUsed,

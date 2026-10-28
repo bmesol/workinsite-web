@@ -39,10 +39,16 @@ const useMaterialShiftService = () => {
     await apiHelper.delete(`material-shifts/${id}`);
   };
 
-  const getMaximumAllowedQuantity = async (id: number): Promise<string> => {
-    const { data } = await apiHelper.get(`material-shifts/${id}/maximum-quantity`);
-    return data.maximumAllowedQuantity as string;
-  };
+  const getMaximumAllowedQuantity = async (
+  id: number,
+  materialId: number,
+  sourceSiteId: number,
+): Promise<string> => {
+  const { data } = await apiHelper.get(
+    `material-shifts/${id}/maximum-allowed-quantity?${buildQueryParams({ materialId, sourceSiteId })}`,
+  );
+  return data.maximumAllowedQuantity as string;
+};
 
   return {
     getMaterialShifts,

@@ -303,7 +303,7 @@ const AuthHelper = {
   logout: () => {
     Sentry.setUser(null);
     AuthHelper.clearAuthData();
-    window.location.href = "/";
+    window.location.href = window.location.pathname;
   },
 };
 

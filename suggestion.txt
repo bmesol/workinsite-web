@@ -1,0 +1,609 @@
+================================================================================
+  SUGGESTION: "Select Contact" Feature for Web (ContactCreationPage)
+  WorkInSite Web App — written 2026-10-26
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 1 — SUMMARY OF CURRENT WEB STRUCTURE (FILES FOUND)
+────────────────────────────────────────────────────────────────────────────────
+
+Entry point — Create Contact screen:
+  src/shared/features/contacts/pages/contact-creation/ContactCreationPage.tsx
+    - Renders: Header, Card, NameField, PhoneNumberField, FormActionButton
+      ("Additional Details"), ContactTypes list, FormSubmissionButtons, Dialog.
+    - The FormActionButton is for adding additional contact details (phone/email/
+      address extras). There is NO "Select Contact" button on the web today.
+
+State & logic hook:
+  src/shared/features/contacts/pages/contact-creation/useContactCreation.ts
+    - Manages: name (string), phone (string), contactList (ContactRequest),
+      error object, handleSubmission, handleCancel, isAddDisabled.
+    - Already exposes setName and setPhone — no new state plumbing needed.
+
+Input validation:
+  src/shared/features/contacts/components/InputValidate/InputValidate.ts
+    - Name regex: /^[a-zA-Z]+ ?[a-zA-Z]+ ?[a-zA-Z]*$/  (two-word minimum)
+    - Phone regex: /^[0-9]{10}$/  (exactly 10 digits, no formatting)
+    - This is the web equivalent of mobile's formatPhone: the web already
+      expects a clean 10-digit string with no country code or spaces.
+
+Additional contact details validation:
+  src/shared/features/contacts/components/ContactValidate/ContactValidate.ts
+    - Phone field inside the "Additional Details" dialog also requires 10 digits.
+
+Form field components:
+  src/shared/components/FormFields/PhoneNumberField.tsx
+    - inputType="tel", regex=^\d*$, maxLength=10 — allows only digits, max 10.
+  src/shared/components/FormFields/NameField.tsx
+    - regex=^[a-zA-Z0-9.\s]*$, maxLength=75.
+  src/shared/components/FormFields/GenericInputField.tsx
+    - Shared wrapper used by both field components above.
+
+Button component:
+  src/shared/components/FormActionButton/FormActionButton.tsx
+    - A generic label + button row. Uses lucide-react icons (PlusCircle/Pencil).
+    - Does NOT yet have an iconType="contacts" variant (that is mobile-only).
+
+DTOs:
+  src/shared/features/contacts/DTOs/ContactProps.ts
+    - ContactRequest: { name, phone?, email?, contactDetails[] }
+  src/shared/features/contacts/DTOs/ContactList.ts
+
+Service:
+  src/shared/features/contacts/service/ContactService.ts
+    - createContact(contact: ContactRequest) → POST contacts
+
+Useful pattern reference (existing browser-API hook in the project):
+  src/shared/hooks/useCurrentLocation.ts
+    - Demonstrates the established pattern for wrapping browser APIs into hooks
+      with proper error types, feature checks, and useCallback.
+
+Existing hooks directory:
+  src/shared/hooks/  (useLoading, useListItemDelete, usePermission,
+                      useCurrentLocation, usePageTracking)
+  → New useContactPicker hook belongs here.
+
+No equivalent of mobile's formatPhone exists in the web codebase.
+The web enforces the 10-digit constraint at validation time instead.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 2 — RECOMMENDED APPROACH
+────────────────────────────────────────────────────────────────────────────────
+
+Use the W3C Contact Picker API (navigator.contacts.select).
+
+Why:
+  - Zero backend dependencies, no OAuth, no file parsing.
+  - Native OS picker on Android — same UX the mobile app already provides.
+  - Falls back gracefully: the button simply does not render on unsupported
+    browsers/devices, so desktop users are unaffected.
+
+Key facts about the Contact Picker API:
+  - Supported: Android Chrome 80+ (Chromium-based browsers on Android).
+  - NOT supported: iOS Safari (Apple has not implemented it as of 2025).
+  - NOT supported: Any desktop browser (Chrome, Firefox, Edge, Safari on macOS/
+    Windows/Linux all return undefined for navigator.contacts).
+  - HTTPS required: The API throws SecurityError on http:// origins.
+    The WorkInSite web app must be served over HTTPS in production (which it
+    presumably already is). Works on localhost for dev (localhost is secure).
+  - User-gesture required: navigator.contacts.select() must be called from
+    inside a click/touch handler. Calling it programmatically without a gesture
+    will throw.
+  - Permission model: Android shows its own native picker — the browser does NOT
+    show a separate "Allow contacts" prompt. The user grants access by selecting
+    contacts inside the picker itself.
+
+Feature detection (the only reliable method):
+  const isSupported = 'contacts' in navigator && 'ContactsManager' in window;
+
+This single check covers all the edge cases:
+  - false on all desktop browsers
+  - false on iOS Safari
+  - false on non-HTTPS pages (ContactsManager won't be defined)
+  - true only on Android Chrome 80+
+
+Core principle: the "Select Contact" button and the "OR" divider are rendered
+ONLY when isSupported === true. Otherwise the page looks exactly as it does
+today — two plain input fields. No empty space, no disabled buttons.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 3 — HOOK DESIGN AND CODE SNIPPET
+────────────────────────────────────────────────────────────────────────────────
+
+File to create:
+  src/shared/hooks/useContactPicker.ts
+
+Purpose:
+  Wraps navigator.contacts.select into a reusable hook that:
+    1. Detects support.
+    2. Opens the OS contact picker on user tap.
+    3. Extracts the first name and first phone number from the selected contact.
+    4. Normalizes the phone number to the last 10 digits (mirrors mobile
+       formatPhone behaviour).
+    5. Returns the result so the caller can populate setName/setPhone.
+    6. Handles user cancellation (user dismisses picker without selecting).
+    7. Handles empty or missing fields gracefully.
+
+--- HOOK CODE SNIPPET ---
+
+// src/shared/hooks/useContactPicker.ts
+
+// TypeScript declarations for the Contact Picker API (not yet in lib.dom.d.ts
+// for all TS versions).
+interface ContactAddress {
+  city?: string;
+  country?: string;
+  postalCode?: string;
+  streetAddress?: string;
+}
+
+interface ContactInfo {
+  name: string[];
+  tel: string[];
+  email: string[];
+  address: ContactAddress[];
+  icon: Blob[];
+}
+
+interface ContactsManager {
+  select(
+    properties: Array<keyof ContactInfo>,
+    options?: { multiple?: boolean }
+  ): Promise<ContactInfo[]>;
+  getProperties(): Promise<Array<keyof ContactInfo>>;
+}
+
+declare global {
+  interface Navigator {
+    contacts?: ContactsManager;
+  }
+  interface Window {
+    ContactsManager?: unknown;
+  }
+}
+
+// ─── helpers ─────────────────────────────────────────────────────────────────
+
+/**
+ * Strip all non-digit characters then take the last 10 digits.
+ * Mirrors the mobile app's formatPhone utility.
+ *
+ * Examples:
+ *   "+91 98765 43210"  → "9876543210"
+ *   "98765 43210"      → "9876543210"
+ *   "043-12345678"     → "1234567800"  (only 10 of 10 kept — real data edge)
+ *   "12345"            → "12345"       (shorter than 10 — caller validates)
+ */
+const formatPhone = (raw: string): string => {
+  const digits = raw.replace(/\D/g, "");
+  return digits.length > 10 ? digits.slice(-10) : digits;
+};
+
+// ─── result type ─────────────────────────────────────────────────────────────
+
+export type ContactPickerResult = {
+  name: string;
+  phone: string;
+};
+
+export type PickContactFn = () => Promise<ContactPickerResult | null>;
+
+export type UseContactPickerReturn = {
+  isSupported: boolean;
+  pickContact: PickContactFn;
+};
+
+// ─── hook ────────────────────────────────────────────────────────────────────
+
+export const useContactPicker = (): UseContactPickerReturn => {
+  const isSupported =
+    typeof navigator !== "undefined" &&
+    "contacts" in navigator &&
+    "ContactsManager" in window;
+
+  const pickContact: PickContactFn = async () => {
+    if (!isSupported || !navigator.contacts) return null;
+
+    try {
+      const results = await navigator.contacts.select(["name", "tel"], {
+        multiple: false,
+      });
+
+      // User closed picker without selecting
+      if (!results || results.length === 0) return null;
+
+      const contact = results[0];
+
+      // Extract name — contacts.name is an array; take first non-empty entry
+      const rawName = contact.name?.find((n) => n.trim().length > 0) ?? "";
+
+      // Extract phone — contacts.tel is an array
+      const tels = contact.tel ?? [];
+
+      if (tels.length === 0) {
+        // Contact has no phone number stored
+        return { name: rawName, phone: "" };
+      }
+
+      // Single phone: use it directly.
+      // Multiple phones: take the first one.
+      // (See Section 6 for the multi-phone UX upgrade path.)
+      const rawPhone = tels[0];
+      const phone = formatPhone(rawPhone);
+
+      return { name: rawName, phone };
+    } catch (err: unknown) {
+      // AbortError — user cancelled the picker
+      if (err instanceof DOMException && err.name === "AbortError") {
+        return null;
+      }
+      // SecurityError — non-HTTPS or picker already open
+      if (err instanceof DOMException && err.name === "SecurityError") {
+        console.warn("useContactPicker: requires HTTPS", err);
+        return null;
+      }
+      // Unexpected error — rethrow so the caller can decide
+      throw err;
+    }
+  };
+
+  return { isSupported, pickContact };
+};
+
+--- END HOOK CODE SNIPPET ---
+
+Notes on the design:
+  - isSupported is evaluated at render time (not inside an effect) because the
+    DOM APIs are synchronously available; no async check is needed.
+  - multiple: false matches the mobile UX (one contact at a time).
+  - The hook returns null (not an error) on cancellation, so the caller does not
+    need a try/catch — just a null check.
+  - formatPhone here is a local utility, identical to the mobile version.
+    If the project later adds a shared utils file, move it there.
+
+Multi-phone upgrade path (optional, rated low effort / medium value):
+  If tels.length > 1, instead of always taking tels[0], you could return all
+  cleaned numbers and let the UI show a small inline selection (radio buttons or
+  a dropdown). This is not required for the first version — most contacts have
+  one primary phone, and the first number is typically the most-used one.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 4 — UI CHANGES (WHERE TO CONDITIONALLY RENDER THE BUTTON)
+────────────────────────────────────────────────────────────────────────────────
+
+Only one file needs UI edits:
+  src/shared/features/contacts/pages/contact-creation/ContactCreationPage.tsx
+
+What to add:
+  1. Import useContactPicker and a contacts icon (lucide-react has BookUser or
+     Contact2 icon — pick whichever matches the design).
+  2. Destructure { isSupported, pickContact } from useContactPicker().
+  3. Write a handleSelectContact async function that calls pickContact() and,
+     if a result is returned, calls setName() and setPhone() (already exposed
+     by useContactCreation — no hook changes needed).
+  4. Between the Header and the NameField, conditionally render:
+       - A "Select from Contacts" button (only when isSupported === true).
+       - A styled "— OR —" divider below the button (only when isSupported).
+     When isSupported === false the button and divider are simply absent; the
+     user sees only the manual entry form, same as today.
+
+--- UI CODE SNIPPET (additions to ContactCreationPage.tsx) ---
+
+  // Add to imports:
+  import { useContactPicker } from "@/shared/hooks/useContactPicker";
+  import { BookUser } from "lucide-react";  // or Contact2
+
+  // Add inside the component, after useContactCreation():
+  const { isSupported, pickContact } = useContactPicker();
+
+  const handleSelectContact = async () => {
+    const result = await pickContact();
+    if (!result) return;          // user cancelled — do nothing
+    if (result.name) setName(result.name);
+    if (result.phone) setPhone(result.phone);
+  };
+
+  // Add in JSX, between <Header> and <NameField>:
+  {isSupported && (
+    <>
+      <button
+        type="button"
+        onClick={handleSelectContact}
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl
+                   border border-border bg-card text-sm font-medium"
+      >
+        <BookUser className="w-4 h-4" />
+        {t("Select from Contacts")}
+      </button>
+
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <hr className="flex-1 border-border" />
+        <span>{t("OR")}</span>
+        <hr className="flex-1 border-border" />
+      </div>
+    </>
+  )}
+
+--- END UI CODE SNIPPET ---
+
+Behaviour summary:
+  - Android Chrome: shows the "Select from Contacts" button → user taps → OS
+    picker opens → user selects → name and phone are pre-filled → user can edit
+    before saving.
+  - iOS Safari / any desktop browser: button is not rendered at all → user
+    fills Name and Phone manually (unchanged experience).
+  - If the selected contact has no phone number, phone field is left empty and
+    the user fills it in manually (validation will catch it on submit).
+  - If the selected contact's phone has more than 10 digits (e.g. +91 prefix),
+    formatPhone trims to the last 10 digits automatically.
+
+Translation keys to add (if using i18n):
+  "Select from Contacts" → add to all locale files
+  "OR" → likely already present; verify
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 5 — DESKTOP ALTERNATIVES (WITH PROS/CONS)
+────────────────────────────────────────────────────────────────────────────────
+
+The Contact Picker API is unavailable on desktop. Below are the options for
+desktop users, ranked by implementation effort vs. value delivered.
+
+┌─────────────────────────────┬──────────────┬───────────┬──────────────────────────────────────────┐
+│ Alternative                 │ Effort       │ Value     │ Notes                                    │
+├─────────────────────────────┼──────────────┼───────────┼──────────────────────────────────────────┤
+│ 1. Manual entry (baseline)  │ None         │ Baseline  │ Already implemented. Works everywhere.   │
+│                             │              │           │ No change needed.                        │
+├─────────────────────────────┼──────────────┼───────────┼──────────────────────────────────────────┤
+│ 2. vCard / CSV file upload  │ Low–Medium   │ Medium    │ User exports contacts from phone to a    │
+│                             │              │           │ .vcf or .csv file, uploads it, app parses│
+│                             │              │           │ and lets user pick one contact.          │
+│                             │              │           │                                          │
+│                             │              │           │ Pros:                                    │
+│                             │              │           │  - Works on all browsers and OSes.       │
+│                             │              │           │  - No OAuth, no third-party dependency.  │
+│                             │              │           │  - vCard format (.vcf) is well-specified.│
+│                             │              │           │                                          │
+│                             │              │           │ Cons:                                    │
+│                             │              │           │  - Requires users to export manually.    │
+│                             │              │           │  - vCard parsing is moderately complex   │
+│                             │              │           │    (RFC 2426 / 6350); use a library      │
+│                             │              │           │    (e.g. "vcard-creator" or "vcf").      │
+│                             │              │           │  - Rarely used by end users in practice. │
+│                             │              │           │                                          │
+│                             │              │           │ Verdict: worth only if a bulk-import     │
+│                             │              │           │ use case exists. Overkill for one name.  │
+├─────────────────────────────┼──────────────┼───────────┼──────────────────────────────────────────┤
+│ 3. Google People API        │ High         │ Low–Med   │ OAuth 2.0 flow → read user's Google      │
+│    with OAuth               │              │           │ Contacts → search + select in UI.        │
+│                             │              │           │                                          │
+│                             │              │           │ Pros:                                    │
+│                             │              │           │  - Works on desktop and mobile.          │
+│                             │              │           │  - Rich data (name, phones, email, photo)│
+│                             │              │           │                                          │
+│                             │              │           │ Cons:                                    │
+│                             │              │           │  - Requires Google Cloud project,        │
+│                             │              │           │    OAuth consent screen review, API key. │
+│                             │              │           │  - Significant backend + frontend work.  │
+│                             │              │           │  - Users must grant Google permission.   │
+│                             │              │           │  - Privacy/compliance concerns.          │
+│                             │              │           │  - Not all users store contacts in Google│
+│                             │              │           │                                          │
+│                             │              │           │ Verdict: disproportionate effort for the │
+│                             │              │           │ marginal gain on desktop. Avoid unless   │
+│                             │              │           │ the app already has Google Sign-In.      │
+├─────────────────────────────┼──────────────┼───────────┼──────────────────────────────────────────┤
+│ 4. QR code handoff          │ Medium       │ Low       │ Desktop shows a QR code. User scans it   │
+│    to phone                 │              │           │ with mobile browser. Mobile browser opens│
+│                             │              │           │ the Contact Picker. Selected contact data│
+│                             │              │           │ is sent back to desktop (via WebSocket,  │
+│                             │              │           │ polling, or a short-lived token in the   │
+│                             │              │           │ URL).                                    │
+│                             │              │           │                                          │
+│                             │              │           │ Pros:                                    │
+│                             │              │           │  - Clever UX, works across devices.      │
+│                             │              │           │                                          │
+│                             │              │           │ Cons:                                    │
+│                             │              │           │  - Complex to implement (real-time channel│
+│                             │              │           │    between two browser sessions).        │
+│                             │              │           │  - Friction: user must have phone nearby.│
+│                             │              │           │  - Very low ROI for a form field.        │
+│                             │              │           │                                          │
+│                             │              │           │ Verdict: not recommended. Manual entry   │
+│                             │              │           │ is faster for the desktop use case.      │
+└─────────────────────────────┴──────────────┴───────────┴──────────────────────────────────────────┘
+
+RECOMMENDATION FOR DESKTOP:
+  Stick with manual entry (Option 1). Desktop users of a construction management
+  app are likely power users entering known contacts — they will type the number.
+  The Contact Picker button appearing exclusively on Android is a genuine
+  enhancement, not a missing feature on desktop.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 6 — EDGE CASES AND TEST CHECKLIST
+────────────────────────────────────────────────────────────────────────────────
+
+Edge case matrix:
+
+  ┌──────────────────────────────────────┬────────────────────────────────────────┐
+  │ Scenario                             │ Expected behaviour                     │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Android Chrome (HTTPS)               │ Button is visible. Picker opens.       │
+  │                                      │ Name + phone pre-fill on selection.    │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Android Chrome (HTTP)                │ ContactsManager undefined → isSupported│
+  │                                      │ = false → button hidden. Manual entry. │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ iOS Safari (any version)             │ contacts not in navigator → isSupported│
+  │                                      │ = false → button hidden.               │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Desktop Chrome / Firefox / Edge /    │ contacts not in navigator → button     │
+  │ Safari on macOS or Windows           │ hidden.                                │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ User opens picker and cancels        │ pickContact() returns null. handleSelect│
+  │ (taps Back / dismisses)              │ Contact does nothing. Form unchanged.  │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Selected contact has no phone number │ result.phone = "". setPhone("") is     │
+  │                                      │ called. Validation will catch empty    │
+  │                                      │ phone on submit. User fills manually.  │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Selected contact has no name         │ result.name = "". setName("") is called│
+  │                                      │ Validation will catch empty/invalid    │
+  │                                      │ name. User fills manually.             │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Phone has country code (+91...)      │ formatPhone strips non-digits, slices  │
+  │                                      │ last 10 → "9876543210". Correct.       │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Phone has spaces / dashes            │ formatPhone strips non-digits. Correct.│
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Phone is shorter than 10 digits      │ formatPhone returns what it has (e.g.  │
+  │ (e.g. landline "044-12345")          │ "04412345" = 8 digits). Validation     │
+  │                                      │ rejects it. User corrects manually.    │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Contact has multiple phone numbers   │ First tel entry is used (tels[0]).     │
+  │                                      │ User can edit the field if wrong.      │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Contact name has a title/suffix      │ e.g. "Dr. Arjun Sharma" — NameField   │
+  │                                      │ regex allows letters, spaces, dots.    │
+  │                                      │ Validation regex requires two words;   │
+  │                                      │ "Dr. Arjun Sharma" passes (3 parts).   │
+  │                                      │ If only "Arjun" is stored in contacts  │
+  │                                      │ (single word), validation will flag it.│
+  │                                      │ User can correct the name field.       │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Form already had values; user taps   │ setName/setPhone overwrite the current │
+  │ "Select from Contacts" again         │ values. This is expected — same as     │
+  │                                      │ mobile. User can undo by typing.       │
+  ├──────────────────────────────────────┼────────────────────────────────────────┤
+  │ Navigator.contacts.select() throws   │ AbortError → null returned → no-op.   │
+  │ unexpectedly                         │ SecurityError → console.warn → null.   │
+  │                                      │ Other error → re-thrown; wrap in a     │
+  │                                      │ try/catch in handleSelectContact and   │
+  │                                      │ show a toast if needed.                │
+  └──────────────────────────────────────┴────────────────────────────────────────┘
+
+Manual test steps:
+
+  [ANDROID CHROME — HTTPS]
+  1. Open the Create Contact page on Android Chrome (HTTPS).
+  2. Verify "Select from Contacts" button and "OR" divider are visible.
+  3. Tap the button. Confirm OS contact picker opens.
+  4. Select a contact with a single 10-digit number.
+     → Verify Name and Phone fields are pre-filled correctly.
+  5. Select a contact with +91 prefix.
+     → Verify Phone field shows last 10 digits only (no leading 91).
+  6. Select a contact with spaces/dashes in number.
+     → Verify Phone field shows clean digits only.
+  7. Dismiss the picker without selecting.
+     → Verify form fields are unchanged.
+  8. Select a contact with no phone number.
+     → Verify Name is filled, Phone is empty, submit shows validation error.
+  9. Select a contact with a single-word name.
+     → Verify Name is filled, submit shows name validation error.
+  10. Tap the button on an HTTP page (if testable).
+      → Verify button is hidden (isSupported = false on non-HTTPS).
+
+  [iOS SAFARI]
+  11. Open the Create Contact page on iPhone Safari.
+      → Verify button is NOT shown. Manual entry fields visible as normal.
+
+  [DESKTOP CHROME / FIREFOX / SAFARI]
+  12. Open the Create Contact page on any desktop browser.
+      → Verify button is NOT shown. Manual entry fields visible as normal.
+
+  [FORM INTEGRATION]
+  13. Use picker to fill name + phone, then submit.
+      → Verify contact is created correctly in backend.
+  14. Use picker to fill name + phone, manually edit both fields, then submit.
+      → Verify edited values (not picker values) are sent to backend.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 7 — STEP-BY-STEP IMPLEMENTATION PLAN
+────────────────────────────────────────────────────────────────────────────────
+
+Total files to create: 1
+Total files to modify: 1
+
+Step 1 — Create the hook
+  File: src/shared/hooks/useContactPicker.ts  (new file)
+  Action: Copy the full hook snippet from Section 3 into this file.
+  Notes:
+    - The TypeScript declarations for ContactsManager at the top of the file
+      are necessary because the Contact Picker API is not yet in standard
+      TypeScript DOM lib typings in all versions.
+    - No npm install needed — the API is browser-native.
+
+Step 2 — Add i18n keys (if applicable)
+  If the project uses locale JSON files for translations, add:
+    "Select from Contacts": "Select from Contacts"   (English)
+    "OR": "OR"                                        (if not present already)
+  to all locale files used by useLanguage / LanguageProvider.
+  If translations are handled inline (t() with fallback), this step is skip.
+
+Step 3 — Modify the Create Contact page
+  File: src/shared/features/contacts/pages/contact-creation/ContactCreationPage.tsx
+
+  3a. Add import at the top:
+        import { useContactPicker } from "@/shared/hooks/useContactPicker";
+        import { BookUser } from "lucide-react";
+        // BookUser is already available — lucide-react is used in FormActionButton.tsx
+
+  3b. Inside the ContactCreationPage component, after the useContactCreation()
+      line, add:
+        const { isSupported, pickContact } = useContactPicker();
+
+        const handleSelectContact = async () => {
+          try {
+            const result = await pickContact();
+            if (!result) return;
+            if (result.name) setName(result.name);
+            if (result.phone) setPhone(result.phone);
+          } catch {
+            // Unexpected error — optionally show a toast here
+          }
+        };
+
+  3c. In the JSX, inside the <Card> <div className="flex flex-col gap-4">,
+      add the following BEFORE the <NameField> block:
+
+        {isSupported && (
+          <>
+            <button
+              type="button"
+              onClick={handleSelectContact}
+              className="w-full flex items-center justify-center gap-2 py-3
+                         rounded-xl border border-border bg-card text-sm
+                         font-medium cursor-pointer"
+            >
+              <BookUser className="w-4 h-4" />
+              {t("Select from Contacts")}
+            </button>
+
+            <div className="flex items-center gap-3 text-xs"
+                 style={{ color: "var(--gray-color)" }}>
+              <hr className="flex-1 border-border" />
+              <span>{t("OR")}</span>
+              <hr className="flex-1 border-border" />
+            </div>
+          </>
+        )}
+
+  That's all. No other files need modification.
+
+Step 4 — Test (follow checklist in Section 6)
+
+Step 5 — (Optional, future) Multi-phone selection
+  If tels.length > 1 becomes a real user complaint, update useContactPicker to
+  accept an onMultiplePhones callback or return all numbers. The UI can then
+  show an inline radio group inside a small popover to let the user pick.
+  This is a self-contained change inside the hook and the creation page handler
+  only — no other components are affected.
+
+────────────────────────────────────────────────────────────────────────────────
+  END OF SUGGESTION
+================================================================================

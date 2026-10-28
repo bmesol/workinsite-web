@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
 import { Check, ChevronDown, ChevronUp, ChevronsUpDown, Plus } from "lucide-react";
@@ -55,8 +55,17 @@ const SelectComboField = ({
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const listRef = useRef<HTMLDivElement>(null);
 
   const selectedLabel = items.find((i) => i.value === selectedValue)?.label;
+
+  const scrollToSelected = () => {
+    requestAnimationFrame(() => {
+      listRef.current
+        ?.querySelector<HTMLElement>('[data-selected-item="true"]')
+        ?.scrollIntoView({ block: "nearest" });
+    });
+  };
 
   const labelNode = label ? (
     <Label
@@ -79,7 +88,10 @@ const SelectComboField = ({
           onOpenChange={(val) => {
             if (isDisabled) return;
             setIsOpen(val);
-            if (val) onSearch?.("");
+            if (val) {
+              onSearch?.("");
+              scrollToSelected();
+            }
           }}
         >
           <PopoverTrigger asChild>
@@ -119,31 +131,49 @@ const SelectComboField = ({
                   onSearch?.(val);
                 }}
               />
-              <CommandList className={cn("max-h-[160px] overflow-y-auto", listClassName)}>
+              <CommandList
+                ref={listRef}
+                className={cn("max-h-[160px] overflow-y-auto", listClassName)}
+              >
                 <CommandEmpty>
                   <span className="text-sm text-muted-foreground">
                     {t("No items found.")}
                   </span>
                 </CommandEmpty>
-                <CommandGroup>
-                  {items.map((item) => (
-                    <CommandItem
-                      key={item.value}
-                      value={String(item.value)}
-                      onSelect={(val) => {
-                        onValueChange(val);
-                        setIsOpen(false);
-                      }}
-                    >
-                      <Check
+                <CommandGroup className="flex flex-col gap-1 px-0 py-1">
+                  {items.map((item) => {
+                    const isSelected = selectedValue === item.value;
+                    return (
+                      <CommandItem
+                        key={item.value}
+                        value={String(item.value)}
+                        data-selected-item={isSelected ? "true" : undefined}
+                        onSelect={(val) => {
+                          onValueChange(val);
+                          setIsOpen(false);
+                        }}
                         className={cn(
-                          "mr-2 h-4 w-4",
-                          selectedValue === item.value ? "opacity-100" : "opacity-0",
+                          "px-3 py-1.5 min-h-9 leading-tight rounded-none cursor-pointer justify-between transition-opacity active:opacity-60",
+                          "text-[var(--gray-color)]",
+                          // unselected: half-strength hover so it never looks like the selected row
+                          "data-[selected=true]:bg-[color-mix(in_srgb,var(--select-hover-bg)_50%,transparent)] data-[selected=true]:text-[var(--gray-color)]",
+                          isSelected && [
+                            "bg-[var(--select-hover-bg)] font-semibold text-[var(--secondary)]",
+                            // keep selected appearance even when cmdk highlights it via keyboard
+                            "data-[selected=true]:bg-[var(--select-hover-bg)] data-[selected=true]:text-[var(--secondary)]",
+                          ],
                         )}
-                      />
-                      {item.label}
-                    </CommandItem>
-                  ))}
+                      >
+                        <span>{item.label}</span>
+                        <Check
+                          className={cn(
+                            "h-4 w-4 shrink-0 text-primary",
+                            !isSelected && "invisible",
+                          )}
+                        />
+                      </CommandItem>
+                    );
+                  })}
                 </CommandGroup>
 
                 {onCreate && (
@@ -182,7 +212,12 @@ const SelectComboField = ({
         variant="outline"
         role="combobox"
         disabled={isDisabled}
-        onClick={() => { if (!isDisabled) setIsOpen((prev) => !prev); }}
+        onClick={() => {
+          if (!isDisabled) {
+            if (!isOpen) scrollToSelected();
+            setIsOpen((prev) => !prev);
+          }
+        }}
         className={cn(
           "w-full justify-between font-normal bg-white text-sm",
           !selectedLabel && "text-muted-foreground",
@@ -199,24 +234,35 @@ const SelectComboField = ({
 
       {isOpen && (
         <div
-          className="w-full rounded-md border border-border bg-white shadow-md z-50 max-h-[150px] overflow-y-auto animate-in fade-in-0 zoom-in-95"
+          ref={listRef}
+          className="w-full rounded-md border border-border shadow-md z-50 max-h-[150px] overflow-y-auto animate-in fade-in-0 zoom-in-95 flex flex-col gap-1 py-1"
           style={{ backgroundColor: "var(--card)" }}
         >
-          {items.map((item) => (
-            <div
-              key={item.value}
-              onClick={() => { onValueChange(item.value); setIsOpen(false); }}
-              className={cn(
-                "flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-accent transition-colors",
-                item.value === selectedValue && "bg-accent font-medium",
-              )}
-            >
-              <span>{item.label}</span>
-              {item.value === selectedValue && (
-                <Check className="h-4 w-4 text-primary" />
-              )}
-            </div>
-          ))}
+          {items.map((item) => {
+            const isSelected = item.value === selectedValue;
+            return (
+              <div
+                key={item.value}
+                data-selected-item={isSelected ? "true" : undefined}
+                onClick={() => { onValueChange(item.value); setIsOpen(false); }}
+                className={cn(
+                  "flex items-center justify-between px-3 py-1.5 min-h-9 leading-tight text-sm cursor-pointer rounded-none transition-opacity active:opacity-60",
+                  "text-[var(--gray-color)]",
+                  // unselected hover: half-strength so it stays visibly lighter than the selected row
+                  "hover:bg-[color-mix(in_srgb,var(--select-hover-bg)_50%,transparent)]",
+                  isSelected && "bg-[var(--select-hover-bg)] font-semibold text-[var(--secondary)] hover:bg-[var(--select-hover-bg)]",
+                )}
+              >
+                <span>{item.label}</span>
+                <Check
+                  className={cn(
+                    "h-4 w-4 shrink-0 text-primary",
+                    !isSelected && "invisible",
+                  )}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import type { InputValidateProps } from "./DTOs";
 import { useState } from "react";
+import { NAME_REGEX } from "@/shared/utils/nameValidation";
 
 const useInputValidate = (props: InputValidateProps) => {
   const { name, phoneNumber, pin, confirmPin } = props;
@@ -34,7 +35,7 @@ if (name !== undefined) {
     updateError("name", "Please enter name");
   else if (trimmedName.length < 2) 
     updateError("name", "Invalid name");
-  else if (!/^[a-zA-Z]+(\s[a-zA-Z]+)*$/.test(trimmedName)) 
+  else if (!NAME_REGEX.test(trimmedName))
     updateError("name", "Invalid name");
 }
 

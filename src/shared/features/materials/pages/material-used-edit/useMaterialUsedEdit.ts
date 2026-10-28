@@ -34,7 +34,7 @@ export const useMaterialUsedEdit = (id: string) => {
   const [isFetchingMaterials, setIsFetchingMaterials] = useState(false);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
-  const { error, validate, setError, initialError } = useMaterialUsedInputValidate({
+  const { error, validate } = useMaterialUsedInputValidate({
     siteId,
     materialId,
     quantity,
@@ -56,17 +56,21 @@ export const useMaterialUsedEdit = (id: string) => {
       setQuantity(data.quantity.toString());
       setWorkModeId(data.workMode.id.toString());
       setWorkModeList([data.workMode]);
-      setNotes(data.notes);
+      setNotes(data.notes ?? '');
 
-      // Fetch maximum allowed quantity
+      // Maximum allowed quantity (needs materialId + siteId)
       try {
-        const maxQty = await materialUsedService.getMaximumAllowedQuantity(parseInt(id));
+        const maxQty = await materialUsedService.getMaximumAllowedQuantity(
+          parseInt(id),
+          data.material.id,
+          data.site.id,
+        );
         setMaximumAllowedQuantity(maxQty);
       } catch {
         setMaximumAllowedQuantity(null);
       }
 
-      // Fetch available materials for site
+      // Available materials for the site
       try {
         const list = await materialUsedService.getAvailableMaterialsBySite(data.site.id);
         const alreadyInList = (list ?? []).some(m => m.material.id === data.material.id);
@@ -96,7 +100,7 @@ export const useMaterialUsedEdit = (id: string) => {
     fetchMaterialUsed();
   }, [id]);
 
-  // ── Site change — reload materials ──
+  // ── Site change: reload materials ──
   const handleSiteChange = async (newSiteId: string) => {
     setSiteId(newSiteId);
     setMaterialId('');
@@ -172,13 +176,14 @@ export const useMaterialUsedEdit = (id: string) => {
 
   // ── Unsaved changes ──
   const hasUnsavedChanges = useCallback(() => {
+    if (!materialUsedDetails) return false;
     return (
-      siteId !== materialUsedDetails?.site.id.toString() ||
-      materialId !== materialUsedDetails?.material.id.toString() ||
-      workModeId !== materialUsedDetails?.workMode.id.toString() ||
-      quantity !== materialUsedDetails?.quantity.toString() ||
-      notes !== materialUsedDetails?.notes ||
-      date !== materialUsedDetails?.date
+      siteId !== materialUsedDetails.site.id.toString() ||
+      materialId !== materialUsedDetails.material.id.toString() ||
+      workModeId !== materialUsedDetails.workMode.id.toString() ||
+      quantity !== materialUsedDetails.quantity.toString() ||
+      notes !== (materialUsedDetails.notes ?? '') ||
+      date !== materialUsedDetails.date
     );
   }, [siteId, materialId, workModeId, quantity, notes, date, materialUsedDetails]);
 
@@ -208,7 +213,7 @@ export const useMaterialUsedEdit = (id: string) => {
       toast.error(
         error?.response?.data?.[0]?.message ||
         error?.response?.data?.message ||
-        'Failed to Edit Material Used.'
+        'Failed to Edit Material Used.',
       );
     }
   };
@@ -237,8 +242,5 @@ export const useMaterialUsedEdit = (id: string) => {
     isFetchingMaterials,
     showUnsavedDialog,
     setShowUnsavedDialog,
-    fetchMaterialUsed,
-    setError,
-    initialError,
   };
 };

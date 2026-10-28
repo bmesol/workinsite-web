@@ -644,7 +644,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
             <div className="px-3 py-4" style={{ borderTop: "1px solid var(--border)" }}>
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold cursor-pointer"
                 style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
               >
                 <LogOut className="w-4 h-4" />

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NAME_REGEX } from "@/shared/utils/nameValidation";
 
 const useInputValidate = (props: { name: string; phone?: string }) => {
   const { name, phone } = props;
@@ -13,7 +14,7 @@ const useInputValidate = (props: { name: string; phone?: string }) => {
     if (name.length === 0) {
       newError.name = "Please enter name";
       isValid = false;
-    } else if (name.length < 2 || !/^[a-zA-Z]+ ?[a-zA-Z]+ ?[a-zA-Z]*$/.test(name)) {
+    } else if (name.length < 2 || !NAME_REGEX.test(name)) {
       newError.name = "Invalid name";
       isValid = false;
     }

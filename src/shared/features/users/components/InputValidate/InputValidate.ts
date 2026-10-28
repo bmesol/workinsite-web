@@ -1,5 +1,6 @@
 import type { InputValidateProps } from "./DTOs";
 import { useState } from "react";
+import { NAME_REGEX } from "@/shared/utils/nameValidation";
 
 const useInputValidate = (props: InputValidateProps) => {
   const { name, phoneNumber, role, pin, confirmPin } = props;
@@ -21,7 +22,7 @@ const useInputValidate = (props: InputValidateProps) => {
     };
 
     if (name?.length === 0) updateError("name", "Please enter name");
-    if (name?.length && (name?.length < 2 || !/^[a-zA-Z]+ ?[a-zA-Z]+ ?[a-zA-Z]*$/.test(name as string))) updateError("name", "Invalid name");
+    if (name?.length && (name?.length < 2 || !NAME_REGEX.test(name as string))) updateError("name", "Invalid name");
 
     if (phoneNumber?.length === 0) updateError("phoneNumber", "Please enter phone number");
     if (phoneNumber?.length && phoneNumber?.length !== 10) updateError("phoneNumber", "Phone number must be 10 digits");

@@ -1,5 +1,6 @@
 import type { SiteInputValidateProps } from "./DTOs";
 import { useState } from "react";
+import { NAME_REGEX } from "@/shared/utils/nameValidation";
 
 const useSiteInputValidate = (props: SiteInputValidateProps) => {
   const { name, clientId, googleLocation, contactId, wageTypeId } = props; 
@@ -26,7 +27,7 @@ const useSiteInputValidate = (props: SiteInputValidateProps) => {
     };
 
     if (!name) updateError("name", "Please enter name");
-    if (name && (name.length < 2 || !/^[a-zA-Z]+ ?[a-zA-Z]+ ?[a-zA-Z]*$/.test(name))) updateError("name", "Invalid name");
+    if (name && (name.length < 2 || !NAME_REGEX.test(name))) updateError("name", "Invalid name");
     if (!clientId) updateError("client", "Please select client");
     if (!googleLocation) updateError("googleLocation", "Please enter google location");
     if (!contactId) updateError("contact", "Please select contact");

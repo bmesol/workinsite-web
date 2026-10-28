@@ -72,8 +72,8 @@ const ClientListPage = () => {
       {/* Client Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {!clientDetails.length ? (
-          <div className="col-span-2 my-4 text-center text-sm text-muted-foreground">
-            {t("No clients found")}
+          <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
+            <p className="text-center text-muted-foreground text-sm break-words">{t("No clients found")}</p>
           </div>
         ) : (
           clientDetails.map((client) => (

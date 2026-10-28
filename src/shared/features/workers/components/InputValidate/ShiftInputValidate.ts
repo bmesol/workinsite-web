@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { NAME_REGEX } from "@/shared/utils/nameValidation";
 
 interface InputValidateProps {
   name?: string;
@@ -25,8 +26,7 @@ export const useShiftInputValidate = (props: InputValidateProps) => {
       setError(prev => ({ ...prev, name: 'Invalid name' }));
       isValid = false;
     } else {
-      const nameRegex = /^[A-Za-z]+(?:[ '\-][A-Za-z]+)*$/;
-      if (!nameRegex.test(normalizedName)) {
+      if (!NAME_REGEX.test(normalizedName)) {
         setError(prev => ({ ...prev, name: 'Invalid name' }));
         isValid = false;
       }

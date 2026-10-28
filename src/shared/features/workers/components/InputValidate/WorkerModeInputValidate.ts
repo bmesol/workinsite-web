@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { NAME_REGEX } from "@/shared/utils/nameValidation";
 
 interface InputValidateProps {
   name?: string;
@@ -16,10 +17,7 @@ export const useWorkModeInputValidate = (props: InputValidateProps) => {
     if (!name || name.length === 0) {
       newError.name = 'Work Mode is required';
       isValid = false;
-    } else if (
-      name.length < 2 ||
-      !/^[a-zA-Z]+ ?[a-zA-Z]+ ?[a-zA-Z]*$/.test(name)
-    ) {
+    } else if (name.length < 2 || !NAME_REGEX.test(name)) {
       newError.name = 'Invalid name';
       isValid = false;
     }

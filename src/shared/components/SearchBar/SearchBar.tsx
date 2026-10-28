@@ -31,7 +31,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
 
     const sanitized = value
-      .replace(/[^a-zA-Z\s]/g, "")
+      .replace(/[^a-zA-Z0-9.\s]/g, "")
       .trimStart();
     setSearchText(sanitized);
   };

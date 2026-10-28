@@ -124,9 +124,11 @@ const AttendanceListPage = () => {
       {/* ── Attendance List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         {attendance.length === 0 ? (
-          <p className="text-center text-sm text-gray-500 mt-10">
-            {t('No Attendance found')}
-          </p>
+          <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
+            <p className="text-center text-muted-foreground text-sm break-words">
+              {t('No Attendance found')}
+            </p>
+          </div>
         ) : (
        attendance.map(item => (
   <AttendanceCard

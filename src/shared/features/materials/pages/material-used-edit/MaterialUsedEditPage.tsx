@@ -1,83 +1,63 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/shared/components/ui/button";
-import { Card } from "@/shared/components/ui/card";
-import { NameField } from "@/shared/components/FormFields/NameField";
-import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
-import { TextareaField } from "@/shared/components/FormFields/TextareaField";
-import { DatePicker } from "@/shared/components/FormFields/DatePicker";
-import { Header } from "@/shared/components/Header/Header";
-import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
-import { useMaterialUsedEdit } from "./useMaterialUsedEdit";
-import { usePermission } from "@/shared/hooks/usePermission";
-import { cn } from "@/shared/components/lib/utils";
-import { Loader2 } from "lucide-react";
-import { MaterialUsedUrls } from "../../utils/urls";
-import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { useParams, useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/shared/components/ui/button';
+import { Card } from '@/shared/components/ui/card';
+import { NameField } from '@/shared/components/FormFields/NameField';
+import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
+import { TextareaField } from '@/shared/components/FormFields/TextareaField';
+import { DatePicker } from '@/shared/components/FormFields/DatePicker';
+import { Header } from '@/shared/components/Header/Header';
+import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
+import { QuantityLimitBadge } from '../../components/QuantityLimitBadge';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/shared/components/ui/alert-dialog';
+import { useMaterialUsedEdit } from './useMaterialUsedEdit';
+import { usePermission } from '@/shared/hooks/usePermission';
+import { MaterialUsedUrls } from '../../utils/urls';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
-export const MaterialUsedEditPage = () => {
-  const { id } = useParams<{ id: string }>();
+const MaterialUsedEditContent = ({ id }: { id: string }) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  if (!id) return null;
-
   const { canEdit } = usePermission();
-  const editable = canEdit("Material Used");
+  const editable = canEdit('Material Used');
 
   const {
-    siteId,
-    setSiteId,
-    materialId,
-    setMaterialId,
-    quantity,
-    setQuantity,
-    notes,
-    setNotes,
-    date,
-    setDate,
+    siteId, setSiteId,
+    materialId, setMaterialId,
+    quantity, setQuantity,
+    notes, setNotes,
+    date, setDate,
+    workModeId, setWorkModeId,
     materialUsedDetails,
     error,
     materialDetails,
     siteDetails,
     workModeDetails,
     loading,
-    workModeId,
-    setWorkModeId,
     fetchSites,
     fetchMaterials,
     fetchWorkModes,
     handleSubmission,
+    handleBack,
     maximumAllowedQuantity,
     isFetchingMaterials,
+    showUnsavedDialog,
+    setShowUnsavedDialog,
   } = useMaterialUsedEdit(id);
-
-  const QuantityBadge = () => {
-    if (!materialId || maximumAllowedQuantity === null) return null;
-
-    const entered = parseFloat(quantity);
-    const max = parseFloat(maximumAllowedQuantity);
-    const isExceeded = !isNaN(entered) && !isNaN(max) && entered > max;
-
-    return (
-      <div
-        className={cn(
-          "self-start px-2.5 py-1 rounded-md border text-xs font-medium -mt-1",
-          isExceeded
-            ? "bg-red-50 border-red-200 text-red-600"
-            : "bg-blue-50 border-blue-200 text-blue-700",
-        )}
-      >
-        {isExceeded
-          ? `⚠  Exceeds maximum allowed (${maximumAllowedQuantity})`
-          : `✓  Max allowed: ${maximumAllowedQuantity}`}
-      </div>
-    );
-  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
       </div>
     );
   }
@@ -86,16 +66,14 @@ export const MaterialUsedEditPage = () => {
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
-      {/* ── Header ── */}
-      <Header title={t("Edit Material Used")} />
+      <Header title={t('Edit Material Used')} />
 
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
-
-          {/* ── Row 1: Date + Site ── */}
+          {/* Row 1: Date + Site */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DatePicker
-              label={t("Date")}
+              label={t('Date')}
               date={date}
               onDateChange={setDate}
               required
@@ -104,67 +82,69 @@ export const MaterialUsedEditPage = () => {
             />
             <ComboboxField
               id="site"
-              label={t("Site")}
+              label={t('Site')}
               items={siteDetails}
-              selectedValue={siteId ?? ""}
+              selectedValue={siteId ?? ''}
               onValueChange={setSiteId}
               onSearch={fetchSites}
               required
               error={error.siteId}
-              disabled={!editable}
+              disabled
             />
           </div>
 
-          {/* ── Row 2: Material + Quantity ── */}
+          {/* Row 2: Material + Quantity */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Material */}
             <div>
               {isFetchingMaterials ? (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
                   <Loader2 className="animate-spin h-4 w-4 text-blue-600" />
-                  Loading available materials…
+                  {t('Loading available materials…')}
                 </div>
               ) : (
                 <ComboboxField
                   id="material"
-                  label={t("Material")}
+                  label={t('Material')}
                   items={materialDetails}
-                  selectedValue={materialId ?? ""}
+                  selectedValue={materialId ?? ''}
                   onValueChange={setMaterialId}
                   onSearch={fetchMaterials}
                   required
                   error={error.materialId}
-                  disabled={!editable}
+                  disabled
                 />
               )}
             </div>
 
-            {/* Quantity + Badge */}
             <div className="flex flex-col gap-2">
               <NameField
-                label={t("Quantity")}
+                label={t('Quantity')}
                 inputValue={quantity}
                 setInputValue={setQuantity}
                 placeholder={
                   maximumAllowedQuantity !== null
-                    ? `Max: ${maximumAllowedQuantity}`
-                    : t("Enter Quantity")
+                    ? `${t('Max')}: ${maximumAllowedQuantity}`
+                    : t('Enter Quantity')
                 }
                 required
                 regex="^[0-9]*(\.[0-9]*)?$"
                 errorMessage={error.quantity}
                 isDisabled={!editable}
               />
-              <QuantityBadge />
+              <QuantityLimitBadge
+                quantity={quantity}
+                maximumAllowedQuantity={maximumAllowedQuantity}
+                visible={!!materialId}
+              />
             </div>
           </div>
 
-          {/* ── Work Mode ── */}
+          {/* Work Mode */}
           <ComboboxField
             id="workMode"
-            label={t("Work Mode")}
+            label={t('Work Mode')}
             items={workModeDetails}
-            selectedValue={workModeId ?? ""}
+            selectedValue={workModeId ?? ''}
             onValueChange={setWorkModeId}
             onSearch={fetchWorkModes}
             required
@@ -172,22 +152,54 @@ export const MaterialUsedEditPage = () => {
             disabled={!editable}
           />
 
-          {/* ── Notes ── */}
+          {/* Notes */}
           <TextareaField
-            label={t("Notes")}
+            label={t('Notes')}
             inputValue={notes}
             setInputValue={setNotes}
-            placeholder={t("Enter your Notes")}
+            placeholder={t('Enter your Notes')}
             isDisabled={!editable}
           />
 
-          {/* ── Save / Cancel ── */}
           <FormSubmissionButtons
             onSave={editable ? handleSubmission : () => {}}
-            onCancel={() => navigate(MaterialUsedUrls.list)}
+            onCancel={handleBack}
           />
         </div>
       </Card>
+
+      {/* Unsaved Changes Dialog */}
+      <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('You have unsaved changes. Do you want to save them before leaving?')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => navigate(MaterialUsedUrls.list)}>
+              {t('Exit Without Saving')}
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button
+                onClick={() => {
+                  setShowUnsavedDialog(false);
+                  handleSubmission();
+                }}
+              >
+                {t('Save')}
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
+};
+
+export const MaterialUsedEditPage = () => {
+  const { id } = useParams<{ id: string }>();
+  if (!id) return null;
+  return <MaterialUsedEditContent id={id} />;
 };

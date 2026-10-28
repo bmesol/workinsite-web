@@ -64,9 +64,11 @@ const WorkerCategoryListPage = () => {
       {/* List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {filteredWorkerCategoryList.length === 0 ? (
-          <p className="text-center text-gray-500 text-sm mt-10">
-            {t('No Worker Category found')}
-          </p>
+          <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
+            <p className="text-center text-gray-500 text-sm break-words">
+              {t('No Worker Category found')}
+            </p>
+          </div>
         ) : (
           filteredWorkerCategoryList.map((workerCategory) => (
             <ContactCard
