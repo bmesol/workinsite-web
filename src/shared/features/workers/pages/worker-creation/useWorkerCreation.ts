@@ -199,9 +199,9 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     redirectParams.append("name", name);
     redirectParams.append("contactId", contactId);
     redirectParams.append("workerCategoryId", workerCategoryId);
-    const contactEditParams = new URLSearchParams({
-      redirect: `${WorkersUrls.create}?${redirectParams.toString()}`,
-    });
+    const backUrl = `${WorkersUrls.create}?${redirectParams.toString()}`;
+    navigate(backUrl, { replace: true });
+    const contactEditParams = new URLSearchParams({ redirect: backUrl });
     navigate(`${ContactsUrls.edit(parseInt(contactId))}?${contactEditParams.toString()}`);
     model.close();
   };

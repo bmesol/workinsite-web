@@ -54,6 +54,7 @@
 
 import { useState } from "react";
 import type { WorkType, WorkTypeNew } from "../../DTOs/WorkTypeProps";
+import { NAME_REGEX } from "@/shared/utils/nameValidation";
 import type { WorkerRole, WorkerRoles } from "../../DTOs/WorkRoleProps";
 
 const useWorkerCategoryInputValidate = (
@@ -83,7 +84,7 @@ const useWorkerCategoryInputValidate = (
       updateError("workerCategoryName", "Please enter worker category name");
     } else if (
       workerCategoryName.trim().length < 2 ||
-      !/^[A-Za-z ]+$/.test(workerCategoryName.trim())
+      !NAME_REGEX.test(workerCategoryName.trim())
     ) {
       updateError("workerCategoryName", "Invalid worker category name");
     }

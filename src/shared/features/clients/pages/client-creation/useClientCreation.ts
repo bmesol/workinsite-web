@@ -82,7 +82,9 @@ const useClientCreation = (queryString: URLSearchParams) => {
     const redirectParamsWithContactId = new URLSearchParams(redirectParams);
     redirectParamsWithContactId.append('name', name);
     redirectParamsWithContactId.append('contactId', contactId);
-    const contactEditParams = new URLSearchParams({ redirect: `${redirectUrl}?${redirectParamsWithContactId.toString()}` });
+    const backUrl = `${redirectUrl}?${redirectParamsWithContactId.toString()}`;
+    navigate(backUrl, { replace: true });
+    const contactEditParams = new URLSearchParams({ redirect: backUrl });
     navigate(`${ContactsUrls.edit(parseInt(contactId))}?${contactEditParams.toString()}`);
     setIsContactEditOpen(false);
   };

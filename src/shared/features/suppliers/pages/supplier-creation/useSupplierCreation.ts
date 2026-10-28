@@ -1,15 +1,28 @@
 import { useContactValidate } from "../../../clients/components/ContactValidate/ContactValidate";
 import { useInputValidate } from "../../../suppliers/components/InputValidate/InputValidate";
-import type { Supplier, SupplierRequest } from "../../DTOs/SupplierProps";
+import type { Supplier, SupplierRequest, UpiDetail, BankAccountProps } from "../../DTOs/SupplierProps";
 import { UpiTypes } from "../../DTOs/SupplierProps";
 import { useContactService } from "@/shared/features/contacts/service/ContactService";
 import { useSupplierService } from "@/shared/features/suppliers/service/SupplierService";
 import type { Contact } from "../../../contacts/DTOs/ContactProps";
+import type { KYCDetail } from "../../../clients/DTOs/ClientProps";
 import { KYCTypes } from "../../../clients/DTOs/ClientProps";
 import { ContactsUrls } from "../../../contacts/utils/urls";
 import { SuppliersUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const DRAFT_KEY = "create-supplier-draft";
+
+interface SupplierDraft {
+  returningFromContactEdit: boolean;
+  name: string;
+  notes: string;
+  contactId: string;
+  kycDetails: KYCDetail[];
+  bankAccounts: BankAccountProps[];
+  upiDetails: UpiDetail[];
+}
 
 const useSupplierCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -17,41 +30,76 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
   const contactService = useContactService();
   const getQueryParam = (param: string) => queryString.get(param)?.trim() || "";
 
-  const [name, setName] = useState(getQueryParam("name"));
-  const [contactId, setContactId] = useState(getQueryParam("contactId"));
-  const [notes, setNotes] = useState(getQueryParam("notes"));
+  // Read draft once on mount; only restore when returningFromContactEdit flag is set,
+  // then immediately clear the flag so a manual refresh starts empty.
+  const [initialDraft] = useState<SupplierDraft | null>(() => {
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as SupplierDraft;
+      if (!parsed.returningFromContactEdit) return null;
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ ...parsed, returningFromContactEdit: false }));
+      return parsed;
+    } catch {
+      return null;
+    }
+  });
+
+  // Track when we intentionally navigate to contact edit so cleanup doesn't wipe the draft.
+  const navigatingToContactEdit = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (!navigatingToContactEdit.current) {
+        sessionStorage.removeItem(DRAFT_KEY);
+      }
+    };
+  }, []);
+
+  const [name, setName] = useState(initialDraft?.name ?? getQueryParam("name"));
+  const [contactId, setContactId] = useState(initialDraft?.contactId ?? getQueryParam("contactId"));
+  const [notes, setNotes] = useState(initialDraft?.notes ?? getQueryParam("notes"));
   const [isActive, setIsActive] = useState(true);
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
 
   const [supplierDetails, setSupplierDetails] = useState<Supplier | SupplierRequest>(
-    {
-      name: "",
-      contactId: parseInt(contactId),
-      note: "",
-      kycDetails: [
-        { kycType: KYCTypes.AADHAAR, value: getQueryParam("AADHAAR") },
-        { kycType: KYCTypes.PAN, value: getQueryParam("PAN") },
-        { kycType: KYCTypes.GST, value: getQueryParam("GST") },
-      ],
-      bankAccounts: [
-        {
-          accountName: getQueryParam("accountName1"),
-          accountNumber: getQueryParam("accountNumber1"),
-          ifscCode: getQueryParam("ifscCode1"),
-        },
-        {
-          accountName: getQueryParam("accountName2"),
-          accountNumber: getQueryParam("accountNumber2"),
-          ifscCode: getQueryParam("ifscCode2"),
-        },
-      ],
-      upiDetails: [
-        { upiType: UpiTypes.GPAY, value: getQueryParam("GPAY") },
-        { upiType: UpiTypes.PHONEPE, value: getQueryParam("PHONEPE") },
-        { upiType: UpiTypes.UPI_ID, value: getQueryParam("UPI_ID") },
-      ],
-    } as SupplierRequest
+    initialDraft
+      ? ({
+          name: initialDraft.name,
+          contactId: parseInt(initialDraft.contactId),
+          note: initialDraft.notes,
+          kycDetails: initialDraft.kycDetails,
+          bankAccounts: initialDraft.bankAccounts,
+          upiDetails: initialDraft.upiDetails,
+        } as SupplierRequest)
+      : ({
+          name: "",
+          contactId: parseInt(getQueryParam("contactId")),
+          note: "",
+          kycDetails: [
+            { kycType: KYCTypes.AADHAAR, value: getQueryParam("AADHAAR") },
+            { kycType: KYCTypes.PAN, value: getQueryParam("PAN") },
+            { kycType: KYCTypes.GST, value: getQueryParam("GST") },
+          ],
+          bankAccounts: [
+            {
+              accountName: getQueryParam("accountName1"),
+              accountNumber: getQueryParam("accountNumber1"),
+              ifscCode: getQueryParam("ifscCode1"),
+            },
+            {
+              accountName: getQueryParam("accountName2"),
+              accountNumber: getQueryParam("accountNumber2"),
+              ifscCode: getQueryParam("ifscCode2"),
+            },
+          ],
+          upiDetails: [
+            { upiType: UpiTypes.GPAY, value: getQueryParam("GPAY") },
+            { upiType: UpiTypes.PHONEPE, value: getQueryParam("PHONEPE") },
+            { upiType: UpiTypes.UPI_ID, value: getQueryParam("UPI_ID") },
+          ],
+        } as SupplierRequest)
   );
 
   const fetchContacts = async (searchString: string = "") => {
@@ -117,12 +165,20 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
     navigate(`${ContactsUrls.create}?${contactCreateParams}`);
   };
 
-  const handleContactEdit = (onClose?: () => void) => { 
-    const redirectParamsWithContactId = new URLSearchParams(redirectParams);
-    redirectParamsWithContactId.append("name", name);
-    redirectParamsWithContactId.append("contactId", contactId);
+  const handleContactEdit = (onClose?: () => void) => {
+    const draft: SupplierDraft = {
+      returningFromContactEdit: true,
+      name,
+      notes,
+      contactId,
+      kycDetails: supplierDetails.kycDetails,
+      bankAccounts: supplierDetails.bankAccounts,
+      upiDetails: supplierDetails.upiDetails,
+    };
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    navigatingToContactEdit.current = true;
     const contactEditParams = new URLSearchParams({
-      redirect: `${redirectUrl}?${redirectParamsWithContactId.toString()}`,
+      redirect: encodeURIComponent(SuppliersUrls.create),
     });
     navigate(`${ContactsUrls.edit(parseInt(contactId))}?${contactEditParams.toString()}`);
     onClose?.();
@@ -140,6 +196,7 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
         isActive,
       };
       await supplierService.createSupplier(supplier);
+      sessionStorage.removeItem(DRAFT_KEY);
       navigate(SuppliersUrls.list);
     }
   };

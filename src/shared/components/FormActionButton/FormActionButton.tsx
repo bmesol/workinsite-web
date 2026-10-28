@@ -1,6 +1,6 @@
 import { FormInput } from "../FormInput/FormInput";
 import { Button } from "@/shared/components/ui/button";
-import { Asterisk, PlusCircle, Pencil } from "lucide-react";
+import { PlusCircle, Pencil, BookUser } from "lucide-react";
 
 const FormActionButton = (props: {
   heading: string;
@@ -10,12 +10,18 @@ const FormActionButton = (props: {
   isColsTwo?: boolean;
   required?: boolean;
   errorMessage?: string;
+  iconType?: string;
 }) => {
-  const { heading, label, onClick, isAddDisabled, isColsTwo = false, required, errorMessage } = props;
+  const { heading, label, onClick, isAddDisabled, isColsTwo = false, required, errorMessage, iconType } = props;
 
-  const icon = label.toLowerCase() === "edit"
-    ? <Pencil className="h-4 w-4 text-white" />
-    : <PlusCircle className="h-4 w-4 text-white" />;
+  const icon =
+    iconType === "contacts" ? (
+      <BookUser className="h-4 w-4 text-white" />
+    ) : label.toLowerCase() === "edit" ? (
+      <Pencil className="h-4 w-4 text-white" />
+    ) : (
+      <PlusCircle className="h-4 w-4 text-white" />
+    );
 
   return (
     <div className="flex flex-col gap-1">

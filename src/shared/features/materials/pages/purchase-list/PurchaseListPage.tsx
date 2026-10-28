@@ -109,9 +109,9 @@ const PurchaseListPage = () => {
       {/* Purchase List */}
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 mt-4">
         {purchaseDetails.length === 0 ? (
-          <p className="col-span-full text-center text-muted-foreground mt-10">
-            No purchases found
-          </p>
+          <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
+            <p className="text-center text-muted-foreground text-sm break-words">No purchases found</p>
+          </div>
         ) : (
           purchaseDetails.map((item) => (
             <ContactCard

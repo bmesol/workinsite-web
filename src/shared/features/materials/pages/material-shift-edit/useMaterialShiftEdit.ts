@@ -33,7 +33,7 @@ export const useMaterialShiftEdit = (id: string) => {
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   // ─── Validator ────────────────────────────────────────────────────────────
-  const { error, validate, setError, initialError } = useMaterialShiftInputValidate({
+  const { error, validate } = useMaterialShiftInputValidate({
     date,
     materialId,
     sourceSiteId,
@@ -55,11 +55,15 @@ export const useMaterialShiftEdit = (id: string) => {
       setSourceSiteList([data.sourceSite]);
       setTargetSiteList([data.sourceSite, data.targetSite]);
       setQuantity(data.quantity.toString());
-      setNotes(data.note);
+      setNotes(data.note ?? '');
 
-      // Max allowed quantity
+      // Maximum allowed quantity (needs materialId + sourceSiteId)
       try {
-        const maxQty = await materialShiftService.getMaximumAllowedQuantity(parseInt(id));
+        const maxQty = await materialShiftService.getMaximumAllowedQuantity(
+          parseInt(id),
+          data.material.id,
+          data.sourceSite.id,
+        );
         setMaximumAllowedQuantity(maxQty);
       } catch {
         setMaximumAllowedQuantity(null);
@@ -177,13 +181,14 @@ export const useMaterialShiftEdit = (id: string) => {
 
   // ─── Unsaved changes ──────────────────────────────────────────────────────
   const hasUnsavedChanges = useCallback(() => {
+    if (!materialShift) return false;
     return (
-      materialId !== materialShift?.material.id.toString() ||
-      sourceSiteId !== materialShift?.sourceSite.id.toString() ||
-      targetSiteId !== materialShift?.targetSite.id.toString() ||
-      quantity !== materialShift?.quantity ||
-      date !== materialShift?.date ||
-      notes !== materialShift?.note
+      materialId !== materialShift.material.id.toString() ||
+      sourceSiteId !== materialShift.sourceSite.id.toString() ||
+      targetSiteId !== materialShift.targetSite.id.toString() ||
+      quantity !== String(materialShift.quantity ?? '') ||
+      date !== materialShift.date ||
+      notes !== (materialShift.note ?? '')
     );
   }, [materialId, sourceSiteId, targetSiteId, quantity, date, notes, materialShift]);
 
@@ -240,8 +245,5 @@ export const useMaterialShiftEdit = (id: string) => {
     isFetchingMaterials,
     showUnsavedDialog,
     setShowUnsavedDialog,
-    fetchMaterialShift,
-    setError,
-    initialError,
   };
 };

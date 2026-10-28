@@ -6,11 +6,13 @@ import { PhoneNumberField } from "@/shared/components/FormFields/PhoneNumberFiel
 import { ContactTypes } from "@/shared/features/contacts/components/ContactTypes/ContactTypes";
 import { Header } from "@/shared/components/Header/Header";
 import { useContactCreation } from "./useContactCreation";
+import { useContactPicker } from "@/shared/hooks/useContactPicker";
 import { Card } from "@/shared/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { toast } from "sonner";
 
 const ContactCreationPage = () => {
   const [queryString] = useSearchParams();
@@ -18,6 +20,18 @@ const ContactCreationPage = () => {
   const { t } = useLanguage();
 
   const { name, phone, setName, setPhone, error, contactList, setContactList, handleSubmission, handleCancel, isAddDisabled } = useContactCreation(queryString);
+  const { isSupported, pickContact } = useContactPicker();
+
+  const handleSelectContact = async () => {
+    try {
+      const result = await pickContact();
+      if (!result) return;
+      if (result.name) setName(result.name);
+      if (result.phone) setPhone(result.phone);
+    } catch {
+      toast.error(t("Something went wrong"));
+    }
+  };
 
   const handleAdd = () => {
     setIsOpen(true);
@@ -28,6 +42,26 @@ const ContactCreationPage = () => {
       <Header title={t('Create Contact')} />
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
+
+          {isSupported && (
+            <>
+              <FormActionButton
+                heading={t('Select Contact')}
+                label={t('Select')}
+                onClick={handleSelectContact}
+                iconType="contacts"
+                isColsTwo
+              />
+              <div
+                className="flex items-center gap-3 text-xs"
+                style={{ color: "var(--gray-color)" }}
+              >
+                <hr className="flex-1 border-border" />
+                <span>{t('OR')}</span>
+                <hr className="flex-1 border-border" />
+              </div>
+            </>
+          )}
 
           <NameField
             inputValue={name}

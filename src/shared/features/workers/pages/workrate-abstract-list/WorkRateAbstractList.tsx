@@ -63,9 +63,11 @@ const WorkRateAbstractListPage = () => {
 
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
         {filteredList.length === 0 ? (
-          <p className="text-center text-gray-500 text-sm mt-10">
-            {t('No Work Rate Abstract found')}
-          </p>
+          <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
+            <p className="text-center text-muted-foreground text-sm break-words">
+              {t('No Work Rate Abstract found')}
+            </p>
+          </div>
         ) : (
           filteredList.map((item: WorkRateAbstractProps) => (
             <ContactCard

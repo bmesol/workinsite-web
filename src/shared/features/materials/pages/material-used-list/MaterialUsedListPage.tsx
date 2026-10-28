@@ -112,9 +112,9 @@ const MaterialUsedListPage = () => {
       {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         {materialUsedDetails.length === 0 ? (
-          <p className="col-span-full text-center text-muted-foreground mt-10">
-            {t("No material used found")}
-          </p>
+          <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
+            <p className="text-center text-muted-foreground text-sm break-words">{t("No material used found")}</p>
+          </div>
         ) : (
           materialUsedDetails.map((item) => (
             <MaterialUsedCard

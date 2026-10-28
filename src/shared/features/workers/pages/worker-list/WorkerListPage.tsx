@@ -89,8 +89,8 @@ const WorkerListPage = () => {
       {/* Worker Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
         {!workerDetails.length ? (
-          <div className="col-span-full my-4 text-center text-muted-foreground">
-             {t('No workers found')}
+          <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
+            <p className="text-center text-muted-foreground text-sm break-words">{t('No workers found')}</p>
           </div>
         ) : (
           workerDetails.map((worker) => {
@@ -134,9 +134,10 @@ const WorkerListPage = () => {
               <Input
                 placeholder={t('Enter worker name')}
                 value={searchText}
+                maxLength={75}
                 onChange={(e) => {
                   const sanitized = e.target.value
-                    .replace(/[^a-zA-Z\s]/g, "")
+                    .replace(/[^a-zA-Z0-9.\s]/g, "")
                     .trimStart();
                   setSearchText(sanitized);
                 }}

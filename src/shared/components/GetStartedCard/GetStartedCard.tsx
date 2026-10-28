@@ -9,7 +9,7 @@ const GetStartedCard = (props: GetStartedCardProps) => {
   const navigate = useNavigate();
 
   return (
-    <div className="container flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-[calc(100vh-4.5rem)] px-4">
       <div className="w-full max-w-lg mx-auto rounded-2xl border border-border bg-card p-8">
         <div className="flex flex-col items-center text-center gap-4">
 
