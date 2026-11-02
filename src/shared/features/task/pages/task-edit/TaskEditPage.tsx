@@ -176,40 +176,39 @@ export const TaskEditPage = () => {
               disabled={!taskFieldPermissions.canEditRemarks}
             />
           </div>
-        </div>
-
-        {/* ── Assigned To / Assigned By ──
-            If the logged-in user is the assignee, show who assigned the task
-            (read-only). Otherwise show the assignee picker. */}
-        {siteId && (
-          <div className="mt-4">
-            {isAssignee ? (
-              taskDetails?.assignedBy && (
+          {/* ── Assigned To / Assigned By ──
+              If the logged-in user is the assignee, show who assigned the task
+              (read-only). Otherwise show the assignee picker. */}
+          {siteId && (
+            <div>
+              {isAssignee ? (
+                taskDetails?.assignedBy && (
+                  <>
+                    <Label className="text-base font-medium">{t('AssignedBy')}</Label>
+                    <AssignedByCard assignedBy={taskDetails.assignedBy} />
+                  </>
+                )
+              ) : (
                 <>
-                  <Label className="text-base font-medium">{t('AssignedBy')}</Label>
-                  <AssignedByCard assignedBy={taskDetails.assignedBy} />
-                </>
-              )
-            ) : (
-              <>
-                <FormActionButton
-                  heading={t('Assign Supervisor')}
-                  label={t('Select')}
-                  onClick={() => setSupervisorDialogOpen(true)}
-                  isColsTwo={true}
-                  isAddDisabled={!taskFieldPermissions.canEditAssignedTo}
-                  errorMessage={error.supervisor}
-                />
-                {supervisorId && (
-                  <SelectedSupervisorCard
-                    supervisorId={supervisorId}
-                    supervisorDetails={supervisorDetails}
+                  <FormActionButton
+                    heading={t('Assign Supervisor')}
+                    label={t('Select')}
+                    onClick={() => setSupervisorDialogOpen(true)}
+                    isColsTwo={true}
+                    isAddDisabled={!taskFieldPermissions.canEditAssignedTo}
+                    errorMessage={error.supervisor}
                   />
-                )}
-              </>
-            )}
-          </div>
-        )}
+                  {supervisorId && (
+                    <SelectedSupervisorCard
+                      supervisorId={supervisorId}
+                      supervisorDetails={supervisorDetails}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* ── Remark chat history ── */}
         {remarks.length > 0 && (

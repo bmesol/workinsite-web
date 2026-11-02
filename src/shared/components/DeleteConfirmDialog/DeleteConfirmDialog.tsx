@@ -1,4 +1,4 @@
-import { X, Trash2 } from "lucide-react";
+import { X } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,16 +43,8 @@ const DeleteConfirmDialog = ({
         </button>
 
         {/* Top section */}
-        <div className="flex items-stretch gap-4 bg-white px-6 py-5">
-          <div className="flex shrink-0 items-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-yellow-200">
-              <Trash2 className="h-6 w-6 text-black" />
-            </div>
-          </div>
-
-          <div className="w-px self-stretch bg-gray-200" />
-
-          <AlertDialogHeader className="space-y-1 pr-6 text-left">
+        <div className="bg-white px-6 pt-5 pb-2 pr-12">
+          <AlertDialogHeader className="space-y-1 text-left">
             <AlertDialogTitle className="text-xl font-semibold text-black">
               {title ?? t("Confirm Delete")}
             </AlertDialogTitle>
@@ -63,7 +55,7 @@ const DeleteConfirmDialog = ({
         </div>
 
         {/* Footer */}
-        <AlertDialogFooter className="flex-row justify-end gap-3 space-x-0 border-t border-gray-200 bg-white px-6 py-4">
+        <AlertDialogFooter className="flex-row justify-end gap-3 space-x-0 bg-white px-6 pt-0 pb-4">
           <AlertDialogCancel asChild>
             <Button
               variant="outline"
@@ -75,10 +67,7 @@ const DeleteConfirmDialog = ({
           </AlertDialogCancel>
 
           <AlertDialogAction asChild>
-            <Button
-              className="cursor-pointer"
-              onClick={onConfirm}
-            >
+            <Button className="cursor-pointer" onClick={onConfirm}>
               {t("Delete")}
             </Button>
           </AlertDialogAction>

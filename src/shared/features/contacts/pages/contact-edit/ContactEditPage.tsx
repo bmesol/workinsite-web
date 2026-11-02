@@ -57,26 +57,28 @@ const ContactEditPage = () => {
       <Header title={t('Edit Contact')} />
       <Card className="mt-4 p-6">
         <div className="flex flex-col gap-4">
-          {name && (
-            <NameField
-              inputValue={name}
-              setInputValue={setName}
-              errorMessage={error.name}
+          <div className="flex gap-4">
+            {name && (
+              <NameField
+                inputValue={name}
+                setInputValue={setName}
+                errorMessage={error.name}
+                className="w-full"
+                required={true}
+                isDisabled={!editable}
+              />
+            )}
+
+            <PhoneNumberField
+              label={t('Phone Number')}
+              inputValue={phone}
+              setInputValue={setPhone}
+              errorMessage={error.phone}
               className="w-full"
               required={true}
               isDisabled={!editable}
             />
-          )}
-
-          <PhoneNumberField
-            label={t('Phone Number')}
-            inputValue={phone}
-            setInputValue={setPhone}
-            errorMessage={error.phone}
-            className="w-full"
-            required={true}
-            isDisabled={!editable}
-          />
+          </div>
           <FormActionButton
             heading={t('Additional Details')}
             label={t('Add')}

@@ -166,6 +166,7 @@
 
 // export default ClientTransactionEditPage;
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 import { Header } from '@/shared/components/Header/Header';
@@ -195,6 +196,7 @@ import {
 } from '@/shared/components/ui/dialog';
 import { useClientTransactionEdit } from './useClientTransactionEdit';
 import { FormActionButton } from '@/shared/components/FormActionButton/FormActionButton';
+import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import PaymentMethodSelector from '../../components/PaymentMethodSelector/PaymentMethodSelector';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { ClientTransactionUrls } from '../../utils/urls';
@@ -205,6 +207,7 @@ const ClientTransactionEditPage = () => {
   const { canEdit } = usePermission();
   const editable = canEdit('Client Transaction');
   const { t } = useLanguage();
+  const [pendingDeleteIndex, setPendingDeleteIndex] = useState<number | null>(null);
 
   const {
     handleBack,
@@ -307,9 +310,9 @@ const ClientTransactionEditPage = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleRemoveSplit(index)}
+                  onClick={() => setPendingDeleteIndex(index)}
                   disabled={!editable}
-                  className="text-red-500 hover:text-red-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="text-red-500 hover:text-red-600 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -416,6 +419,17 @@ const ClientTransactionEditPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* ── Delete Site Split Confirm Dialog ── */}
+      <DeleteConfirmDialog
+        open={pendingDeleteIndex !== null}
+        onClose={() => setPendingDeleteIndex(null)}
+        onConfirm={() => {
+          if (pendingDeleteIndex !== null) handleRemoveSplit(pendingDeleteIndex);
+          setPendingDeleteIndex(null);
+        }}
+        description={t('Are you sure you want to remove this site split? This action cannot be undone.')}
+      />
 
     </div>
   );

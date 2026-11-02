@@ -157,29 +157,28 @@ const TaskCreationPage = () => {
               disabled={!editable}
             />
           </div>
-        </div>
-
-        {/* ── Assign Supervisor ── */}
-        {siteId && (
-          <div className="mt-4">
-            <FormActionButton
-              heading={t('Assign Supervisor')}
-              label={t('Select')}
-              onClick={() => setSupervisorDialogOpen(true)}
-              isColsTwo={true}
-              required={true}
-              errorMessage={error.supervisor}
-              isAddDisabled={!editable}
-            />
-
-            {supervisorId && (
-              <SelectedSupervisorCard
-                supervisorId={supervisorId}
-                supervisorDetails={supervisorDetails}
+          {/* ── Assign Supervisor ── */}
+          {siteId && (
+            <div>
+              <FormActionButton
+                heading={t('Assign Supervisor')}
+                label={t('Select')}
+                onClick={() => setSupervisorDialogOpen(true)}
+                isColsTwo={true}
+                required={true}
+                errorMessage={error.supervisor}
+                isAddDisabled={!editable}
               />
-            )}
-          </div>
-        )}
+
+              {supervisorId && (
+                <SelectedSupervisorCard
+                  supervisorId={supervisorId}
+                  supervisorDetails={supervisorDetails}
+                />
+              )}
+            </div>
+          )}
+        </div>
 
         {/* ── Photos ── */}
         <div className="mt-4">

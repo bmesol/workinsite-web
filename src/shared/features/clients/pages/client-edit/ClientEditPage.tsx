@@ -95,21 +95,8 @@ const ClientEditPage = () => {
             )}
           </div>
 
-          {/* Contact Details + KYC side by side */}
+          {/* KYC + Contact Details side by side */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Contact Details */}
-            <div className="flex flex-col gap-3">
-              {contact.id ? (
-                <ContactDetailForm
-                  handleContactEdit={handleContactEdit}
-                  primaryContactDetails={primaryContactDetails}
-                  hasMoreDetails={hasMoreDetails}
-                  handleMoreDetails={() => setIsContactOpen(true)}
-                  isAddDisabled={!editable}
-                />
-              ) : null}
-            </div>
-
             {/* KYC */}
             <div className="flex flex-col gap-3">
               <FormActionButton
@@ -130,6 +117,19 @@ const ClientEditPage = () => {
                 isColsTwo
                 disabled={!editable}
               />
+            </div>
+
+            {/* Contact Details */}
+            <div className="flex flex-col gap-3">
+              {contact.id ? (
+                <ContactDetailForm
+                  handleContactEdit={handleContactEdit}
+                  primaryContactDetails={primaryContactDetails}
+                  hasMoreDetails={hasMoreDetails}
+                  handleMoreDetails={() => setIsContactOpen(true)}
+                  isAddDisabled={!editable}
+                />
+              ) : null}
             </div>
           </div>
 
@@ -155,7 +155,7 @@ const ClientEditPage = () => {
 
       {/* KYC Dialog */}
       <Dialog open={isKycOpen} onOpenChange={setIsKycOpen}>
-        <DialogContent>
+        <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>{t('KYC Type')}</DialogTitle>
           </DialogHeader>
@@ -174,7 +174,7 @@ const ClientEditPage = () => {
 
       {/* Contact More Details Dialog */}
       <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
-        <DialogContent>
+        <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
           <ContactsEditForm
             contact={contact}
             onEdit={handleContactEdit}

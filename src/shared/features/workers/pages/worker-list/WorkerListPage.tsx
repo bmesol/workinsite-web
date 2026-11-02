@@ -87,7 +87,7 @@ const WorkerListPage = () => {
       )}
 
       {/* Worker Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mt-4 pb-4">
         {!workerDetails.length ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t('No workers found')}</p>

@@ -46,8 +46,6 @@ type DateFieldProps = {
   className?: string;
 };
 
-// Reference-design tokens
-const BRAND_YELLOW = '#F5C720';
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 // Year list height (≈ a 5-row month) — calendar grid itself sizes to its content
 const YEAR_LIST_HEIGHT = 'h-[196px]';
@@ -222,7 +220,7 @@ const DatePicker = ({
             )}
             style={{
               fontFamily: 'Outfit, sans-serif',
-              fontSize: 'var(--font-xs)',
+              fontSize: 'var(--font-sm)',
               color: committedDate ? 'var(--foreground)' : 'var(--gray-color)',
             }}
           >
@@ -243,10 +241,10 @@ const DatePicker = ({
           <div className="flex flex-col">
             {/* Header band */}
             <div
-              className="shrink-0 px-3 pt-2 pb-2.5 text-black"
-              style={{ backgroundColor: BRAND_YELLOW }}
+              className="shrink-0 px-3 pt-2 pb-2.5"
+              style={{ backgroundColor: 'var(--primary)', color: 'var(--primary-bg-text)' }}
             >
-              <div className="text-[length:var(--font-xs)] font-medium text-black/60">Date</div>
+              <div className="text-[length:var(--font-xs)] font-medium opacity-70">Date</div>
               <div className="text-[length:var(--font-sm)] font-semibold leading-tight">
                 {draftDate ? format(draftDate, 'EEE, d MMM yyyy') : 'Select date'}
               </div>
@@ -354,11 +352,12 @@ const DatePicker = ({
                               ? 'cursor-not-allowed text-gray-300 dark:text-neutral-600'
                               : 'text-foreground/85 hover:bg-black/5 dark:hover:bg-white/10',
                             today && !selected && 'ring-1 ring-inset ring-black/30',
-                            selected &&
-                              'font-medium text-black hover:brightness-95',
+                            selected && 'font-medium hover:brightness-95',
                           )}
                           style={
-                            selected ? { backgroundColor: BRAND_YELLOW } : undefined
+                            selected
+                              ? { backgroundColor: 'var(--primary)', color: 'var(--primary-bg-text)' }
+                              : undefined
                           }
                         >
                           {format(d, 'd')}
@@ -375,8 +374,8 @@ const DatePicker = ({
               <button
                 type="button"
                 onClick={handleCancel}
-                className="rounded px-2 py-0.5 !text-[length:var(--font-xs)] font-medium uppercase tracking-wide hover:bg-yellow-50 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                style={{ color: BRAND_YELLOW }}
+                className="rounded px-2 py-0.5 !text-[length:var(--font-xs)] font-medium uppercase tracking-wide hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                style={{ color: 'var(--primary)' }}
               >
                 Cancel
               </button>
@@ -384,8 +383,8 @@ const DatePicker = ({
                 type="button"
                 onClick={handleOk}
                 disabled={!draftDate}
-                className="rounded-md px-3 py-1 !text-[length:var(--font-xs)] font-medium uppercase text-black transition hover:brightness-95 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                style={{ backgroundColor: BRAND_YELLOW }}
+                className="rounded-md px-3 py-1 !text-[length:var(--font-xs)] font-medium uppercase transition hover:brightness-95 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                style={{ backgroundColor: 'var(--primary)', color: 'var(--primary-bg-text)' }}
               >
                 OK
               </button>

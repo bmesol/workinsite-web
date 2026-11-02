@@ -58,7 +58,7 @@ const useClientCreation = (queryString: URLSearchParams) => {
   }, [contactId]);
 
   const { error, validate } = useInputValidate({ name, contactId });
-  const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact);
+  const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact, true);
 
   const contactDetails = contactList.map((item) => ({ label: item.name, value: item.id.toString() }));
   const validKycDetails = clientDetails.kycDetails.filter((item) => item.value);

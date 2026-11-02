@@ -42,6 +42,7 @@ const TextareaField = (props: InputPropTypes) => {
         disabled={isDisabled}
         required={required}
         className="w-full disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800"
+        style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
       />
     </FormInput>
   );
