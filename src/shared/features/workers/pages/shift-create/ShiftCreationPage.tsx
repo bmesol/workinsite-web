@@ -46,7 +46,7 @@ const ShiftCreationPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-10">
+    <div className="min-h-screen w-full px-4 pb-10">
       <Header title={t('Shift')} />
 
       <Card className="mt-4">

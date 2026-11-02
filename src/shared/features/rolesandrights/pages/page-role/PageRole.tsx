@@ -80,7 +80,7 @@ const PageRolePage = () => {
                       disabled={isDisabled}
                       onClick={() => !isDisabled && handleSelectRight(page.id, level.value)}
                       className={cn(
-                        'flex items-center gap-1.5 px-3 py-2 rounded-lg border-[1.5px] text-xs font-semibold transition-all',
+                        'flex items-center gap-1.5 px-3 py-2 rounded-lg border-[1.5px] text-xs font-semibold transition-all cursor-pointer',
                         isSelected
                           ? 'border-transparent text-white'
                           : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300',

@@ -27,6 +27,7 @@ import {
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { X } from "lucide-react";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
+import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
@@ -77,6 +78,7 @@ const AttendanceCreationPage = () => {
     confirmWorkTypeChange,
     cancelWorkTypeChange,
     handleWorkTypeChange,
+    handleNavigate,
     workQuantityIndicator,
   } = useAttendanceCreation();
 
@@ -243,12 +245,11 @@ const AttendanceCreationPage = () => {
               setInputValue={setNotes}
             />
 
-            {/* Save Button */}
-            <div className="flex justify-end">
-              <Button type="submit" className="w-24">
-                {t('Save')}
-              </Button>
-            </div>
+            {/* Save / Cancel Buttons */}
+            <FormSubmissionButtons
+              onSave={handleSubmit}
+              onCancel={handleNavigate}
+            />
           </form>
         </CardContent>
       </Card>

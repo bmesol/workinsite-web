@@ -1,7 +1,7 @@
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { TextareaField } from "@/shared/components/FormFields/TextareaField";
-import { ContactTypes } from "../../../contacts/components/ContactTypes/ContactTypes";
+import { ContactDetailForm } from "@/shared/components/ContactDetailForm/ContactDetailForm";
 import { ContactsEditForm } from "../../components/ContactsEditForm/ContactEditForm";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { KycCreateForm } from "@/shared/components/Kyc/KycCreateForm/KycCreateForm";
@@ -10,7 +10,6 @@ import { KycTypes } from "@/shared/components/Kyc/KycTypes/KycTypes";
 import { useClientCreation } from "./useClientCreation";
 import { useSearchParams } from "react-router-dom";
 import { Card } from "@/shared/components/ui/card";
-import { Phone } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -79,39 +78,41 @@ const ClientCreationPage = () => {
             />
           </div>
 
-          {/* Contact Details */}
-          {contact.id ? (
-            <>
+          {/* KYC + Contact Details side by side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* KYC */}
+            <div className="flex flex-col gap-3">
               <FormActionButton
-                heading={t('Contact detail')}
-                label={t('Edit')}
-                onClick={handleContactEdit}
+                heading={t('KYC')}
+                label={t('Add')}
+                onClick={() => setIsKycOpen(true)}
+                isAddDisabled={isAddDisabled}
+                isColsTwo
               />
-              {contact.phone && (
-                <div className="flex items-center gap-2 ml-1">
-                  <Phone className="h-4 w-4 text-black" />
-                  <a
-                    href={`tel:${contact.phone}`}
-                    className="text-sm text-black hover:underline"
-                  >
-                    {contact.phone}
-                  </a>
-                </div>
-              )}
-              <ContactTypes
-                contactList={primaryContactDetails}
-                showEditDeleteButtons={false}
+              <KycTypes
+                details={{ kycDetails: clientDetails.kycDetails }}
+                setDetails={(updated) =>
+                  setClientDetails((prev) => ({
+                    ...prev,
+                    kycDetails: updated.kycDetails,
+                  }))
+                }
+                isColsTwo
               />
-              {hasMoreDetails && (
-                <button
-                  className="text-sm text-secondary underline text-left ml-3"
-                  onClick={() => setIsContactOpen(true)}
-                >
-                  {t('More details...')}
-                </button>
-              )}
-            </>
-          ) : null}
+            </div>
+
+            {/* Contact Details */}
+            <div className="flex flex-col gap-3">
+              {contact.id ? (
+                <ContactDetailForm
+                  handleContactEdit={handleContactEdit}
+                  primaryContactDetails={primaryContactDetails}
+                  hasMoreDetails={hasMoreDetails}
+                  handleMoreDetails={() => setIsContactOpen(true)}
+                />
+              ) : null}
+            </div>
+          </div>
 
           {/* Notes */}
           <TextareaField
@@ -119,23 +120,6 @@ const ClientCreationPage = () => {
             inputValue={notes}
             setInputValue={setNotes}
             placeholder={t('Enter your notes')}
-          />
-
-          {/* KYC */}
-          <FormActionButton
-            heading={t('KYC')}
-            label={t('Add')}
-            onClick={() => setIsKycOpen(true)}
-            isAddDisabled={isAddDisabled}
-          />
-          <KycTypes
-            details={{ kycDetails: clientDetails.kycDetails }}
-            setDetails={(updated) =>
-              setClientDetails((prev) => ({
-                ...prev,
-                kycDetails: updated.kycDetails,
-              }))
-            }
           />
 
           {/* Submit */}

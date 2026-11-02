@@ -63,22 +63,24 @@ const ContactCreationPage = () => {
             </>
           )}
 
-          <NameField
-            inputValue={name}
-            setInputValue={setName}
-            errorMessage={error.name}
-            className="w-full"
-            required={true}
-          />
+          <div className="flex gap-4">
+            <NameField
+              inputValue={name}
+              setInputValue={setName}
+              errorMessage={error.name}
+              className="w-full"
+              required={true}
+            />
 
-          <PhoneNumberField
-            label={t('Phone Number')}
-            inputValue={phone}
-            setInputValue={setPhone}
-            errorMessage={error.phone}
-            className="w-full"
-            required={true}
-          />
+            <PhoneNumberField
+              label={t('Phone Number')}
+              inputValue={phone}
+              setInputValue={setPhone}
+              errorMessage={error.phone}
+              className="w-full"
+              required={true}
+            />
+          </div>
 
           <FormActionButton
             heading={t('Additional Details')}

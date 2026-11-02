@@ -102,7 +102,7 @@ const SelectComboField = ({
               aria-expanded={isOpen}
               disabled={isDisabled}
               className={cn(
-                "w-full justify-between font-normal text-sm bg-white dark:bg-background",
+                "w-full justify-between font-normal text-sm bg-transparent",
                 isDisabled && "bg-gray-100 dark:bg-neutral-800 disabled:opacity-75",
                 className,
               )}
@@ -130,10 +130,13 @@ const SelectComboField = ({
                   setSearchValue(val);
                   onSearch?.(val);
                 }}
+                style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
               />
               <CommandList
                 ref={listRef}
                 className={cn("max-h-[160px] overflow-y-auto", listClassName)}
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
               >
                 <CommandEmpty>
                   <span className="text-sm text-muted-foreground">
@@ -152,6 +155,7 @@ const SelectComboField = ({
                           onValueChange(val);
                           setIsOpen(false);
                         }}
+                        style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
                         className={cn(
                           "px-3 py-1.5 min-h-9 leading-tight rounded-none cursor-pointer justify-between transition-opacity active:opacity-60",
                           "text-[var(--gray-color)]",
@@ -219,7 +223,7 @@ const SelectComboField = ({
           }
         }}
         className={cn(
-          "w-full justify-between font-normal bg-white text-sm",
+          "w-full justify-between font-normal bg-transparent text-sm",
           !selectedLabel && "text-muted-foreground",
           isDisabled && "opacity-50 cursor-not-allowed",
           isOpen && "border-primary",

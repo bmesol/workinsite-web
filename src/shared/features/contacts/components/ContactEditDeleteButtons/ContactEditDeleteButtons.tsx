@@ -42,7 +42,7 @@ const ContactEditDeleteButtons = (props: ContactEditDeleteButtonsProps) => {
       {/* Dialog */}
       {editItem && (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent>
+          <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
             <DialogHeader>
               <DialogTitle>Contact Type</DialogTitle>
             </DialogHeader>

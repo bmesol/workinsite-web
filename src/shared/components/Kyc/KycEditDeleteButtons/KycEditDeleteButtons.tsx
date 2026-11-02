@@ -37,7 +37,7 @@ const KycEditDeleteButtons = (props: KycEditDeleteButtonsProps) => {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>KYC Type</DialogTitle>
           </DialogHeader>
