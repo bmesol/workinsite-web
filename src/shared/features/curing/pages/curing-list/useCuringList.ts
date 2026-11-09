@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCuringService } from '../../service/CuringService';
+import type { GetCuringParams } from '../../service/CuringService';
 import { useCuringTypeService } from '../../service/CuringTypeService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import type { CuringDTO } from '../../DTOs/CuringProps';
@@ -9,6 +10,7 @@ import type { CuringType } from '../../DTOs/CuringTypeProps';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { SITE_STATUS } from '@/shared/constants/appEnums';
 import { CuringUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useCuringList = () => {
   const navigate = useNavigate();
@@ -62,7 +64,7 @@ const useCuringList = () => {
   }));
 
   // ── Fetch curings ─────────────────────────────────────────────────────────
-  const fetchCurings = async (overrideFilters?: any) => {
+  const fetchCurings = async (overrideFilters?: Partial<GetCuringParams>) => {
     setLoading(true);
     try {
       const filters = overrideFilters ?? {
@@ -101,12 +103,8 @@ const useCuringList = () => {
       await curingService.deleteCuring(id);
       setDeleteId(null);
       fetchCurings();
-    } catch (error: any) {
-      const msg =
-        error?.response?.data?.[0]?.message ||
-        error?.response?.data?.message ||
-        'Failed to delete curing.';
-      toast.error(msg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete curing.'));
     }
   };
 

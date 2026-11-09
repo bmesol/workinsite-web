@@ -92,6 +92,7 @@ interface WorkTypeProp {
     name: string;
     note: string;
   };
+  unit?: WorkTypeUnit;
 }
 
 interface SelectedItemProps {

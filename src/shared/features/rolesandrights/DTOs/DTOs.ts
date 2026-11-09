@@ -5,6 +5,14 @@ export interface Roles {
   id: number;
 }
 
+export interface RolesPagedResult {
+  items: Roles[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export interface RoleRequest {
   name: string;
   note?: string;

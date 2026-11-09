@@ -1,7 +1,7 @@
 // WorkerService.ts
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
-import type { WorkerRequest } from "../DTOs/WorkerProps";
+import type { Worker, WorkerRequest } from "../DTOs/WorkerProps";
 
 type GetWorkersParams = {
   WorkerName?: string;
@@ -12,15 +12,15 @@ const useWorkerService = () => {
   const baseUrl = import.meta.env.VITE_WORKER_SERVICE_BASE_URL || "";
   const apiHelper = useAPIHelper(baseUrl, true);
 
-const getWorkers = async (params: GetWorkersParams = {}) => {
-  const { data } = await apiHelper.get(`workers?${buildQueryParams({
+const getWorkers = async (params: GetWorkersParams = {}): Promise<Worker[]> => {
+  const { data } = await apiHelper.get<{ items: Worker[] }>(`workers?${buildQueryParams({
     WorkerName: params.WorkerName,
     WorkerCategoryId: params.WorkerCategoryId,
   })}`);
-  return data?.items ?? data;
+  return data.items;
 };
   const getWorker = async (id: number) => {
-    const { data } = await apiHelper.get(`workers/${id}`);
+    const { data } = await apiHelper.get<Worker>(`workers/${id}`);
     return data;
   };
 

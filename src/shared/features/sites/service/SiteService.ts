@@ -1,4 +1,4 @@
-import type { SiteCreationRequest, SiteUpdationRequest } from "../DTOs/SiteProps";
+import type { SiteCreationRequest, SiteUpdationRequest, Site } from "../DTOs/SiteProps";
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
@@ -12,7 +12,7 @@ const useSiteService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getSites = async (params: GetSitesParams = {}) => {
-    const { data } = await apiHelper.get(`sites?${buildQueryParams({
+    const { data } = await apiHelper.get<Site[]>(`sites?${buildQueryParams({
       searchString: params.searchString,
       status: params.status,
     })}`);
@@ -20,7 +20,7 @@ const useSiteService = () => {
   };
 
   const getSite = async (id: number) => {
-    const { data } = await apiHelper.get(`sites/${id}`);
+    const { data } = await apiHelper.get<Site>(`sites/${id}`);
     return data;
   };
 

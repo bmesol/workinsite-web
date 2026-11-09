@@ -1,8 +1,8 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
-import type { SupplierTransactionRequest } from '../DTOs/SupplierTransaction';
+import type { SupplierTransactionRequest, SupplierTransactionPagedResult, SupplierTransactionProps } from '../DTOs/SupplierTransaction';
 
-interface SupplierTransactionParams {
+export interface SupplierTransactionParams {
   supplierId?: number;
   fromDate?: string;
   toDate?: string;
@@ -16,7 +16,7 @@ const useSupplierTransactionService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getSupplierTransactions = async (params: SupplierTransactionParams) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<SupplierTransactionPagedResult>(
       `supplier-transactions?${buildQueryParams({
         SupplierId: params.supplierId,
         FromDate: params.fromDate,
@@ -30,7 +30,7 @@ const useSupplierTransactionService = () => {
   };
 
   const getSupplierTransaction = async (id: number) => {
-    const { data } = await apiHelper.get(`supplier-transactions/${id}`);
+    const { data } = await apiHelper.get<SupplierTransactionProps>(`supplier-transactions/${id}`);
     return data;
   };
 

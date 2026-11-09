@@ -1,6 +1,7 @@
 import { useInputValidate } from "@/shared/features/users/components/InputValidate/InputValidate";
 import { createUserService } from "../../services/UserService";
 import { createRoleService } from "../../services/RoleService";
+import type { RoleListItem } from "../../services/RoleService";
 import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
 import { useEffect, useState } from "react";
@@ -40,9 +41,9 @@ const useUserEdit = (id: string) => {
       setNotes(userData.note ?? "");
       setIsActive(userData.isActive);
 
-      const rawItems = Array.isArray(rolesData?.items) ? rolesData.items : [];
+      const rawItems: RoleListItem[] = Array.isArray(rolesData?.items) ? rolesData.items : [];
       const roleItems: { label: string; value: string }[] = rawItems.map(
-        (item: any) => ({
+        (item) => ({
           label: item.name,
           value: item.id.toString(),
         }),

@@ -1,5 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
-import type { WorkModeRequest } from '../DTOs/WorkModeProps'; 
+import type { WorkModeRequest, WorkMode } from '../DTOs/WorkModeProps';
 
 export const useWorkModeService = () => {
   const baseUrl = import.meta.env.VITE_WORKER_SERVICE_BASE_URL || ''; 
@@ -7,7 +7,7 @@ export const useWorkModeService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkModes = async (searchString: string = '', setIsLoading?: boolean) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<WorkMode[]>(
       `work-modes?searchString=${searchString}`,
       setIsLoading,
     );
@@ -20,7 +20,7 @@ export const useWorkModeService = () => {
   };
 
   const createWorkMode = async (workMode: WorkModeRequest) => {
-    const { data } = await apiHelper.post('work-modes', workMode);
+    const { data } = await apiHelper.post<WorkMode>('work-modes', workMode);
     return data;
   };
 

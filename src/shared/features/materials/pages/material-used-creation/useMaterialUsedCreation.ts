@@ -10,6 +10,7 @@ import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import { MaterialUsedUrls } from '../../utils/urls';
 import { formatDateToString } from '@/shared/utils/formatters';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useMaterialUsedCreation = () => {
   const navigate = useNavigate();
@@ -194,10 +195,8 @@ const useMaterialUsedCreation = () => {
       toast.success('Material Used created successfully.');
       resetFormFields();
       navigate(MaterialUsedUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.[0]?.message || 'Failed to Create Material Used.'
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to Create Material Used.'));
     }
   };
 

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
 import type { Material } from '../../DTOs/MaterialProps';
 import { ReceivedQualityTypes } from '../../DTOs/PurchaseProps';
+import type { PurchaseViewImage } from '../../DTOs/PurchaseProps';
 import { usePurchaseMaterialInputValidate } from '../../components/InputValidate/PurchaseMaterialInputValidate';
 import { useMaterialService } from '../../service/MaterialService';
 import { useMaterialPurchaseService } from '../../service/PurchaseService';
@@ -126,9 +127,34 @@ export const usePurchaseMaterialsEdit = ({
     (v.receivedQuality as ReceivedQualityTypes) ?? ReceivedQualityTypes.GOOD
   );
   const [notes, setNotes] = useState(v.note);
-  const [materialList, setMaterialList] = useState<Material[]>([]);
-  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
-  const [showImage, setShowImage] = useState<ShowImage[]>([]);
+  const [materialList, setMaterialList] = useState<Material[]>(
+    v.material ? [v.material] : []
+  );
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(() => {
+    const backendImages: UploadedImage[] =
+      'purchaseMaterialId' in v && Array.isArray(v.images)
+        ? v.images.map(img => ({
+            id: img.id,
+            uri: img.uri || '',
+            name: img.name || 'image.webp',
+            type: img.type || 'image/webp',
+          }))
+        : [];
+    const newImgs: UploadedImage[] =
+      'newImages' in v && Array.isArray(v.newImages)
+        ? v.newImages.map(img => ({ uri: img.uri, name: img.name, type: img.type }))
+        : [];
+    return [...backendImages, ...newImgs];
+  });
+  const [showImage, setShowImage] = useState<ShowImage[]>(() =>
+    'purchaseMaterialId' in v && Array.isArray(v.images)
+      ? v.images.map(img => ({
+          id: img.id,
+          imagePath: img.imagePath,
+          staticBaseUrl: img.staticBaseUrl,
+        }))
+      : []
+  );
   const [removedImages, setRemovedImages] = useState<RemovedImages[]>([]);
   const [isImageSheetOpen, setIsImageSheetOpen] = useState(false);
 
@@ -145,13 +171,6 @@ export const usePurchaseMaterialsEdit = ({
       receivedQuality,
       minQuantity,
     });
-
-  const fetchMinQuantity = async (purchaseMaterialId: number) => {
-    const result = await purchaseService.getMinimumQuantity(purchaseMaterialId);
-    if (!result) return;
-    const fetchedMin = parseFloat(result.minimumAllowedQuantity);
-    setMinQuantity(fetchedMin);
-  };
 
   const validateQuantity = (value: string, currentMin: number) => {
     const parsed = parseFloat(value);
@@ -191,8 +210,10 @@ export const usePurchaseMaterialsEdit = ({
     { label: 'Damaged', value: ReceivedQualityTypes.DAMAGED },
   ];
 
-  useEffect(() => {
-    if (!selectedItem || !v) return;
+  const [prevSelectedItem, setPrevSelectedItem] = useState(selectedItem);
+
+  if (prevSelectedItem !== selectedItem) {
+    setPrevSelectedItem(selectedItem);
 
     setMaterialId(v.material?.id.toString());
     setRate(v.rate);
@@ -205,7 +226,7 @@ export const usePurchaseMaterialsEdit = ({
 
     const backendImages: ShowImage[] =
       'images' in v && Array.isArray(v.images)
-        ? v.images.map(img => ({
+        ? (v.images as PurchaseViewImage[]).map(img => ({
             id: img.id,
             imagePath: img.imagePath,
             staticBaseUrl: img.staticBaseUrl,
@@ -214,7 +235,7 @@ export const usePurchaseMaterialsEdit = ({
 
     const backendUploadedImages: UploadedImage[] =
       'images' in v && Array.isArray(v.images)
-        ? v.images.map(img => ({
+        ? (v.images as PurchaseViewImage[]).map(img => ({
             uri: img.uri || '',
             name: img.name || 'image.webp',
             type: img.type || 'image/webp',
@@ -238,11 +259,18 @@ export const usePurchaseMaterialsEdit = ({
       setMaterialList(prev => [v.material, ...prev]);
     }
 
-    if ('purchaseMaterialId' in v && v.purchaseMaterialId) {
-      fetchMinQuantity(v.purchaseMaterialId);
-    } else {
+    if (!('purchaseMaterialId' in v) || !v.purchaseMaterialId) {
       setMinQuantity(0);
     }
+  }
+
+  useEffect(() => {
+    if (!('purchaseMaterialId' in v) || !v.purchaseMaterialId) return;
+    const id = v.purchaseMaterialId;
+    purchaseService.getMinimumQuantity(id).then(result => {
+      if (!result) return;
+      setMinQuantity(parseFloat(result.minimumAllowedQuantity));
+    });
   }, [selectedItem]);
 
   const handleImageSheetOpen = () => setIsImageSheetOpen(true);
@@ -264,7 +292,7 @@ export const usePurchaseMaterialsEdit = ({
         files.map(file => compressImageToWebP(file)),
       );
       setUploadedImages(prev => [...prev, ...compressed]);
-    } catch (err) {
+    } catch {
       toast.error('An error occurred while processing images.');
     }
     if (fileInputRef.current) fileInputRef.current.value = '';

@@ -1,17 +1,17 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
-import type { CuringTypeCreationRequest, CuringTypeUpdationRequest } from '../DTOs/CuringTypeProps';
+import type { CuringType, CuringTypeCreationRequest, CuringTypeUpdationRequest } from '../DTOs/CuringTypeProps';
 
 const useCuringTypeService = () => {
   const baseUrl = import.meta.env.VITE_SITE_SERVICE_BASE_URL || '';
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getCuringTypes = async () => {
-    const { data } = await apiHelper.get('/curings-types');
+    const { data } = await apiHelper.get<CuringType[]>('/curings-types');
     return data;
   };
 
   const getCuringType = async (id: number) => {
-    const { data } = await apiHelper.get(`/curings-types/${id}`);
+    const { data } = await apiHelper.get<CuringType>(`/curings-types/${id}`);
     return data;
   };
 

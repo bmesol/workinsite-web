@@ -1,8 +1,8 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
-import type { ClientTransactionRequest } from '../DTOs/ClientTransaction';
+import type { ClientTransactionRequest, ClientTransactionPagedResult, ClientTransactionProps } from '../DTOs/ClientTransaction';
 
-interface ClientTransactionParams {
+export interface ClientTransactionParams {
   clientId?: number;
   fromDate?: string;
   toDate?: string;
@@ -16,7 +16,7 @@ const useClientTransactionService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getClientTransactions = async (params: ClientTransactionParams) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<ClientTransactionPagedResult>(
       `client-transactions?${buildQueryParams({
         ClientId: params.clientId,
         FromDate: params.fromDate,
@@ -30,7 +30,7 @@ const useClientTransactionService = () => {
   };
 
   const getClientTransaction = async (id: number) => {
-    const { data } = await apiHelper.get(`client-transactions/${id}`);
+    const { data } = await apiHelper.get<ClientTransactionProps>(`client-transactions/${id}`);
     return data;
   };
 

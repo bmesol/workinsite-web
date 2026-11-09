@@ -30,8 +30,17 @@ interface MaterialUsed {
   date: string;
 }
 
+interface MaterialUsedPagedResult {
+  items: MaterialUsed[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export type {
   MaterialUsedCreationRequest,
   MaterialUsedUpdationRequest,
   MaterialUsed,
+  MaterialUsedPagedResult,
 };

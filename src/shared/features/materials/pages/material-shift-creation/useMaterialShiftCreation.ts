@@ -10,6 +10,7 @@ import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { MaterialShiftCreationRequest } from '../../DTOs/MaterialShiftProps';
 import { MaterialShiftUrls } from '../../utils/urls';
 import { formatDateToString } from '@/shared/utils/formatters';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useMaterialShiftCreation = () => {
   const navigate = useNavigate();
@@ -198,12 +199,8 @@ export const useMaterialShiftCreation = () => {
       await materialShiftService.createMaterialShift(materialShift);
       resetFormFields();
       navigate(MaterialShiftUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.[0]?.message ||
-        error?.response?.data?.message ||
-        'Failed to Create Material Shift.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to Create Material Shift.'));
     }
   };
 

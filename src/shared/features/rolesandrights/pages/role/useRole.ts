@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { useRoleService } from '../../service/RoleService';
 import type { RoleRequest, Roles } from '../../DTOs/DTOs';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useRolesScreen = () => {
   const { getRoles, createRole, updateRole, deleteRole } = useRoleService();
@@ -49,10 +50,8 @@ export const useRolesScreen = () => {
       resetForm();
       setIsSheetOpen(false);
       fetchRoles();
-    } catch (error: any) {
-      const errorMsg =
-        error?.response?.data?.[0]?.message || 'Failed to Save Role';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to Save Role'));
       setIsSheetOpen(false);
     }
   };
@@ -66,10 +65,8 @@ export const useRolesScreen = () => {
       await deleteRole(id);
       setDeleteId(null);
       fetchRoles();
-    } catch (error: any) {
-      const errorMsg =
-        error?.response?.data?.message || 'Failed to delete Role';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Role'));
       setDeleteId(null);
     }
   };

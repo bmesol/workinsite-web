@@ -1,8 +1,9 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type { AxiosRequestHeaders } from 'axios';
+import type { Purchase, PurchasePagedResult } from '../DTOs/PurchaseProps';
 
-type MaterialPurchasesfilters = {
+export type MaterialPurchasesfilters = {
   billNumber?: string;
   siteId?: number;
   supplierId?: number;
@@ -16,7 +17,7 @@ const useMaterialPurchaseService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getMaterialPurchases = async (filters: MaterialPurchasesfilters = {}) => {
-    const { data } = await apiHelper.get(`/purchases?${buildQueryParams({
+    const { data } = await apiHelper.get<PurchasePagedResult>(`/purchases?${buildQueryParams({
       BillNumber: filters.billNumber,
       SiteId: filters.siteId,
       SupplierId: filters.supplierId,
@@ -28,7 +29,7 @@ const useMaterialPurchaseService = () => {
   };
 
   const getMaterialPurchase = async (id: number) => {
-    const { data } = await apiHelper.get(`purchases/${id}`);
+    const { data } = await apiHelper.get<Purchase>(`purchases/${id}`);
     return data;
   };
 
@@ -47,7 +48,7 @@ const useMaterialPurchaseService = () => {
   const getMinimumQuantity = async (
   purchaseMaterialId: number
 ): Promise<{ minimumAllowedQuantity: string }> => {
-  const { data } = await apiHelper.get(
+  const { data } = await apiHelper.get<{ minimumAllowedQuantity: string }>(
     `purchases/purchase-materials/${purchaseMaterialId}/minimum-quantity`,
   );
   return data;

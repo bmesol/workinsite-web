@@ -2,6 +2,28 @@ import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 import type  { Material } from '@/shared/features/materials/DTOs/MaterialProps';
 
+type UploadedImage = {
+  id?: number;
+  uri: string;
+  name?: string;
+  type?: string;
+  file?: File;
+};
+
+type RemovedImage = {
+  id: number;
+  imagePath: string;
+};
+
+type PurchaseViewImage = {
+  id: number;
+  imagePath: string;
+  staticBaseUrl: string;
+  uri?: string;
+  name?: string;
+  type?: string;
+};
+
 export const ReceivedQualityTypes = {
   GOOD: 'Good',
   DAMAGED: 'Damaged',
@@ -12,7 +34,7 @@ export type ReceivedQualityTypes = typeof ReceivedQualityTypes[keyof typeof Rece
 interface PurchaseMaterial {
   id: number;
   material: Material;
-  images?: any;
+  images?: PurchaseViewImage[];
   quantity: string;
   rate: string;
   additionalCharges: string;
@@ -34,7 +56,7 @@ interface PurchaseMaterialCreation {
   receivedDate: string;
   receivedQuantity: string;
   note?: string;
-  images?: any;
+  images?: UploadedImage[];
 }
 
 interface PurchaseMaterialUpdation {
@@ -49,8 +71,8 @@ interface PurchaseMaterialUpdation {
   receivedDate: string;
   receivedQuantity: string;
   note?: string;
-  newImages?: any;
-  removedImages?: any;
+  newImages?: UploadedImage[];
+  removedImages?: RemovedImage[];
 }
 
 interface Purchase {
@@ -60,7 +82,7 @@ interface Purchase {
   supplier: Supplier;
   date: string;
   purchaseMaterials: PurchaseMaterial[];
-  images?: any;
+  images?: PurchaseViewImage[];
   totalAmount: string;
   gst: string;
   additionalCharges: string;
@@ -74,7 +96,7 @@ interface PurchaseCreationRequest {
   SupplierId: number;
   Date: string;
   PurchaseMaterials: PurchaseMaterialCreation[];
-  Images?: any;
+  Images?: UploadedImage[];
   TotalAmount: string;
   GST: string;
   AdditionalCharges: string;
@@ -90,8 +112,8 @@ interface PurchaseUpdationRequest {
   NewPurchaseMaterials?: PurchaseMaterialCreation[];
   UpdatedPurchaseMaterials?: PurchaseMaterialUpdation[];
   RemovedPurchaseMaterialIds?: number[];
-  RemovedImages?: any;
-  Images?: any;
+  RemovedImages?: RemovedImage[];
+  Images?: UploadedImage[];
   TotalAmount: string;
   GST: string;
   AdditionalCharges: string;
@@ -108,12 +130,24 @@ interface PurchaseFilterRequest {
   PageSize?: number;
 }
 
+interface PurchasePagedResult {
+  items: Purchase[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export type {
   Purchase,
+  PurchasePagedResult,
   PurchaseCreationRequest,
   PurchaseUpdationRequest,
   PurchaseMaterial,
   PurchaseMaterialCreation,
   PurchaseMaterialUpdation,
   PurchaseFilterRequest,
+  UploadedImage,
+  RemovedImage,
+  PurchaseViewImage,
 };

@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { useTaskService } from '../../service/TaskService';
 import type { Task } from '../../DTOs/TaskProps';
 import { TaskUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useTaskList = () => {
   const navigate = useNavigate();
@@ -41,10 +42,8 @@ const useTaskList = () => {
       await taskService.deleteTask(id);
       setDeleteId(null);
       fetchTasks();
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || 'Failed to delete Task.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Task.'));
     }
   };
 

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
 import { useState } from "react";
 import { toast } from "sonner";
+import { parseApiError } from "@/shared/utils/parseApiError";
 
 const useUserCreationPinForm = (userDetail: UserBase, onClose: () => void, queryString?: URLSearchParams) => {
   const userService = createUserService();
@@ -42,8 +43,8 @@ const useUserCreationPinForm = (userDetail: UserBase, onClose: () => void, query
           return;
         }
         navigate(UsersUrls.list);
-      } catch (error: any) {
-        toast.error(error.message, { description: "Invalid Request" });
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'An unexpected error occurred'), { description: "Invalid Request" });
       }
     }
   };

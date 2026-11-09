@@ -3,7 +3,6 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { SupervisorAttendance } from '../DTOs/SupervisorAttendanceProps';
 import {
-  THIN_BORDER,
   styleHeaderRow,
   styleDataRow,
   addReportHeader,

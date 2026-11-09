@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { AttendanceProps } from '../../DTOs/AttendanceProps';
 import { useAttendanceService } from '@/shared/features/attendance/service/AttendanceService';
+import type { GetAttendanceParams } from '@/shared/features/attendance/service/AttendanceService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useWageTypeService } from '@/shared/features/sites/service/WageTypeService';
 import { useWorkerService } from '@/shared/features/workers/service/WorkerService';
@@ -11,6 +12,7 @@ import type { WorkTypeProp } from '@/shared/features/workers/DTOs/WorkTypeProps'
 import { useNavigate } from 'react-router-dom';
 import { AttendanceUrls } from '../../utils/urls';
 import { toast } from 'sonner';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 interface WorkType {
   value: string;
@@ -72,7 +74,7 @@ export const useAttendanceList = () => {
     fetchAttendance(true);
   }, []);
 
-  const fetchAttendance = async (reset = false, overrideFilters?: any) => {
+  const fetchAttendance = async (reset = false, overrideFilters?: Partial<GetAttendanceParams>) => {
     const filters = overrideFilters || {
       siteId: siteId.value ? parseInt(siteId.value) : undefined,
       wageTypeId: wageTypeId.value ? parseInt(wageTypeId.value) : undefined,
@@ -102,8 +104,8 @@ export const useAttendanceList = () => {
         setPageNumber(prev => prev + 1);
       }
       setHasMore(response.totalPages > response.pageNumber);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to fetch attendance records');
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to fetch attendance records'));
     } finally {
       setLoading(false);
       setPaginationLoading(false);
@@ -159,10 +161,8 @@ export const useAttendanceList = () => {
       await attendanceService.deleteAttendance(deleteConfirmId);
       setDeleteConfirmId(null);
       fetchAttendance(true);
-    } catch (error: any) {
-      const errorMsg =
-        error?.response?.data?.message || 'Failed to delete Attendance';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Attendance'));
       setDeleteConfirmId(null);
     }
   };
@@ -256,8 +256,7 @@ export const useAttendanceList = () => {
       WorkerName,
       WorkerCategoryId: parseInt(workTypeId.workerCategoryId),
     });
-    if (!workers?.items) return;
-    setWorkerList(WorkerName ? workers.items.slice(0, 3) : workers.items);
+    setWorkerList(WorkerName ? workers.slice(0, 3) : workers);
   };
 
   const fetchWageTypes = async (searchString: string = '') => {

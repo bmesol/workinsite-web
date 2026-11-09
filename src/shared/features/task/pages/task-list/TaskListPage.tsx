@@ -86,7 +86,7 @@ const TaskListPage = () => {
               key={item.id}
               id={item.id}
               taskName={item.taskName}
-              siteId={item.site?.name}
+              siteName={item.site?.name}
               supervisor={item.assignedTo?.name}
               date={item.date}
               priority={item.priority}

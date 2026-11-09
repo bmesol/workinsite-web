@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import type { WorkMode } from '../../DTOs/WorkModeProps';
 import { useWorkModeInputValidate } from '../../components/InputValidate/WorkerModeInputValidate';
 import { useWorkModeService } from '../../service/WorkerModeService';
-import { toast } from 'sonner';    
+import { toast } from 'sonner';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useWorkModeCreation = () => {               
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export const useWorkModeCreation = () => {
     try {
       const data = await workmodeService.getWorkModes('');
       setWorkModeDetails(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Failed to fetch work modes');
     } finally {
       setLoading(false);
@@ -59,9 +60,8 @@ export const useWorkModeCreation = () => {
           resetFormFields();
           setIsEditing(false);
         }
-      } catch (error: any) {
-        const errorMsg = error?.response?.data?.[0]?.message || 'Failed to update work mode';
-        toast.error(errorMsg);
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to update work mode'));
       }
     }
   };
@@ -93,9 +93,8 @@ export const useWorkModeCreation = () => {
       await workmodeService.deleteWorkMode(deleteId);
       toast.success('Work mode deleted successfully');
       fetchWorkMode();
-    } catch (error: any) {
-      const errorMsg = error?.response?.data?.message || 'Failed to delete work mode';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete work mode'));
     } finally {
       setDeleteId(null);
     }
@@ -113,9 +112,8 @@ export const useWorkModeCreation = () => {
           fetchWorkMode();
         }
         resetFormFields();
-      } catch (error: any) {
-        const errorMsg = error?.response?.data?.[0]?.message || 'Failed to create work mode';
-        toast.error(errorMsg);
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to create work mode'));
       }
     }
   };

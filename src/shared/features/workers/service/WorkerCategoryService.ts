@@ -1,4 +1,4 @@
-import type { WorkerCategoryEditRequest } from "../DTOs/WorkerCategoryProps";
+import type { WorkerCategoryCreationRequest, WorkerCategoryEditRequest, WorkerCategoryProps } from "../DTOs/WorkerCategoryProps";
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
 
 const useWorkerCategoryService = () => {
@@ -6,17 +6,17 @@ const useWorkerCategoryService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkerCategories = async (searchString: string = "", setIsLoading?: boolean) => {
-    const { data } = await apiHelper.get(`worker-categories?searchString=${searchString}`, setIsLoading);
+    const { data } = await apiHelper.get<WorkerCategoryProps[]>(`worker-categories?searchString=${searchString}`, setIsLoading);
     return data;
   };
 
   const getWorkerCategory = async (id: number) => {
-    const { data } = await apiHelper.get(`worker-categories/${id}`);
+    const { data } = await apiHelper.get<WorkerCategoryProps>(`worker-categories/${id}`);
     return data;
   };
 
-  const createWorkerCategory = async (workerCategory: any) => {
-    const { data } = await apiHelper.post("worker-categories", workerCategory);
+  const createWorkerCategory = async (workerCategory: WorkerCategoryCreationRequest) => {
+    const { data } = await apiHelper.post<WorkerCategoryProps>("worker-categories", workerCategory);
     return data;
   };
   const updateWorkerCategory = async (id: number, workerCategory: WorkerCategoryEditRequest) => {

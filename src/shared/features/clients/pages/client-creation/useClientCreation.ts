@@ -92,7 +92,7 @@ const useClientCreation = (queryString: URLSearchParams) => {
   const handleSubmission = async () => {
     if (validate()) {
       const client = { name, note: notes, contactId: parseInt(contactId), kycDetails: validKycDetails };
-      const response = await clientService.createClient(client);
+      const response = await clientService.createClient(client) as Client;
       if (queryStringRedirectUrl) {
         navigate(`${queryStringRedirectUrl}&clientId=${response.id}`);
         return;

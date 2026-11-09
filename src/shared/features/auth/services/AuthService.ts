@@ -54,6 +54,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 
 import { AuthHelper } from "@/shared/features/auth/helpers/AuthHelper";
 import { refreshTokensShared } from "@/shared/helpers/tokenRefresh";
+import { parseApiError } from "@/shared/utils/parseApiError";
 
 export interface AuthTokens {
   accessToken: string;
@@ -121,11 +122,8 @@ const AuthService = {
         accessToken: response.data.accessToken,
         refreshToken: response.data.refreshToken,
       };
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.message ||
-          "Invalid phone number or PIN",
-      );
+    } catch (error: unknown) {
+      throw new Error(parseApiError(error, "Invalid phone number or PIN"));
     }
   },
 

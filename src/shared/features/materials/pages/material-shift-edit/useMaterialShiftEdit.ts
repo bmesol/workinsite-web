@@ -8,6 +8,7 @@ import { useMaterialShiftInputValidate } from '../../components/InputValidate/Ma
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { SITE_STATUS } from '@/shared/constants/appEnums';
 import { MaterialShiftUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useMaterialShiftEdit = (id: string) => {
   const navigate = useNavigate();
@@ -214,12 +215,8 @@ export const useMaterialShiftEdit = (id: string) => {
       });
       toast.success('Material Shift updated successfully.');
       navigate(MaterialShiftUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.[0]?.message ||
-        error?.response?.data?.message ||
-        'Failed to Edit Material Shift.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to Edit Material Shift.'));
     }
   };
 

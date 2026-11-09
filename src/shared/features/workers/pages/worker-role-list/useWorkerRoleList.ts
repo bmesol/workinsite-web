@@ -20,7 +20,7 @@ export const useWorkerRoleList = (props: WorkerRoleListProps) => {
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);     // ← replaces bottomSheetRef
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // ← replaces Alert
-  const [pendingDelete, setPendingDelete] = useState<{ index: number; source: string; item: any } | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ index: number; source: string; item: WorkerRole | WorkerRoles } | null>(null);
 
   const WorkerRoleService = useWorkerRoleService();
 
@@ -29,8 +29,8 @@ export const useWorkerRoleList = (props: WorkerRoleListProps) => {
     setEditDialogOpen(true);   // ← replaces workerRoleBottomSheetRef.current?.open()
   };
 
-  const handleDeleteClick = async (index: number, source: string, item: any) => {
-    if (source === "update" && item.id) {
+  const handleDeleteClick = async (index: number, source: string, item: WorkerRole | WorkerRoles) => {
+    if (source === "update" && 'id' in item && item.id) {
       const isInUse = await WorkerRoleService.getWorkerRoleUsage(item.id);
       if (isInUse === true) {
         toast.error("This worker role is currently in use and cannot be deleted.");
@@ -53,7 +53,7 @@ export const useWorkerRoleList = (props: WorkerRoleListProps) => {
       const updated = [...(updateworkerRoleList || [])];
       updated.splice(index, 1);
       setUpdateWorkerRoleList(updated);
-      if (deleteworkerRoleList && setDeleteWorkerRoleList && item.id) {
+      if (deleteworkerRoleList && setDeleteWorkerRoleList && 'id' in item && item.id) {
         setDeleteWorkerRoleList([...deleteworkerRoleList, item.id]);
       }
     }

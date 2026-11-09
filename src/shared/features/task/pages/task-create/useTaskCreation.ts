@@ -9,6 +9,7 @@ import { priorityTaskType, statusTaskType } from '../../DTOs/TaskProps';
 import { SITE_STATUS, TASK_PRIORITY_OPTIONS, TASK_STATUS_OPTIONS } from '@/shared/constants/appEnums';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { TaskUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export type UploadedImage = {
   uri: string;
@@ -232,8 +233,8 @@ export const useTaskCreation = () => {
       resetFormFields();
       navigate(TaskUrls.list);
       toast.success(t('Task created successfully'));
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || t('Failed to create Task'));
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, t('Failed to create Task')));
     } finally {
       setLoading(false);
     }

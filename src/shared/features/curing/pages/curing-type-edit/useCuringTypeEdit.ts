@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useCuringTypeService } from '../../service/CuringTypeService';
 import { useCuringTypeInputValidate } from '../../components/InputValidate/CuringTypeInputValidate';
 import { CuringTypeUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useCuringTypeEdit = (id: string) => {
   const { t } = useLanguage();
@@ -62,12 +63,8 @@ export const useCuringTypeEdit = (id: string) => {
       });
       toast.success(t('Curing type updated successfully.'));
       navigate(CuringTypeUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.[0]?.message ||
-        error?.response?.data?.message ||
-        'Failed to update curing type.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to update curing type.'));
     }
   };
 

@@ -1,12 +1,7 @@
 import { userApiClient } from "@/shared/services/ApiClient";
 import type { UserCreationRequest } from "../DTOs/UserCreationRequest";
-
-// DTOs
-export type ProfileUpdationRequest = {
-  name: string;
-  phone: string;
-  note: string;
-};
+import type { User } from "../DTOs/User";
+import type { ProfileUpdationRequest } from "../DTOs/ProfileUpdationRequest";
 
 
 export type UserUpdationRequest = {
@@ -19,7 +14,7 @@ export type UserUpdationRequest = {
 
 const createUserService = () => {
 
-  const getUsers = async (searchString: string = "") => {
+  const getUsers = async (searchString: string = ""): Promise<User[]> => {
     const { data } = await userApiClient.get(`users?searchString=${searchString}`);
     return data;
   };

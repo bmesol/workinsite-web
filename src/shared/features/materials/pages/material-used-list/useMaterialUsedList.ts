@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useMaterialUsedService } from '../../service/MaterialUsedService';
+import type { GetMaterialsUsedParams } from '../../service/MaterialUsedService';
 import { useMaterialService } from '@/shared/features/materials/service/MaterialService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useWorkModeService } from '@/shared/features/workers/service/WorkerModeService';
@@ -10,6 +11,7 @@ import type { Material } from '@/shared/features/materials/DTOs/MaterialProps';
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import type { MaterialUsed } from '../../DTOs/MaterialUsedProps';
 import { MaterialUsedUrls } from '../../utils/urls'; // adjust path
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useMaterialUsedList = () => {
   const navigate = useNavigate();
@@ -84,7 +86,7 @@ const useMaterialUsedList = () => {
   }));
 
   // ── Fetch Material Used ──
-  const fetchMaterialUsed = async (reset = false, overrideFilters?: any) => {
+  const fetchMaterialUsed = async (reset = false, overrideFilters?: Partial<GetMaterialsUsedParams>) => {
     const filters = overrideFilters || {
       date: date || undefined,
       siteId: site.value ? parseInt(site.value) : undefined,
@@ -140,10 +142,8 @@ const useMaterialUsedList = () => {
       await materialUsedService.deleteMaterialUsed(id);
       setDeleteId(null);
       fetchMaterialUsed(true);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || 'Failed to delete Material Used.'
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Material Used.'));
     }
   };
 

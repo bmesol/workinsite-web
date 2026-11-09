@@ -18,4 +18,12 @@ interface WorkerTransactionProps {
   id: number;
 }
 
-export type { WorkerTransactionRequest, WorkerTransactionProps };
+interface WorkerTransactionPagedResult {
+  items: WorkerTransactionProps[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export type { WorkerTransactionRequest, WorkerTransactionProps, WorkerTransactionPagedResult };

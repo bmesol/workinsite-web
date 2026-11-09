@@ -1,8 +1,8 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
-import type { WorkerTransactionRequest } from '../DTOs/WorkerTransaction';
+import type { WorkerTransactionRequest, WorkerTransactionProps, WorkerTransactionPagedResult } from '../DTOs/WorkerTransaction';
 
-interface WorkerTransactionParams {
+export interface WorkerTransactionParams {
   workerId?: number;
   fromDate?: string;
   toDate?: string;
@@ -16,7 +16,7 @@ const useWorkerTransactionService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkerTransactions = async (params: WorkerTransactionParams) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<WorkerTransactionPagedResult>(
       `worker-transactions?${buildQueryParams({
         WorkerId: params.workerId,
         FromDate: params.fromDate,
@@ -30,7 +30,7 @@ const useWorkerTransactionService = () => {
   };
 
   const getWorkerTransaction = async (id: number) => {
-    const { data } = await apiHelper.get(`worker-transactions/${id}`);
+    const { data } = await apiHelper.get<WorkerTransactionProps>(`worker-transactions/${id}`);
     return data;
   };
 

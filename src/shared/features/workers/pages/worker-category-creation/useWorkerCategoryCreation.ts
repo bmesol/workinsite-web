@@ -64,6 +64,7 @@ import type { WorkTypeNew } from "../../DTOs/WorkTypeProps";
 import type { WorkerCategoryCreationRequest } from "../../DTOs/WorkerCategoryProps";
 import { toast } from "sonner";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { parseApiError } from "@/shared/utils/parseApiError";
 
 const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
    const payload = {
   name: workerCategoryName.trim(),
   workTypes: (workTypeList ?? []).map((wt) => ({ name: wt.name, unitId: wt.unitId })),
-  workerRoles: (workerRoleList ?? []).map((wr: any) => ({
+  workerRoles: (workerRoleList ?? []).map((wr) => ({
     name: wr.name,
     salaryPerShift: wr.salaryPerShift ?? "",
     hoursPerShift: wr.hoursPerShift ?? "",
@@ -119,10 +120,8 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
     } else {
       navigate(WorkerCategoriesUrls.list);
     }
-  } catch (error: any) {
-    const errorMsg =
-      error?.response?.data?.[0]?.message || "Failed to create worker category. Please try again.";
-    toast.error(errorMsg);
+  } catch (error: unknown) {
+    toast.error(parseApiError(error, "Failed to create worker category. Please try again."));
   }
 };
 

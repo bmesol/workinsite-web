@@ -4,10 +4,11 @@ import { toast } from 'sonner';
 import { useMaterialShiftService } from '../../service/MaterialShiftService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useMaterialService } from '@/shared/features/materials/service/MaterialService';
-import type { MaterialShift } from '../../DTOs/MaterialShiftProps';
+import type { MaterialShift, MaterialShiftFilterRequest } from '../../DTOs/MaterialShiftProps';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import type { Material } from '@/shared/features/materials/DTOs/MaterialProps';
 import { MaterialShiftUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useMaterialShiftList = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export const useMaterialShiftList = () => {
   }, [location.state?.refresh]);
 
   // ── Fetch Material Shifts ──
-  const fetchMaterialShifts = async (resetList = false, overrideFilters?: any) => {
+  const fetchMaterialShifts = async (resetList = false, overrideFilters?: Partial<MaterialShiftFilterRequest>) => {
     const filters = overrideFilters || {
       materialId: materialId.value ? parseInt(materialId.value) : undefined,
       sourceSiteId: sourceSiteId.value ? parseInt(sourceSiteId.value) : undefined,
@@ -125,10 +126,8 @@ export const useMaterialShiftList = () => {
       await materialShiftService.deleteMaterialShift(id);
       setDeleteId(null);
       fetchMaterialShifts(true);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || 'Failed to delete Material Shift.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Material Shift.'));
     }
   };
 

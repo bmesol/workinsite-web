@@ -7,6 +7,11 @@ export type RoleRequest = {
   // ... other role fields as per your RoleRequest DTO
 };
 
+export type RoleListItem = {
+  id: number;
+  name: string;
+};
+
 type GetRolesParams = {
   name?: string;
   pageNumber?: number;

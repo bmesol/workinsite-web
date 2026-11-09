@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useMaterialPurchaseService } from '../../service/PurchaseService';
+import type { MaterialPurchasesfilters } from '../../service/PurchaseService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useSupplierService } from '@/shared/features/suppliers/service/SupplierService';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 import type { Purchase } from '../../DTOs/PurchaseProps';
 import { PurchaseUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const usePurchaseList = () => {
   const navigate = useNavigate();
@@ -37,7 +39,7 @@ export const usePurchaseList = () => {
     fetchPurchases(true);
   }, [location.state?.refresh]);
 
-  const fetchPurchases = async (resetList = false, overrideFilters?: any) => {
+  const fetchPurchases = async (resetList = false, overrideFilters?: Partial<MaterialPurchasesfilters>) => {
     const filters = overrideFilters || {
       siteId: siteId.value ? parseInt(siteId.value) : undefined,
       billNumber: billNumber || undefined,
@@ -71,7 +73,7 @@ export const usePurchaseList = () => {
       }
 
       setHasMore(response.totalPages > response.pageNumber);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Failed to fetch Purchase.');
     } finally {
       setLoading(false);
@@ -96,7 +98,7 @@ export const usePurchaseList = () => {
     setAppliedFilters('');
   };
 
-  const handleClearSearch = async () => {
+  const handleClearSearch = () => {
     resetForm();
     fetchPurchases(true, {
       billNumber: undefined,
@@ -120,20 +122,18 @@ export const usePurchaseList = () => {
       await materialPurchaseService.deleteMaterialPurchase(id);
       setDeleteId(null);
       fetchPurchases(true);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || 'Failed to delete Purchase.'
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Purchase.'));
     }
   };
 
   const handleEditPurchase = (id: number) => {
-  navigate(PurchaseUrls.edit(id));
-};
+    navigate(PurchaseUrls.edit(id));
+  };
 
-const handleAddPurchase = () => {
-  navigate(PurchaseUrls.create);
-};
+  const handleAddPurchase = () => {
+    navigate(PurchaseUrls.create);
+  };
   const fetchSites = async (searchString: string = '') => {
     const sites = await siteService.getSites({ searchString });
     if (!sites) return;

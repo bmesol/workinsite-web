@@ -1,12 +1,12 @@
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
-import type { WorkType } from "../DTOs/WorkTypeProps";
+import type { WorkType, WorkTypeProp } from "../DTOs/WorkTypeProps";
 
 export const useWorkTypeService = () => {
   const baseUrl = import.meta.env.VITE_WORKER_SERVICE_BASE_URL || "";  // ← react-native-config → vite env
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkTypes = async (searchString: string = "") => {
-    const { data } = await apiHelper.get(`work-types?searchString=${searchString}`);
+    const { data } = await apiHelper.get<WorkTypeProp[]>(`work-types?searchString=${searchString}`);
     return data;
   };
 

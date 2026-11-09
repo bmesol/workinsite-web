@@ -357,6 +357,7 @@ import { useUser } from '@/shared/hooks/useUserContact';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { getTaskFieldPermissions } from '@/shared/helpers/TaskPermission';
 import { seedSelfUpdate } from '@/shared/features/notifications/hooks/useTaskNotifications';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export type UploadedImage = {
   uri: string;
@@ -664,10 +665,8 @@ export const useTaskEdit = (id: string) => {
 
       toast.success(t('Task updated successfully.'));
       navigate(TaskUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || 'Update failed.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Update failed.'));
     }
   };
 

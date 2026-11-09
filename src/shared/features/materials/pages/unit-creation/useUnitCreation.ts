@@ -4,6 +4,7 @@ import { useUnitService } from '../../service/UnitService';
 import { useUnitInputValidate } from '../../components/InputValidate/UnitInputValidate';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useUnitCreation = () => {
   const navigate = useNavigate();
@@ -57,8 +58,8 @@ export const useUnitCreation = () => {
         const response = await unitService.createUnit({ name: name.trim() });
         if (response.id) refreshList();
         resetFormFields();
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message || 'Failed to create unit');
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to create unit'));
       }
     }
   };
@@ -73,8 +74,8 @@ export const useUnitCreation = () => {
           refreshList();
           resetFormFields();
         }
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message || 'Failed to update unit');
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to update unit'));
       }
     }
   };
@@ -88,8 +89,8 @@ export const useUnitCreation = () => {
       await unitService.deleteUnit(id);
       setDeleteId(null);
       refreshList();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to delete unit');
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete unit'));
       setDeleteId(null);
     }
   };

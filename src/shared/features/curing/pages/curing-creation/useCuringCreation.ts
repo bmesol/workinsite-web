@@ -9,6 +9,7 @@ import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { CuringType } from '../../DTOs/CuringTypeProps';
 import { CuringUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useCuringCreate = () => {
   const navigate = useNavigate();
@@ -89,12 +90,8 @@ export const useCuringCreate = () => {
       });
       resetForm();
       navigate(CuringUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.[0]?.message ||
-        error?.response?.data?.message ||
-        'Failed to create curing.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to create curing.'));
     }
   };
 

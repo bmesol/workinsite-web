@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useClientTransactionService } from '../../service/ClientTransactionService';
+import type { ClientTransactionParams } from '../../service/ClientTransactionService';
 import { useClientService } from '@/shared/features/clients/service/ClientService';
 import type { ClientTransactionProps } from '../../DTOs/ClientTransaction';
 import type { Client } from '@/shared/features/clients/DTOs/ClientProps';
 import { ClientTransactionUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useClientTransactionList = () => {
   const navigate = useNavigate();
@@ -45,7 +47,7 @@ const useClientTransactionList = () => {
   }));
 
   // ── Fetch transactions ────────────────────────────────────────────────────
-  const fetchTransactions = async (reset = false, overrideFilters?: any) => {
+  const fetchTransactions = async (reset = false, overrideFilters?: Partial<ClientTransactionParams>) => {
     const filters = overrideFilters || {
       fromDate: fromDate || undefined,
       toDate: toDate || undefined,
@@ -122,11 +124,8 @@ const useClientTransactionList = () => {
       await clientTransactionService.deleteClientTransaction(id);
       setDeleteId(null);
       fetchTransactions(true);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-        'Failed to delete Client Transaction.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Client Transaction.'));
     }
   };
 

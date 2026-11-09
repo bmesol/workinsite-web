@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useWorkerTransactionService } from '../../service/WorkerTransactionService';
+import type { WorkerTransactionParams } from '../../service/WorkerTransactionService';
 import { useWorkerService } from '@/shared/features/workers/service/WorkerService';
 import type { WorkerTransactionProps } from '../../DTOs/WorkerTransaction';
 import type { Worker } from '@/shared/features/workers/DTOs/WorkerProps';
 import { WorkerTransactionUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const PAGE_SIZE = 3;
 
@@ -45,7 +47,7 @@ const useWorkerTransactionList = () => {
 
   const fetchWorkerTransactions = async (
     reset = false,
-    overrideFilters?: any,
+    overrideFilters?: Partial<WorkerTransactionParams>,
   ) => {
     const filters = overrideFilters || {
       fromDate: fromDate || undefined,
@@ -125,10 +127,8 @@ const useWorkerTransactionList = () => {
       await workerTransactionService.deleteWorkerTransaction(deleteId);
       setDeleteId(null);
       fetchWorkerTransactions(true);
-    } catch (error: any) {
-      const errorMsg =
-        error?.response?.data?.message || 'Failed to delete Worker Transaction';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Worker Transaction'));
       setDeleteId(null);
     }
   };

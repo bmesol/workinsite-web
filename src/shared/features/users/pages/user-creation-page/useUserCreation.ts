@@ -3,6 +3,7 @@ import { useInputValidate } from "../../components/InputValidate/InputValidate";
 import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
 import { createRoleService } from "../../services/RoleService";
+import type { RoleListItem } from "../../services/RoleService";
 
 const useUserCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -21,8 +22,8 @@ const useUserCreation = (queryString: URLSearchParams) => {
   const fetchRoles = async () => {
     try {
       const data = await roleService.getRoles({ ignorePagination: true });
-      const rolesData = data?.items || data || [];
-      const formatted = rolesData.map((item: any) => ({
+      const rolesData: RoleListItem[] = data?.items || data || [];
+      const formatted = rolesData.map((item) => ({
         label: item.name,
         value: item.id.toString(),
       }));

@@ -1,8 +1,7 @@
 import { useInputValidate } from "../../components/InputValidate/InputValidate";
 import { ContactTypes } from "../../DTOs/ContactProps";
-import type { ContactRequest} from "../../DTOs/ContactProps"
+import type { Contact, ContactRequest} from "../../DTOs/ContactProps"
 import { useContactService } from "../../service/ContactService";
-import { toast } from "sonner";
 import { ContactsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -25,7 +24,7 @@ const useContactCreation = (queryString: URLSearchParams) => {
   const handleSubmission = async () => {
     if (validate()) {
       const contact = { ...contactList, name, phone };
-      const response = await contactService.createContact(contact);
+      const response = await contactService.createContact(contact) as Contact;
       if (redirectUrl) {
         navigate(`${redirectUrl}&name=${name}&contactId=${response.id}`);
         return;

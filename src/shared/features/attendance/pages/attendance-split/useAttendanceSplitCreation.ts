@@ -8,7 +8,7 @@ import {useShiftService} from '@/shared/features/workers/service/ShiftService';
 interface AttendanceSplitProps {
   attendanceSplit: AttendanceSplit[];
   setAttendanceSplit: (value: AttendanceSplit[]) => void;
-  Ref?: any;
+  Ref?: { current: { close?: () => void } | null };
   workerCategoryId: number;
 }
 
@@ -139,7 +139,7 @@ export const useAttendanceSplitCreationScreen = (
       };
       setAttendanceSplit([...attendanceSplit, newAttendanceSplitEntry]);
       resetFormFields();
-      Ref?.current?.close();
+      Ref?.current?.close?.();
     }
   };
 

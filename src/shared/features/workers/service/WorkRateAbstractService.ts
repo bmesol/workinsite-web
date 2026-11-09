@@ -1,19 +1,19 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
-import type { workerRateAbstractRequest } from '../DTOs/WorkRateAbstract';
+import type { workerRateAbstractRequest, WorkRateAbstractProps } from '../DTOs/WorkRateAbstract';
 
 const useWorkRateAbstractService = () => {
   const baseUrl = import.meta.env.VITE_SITE_SERVICE_BASE_URL || '';
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkRateAbstracts = async (searchString: string = '') => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<WorkRateAbstractProps[]>(
       `work-rate-abstracts?searchString=${searchString}`,
     );
     return data;
   };
 
   const getWorkRateAbstract = async (id: number) => {
-    const { data } = await apiHelper.get(`work-rate-abstracts/${id}`);
+    const { data } = await apiHelper.get<WorkRateAbstractProps>(`work-rate-abstracts/${id}`);
     return data;
   };
 

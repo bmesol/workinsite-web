@@ -1,17 +1,17 @@
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
-import type { ClientRequest } from "../DTOs/ClientProps";
+import type { Client, ClientRequest } from "../DTOs/ClientProps";
 
 const useClientService = () => {
   const baseUrl = import.meta.env.VITE_SITE_SERVICE_BASE_URL ?? "";
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getClients = async (searchString: string = "", setIsLoading?: boolean) => {
-    const { data } = await apiHelper.get(`clients?searchString=${searchString}`, setIsLoading);
+    const { data } = await apiHelper.get<Client[]>(`clients?searchString=${searchString}`, setIsLoading);
     return data;
   };
 
   const getClient = async (id: number) => {
-    const { data } = await apiHelper.get(`clients/${id}`);
+    const { data } = await apiHelper.get<Client>(`clients/${id}`);
     return data;
   };
 

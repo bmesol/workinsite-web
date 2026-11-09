@@ -10,6 +10,7 @@ import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 import type { PurchaseMaterialCreationListProps } from '../../DTOs/PurchaseMaterialProps';
 import { formatDateToString } from '@/shared/features/attendance/utils/functions';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export type UploadedImage = {
   uri: string;
@@ -145,7 +146,7 @@ export const usePurchaseCreation = () => {
     updateTotals(updatedItems);
   };
 
- const updateTotals = (materials: any[]) => {
+ const updateTotals = (materials: PurchaseMaterialCreationListProps[]) => {
   if (materials.length === 0) {
     setTotalAmount('');
     setAdditionalCharges('');
@@ -234,8 +235,8 @@ export const usePurchaseCreation = () => {
         resetFormFields();
         navigate('/materials/purchase', { state: { refresh: true } });
       }
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to create Purchase');
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to create Purchase'));
     }
   };
 

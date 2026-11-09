@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 interface PurchaseMaterialInputProps {
-  materialId: any;
+  materialId: string;
   rate: string;
   receivedQuality: string;
   receivedDate?: string;

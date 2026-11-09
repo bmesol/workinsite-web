@@ -1,7 +1,8 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
+import type { AttendanceProps, AttendancePagedResult } from '../DTOs/AttendanceProps';
 
-type GetAttendanceParams = {
+export type GetAttendanceParams = {
   siteId?: number;
   wageTypeId?: number;
   workTypeId?: number;
@@ -16,7 +17,7 @@ const useAttendanceService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getAttendances = async (params: GetAttendanceParams = {}) => {
-    const { data } = await apiHelper.get(`/attendances?${buildQueryParams({
+    const { data } = await apiHelper.get<AttendancePagedResult>(`/attendances?${buildQueryParams({
       SiteId: params.siteId,
       WageTypeId: params.wageTypeId,
       WorkTypeId: params.workTypeId,
@@ -29,7 +30,7 @@ const useAttendanceService = () => {
   };
 
   const getAttendance = async (id: number) => {
-    const { data } = await apiHelper.get(`attendances/${id}`);
+    const { data } = await apiHelper.get<AttendanceProps>(`attendances/${id}`);
     return data;
   };
 

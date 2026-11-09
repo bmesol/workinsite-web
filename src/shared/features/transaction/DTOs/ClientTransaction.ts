@@ -39,5 +39,13 @@ interface ClientTransactionProps {
   clientTransactionSplits?: ClientTransactionSplitProps[];
 }
 
+interface ClientTransactionPagedResult {
+  items: ClientTransactionProps[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export { PaymentMethodEnum };
-export type { ClientTransactionRequest, ClientTransactionSplitRequest, ClientTransactionProps, ClientTransactionSplitProps };
+export type { ClientTransactionRequest, ClientTransactionSplitRequest, ClientTransactionProps, ClientTransactionSplitProps, ClientTransactionPagedResult };

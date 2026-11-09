@@ -126,6 +126,7 @@ import { WorkerCategoriesUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { parseApiError } from "@/shared/utils/parseApiError";
 import type { WorkType, WorkTypeNew } from "../../DTOs/WorkTypeProps";
 import type { WorkerRole, WorkerRoles } from "../../DTOs/WorkRoleProps";
 
@@ -169,12 +170,8 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
 
       setUpdatedWorkTypeList(workerCategory.workTypes ?? []);
       setUpdateWorkerRoleList(workerCategory.workerRoles ?? []);
-    } catch (error: any) {
-      const errorMsg =
-        error?.response?.data?.[0]?.message ||
-        "Could not fetch worker category. Please try again";
-
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, "Could not fetch worker category. Please try again"));
     } finally {
       setLoading(false);
     }
@@ -230,12 +227,8 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
         }
 
         navigate(WorkerCategoriesUrls.list);
-      } catch (error: any) {
-        const errorMsg =
-          error?.response?.data?.[0]?.message ||
-          "Could not update worker category. Please try again";
-
-        toast.error(errorMsg);
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, "Could not update worker category. Please try again"));
       }
     }
   };

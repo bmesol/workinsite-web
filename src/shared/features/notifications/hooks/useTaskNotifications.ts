@@ -61,7 +61,9 @@ const seedSelfUpdate = (taskId: number, updatedOn: string) => {
     const map: Record<number, string> = raw ? JSON.parse(raw) : {};
     map[taskId] = updatedOn;
     localStorage.setItem(key, JSON.stringify(map));
-  } catch {}
+  } catch {
+    // ignore localStorage errors
+  }
 };
 
 const getAssignedToName = (t: Task): string => {
@@ -87,7 +89,9 @@ const buildNotification = (t: Task, type: 'new' | 'updated'): TaskNotification =
 const useTaskNotifications = () => {
   const taskService = useTaskService();
   const taskServiceRef = useRef(taskService);
-  taskServiceRef.current = taskService;
+  useEffect(() => {
+    taskServiceRef.current = taskService;
+  });
 
   const [notifications, setNotifications] = useState<TaskNotification[]>(
     () => loadUnread(),
@@ -98,7 +102,7 @@ const useTaskNotifications = () => {
 
     const poll = async () => {
       try {
-        const tasks: Task[] = await taskServiceRef.current.getTasks();
+        const tasks = await taskServiceRef.current.getTasks() as Task[];
         if (!Array.isArray(tasks)) return;
 
         const seenIds = getSeenIds();

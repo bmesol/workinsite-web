@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { useCuringTypeService } from '../../service/CuringTypeService';
 import { useCuringTypeInputValidate } from '../../components/InputValidate/CuringTypeInputValidate';
 import { CuringTypeUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useCuringTypeCreate = () => {
   const navigate = useNavigate();
@@ -32,12 +33,8 @@ export const useCuringTypeCreate = () => {
       });
       resetForm();
       navigate(CuringTypeUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.[0]?.message ||
-        error?.response?.data?.message ||
-        'Failed to create curing type.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to create curing type.'));
     }
   };
 

@@ -276,7 +276,7 @@ function getApiInstance(
    * refresh-race fix is confirmed in production.
    */
   api.interceptors.response.use(
-    (response: AxiosResponse<any>) => response,
+    (response) => response,
 
     async (error: AxiosError) => {
       const status = error.response?.status;
@@ -430,42 +430,42 @@ const useAPIHelper = (
     }
   };
 
-  const get = (
+  const get = <T = unknown>(
     url: string,
     showLoader: boolean = true,
     config?: AxiosRequestConfig,
   ) =>
     withLoader(showLoader, () =>
-      api.get(url, config),
+      api.get<T>(url, config),
     );
 
-  const post = (
+  const post = <T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig,
     showLoader: boolean = true,
   ) =>
     withLoader(showLoader, () =>
-      api.post(url, data, config),
+      api.post<T>(url, data, config),
     );
 
-  const put = (
+  const put = <T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig,
     showLoader: boolean = true,
   ) =>
     withLoader(showLoader, () =>
-      api.put(url, data, config),
+      api.put<T>(url, data, config),
     );
 
-  const deleteRequest = (
+  const deleteRequest = <T = unknown>(
     url: string,
     config?: AxiosRequestConfig,
     showLoader: boolean = true,
   ) =>
     withLoader(showLoader, () =>
-      api.delete(url, config),
+      api.delete<T>(url, config),
     );
 
   return {

@@ -1,5 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
-import type { MaterialRequest } from '../DTOs/MaterialProps';
+import type { Material, MaterialRequest } from '../DTOs/MaterialProps';
 
 export const useMaterialService = () => {
   const baseUrl = import.meta.env.VITE_MASTER_DATA_SERVICE_BASE_URL || '';
@@ -9,7 +9,7 @@ export const useMaterialService = () => {
     searchString: string = '',
     setIsLoading?: boolean,
   ) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<Material[]>(
       `materials?searchString=${searchString}`,
       setIsLoading,
     );
@@ -17,7 +17,7 @@ export const useMaterialService = () => {
   };
 
   const getMaterial = async (id: number) => {
-    const { data } = await apiHelper.get(`materials/${id}`);
+    const { data } = await apiHelper.get<Material>(`materials/${id}`);
     return data;
   };
 

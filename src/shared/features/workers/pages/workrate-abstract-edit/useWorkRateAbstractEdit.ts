@@ -11,6 +11,7 @@ import type { WorkRateAbstractProps } from '../../DTOs/WorkRateAbstract';
 import type { Unit } from '@/shared/features/materials/DTOs/UnitProps';
 import type { WorkType } from '@/shared/features/workers/DTOs/WorkTypeProps';
 import { WorkRateAbstractUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useWorkRateAbstractEdit = (id: string) => {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ const useWorkRateAbstractEdit = (id: string) => {
   const fetchWorkTypes = async (searchString: string = '') => {
     const workTypes = await workTypeService.getWorkTypes(searchString);
     if (!workTypes) return;
-    setWorkTypeList(searchString ? workTypes.slice(0, 3) : workTypes);
+    setWorkTypeList((searchString ? workTypes.slice(0, 3) : workTypes) as unknown as WorkType[]);
   };
 
   // Unit is auto-derived from work type; kept only in case needed elsewhere —
@@ -96,7 +97,7 @@ const useWorkRateAbstractEdit = (id: string) => {
       setTotalRate(data.totalRate?.toString());
       setTotalQuantity(data.totalQuantity?.toString());
       setNotes(data.note);
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch work rate abstract data.');
     } finally {
       setLoading(false);
@@ -114,6 +115,7 @@ const useWorkRateAbstractEdit = (id: string) => {
           const site = await siteService.getSite(parseInt(siteId));
           setSiteList([site]);
         } catch {
+          // ignore fetch errors silently
         }
       }
     };
@@ -125,13 +127,14 @@ const useWorkRateAbstractEdit = (id: string) => {
     const fetchWorkTypeById = async () => {
       if (workTypeId) {
         try {
-          const workType = await workTypeService.getWorkType(parseInt(workTypeId));
+          const workType = await workTypeService.getWorkType(parseInt(workTypeId)) as WorkType;
           setWorkTypeList([workType]);
           if (workType?.unit) {
             setUnitId(workType.unit.id.toString());
             setUnitList([{ id: workType.unit.id, name: workType.unit.name } as Unit]);
           }
         } catch {
+          // ignore fetch errors silently
         }
       }
     };
@@ -179,11 +182,8 @@ const useWorkRateAbstractEdit = (id: string) => {
         await workRateAbstractService.updateWorkRateAbstract(parseInt(id), payload);
         toast.success('Work rate abstract updated successfully');
         navigate(WorkRateAbstractUrls.list);
-      } catch (error: any) {
-        const errorMsg =
-          error?.response?.data?.[0]?.message ||
-          'Failed to update work rate abstract. Please try again.';
-        toast.error(errorMsg);
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to update work rate abstract. Please try again.'));
       }
     }
   };

@@ -5,7 +5,7 @@ import { usePermission } from '@/shared/hooks/usePermission';
 interface TaskCardProps {
   id: number;
   taskName: string;
-  siteId: any;
+  siteName?: string;
   supervisor: string;
   date: string;
   priority: string;
@@ -39,7 +39,7 @@ const getChipStyle = (type: 'priority' | 'status', value?: number | string) => {
 export const TaskCard = ({
   id,
   taskName,
-  siteId,
+  siteName,
   supervisor,
   date,
   priority,
@@ -81,14 +81,14 @@ export const TaskCard = ({
 
       {/* ── Site | Supervisor ── */}
       <div className="flex items-center ">
-        {siteId && (
+        {siteName && (
           <div className="flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5 text-black shrink-0" />
-            <span className="text-sm text-black truncate">{siteId}</span>
+            <span className="text-sm text-black truncate">{siteName}</span>
           </div>
         )}
 
-        {siteId && supervisor && (
+        {siteName && supervisor && (
           <span className="mx-1.5 text-muted-foreground">|</span>
         )}
 

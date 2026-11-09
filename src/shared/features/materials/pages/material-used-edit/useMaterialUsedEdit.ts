@@ -10,6 +10,7 @@ import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import type { MaterialUsed } from '@/shared/features/materials/DTOs/MaterialUsedProps';
 import { MaterialUsedUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useMaterialUsedEdit = (id: string) => {
   const navigate = useNavigate();
@@ -209,12 +210,8 @@ export const useMaterialUsedEdit = (id: string) => {
       });
       toast.success('Material Used updated successfully.');
       navigate(MaterialUsedUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.[0]?.message ||
-        error?.response?.data?.message ||
-        'Failed to Edit Material Used.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to Edit Material Used.'));
     }
   };
 

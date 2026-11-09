@@ -38,9 +38,9 @@ const WorkTypeList = (props: WorkTypeListProps) => {
   // include unitName for both "new" (WorkTypeNew: flat unitId/unitName)
   // and "update" (WorkType: nested unit object) sources
   const combinedList = [
-    ...(workTypeList || []).map((item: any, index) => ({
-      name: typeof item === "string" ? item : item.name,
-      unitName: typeof item === "string" ? "" : item.unitName ?? "",
+    ...(workTypeList || []).map((item, index) => ({
+      name: item.name,
+      unitName: item.unitName,
       index,
       source: "new",
       item,

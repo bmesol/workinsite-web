@@ -13,7 +13,7 @@ const useWorkerReportService = () => {
   const getAttendanceReportSummary = async (
     params: AttendanceReportParams,
   ): Promise<WorkerReportSummaryResponse> => {
-    const { data } = await apiHelper.get(`attendance-reports/summary?${buildQueryParams({
+    const { data } = await apiHelper.get<WorkerReportSummaryResponse>(`attendance-reports/summary?${buildQueryParams({
       SiteId: params.SiteId,
       WorkerId: params.WorkerId,
       FromDate: params.FromDate,
@@ -28,7 +28,7 @@ const useWorkerReportService = () => {
   const getAttendanceReports = async (
     params: AttendanceReportParams,
   ): Promise<WorkerReportResponse> => {
-    const { data } = await apiHelper.get(`attendance-reports?${buildQueryParams({
+    const { data } = await apiHelper.get<WorkerReportResponse>(`attendance-reports?${buildQueryParams({
       SiteId: params.SiteId,
       WorkerId: params.WorkerId,
       FromDate: params.FromDate,

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMaterialService } from "../../service/MaterialService";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useMaterialList = () => {
   const materialService = useMaterialService();
@@ -42,8 +43,8 @@ const useMaterialList = () => {
       await materialService.deleteMaterial(id);
       setDeleteId(null);
       fetchMaterial(searchText);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to delete material');
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete material'));
     }
   };
 

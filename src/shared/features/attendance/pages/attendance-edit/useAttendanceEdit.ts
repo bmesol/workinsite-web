@@ -16,6 +16,7 @@ import type { WageType, Worker } from '@/shared/features/workers/DTOs/WorkerProp
 import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import type { AttendanceProps, AttendanceSplit } from '../../DTOs/AttendanceProps';
 import { useAttendanceInputValidate } from '../../components/InputValidate/AttendanceValidate';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 type UploadedImage = {
   uri: string;
@@ -161,8 +162,7 @@ const useAttendanceEditScreen = () => {
       WorkerName,
       WorkerCategoryId: workType.workerCategory.id,
     });
-    if (!workers?.items) return;
-    setWorkerList(WorkerName ? workers.items.slice(0, 3) : workers.items);
+    setWorkerList(WorkerName ? workers.slice(0, 3) : workers);
   };
 
   const fetchWageTypes = async (searchString: string = '') => {
@@ -194,9 +194,9 @@ const useAttendanceEditScreen = () => {
         WorkModeId: parseInt(currentWorkModeId),
       });
       setWorkQuantityReport(result?.items?.[0] ?? null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setWorkQuantityReport(null);
-      toast.error(error?.response?.data?.message || 'Failed to fetch work quantity report');
+      toast.error(parseApiError(error, 'Failed to fetch work quantity report'));
     }
   };
 
@@ -253,7 +253,7 @@ const useAttendanceEditScreen = () => {
     );
   };
 
-  const arraysEqual = (arr1: any[], arr2: any[]) => {
+  const arraysEqual = <T>(arr1: T[], arr2: T[]) => {
     if (arr1.length !== arr2.length) return false;
     return JSON.stringify(arr1) === JSON.stringify(arr2);
   };
@@ -329,7 +329,7 @@ const useAttendanceEditScreen = () => {
           if (img.file) formData.append('Images', img.file);
         });
 
-        await new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve) => {
           if (!navigator.geolocation) {
             formData.append('CurrentLocation.Lat', '0');
             formData.append('CurrentLocation.Lng', '0');
@@ -371,9 +371,8 @@ const useAttendanceEditScreen = () => {
         await attendanceService.updateAttendance(parseInt(attendanceId!), formData);
         resetFormFields();
         handleNavigateAfterSave();
-      } catch (error: any) {
-        const errorMsg = error?.response?.data?.[0]?.message || 'Failed to Edit Attendance';
-        toast.error(errorMsg);
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to Edit Attendance'));
       }
     }
   };

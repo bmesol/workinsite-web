@@ -18,4 +18,12 @@ interface SupplierTransactionProps {
   id: number;
 }
 
-export type { SupplierTransactionRequest, SupplierTransactionProps };
+interface SupplierTransactionPagedResult {
+  items: SupplierTransactionProps[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export type { SupplierTransactionRequest, SupplierTransactionProps, SupplierTransactionPagedResult };

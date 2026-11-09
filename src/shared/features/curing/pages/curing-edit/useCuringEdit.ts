@@ -10,6 +10,7 @@ import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { CuringType } from '../../DTOs/CuringTypeProps';
 import { CuringUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useCuringEdit = (id: string) => {
   const { t } = useLanguage();
@@ -119,12 +120,8 @@ export const useCuringEdit = (id: string) => {
       });
       toast.success(t('Curing updated successfully.'));
       navigate(CuringUrls.list);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.[0]?.message ||
-        error?.response?.data?.message ||
-        'Failed to update curing.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to update curing.'));
     }
   };
 
