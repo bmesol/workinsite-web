@@ -9,7 +9,7 @@ const useSiteExpenseReportService = () => {
   const getSiteExpenseReport = async (
     params: SiteExpenseReportParams,
   ): Promise<SiteExpenseReportResponse> => {
-    const { data } = await apiHelper.get(`expense-reports?${buildQueryParams({
+    const { data } = await apiHelper.get<SiteExpenseReportResponse>(`expense-reports?${buildQueryParams({
       SiteId: params.SiteId,
       FromDate: params.FromDate,
       ToDate: params.ToDate,

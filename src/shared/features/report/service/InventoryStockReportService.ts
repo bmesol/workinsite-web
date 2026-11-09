@@ -10,7 +10,7 @@ const useInventoryStockReportService = () => {
   const getInventoryStockReport = async (
     params: InventoryStockReportParams,
   ): Promise<InventoryStockReportResponse> => {
-    const { data } = await apiHelper.get(`material-reports?${buildQueryParams({
+    const { data } = await apiHelper.get<InventoryStockReportResponse>(`material-reports?${buildQueryParams({
       SiteId: params.SiteId,
       FromDate: params.FromDate,
       ToDate: params.ToDate,

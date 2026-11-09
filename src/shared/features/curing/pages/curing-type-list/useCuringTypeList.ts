@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { useCuringTypeService } from '../../service/CuringTypeService';
 import type { CuringType } from '../../DTOs/CuringTypeProps';
 import { CuringTypeUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useCuringTypeList = () => {
   const navigate = useNavigate();
@@ -37,10 +38,8 @@ const useCuringTypeList = () => {
       await curingTypeService.deleteCuringType(id);
       setDeleteId(null);
       fetchCuringTypes();
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || 'Failed to delete curing type.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete curing type.'));
     }
   };
 

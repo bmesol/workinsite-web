@@ -90,10 +90,9 @@ const useWorkerRoleCostEdit = (
         setDialogOpen(false);
         setEditingCost(initalCost);
         fetchCosts();
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error('WorkerRoleCostEdit: operation failed', error);
-        const errorMsg = parseApiError(error, 'Failed to create unit');
-        toast.error(errorMsg);
+        toast.error(parseApiError(error, 'Failed to create unit'));
       }
     }
   };

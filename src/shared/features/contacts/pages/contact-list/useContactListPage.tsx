@@ -56,13 +56,13 @@ const useContactList = () => {
       await contactService.deleteContact(id);
       setDeleteId(null);
       refreshList(); 
-    } catch (error: any) {
+    } catch (error: unknown) {
       setDeleteId(null);
-      error.response.data.forEach((i: any) => {
-        const messages = JSON.parse(i.message);
-        messages.forEach((message: string) =>
-          toast.error(`Couldn't Delete — ${message}`)
-        );
+      const responseData = (error as { response?: { data?: unknown } })?.response?.data;
+      if (!Array.isArray(responseData)) return;
+      (responseData as { message: string }[]).forEach((i) => {
+        const messages: string[] = JSON.parse(i.message);
+        messages.forEach((message) => toast.error(`Couldn't Delete — ${message}`));
       });
     }
   };

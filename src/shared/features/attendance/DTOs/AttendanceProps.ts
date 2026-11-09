@@ -93,13 +93,21 @@ interface AttendanceProps {
   images?: ViewImages[];  // web: array of image URLs instead of any
 }
 
+interface AttendancePagedResult {
+  items: AttendanceProps[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export type {
   AttendanceSplit,
   AttendanceSplits,
   AttendanceCreationRequest,
   AttendanceUpdationRequest,
   AttendanceProps,
+  AttendancePagedResult,
   UploadedImage,
   WorkType,
-  
 };

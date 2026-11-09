@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSupplierTransactionService } from '../../service/SupplierTransactionService';
+import type { SupplierTransactionParams } from '../../service/SupplierTransactionService';
 import { useSupplierService } from '@/shared/features/suppliers/service/SupplierService';
 import type { SupplierTransactionProps } from '../../DTOs/SupplierTransaction';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
 import { SupplierTransactionUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useSupplierTransactionList = () => {
   const navigate = useNavigate();
@@ -45,7 +47,7 @@ const useSupplierTransactionList = () => {
   }));
 
   // ── Fetch transactions ────────────────────────────────────────────────────
-  const fetchSupplierTransactions = async (reset = false, overrideFilters?: any) => {
+  const fetchSupplierTransactions = async (reset = false, overrideFilters?: Partial<SupplierTransactionParams>) => {
     const filters = overrideFilters || {
       fromDate: fromDate || undefined,
       toDate: toDate || undefined,
@@ -122,11 +124,8 @@ const useSupplierTransactionList = () => {
       await supplierTransactionService.deleteSupplierTransaction(id);
       setDeleteId(null);
       fetchSupplierTransactions(true);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-        'Failed to delete Supplier Transaction.',
-      );
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete Supplier Transaction.'));
     }
   };
 

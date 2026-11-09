@@ -1,5 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
-import type { ShiftRequest } from '../DTOs/ShiftProps';
+import type { Shift, ShiftRequest } from '../DTOs/ShiftProps';
 
 export const useShiftService = () => {
   const baseUrl = import.meta.env.VITE_WORKER_SERVICE_BASE_URL || '';
@@ -9,7 +9,7 @@ export const useShiftService = () => {
     searchString: string = '',
     setIsLoading?: boolean,
   ) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<Shift[]>(
       `shifts?searchString=${searchString}`,
       setIsLoading,
     );
@@ -22,7 +22,7 @@ export const useShiftService = () => {
   };
 
   const createShift = async (shifts: ShiftRequest) => {
-    const { data } = await apiHelper.post('shifts', shifts);
+    const { data } = await apiHelper.post<Shift>('shifts', shifts);
     return data;
   };
 

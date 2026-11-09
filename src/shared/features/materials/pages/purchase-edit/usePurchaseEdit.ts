@@ -14,6 +14,7 @@ import type {
   PurchaseMaterialUpdationListProps,
 } from '../../DTOs/PurchaseMaterialProps';
 import { PurchaseUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export type UploadedImage = {
   uri: string;
@@ -324,8 +325,8 @@ export const usePurchaseEdit = (id: string) => {
       toast.success('Purchase updated successfully.');
       resetFormFields();
       navigate(PurchaseUrls.list);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to edit Purchase.');
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to edit Purchase.'));
     }
   };
 

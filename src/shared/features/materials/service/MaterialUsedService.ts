@@ -1,11 +1,13 @@
 import type {
+  MaterialUsed,
   MaterialUsedCreationRequest,
+  MaterialUsedPagedResult,
   MaterialUsedUpdationRequest,
 } from '../DTOs/MaterialUsedProps';
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 
-type GetMaterialsUsedParams = {
+export type GetMaterialsUsedParams = {
   date?: string;
   siteId?: number;
   materialId?: number;
@@ -56,7 +58,7 @@ export const useMaterialUsedService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getMaterialsUsed = async (params: GetMaterialsUsedParams = {}) => {
-    const { data } = await apiHelper.get(`material-usages?${buildQueryParams({
+    const { data } = await apiHelper.get<MaterialUsedPagedResult>(`material-usages?${buildQueryParams({
       Date: params.date,
       SiteId: params.siteId,
       MaterialId: params.materialId,
@@ -69,7 +71,7 @@ export const useMaterialUsedService = () => {
   };
 
   const getMaterialUsedById = async (id: number) => {
-    const { data } = await apiHelper.get(`material-usages/${id}`);
+    const { data } = await apiHelper.get<MaterialUsed>(`material-usages/${id}`);
     return data;
   };
 
@@ -118,10 +120,10 @@ export const useMaterialUsedService = () => {
   materialId: number,
   siteId: number,
 ): Promise<string> => {
-  const { data } = await apiHelper.get(
+  const { data } = await apiHelper.get<{ maximumAllowedQuantity: string }>(
     `material-usages/${id}/maximum-allowed-quantity?${buildQueryParams({ materialId, siteId })}`,
   );
-  return data.maximumAllowedQuantity as string;
+  return data.maximumAllowedQuantity;
 };
 
   return {

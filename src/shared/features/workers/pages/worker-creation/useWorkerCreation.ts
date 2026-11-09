@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { parseApiError } from "@/shared/utils/parseApiError";
 
 const useWorkerCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -243,10 +244,8 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
       await workerService.createWorker(worker); 
       toast.success(t('Worker created successfully'));
       navigate(WorkersUrls.list); 
-    } catch (error: any) {
-      const errorMsg =
-        error?.response?.data?.[0]?.message || "Failed to create worker. Please try again.";
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, "Failed to create worker. Please try again."));
     }
   };
 

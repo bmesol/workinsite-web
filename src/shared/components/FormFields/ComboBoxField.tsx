@@ -1,9 +1,11 @@
 import { SelectComboField } from "./SelectComboField";
 
-type ComboboxFieldProps = {
+type ComboboxItem<T = unknown> = { label: string; value: string; allItems?: T };
+
+type ComboboxFieldProps<T = unknown> = {
   id: string;
   label: string;
-  items: { label: string; value: string }[];
+  items: ComboboxItem<T>[];
   selectedValue: string;
   onValueChange: (val: string) => void;
   onSearch: (val: string) => void;
@@ -15,13 +17,13 @@ type ComboboxFieldProps = {
   className?: string;
 };
 
-const ComboboxField = ({
+const ComboboxField = <T = unknown>({
   disabled,
   error,
   onValueChange,
   onSearch,
   ...rest
-}: ComboboxFieldProps) => (
+}: ComboboxFieldProps<T>) => (
   <SelectComboField
     {...rest}
     searchable
@@ -33,4 +35,4 @@ const ComboboxField = ({
 );
 
 export { ComboboxField };
-export type { ComboboxFieldProps };
+export type { ComboboxFieldProps, ComboboxItem };

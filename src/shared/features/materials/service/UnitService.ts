@@ -1,11 +1,11 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
-import type { UnitRequest } from '../DTOs/UnitProps'; 
+import type { Unit, UnitRequest } from '../DTOs/UnitProps';
 export const useUnitService = () => {
   const baseUrl = import.meta.env.VITE_MASTER_DATA_SERVICE_BASE_URL || ''; 
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getUnits = async (searchString: string = '', setIsLoading?: boolean) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<Unit[]>(
       `units?searchString=${searchString}`,
       setIsLoading,
     );
@@ -13,12 +13,12 @@ export const useUnitService = () => {
   };
 
   const getUnit = async (id: number) => {
-    const { data } = await apiHelper.get(`units/${id}`);
+    const { data } = await apiHelper.get<Unit>(`units/${id}`);
     return data;
   };
 
   const createUnit = async (unit: UnitRequest) => {
-    const { data } = await apiHelper.post('units', unit);
+    const { data } = await apiHelper.post<Unit>('units', unit);
     return data;
   };
 

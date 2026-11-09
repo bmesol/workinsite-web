@@ -16,7 +16,7 @@ export const useWorkTypeList = (props: WorkTypeListProps) => {
   const [selectedItem, setSelectedItem] = useState<SelectedItemProps | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);        // ← replaces bottomSheetRef
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);    // ← replaces Alert
-  const [pendingDelete, setPendingDelete] = useState<{ index: number; source: string; item: any } | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ index: number; source: string; item: WorkType | WorkTypeNew } | null>(null);
 
   const WorkTypeService = useWorkTypeService();
 
@@ -25,8 +25,8 @@ export const useWorkTypeList = (props: WorkTypeListProps) => {
     setEditDialogOpen(true);   // ← replaces bottomSheetRef.current?.open()
   };
 
-  const handleDeleteClick = async (index: number, source: string, item: any) => {
-    if (source === "update" && item.id) {
+  const handleDeleteClick = async (index: number, source: string, item: WorkType | WorkTypeNew) => {
+    if (source === "update" && 'id' in item && item.id) {
       const isInUse = await WorkTypeService.getWorkTypeUsage(item.id);
       if (isInUse === true) {
         toast.error("This work type is currently in use and cannot be deleted.");
@@ -49,7 +49,7 @@ export const useWorkTypeList = (props: WorkTypeListProps) => {
       const updated = [...(updatedWorkTypeList || [])];
       updated.splice(index, 1);
       setUpdatedWorkTypeList(updated);
-      if (deletedWorkTypeList && setDeletedWorkTypeList && item.id) {
+      if (deletedWorkTypeList && setDeletedWorkTypeList && 'id' in item && item.id) {
         setDeletedWorkTypeList([...deletedWorkTypeList, item.id]);
       }
     }

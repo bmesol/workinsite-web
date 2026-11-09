@@ -1,17 +1,17 @@
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
-import type { SupplierRequest } from "../DTOs/SupplierProps";
+import type { Supplier, SupplierRequest } from "../DTOs/SupplierProps";
 
 const useSupplierService = () => {
   const baseUrl = import.meta.env.VITE_SUPPLIER_SERVICE_BASE_URL || "";  
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getSuppliers = async (searchString: string = "") => {
-    const { data } = await apiHelper.get(`suppliers?searchString=${searchString}`);
+    const { data } = await apiHelper.get<Supplier[]>(`suppliers?searchString=${searchString}`);
     return data;
   };
 
   const getSupplier = async (id: number) => {
-    const { data } = await apiHelper.get(`suppliers/${id}`);
+    const { data } = await apiHelper.get<Supplier>(`suppliers/${id}`);
     return data;
   };
 

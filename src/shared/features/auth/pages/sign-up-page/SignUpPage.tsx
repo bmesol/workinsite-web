@@ -19,6 +19,14 @@ import { useState } from "react";
 import { Footer } from "@/shared/components/footer/Footer";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
+interface SignUpErrors {
+  name?: string;
+  phone?: string;
+  organization?: string;
+  pin?: string;
+  confirmPin?: string;
+}
+
 export const SignUpPage = () => {
   const { t } = useLanguage();
   const [name, setName] = useState("");
@@ -26,10 +34,10 @@ export const SignUpPage = () => {
   const [organization, setOrganization] = useState("");
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<SignUpErrors>({});
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: SignUpErrors = {};
 
     if (!name.trim()) {
       newErrors.name = "Name is required";

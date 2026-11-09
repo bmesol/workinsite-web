@@ -16,12 +16,13 @@ import type { WorkMode } from '@/shared/features/workers/DTOs/WorkModeProps';
 import { formatDateToString } from '../../utils/functions';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 type UploadedImage = {
-  uri: string;    // blob URL from URL.createObjectURL()
+  uri: string;   
   type: string;
   name: string;
-  file: File;     // original File object for FormData
+  file: File;   
 };
 
 interface WorkType {
@@ -400,13 +401,12 @@ const handleSubmit = async () => {
       resetFormFields();
       handleNavigate();
 
-    } catch (error: any) {
-      if (error?.code === 1) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && (error as Record<string, unknown>).code === 1) {
         toast.error('Location permission denied. Please allow location access.');
         return;
       }
-      const errorMsg = error?.response?.data?.[0]?.message || 'Failed to create Attendance';
-      toast.error(errorMsg);
+      toast.error(parseApiError(error, 'Failed to create Attendance'));
     }
   }
 };

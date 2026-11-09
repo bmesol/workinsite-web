@@ -32,7 +32,7 @@ const RadioField = (props: SelectInputPropTypes) => {
         onValueChange={handleInputChange}
         className={cn("flex flex-row gap-4", className)}
       >
-        {items.map((item: any) => (
+        {items.map((item) => (
           <div key={item.value} className="flex items-center space-x-2">
             <RadioGroupItem
               value={String(item.value)}

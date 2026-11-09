@@ -5,7 +5,12 @@ interface MaterialError {
   unitId: string;
 }
 
-export const useMaterialInputValidate = ({name, unitId}: any) => {
+interface MaterialInputProps {
+  name: string;
+  unitId: string | number;
+}
+
+export const useMaterialInputValidate = ({name, unitId}: MaterialInputProps) => {
   const initialError: MaterialError = {
     name: '',
     unitId: '',

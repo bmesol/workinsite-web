@@ -1,11 +1,12 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type {
+  CuringDTO,
   CuringCreationRequest,
   CuringUpdationRequest,
 } from '../DTOs/CuringProps';
 
-type GetCuringParams = {
+export type GetCuringParams = {
   SiteName?: string;
   Status?: number;
   CuringTypeId?: number;
@@ -16,7 +17,7 @@ const useCuringService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getCurings = async (params: GetCuringParams = {}) => {
-    const { data } = await apiHelper.get(`/curings?${buildQueryParams({
+    const { data } = await apiHelper.get<CuringDTO[]>(`/curings?${buildQueryParams({
       SiteName: params.SiteName,
       Status: params.Status,
       CuringTypeId: params.CuringTypeId,
@@ -25,7 +26,7 @@ const useCuringService = () => {
   };
 
   const getCuring = async (id: number) => {
-    const { data } = await apiHelper.get(`/curings/${id}`);
+    const { data } = await apiHelper.get<CuringDTO>(`/curings/${id}`);
     return data;
   };
 

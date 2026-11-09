@@ -83,6 +83,7 @@ export default function InventoryStockReportPage() {
   useEffect(() => {
     if (!hasViewAccess) { navigate('/dashboard', { replace: true }); return; }
     void fetchReport({ FromDate: dateRange.from, ToDate: dateRange.to });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!hasViewAccess) return null;

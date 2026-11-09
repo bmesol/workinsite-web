@@ -84,6 +84,7 @@ export default function SiteExpenseReportPage() {
       // Auto-load current week on initial open
       void fetchReport({ FromDate: dateRange.from, ToDate: dateRange.to });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!hasViewAccess) return null;

@@ -1,5 +1,5 @@
 import type { Material } from '@/shared/features/materials/DTOs/MaterialProps';
-import type { ReceivedQualityTypes } from './PurchaseProps';
+import type { ReceivedQualityTypes, UploadedImage, RemovedImage, PurchaseViewImage } from './PurchaseProps';
 
 interface PurchaseMaterialCreationListProps {
   material: Material;
@@ -10,7 +10,7 @@ interface PurchaseMaterialCreationListProps {
   receivedDate: string;
   receivedQuantity: string;
   note?: string;
-  images?: any;
+  images?: UploadedImage[];
 }
 
 interface PurchaseMaterialUpdationListProps {
@@ -24,8 +24,9 @@ interface PurchaseMaterialUpdationListProps {
   receivedDate: string;
   receivedQuantity: string;
   note?: string;
-  newImages?: any;
-  removedImages?: any;
+  newImages?: UploadedImage[];
+  removedImages?: RemovedImage[];
+  images?: PurchaseViewImage[];
 }
 
 export type {

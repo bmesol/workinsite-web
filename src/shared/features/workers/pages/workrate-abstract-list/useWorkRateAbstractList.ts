@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useWorkRateAbstractService } from '../../service/WorkRateAbstractService';
 import type { WorkRateAbstractProps } from '../../DTOs/WorkRateAbstract'; 
 import { toast } from 'sonner'; 
-import  { WorkRateAbstractUrls } from '../../utils/urls'; 
+import  { WorkRateAbstractUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 const useWorkRateAbstractList = () => { 
   const navigate = useNavigate();
@@ -19,9 +20,8 @@ const useWorkRateAbstractList = () => {
     try {
       const workRateAbstractData = await workRateAbstractService.getWorkRateAbstracts(searchString);
       setWorkRateAbstract(workRateAbstractData);
-    } catch (error: any) {
-      const errorMsg = error?.response?.data?.message || 'Failed to fetch work rate abstracts';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to fetch work rate abstracts'));
     } finally {
       setLoading(false);
     }
@@ -42,9 +42,8 @@ const useWorkRateAbstractList = () => {
       await workRateAbstractService.deleteWorkRateAbstract(deleteId);
       toast.success('Work rate abstract deleted successfully');
       fetchWorkRateAbstract();
-    } catch (error: any) {
-      const errorMsg = error?.response?.data?.message || 'Failed to delete work rate abstract';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete work rate abstract'));
     } finally {
       setDeleteId(null);
     }

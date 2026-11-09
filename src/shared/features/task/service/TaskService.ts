@@ -1,4 +1,5 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
+import type { Task } from '../DTOs/TaskProps';
 
 const useTaskService = () => {
   const baseUrl = import.meta.env.VITE_SITE_SERVICE_BASE_URL || '';
@@ -24,7 +25,7 @@ const updateTask = async (id: number, payload: FormData) => {
 };
 
   const getTask = async (id: number) => {
-    const { data } = await apiHelper.get(`/tasks/${id}`);
+    const { data } = await apiHelper.get<Task>(`/tasks/${id}`);
     return data;
   };
 

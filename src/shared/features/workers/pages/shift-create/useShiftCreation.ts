@@ -3,6 +3,7 @@ import { useShiftService } from '../../service/ShiftService';
 import { useShiftInputValidate } from '../../components/InputValidate/ShiftInputValidate';
 import type { Shift } from '../../DTOs/ShiftProps';
 import { toast } from 'sonner';
+import { parseApiError } from '@/shared/utils/parseApiError';
 
 export const useShiftCreation = () => {
   const shiftService = useShiftService();
@@ -62,10 +63,8 @@ export const useShiftCreation = () => {
           resetFormFields();
           setIsEditing(false);
         }
-      } catch (error: any) {
-        const errorMsg =
-          error?.response?.data?.[0]?.message || 'Failed to update shift';
-        toast.error(errorMsg);
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to update shift'));
       }
     }
   };
@@ -79,10 +78,8 @@ export const useShiftCreation = () => {
     try {
       await shiftService.deleteShift(deleteId);
       fetchShift();
-    } catch (error: any) {
-      const errorMsg =
-        error?.response?.data?.message || 'Failed to delete shift';
-      toast.error(errorMsg);
+    } catch (error: unknown) {
+      toast.error(parseApiError(error, 'Failed to delete shift'));
     } finally {
       setDeleteId(null);
     }
@@ -104,12 +101,8 @@ export const useShiftCreation = () => {
           fetchShift();
         }
         resetFormFields();
-      } catch (error: any) {
-        const errorMsg =
-          error?.response?.data?.[0]?.message ||
-          error?.response?.data?.message ||
-          'Failed to create shift';
-        toast.error(errorMsg);
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to create shift'));
       }
     }
   };

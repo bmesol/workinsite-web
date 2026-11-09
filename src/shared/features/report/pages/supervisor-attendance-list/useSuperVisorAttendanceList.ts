@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSupervisorAttendanceService } from '../../service/SupervisorAttendanceService';
 import { createUserService } from '@/shared/features/users/services/UserService';
+import type { User } from '@/shared/features/users/DTOs/User';
 import { getWeekRangeHyphen as getWeekRange } from '@/shared/utils/formatters';
 import type { SupervisorAttendance } from '../../DTOs/SupervisorAttendanceProps';
 import { useSupervisorAttendanceInputValidate } from '../../components/InputValidate/SupervisorAttendanceInputValidate';
@@ -17,8 +17,6 @@ function ddmmyyyyToDate(ddmmyyyy: string): Date | null {
 const PAGE_SIZE = 10;
 
 export function useSupervisorAttendanceList() {
-  const navigate = useNavigate();
-
   const supervisorAttendanceService = useSupervisorAttendanceService();
   const userService = createUserService();
 
@@ -29,7 +27,7 @@ export function useSupervisorAttendanceList() {
   const [hasMore, setHasMore] = useState(false);
   const [hasSearchFilter, setHasSearchFilter] = useState(false);
   const [supervisor, setSupervisor] = useState({ name: '', value: '' });
-  const [supervisorList, setSupervisorList] = useState<any[]>([]);
+  const [supervisorList, setSupervisorList] = useState<User[]>([]);
   const [appliedFilters, setAppliedFilters] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<
@@ -57,9 +55,11 @@ export function useSupervisorAttendanceList() {
     }
   };
 
-  const fetchAttendances = async (reset = false, override?: any) => {
+  type FetchOverride = { SupervisorId?: number; FromDate?: string; ToDate?: string };
+
+  const fetchAttendances = async (reset = false, override?: FetchOverride) => {
     if (!reset && !hasMore) return;
-    reset ? setLoading(true) : setPaginationLoading(true);
+    if (reset) setLoading(true); else setPaginationLoading(true);
 
     try {
       const overrideObj = override ?? {};
@@ -88,6 +88,7 @@ export function useSupervisorAttendanceList() {
       setHasMore(response.totalPages > response.pageNumber);
       setHasSearchFilter(Boolean(isFiltered));
     } catch {
+      // ignore fetch errors silently
     } finally {
       setLoading(false);
       setPaginationLoading(false);
@@ -98,10 +99,11 @@ export function useSupervisorAttendanceList() {
     try {
       const res = await userService.getUsers(text);
       const supervisors = (res || []).filter(
-        (u: any) => u.role?.name?.toLowerCase() === 'supervisor',
+        (u) => u.role?.name?.toLowerCase() === 'supervisor',
       );
       setSupervisorList(supervisors.slice(0, 3));
     } catch {
+      // ignore fetch errors silently
     }
   };
 
@@ -141,6 +143,7 @@ export function useSupervisorAttendanceList() {
       await supervisorAttendanceService.deleteSupervisorAttendance(id);
       setAttendances(prev => prev.filter(a => a.id !== id));
     } catch {
+      // ignore delete errors silently
     }
   };
 

@@ -1,3 +1,5 @@
+import type { AttendanceSplit } from './AttendanceProps';
+
 interface AttendanceInputProps {
   date: string;
   siteId: string;
@@ -6,7 +8,7 @@ interface AttendanceInputProps {
   workerId: string;
   workedQuantity: string;
   workModeId: string;
-  attendanceSplit: any;
+  attendanceSplit: AttendanceSplit[];
 }
 
 export type {AttendanceInputProps};

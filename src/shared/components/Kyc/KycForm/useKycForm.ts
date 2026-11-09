@@ -12,9 +12,9 @@ const useKycForm = (props: KycFormProps) => {
   const { details, setDetails, onClose, mode, selectedItem } = props;
 
   const [kycType, setKycType] = useState<KYCTypes | "">(
-    mode === "edit" ? selectedItem!.type : ""
+    mode === "edit" && selectedItem ? selectedItem.type : ""
   );
-  const [input, setInput] = useState(mode === "edit" ? selectedItem!.value : "");
+  const [input, setInput] = useState(mode === "edit" && selectedItem ? selectedItem.value : "");
 
   let { error, setError, initialError, validate, kycItems } = useKycValidate(
     input,
@@ -48,7 +48,7 @@ const useKycForm = (props: KycFormProps) => {
       });
     } else {
       const updated = details.kycDetails.map((item, index) =>
-        index === selectedItem!.id ? { kycType: kycType as KYCTypes, value: input } : item
+        index === selectedItem?.id ? { kycType: kycType as KYCTypes, value: input } : item
       );
       setDetails({ kycDetails: [...updated] });
     }

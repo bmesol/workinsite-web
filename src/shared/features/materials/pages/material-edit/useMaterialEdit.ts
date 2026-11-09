@@ -46,7 +46,7 @@ export const useMaterialEdit = (id: string) => {
       setName(materialData.name);
       setHsnCode(materialData.hsnCode);
       setUnitId(materialData.unit?.id.toString());
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch material data.');
     } finally {
       setLoading(false);
@@ -110,9 +110,10 @@ export const useMaterialEdit = (id: string) => {
         if (redirectAfter) {
           navigate('/materials');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const e = err as { response?: { data?: Array<{ message?: string }> } };
         const errorMsg =
-          err?.response?.data?.[0]?.message || 'Failed to Edit Material';
+          e?.response?.data?.[0]?.message || 'Failed to Edit Material';
         toast.error(errorMsg);
       }
     }

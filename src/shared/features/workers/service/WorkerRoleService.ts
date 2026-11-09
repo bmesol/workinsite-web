@@ -1,6 +1,6 @@
 import { useAPIHelper } from "@/shared/helpers/ApiHelper";
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
-import type { WorkerRole, WorkerRoles } from "../DTOs/WorkRoleProps";
+import type { WorkerRole, WorkerRoles, WorkerRoleItem } from "../DTOs/WorkRoleProps";
 import type { GetWorkerRoleCostParams, WorkerRoleCost } from "../pages/workerrole-cost-edit/DTOs";
 
 interface GetWorkerRolesParams {
@@ -18,7 +18,7 @@ export const useWorkerRoleService = () => {
     WorkerCategoryId,
     ResultLimit,
   }: GetWorkerRolesParams) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<WorkerRoleItem[]>(
       `worker-roles?${buildQueryParams({ WorkerRoleName, WorkerCategoryId, ResultLimit })}`,
     );
     return data;
@@ -63,7 +63,7 @@ export const useWorkerRoleCostService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getWorkerRoleCosts = async (params: GetWorkerRoleCostParams) => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<WorkerRoles[]>(
       `worker-role-costs?${buildQueryParams({
         WorkerCategoryId: params.WorkerCategoryId,
         WorkerId: params.WorkerId,

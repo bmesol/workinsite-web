@@ -43,7 +43,7 @@ export const usePurchaseMaterialList = (props: {
       'purchaseMaterialId' in item
         ? item.purchaseMaterialId
         : 'id' in item
-        ? (item as any).id
+        ? (item as { id: number }).id
         : undefined;
 
     if (purchaseMaterialId) {
@@ -57,7 +57,7 @@ export const usePurchaseMaterialList = (props: {
       );
     }
 
-    setSelectedItem({ index, value: { ...item, purchaseMaterialId }, source });
+    setSelectedItem({ index, value: item, source });
     setEditDialogOpen(true);
   };
 
@@ -76,7 +76,7 @@ export const usePurchaseMaterialList = (props: {
       'purchaseMaterialId' in item
         ? item.purchaseMaterialId
         : 'id' in item
-        ? (item as any).id
+        ? (item as { id: number }).id
         : undefined;
 
     if (purchaseMaterialId) {

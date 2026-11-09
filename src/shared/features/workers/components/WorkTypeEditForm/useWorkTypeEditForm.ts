@@ -81,7 +81,7 @@
 // };
 
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { WorkTypeEditFormProps, WorkType, WorkTypeNew } from "../../DTOs/WorkTypeProps";
 import { useUnitService } from "@/shared/features/materials/service/UnitService"; // path adjust pannunga
 import type { Unit } from "@/shared/features/materials/DTOs/UnitProps"; // path adjust pannunga
@@ -105,27 +105,30 @@ export const useWorkTypeEditForm = (props: WorkTypeEditFormProps) => {
   const [unitId, setUnitId] = useState(existingUnit?.id?.toString() ?? "");
   const [unitName, setUnitName] = useState(existingUnit?.name ?? "");
   const [unitList, setUnitList] = useState<Unit[]>(
-    existingUnit ? [{ id: existingUnit.id, name: existingUnit.name }] : []
+    existingUnit ? [existingUnit] : []
   );
   const [error, setError] = useState({ name: "", unit: "" });
+  const [prevSelectedItem, setPrevSelectedItem] = useState(selectedItem);
 
   const unitService = useUnitService();
 
-  useEffect(() => {
-    if (!selectedItem) return;
-    setName(selectedItem.value.name || "");
-    if ("id" in selectedItem.value) {
-      const wt = selectedItem.value as WorkType;
-      setUnitId(wt.unit?.id?.toString() ?? "");
-      setUnitName(wt.unit?.name ?? "");
-      setUnitList(wt.unit ? [{ id: wt.unit.id, name: wt.unit.name }] : []);
-    } else {
-      const wt = selectedItem.value as WorkTypeNew;
-      setUnitId(wt.unitId?.toString() ?? "");
-      setUnitName(wt.unitName ?? "");
-      setUnitList(wt.unitId ? [{ id: wt.unitId, name: wt.unitName }] : []);
+  if (prevSelectedItem !== selectedItem) {
+    setPrevSelectedItem(selectedItem);
+    if (selectedItem) {
+      setName(selectedItem.value.name || "");
+      if ("id" in selectedItem.value) {
+        const wt = selectedItem.value as WorkType;
+        setUnitId(wt.unit?.id?.toString() ?? "");
+        setUnitName(wt.unit?.name ?? "");
+        setUnitList(wt.unit ? [wt.unit] : []);
+      } else {
+        const wt = selectedItem.value as WorkTypeNew;
+        setUnitId(wt.unitId?.toString() ?? "");
+        setUnitName(wt.unitName ?? "");
+        setUnitList(wt.unitId ? [{ id: wt.unitId, name: wt.unitName, isActive: true, note: null }] : []);
+      }
     }
-  }, [selectedItem]);
+  }
 
   const fetchUnits = async (searchString: string = "") => {
     const units = await unitService.getUnits(searchString, false);
@@ -157,8 +160,8 @@ export const useWorkTypeEditForm = (props: WorkTypeEditFormProps) => {
     } else {
       const lower = trimmedName.toLowerCase();
       const combinedList = [
-        ...(workTypeList || []).map((item: any, index) => ({
-          name: typeof item === "string" ? item : item.name,
+        ...(workTypeList || []).map((item, index) => ({
+          name: item.name,
           index,
           source: "new",
         })),
@@ -209,7 +212,7 @@ export const useWorkTypeEditForm = (props: WorkTypeEditFormProps) => {
         name: trimmedName,
         unitId: parseInt(unitId),
         unitName,
-      } as any;
+      } satisfies WorkTypeNew;
       setWorkTypeList(updatedList);
     }
 

@@ -11,6 +11,14 @@ interface WorkerRoles {
   id: number;
 }
 
+interface WorkerRoleItem {
+  id: number;
+  name: string;
+  salaryPerShift: string;
+  hoursPerShift: string;
+  workerCategory: { id: number; name: string; note: string };
+}
+
 interface WorkerRoleEditFormProps {
   workerRoleList: WorkerRole[];
   setWorkerRoleList: React.Dispatch<React.SetStateAction<WorkerRole[]>>;
@@ -45,6 +53,7 @@ interface WorkerRoleCreateFormProps {
 export type {
   WorkerRole,
   WorkerRoles,
+  WorkerRoleItem,
   WorkerRoleCreateFormProps,
   WorkerRoleEditFormProps,
   WorkerRoleListProps,

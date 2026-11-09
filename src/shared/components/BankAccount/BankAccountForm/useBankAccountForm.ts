@@ -11,13 +11,13 @@ const useBankAccountForm = (props: BankAccountFormProps) => {
   const { details, setDetails, onClose, mode, selectedItem } = props;
 
   const [accountName, setAccountName] = useState(
-    mode === "edit" ? selectedItem!.accountName : ""
+    mode === "edit" && selectedItem ? selectedItem.accountName : ""
   );
   const [accountNumber, setAccountNumber] = useState(
-    mode === "edit" ? selectedItem!.accountNumber : ""
+    mode === "edit" && selectedItem ? selectedItem.accountNumber : ""
   );
   const [ifscCode, setIfscCode] = useState(
-    mode === "edit" ? selectedItem!.ifscCode : ""
+    mode === "edit" && selectedItem ? selectedItem.ifscCode : ""
   );
 
   const { error, validate } = useBankAccountValidate(accountName, accountNumber, ifscCode);
@@ -31,7 +31,7 @@ const useBankAccountForm = (props: BankAccountFormProps) => {
       });
     } else {
       const updated = details.bankAccounts.map((item, index) =>
-        index === selectedItem!.id ? { accountName, accountNumber, ifscCode } : item
+        index === selectedItem?.id ? { accountName, accountNumber, ifscCode } : item
       );
       setDetails({ bankAccounts: [...updated] });
     }

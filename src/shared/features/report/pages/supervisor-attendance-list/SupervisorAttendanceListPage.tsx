@@ -25,19 +25,6 @@ import {
 } from "@/shared/components/ui/dialog";
 import { useEffect } from "react";
 
-const formatTime12h = (time?: string): string | undefined => {
-  if (!time) return undefined;
-  const [h, m] = time.split(":").map(Number);
-  if (isNaN(h) || isNaN(m)) return undefined;
-  const d = new Date();
-  d.setHours(h, m, 0, 0);
-  return d.toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-};
-
 const SupervisorAttendanceListPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -275,7 +262,7 @@ const SupervisorAttendanceListPage = () => {
               selectedValue={supervisor.value}
               onValueChange={(val) => {
                 const found = supervisorDetails.find((i) => i.value === val);
-                if (found?.allItems) setSupervisor(found.allItems as any);
+                if (found?.allItems) setSupervisor(found.allItems);
               }}
               onSearch={fetchSupervisors}
             />

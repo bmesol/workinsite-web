@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { SitesUrls } from "../../utils/urls";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { parseApiError } from "@/shared/utils/parseApiError";
 
 const useSiteCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -160,8 +161,8 @@ const useSiteCreation = (queryString: URLSearchParams) => {
       try {
         await siteService.createSite(site);
         navigate(SitesUrls.list);
-      } catch (error: any) {
-        toast.error(error?.response?.data?.[0]?.message || 'Site already exists');
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Site already exists'));
       }
     }
   };

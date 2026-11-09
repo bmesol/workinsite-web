@@ -1,8 +1,10 @@
 import { useAPIHelper } from '@/shared/helpers/ApiHelper';
 import { buildQueryParams } from '@/shared/utils/buildQueryParams';
 import type {
+  MaterialShift,
   MaterialShiftCreationRequest,
   MaterialShiftFilterRequest,
+  MaterialShiftPagedResult,
 } from '../DTOs/MaterialShiftProps';
 
 const useMaterialShiftService = () => {
@@ -10,7 +12,7 @@ const useMaterialShiftService = () => {
   const apiHelper = useAPIHelper(baseUrl, true);
 
   const getMaterialShifts = async (filters: MaterialShiftFilterRequest = {}) => {
-    const { data } = await apiHelper.get(`/material-shifts?${buildQueryParams({
+    const { data } = await apiHelper.get<MaterialShiftPagedResult>(`/material-shifts?${buildQueryParams({
       materialId: filters.materialId,
       sourceSiteId: filters.sourceSiteId,
       targetSiteId: filters.targetSiteId,
@@ -23,7 +25,7 @@ const useMaterialShiftService = () => {
   };
 
   const getMaterialShift = async (id: number) => {
-    const { data } = await apiHelper.get(`material-shifts/${id}`);
+    const { data } = await apiHelper.get<MaterialShift>(`material-shifts/${id}`);
     return data;
   };
 
@@ -44,10 +46,10 @@ const useMaterialShiftService = () => {
   materialId: number,
   sourceSiteId: number,
 ): Promise<string> => {
-  const { data } = await apiHelper.get(
+  const { data } = await apiHelper.get<{ maximumAllowedQuantity: string }>(
     `material-shifts/${id}/maximum-allowed-quantity?${buildQueryParams({ materialId, sourceSiteId })}`,
   );
-  return data.maximumAllowedQuantity as string;
+  return data.maximumAllowedQuantity;
 };
 
   return {

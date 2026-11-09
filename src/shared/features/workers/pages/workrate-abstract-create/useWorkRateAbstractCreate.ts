@@ -5,10 +5,11 @@ import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { SITE_STATUS } from '@/shared/constants/appEnums';
 import { useWorkTypeService } from '../../service/WorkerTypeService';
 import { useWorkRateAbstractService } from '../../service/WorkRateAbstractService';
-import { WorkRateAbstractUrls } from '../../utils/urls';  
+import { WorkRateAbstractUrls } from '../../utils/urls';
+import { parseApiError } from '@/shared/utils/parseApiError';
 import type { Unit } from '@/shared/features/materials/DTOs/UnitProps';
 import { toast } from 'sonner';                        
-import type { WorkType } from '../../DTOs/WorkTypeProps';
+import type { WorkTypeProp } from '../../DTOs/WorkTypeProps';
 import { useWorkRateAbstractValidate } from '../../components/InputValidate/WorkRateAbstractValidate';
 
 const useWorkRateAbstractCreate = () => {             
@@ -22,7 +23,7 @@ const useWorkRateAbstractCreate = () => {
   const [notes, setNotes] = useState('');
   const [allSites, setAllSites] = useState<Site[]>([]);
   const [siteList, setSiteList] = useState<Site[]>([]);
-  const [workTypeList, setWorkTypeList] = useState<WorkType[]>([]);
+  const [workTypeList, setWorkTypeList] = useState<WorkTypeProp[]>([]);
   const [unitList, setUnitList] = useState<Unit[]>([]);
 
   const siteService = useSiteService();
@@ -91,7 +92,7 @@ const useWorkRateAbstractCreate = () => {
     const selected = workTypeList.find(wt => wt.id.toString() === value);
     if (selected?.unit) {
       setUnitId(selected.unit.id.toString());
-      setUnitList([{ id: selected.unit.id, name: selected.unit.name }]);
+      setUnitList([selected.unit]);
     } else {
       setUnitId('');
       setUnitList([]);
@@ -139,11 +140,8 @@ const useWorkRateAbstractCreate = () => {
         toast.success('Work rate abstract created successfully');  
         resetFormFields();
         navigate(WorkRateAbstractUrls.list);
-      } catch (error: any) {
-        const errorMsg =
-          error?.response?.data?.[0]?.message ||
-          'Failed to create work rate abstract. Please try again.';
-        toast.error(errorMsg);
+      } catch (error: unknown) {
+        toast.error(parseApiError(error, 'Failed to create work rate abstract. Please try again.'));
       }
     }
   };

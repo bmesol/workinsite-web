@@ -30,4 +30,12 @@ interface MaterialShiftFilterRequest {
   pageSize?: number;
 }
 
-export type { MaterialShiftCreationRequest, MaterialShift, MaterialShiftFilterRequest };
+interface MaterialShiftPagedResult {
+  items: MaterialShift[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export type { MaterialShiftCreationRequest, MaterialShift, MaterialShiftFilterRequest, MaterialShiftPagedResult };

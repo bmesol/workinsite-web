@@ -14,7 +14,7 @@ const useSupervisorAttendanceService = () => {
   const getSupervisorAttendances = async (
     params?: SupervisorAttendanceListParams,
   ): Promise<SupervisorAttendanceListResponse> => {
-    const { data } = await apiHelper.get(
+    const { data } = await apiHelper.get<SupervisorAttendanceListResponse>(
       `/supervisor-attendances?${buildQueryParams({
         SupervisorId: params?.SupervisorId,
         FromDate: params?.FromDate,
@@ -30,7 +30,7 @@ const useSupervisorAttendanceService = () => {
   const getSupervisorAttendance = async (
     id: number,
   ): Promise<SupervisorAttendance> => {
-    const { data } = await apiHelper.get(`/supervisor-attendances/${id}`);
+    const { data } = await apiHelper.get<SupervisorAttendance>(`/supervisor-attendances/${id}`);
     return data;
   };
 

@@ -3,6 +3,7 @@ import { useMaterialService } from '@/shared/features/materials/service/Material
 import { useMaterialUsedService } from '@/shared/features/materials/service/MaterialUsedService';
 import type { AvailableMaterialReport } from '@/shared/features/materials/service/MaterialUsedService';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
+import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { SITE_STATUS } from '@/shared/constants/appEnums';
 
 export type SelectedMaterial = {
@@ -19,8 +20,8 @@ export function useAvailableMaterialReportScreen({ navigate }: { navigate: (path
     const [refreshing, setRefreshing] = useState(false);
     const [reportData, setReportData] = useState<AvailableMaterialReport[]>([]);
     const [site, setSite] = useState({ name: '', value: '' });
-    const [allSites, setAllSites] = useState<any[]>([]);
-    const [siteList, setSiteList] = useState<any[]>([]);
+    const [allSites, setAllSites] = useState<Site[]>([]);
+    const [siteList, setSiteList] = useState<Site[]>([]);
     const [selectedMaterials, setSelectedMaterials] = useState<SelectedMaterial[]>([]);
     const [materialList, setMaterialList] = useState<any[]>([]);
     const [date, setDate] = useState<string>('');
