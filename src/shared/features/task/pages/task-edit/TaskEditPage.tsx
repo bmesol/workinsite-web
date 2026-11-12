@@ -35,6 +35,7 @@ import AssignedByCard from '../../components/AssignedbyCard/AssignedbyCard';
 import RemarkSection from '@/shared/components/RemarkSection/RemarkSection';
 import PurchasePhoto from '@/shared/features/materials/pages/purchase-photo/PurchasePhoto';
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
+import { SkRow2, SkField, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 export const TaskEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -88,8 +89,17 @@ export const TaskEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Task')} />
+        <Card className="mt-4 p-6">
+          <div className="flex flex-col gap-4">
+            <SkRow2 />
+            <SkRow2 />
+            <SkRow2 />
+            <SkField />
+            <SkButtons />
+          </div>
+        </Card>
       </div>
     );
   }

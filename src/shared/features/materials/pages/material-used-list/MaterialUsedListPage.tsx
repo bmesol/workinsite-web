@@ -6,6 +6,7 @@ import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { DatePicker } from "@/shared/components/FormFields/DatePicker";
 import MaterialUsedCard from "@/shared/components/MaterialUsedCard/MaterialUsedCard";
+import { MaterialUsedCardSkeleton } from "@/shared/components/MaterialUsedCard/MaterialUsedCardSkeleton";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import {
   Dialog,
@@ -17,8 +18,10 @@ import { useMaterialUsedList } from "./useMaterialUsedList";
 import { MaterialUsedUrls } from "../../utils/urls";
 import materialUsedImage from "@/assets/images/client-creation-illustration.png";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
+import { SearchFilterBarSkeleton } from "@/shared/components/SearchFilterBar/SearchFilterBarSkeleton";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { usePermission } from "@/shared/hooks/usePermission";
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const MaterialUsedListPage = () => {
   const navigate = useNavigate();
@@ -69,15 +72,7 @@ const MaterialUsedListPage = () => {
     quantity
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!materialUsedDetails.length && !appliedFilters) {
+  if (!materialUsedDetails.length && !appliedFilters && !loading) {
     return (
       <GetStartedCard
         imgSrc={materialUsedImage}
@@ -92,26 +87,35 @@ const MaterialUsedListPage = () => {
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* ── Header ── */}
-      <Header title={t("Material Used List")}>
-        <Actions>
-          <Button onClick={handlePress} disabled={!editable}>{t('New Material Used')}</Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-36"]} />
+      ) : (
+        <Header title={t("Material Used List")}>
+          <Actions>
+            <Button onClick={handlePress} disabled={!editable}>{t('New Material Used')}</Button>
+          </Actions>
+        </Header>
+      )}
 
       {/* ── Filter / Search bar ── */}
       <div className="flex justify-end ">
-       <SearchFilterBar
-        appliedFilters={appliedFilters}
-        placeholder={t('Search material used')}
-        onFilterOpen={() => setFilterOpen(true)}
-        onClearSearch={handleClearSearch}
-      />
-
+        {loading ? <SearchFilterBarSkeleton /> : (
+          <SearchFilterBar
+            appliedFilters={appliedFilters}
+            placeholder={t('Search material used')}
+            onFilterOpen={() => setFilterOpen(true)}
+            onClearSearch={handleClearSearch}
+          />
+        )}
       </div>
 
       {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-        {materialUsedDetails.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <MaterialUsedCardSkeleton key={i} />
+          ))
+        ) : materialUsedDetails.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t("No material used found")}</p>
           </div>

@@ -19,6 +19,7 @@ import { useCuringTypeEdit } from './useCuringTypeEdit';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { CuringTypeUrls } from '../../utils/urls';
+import { SkField, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 export const CuringTypeEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,8 +46,15 @@ export const CuringTypeEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Curing Type')} />
+        <Card className="mt-4 p-6">
+          <div className="flex flex-col gap-4">
+            <SkField />
+            <SkTextarea />
+            <SkButtons />
+          </div>
+        </Card>
       </div>
     );
   }

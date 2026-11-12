@@ -23,6 +23,7 @@ import { useMaterialUsedEdit } from './useMaterialUsedEdit';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { MaterialUsedUrls } from '../../utils/urls';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SkRow2, SkField, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const MaterialUsedEditContent = ({ id }: { id: string }) => {
   const navigate = useNavigate();
@@ -56,8 +57,17 @@ const MaterialUsedEditContent = ({ id }: { id: string }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Material Used')} />
+        <Card className="mt-4 p-6">
+          <div className="flex flex-col gap-4">
+            <SkRow2 />
+            <SkRow2 />
+            <SkField />
+            <SkTextarea />
+            <SkButtons />
+          </div>
+        </Card>
       </div>
     );
   }

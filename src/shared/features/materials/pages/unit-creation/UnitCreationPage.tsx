@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Header } from "@/shared/components/Header/Header";
-import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
-import { Label } from "@/shared/components/ui/label";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { UnitList } from "../unit-list/UnitListPage";
 import { useUnitCreation } from "./useUnitCreation";
+import { UnitCreationSkeleton } from "./UnitCreationSkeleton";
 import { usePermission } from "@/shared/hooks/usePermission";
-import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { NameField } from "@/shared/components/FormFields/NameField";
@@ -53,6 +52,8 @@ const UnitCreationPage = () => {
     confirmDelete,
     setEditingUnit,
   } = useUnitCreation();
+
+  if (loading) return <UnitCreationSkeleton />;
 
   return (
     <div className="min-h-screen w-full px-4  pb-10">
@@ -106,16 +107,8 @@ const UnitCreationPage = () => {
             </div>
           </div>
 
-          {/* Loader / List */}
-          {loading ? (
-            <div className="flex items-center justify-center py-10">
-              <Loader2
-                className="animate-spin"
-                style={{ color: "var(--secondary)" }}
-                size={28}
-              />
-            </div>
-          ) : (() => {
+          {/* Unit List */}
+          {(() => {
             const filtered = unitDetails.filter((u) =>
               u.name.toLowerCase().includes(searchText.toLowerCase())
             );

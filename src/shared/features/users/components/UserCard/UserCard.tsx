@@ -9,7 +9,7 @@ import type { UserCardProps } from "./DTOs";
 import { getUserStatusColor } from "../../utils/userStatus";
 
 const UserCard = (props: UserCardProps) => {
-  const { name, imgURL, role, phoneNumber, isActive } = props;
+  const { name, imgURL, role, phoneNumber, isActive, index = 0 } = props;
 
   const initials = name
     .split(" ")
@@ -18,7 +18,10 @@ const UserCard = (props: UserCardProps) => {
     .toUpperCase();
 
   return (
-    <Card className="w-full flex flex-row items-center gap-4 p-4 cursor-pointer hover:shadow-sm transition-shadow">
+    <Card
+      className="w-full flex flex-row items-center gap-4 p-4 cursor-pointer hover:shadow-sm hover:bg-background transition-[background-color,box-shadow] duration-200 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both"
+      style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
+    >
       <div className="relative flex-shrink-0">
         <Avatar className="h-16 w-16 rounded-xl">
           <AvatarImage src={imgURL} alt={name} />

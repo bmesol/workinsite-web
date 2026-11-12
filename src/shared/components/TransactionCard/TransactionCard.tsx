@@ -19,6 +19,7 @@ interface Props {
   onDelete: (id: number) => void;
   onPress: (id: number) => void;
   permissionKey?: string;
+  index?: number;
 }
 
 const paymentMethodColors: Record<string, string> = {
@@ -46,13 +47,15 @@ const TransactionCard: React.FC<Props> = ({
   onDelete,
   onPress,
   permissionKey,
+  index = 0,
 }) => {
   const { canEdit } = usePermission();
   const hasPermission = permissionKey ? canEdit(permissionKey) : true;
 
   return (
     <Card
-      className="w-full flex flex-col gap-1.5 p-4 cursor-pointer hover:shadow-sm transition-shadow"
+      className="w-full flex flex-col gap-1.5 p-4 cursor-pointer hover:shadow-sm hover:bg-background transition-[background-color,box-shadow] duration-200 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both"
+      style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
       onClick={() => onPress(id)}
     >
       {/* ── Top Row: Name + Delete ── */}

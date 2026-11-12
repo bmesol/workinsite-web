@@ -18,6 +18,7 @@ import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmis
 import { useMaterialEdit } from './useMaterialEdit';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SkField, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const MaterialEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,8 +52,16 @@ const MaterialEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Material')} />
+        <Card className="mt-4 p-6">
+          <div className="flex flex-col gap-4">
+            <SkField />
+            <SkField />
+            <SkField />
+            <SkButtons />
+          </div>
+        </Card>
       </div>
     );
   }

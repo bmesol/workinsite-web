@@ -15,7 +15,8 @@ const socialApps = [
   { label: "Telegram",  url: "https://web.telegram.org",  icon: "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/telegram.svg",  bg: "#26A5E4" },
 ];
 
-const SiteCard = (props: { site: Site }) => {
+const SiteCard = (props: { site: Site; index?: number }) => {
+  const { index = 0 } = props;
   const [shareOpen, setShareOpen] = useState(false);
   const [copyLabel, setCopyLabel] = useState<"Copy" | "Copied">("Copy");
 
@@ -51,7 +52,10 @@ const SiteCard = (props: { site: Site }) => {
 
   return (
     <>
-      <Card className="cursor-pointer w-full overflow-hidden">
+      <Card
+        className="cursor-pointer w-full overflow-hidden hover:shadow-sm hover:bg-background transition-[background-color,box-shadow] duration-200 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both"
+        style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
+      >
 
         {/* Top Row */}
         <div className="flex items-center justify-between px-3">

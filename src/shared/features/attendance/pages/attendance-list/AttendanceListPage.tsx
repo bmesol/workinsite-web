@@ -10,7 +10,9 @@ import { Loader2 } from 'lucide-react';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useState } from 'react';
 import { AttendanceCard } from '@/shared/components/AttendanceCard/AttendanceCard';
+import { AttendanceCardSkeleton } from '@/shared/components/AttendanceCard/AttendanceCardSkeleton';
 import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
+import { SearchFilterBarSkeleton } from '@/shared/components/SearchFilterBar/SearchFilterBarSkeleton';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +31,7 @@ import {
 } from '@/shared/components/ui/alert-dialog';
 import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const AttendanceListPage = () => {
   const { canEdit } = usePermission();
@@ -78,15 +81,7 @@ const AttendanceListPage = () => {
     workerId.value
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
-      </div>
-    );
-  }
-
-  if (!attendance.length && !appliedFilters) {
+  if (!attendance.length && !appliedFilters && !loading) {
     return (
       <div className="min-h-screen w-full px-4 py-6 pb-10">
         <GetStartedCard
@@ -105,25 +100,35 @@ const AttendanceListPage = () => {
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
       {/* ── Header ── */}
-      <Header title={t('Attendance List')}>
-        {editable && (
-          <Actions>
-            <Button onClick={handlePress}>{t('New Attendance')}</Button>
-          </Actions>
-        )}
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-32"]} />
+      ) : (
+        <Header title={t('Attendance List')}>
+          {editable && (
+            <Actions>
+              <Button onClick={handlePress}>{t('New Attendance')}</Button>
+            </Actions>
+          )}
+        </Header>
+      )}
 
       {/* ── Search Filter Bar ── */}
-      <SearchFilterBar
-        appliedFilters={appliedFilters}
-        placeholder={t('Search attendance')}
-        onFilterOpen={() => setFilterOpen(true)}
-        onClearSearch={handleClearSearch}
-      />
+      {loading ? <SearchFilterBarSkeleton /> : (
+        <SearchFilterBar
+          appliedFilters={appliedFilters}
+          placeholder={t('Search attendance')}
+          onFilterOpen={() => setFilterOpen(true)}
+          onClearSearch={handleClearSearch}
+        />
+      )}
 
       {/* ── Attendance List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        {attendance.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <AttendanceCardSkeleton key={i} />
+          ))
+        ) : attendance.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">
               {t('No Attendance found')}

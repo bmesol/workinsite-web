@@ -3,10 +3,13 @@ import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import { UserStatusLegend } from "../../components/UserStatus/UserStatus";
 import { UserCard } from "@/shared/features/users/components/UserCard/UserCard";
+import { UserCardSkeleton } from "@/shared/features/users/components/UserCard/UserCardSkeleton";
 import { useUserList } from "./useUserList";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import { SearchBarSkeleton } from "@/shared/components/SearchBar/SearchBarSkeleton";
 import { useState } from "react";
-import { useLanguage } from "@/shared/hooks/useLanguageContext"; 
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const UserListPage = () => {
   const { t } = useLanguage(); 
@@ -22,46 +25,48 @@ const UserListPage = () => {
 
   const [searchValue, setSearchValue] = useState("");
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
-      </div>
-    );
-  }
-
-  if (!userList.length && !hasSearchFilter) return <UserGetStartedPage />;
+  if (!userList.length && !hasSearchFilter && !loading) return <UserGetStartedPage />;
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
 
       {/* ── Header ── */}
-      <Header title={t('User List')}>
-        <Actions>
-          <UserStatusLegend />
-          <Button onClick={handleCreate}>
-            {t('Create User')}
-          </Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-9", "w-28"]} />
+      ) : (
+        <Header title={t('User List')}>
+          <Actions>
+            <UserStatusLegend />
+            <Button onClick={handleCreate}>
+              {t('Create User')}
+            </Button>
+          </Actions>
+        </Header>
+      )}
 
       {/* ── SearchBar ── */}
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
-          <SearchBar
-            searchText={searchValue}
-            setSearchText={(val) => {
-              setSearchValue(val);
-              fetchUser(val);
-            }}
-            searchCategory={t('Search users')}
-          />
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchValue}
+              setSearchText={(val) => {
+                setSearchValue(val);
+                fetchUser(val);
+              }}
+              searchCategory={t('Search users')}
+            />
+          )}
         </div>
       </div>
 
       {/* ── User Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
-        {!userList.length ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <UserCardSkeleton key={i} />
+          ))
+        ) : !userList.length ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t('No users found')}</p>
           </div>

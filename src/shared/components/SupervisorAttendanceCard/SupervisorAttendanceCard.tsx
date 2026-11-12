@@ -7,6 +7,7 @@ type Props = {
   time?: string;
   address: string;
   onPress?: () => void;
+  index?: number;
 };
 
 const SupervisorAttendanceCard: React.FC<Props> = ({
@@ -16,12 +17,13 @@ const SupervisorAttendanceCard: React.FC<Props> = ({
   time,
   address,
   onPress,
+  index = 0,
 }) => {
   return (
     <div
       onClick={onPress}
-      className="bg-white dark:bg-[var(--card)] rounded-xl border p-4 cursor-pointer hover:shadow-sm transition-shadow"
-      style={{ borderColor: 'var(--border)' }}
+      className="bg-white dark:bg-[var(--card)] rounded-xl border p-4 cursor-pointer hover:shadow-sm transition-shadow animate-in fade-in-0 slide-in-from-bottom-2 duration-200 fill-mode-both"
+      style={{ borderColor: 'var(--border)', animationDelay: `${Math.min(index, 5) * 40}ms` }}
     >
       {/* ── Header Row ── */}
       <div className="flex items-center gap-3 mb-3">

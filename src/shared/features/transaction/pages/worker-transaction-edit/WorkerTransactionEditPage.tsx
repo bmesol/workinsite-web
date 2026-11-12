@@ -22,6 +22,7 @@ import PaymentMethodSelector from '../../components/PaymentMethodSelector/Paymen
 import { usePermission } from '@/shared/hooks/usePermission';
 import { WorkerTransactionUrls } from '../../utils/urls';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SkField, SkPaymentMethod, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const WorkerTransactionEditPage = () => {
   const navigate = useNavigate();
@@ -49,8 +50,18 @@ const WorkerTransactionEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Worker Transaction')} />
+        <Card className="mt-4 p-6">
+          <div className="flex flex-col gap-4">
+            <SkField />
+            <SkField />
+            <SkField />
+            <SkPaymentMethod />
+            <SkTextarea />
+            <SkButtons />
+          </div>
+        </Card>
       </div>
     );
   }

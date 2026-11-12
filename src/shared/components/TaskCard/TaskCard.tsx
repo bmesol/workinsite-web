@@ -13,6 +13,7 @@ interface TaskCardProps {
   onPress: () => void;
   onDelete: () => void;
   permissionKey?: string;
+  index?: number;
 }
 
 const getChipStyle = (type: 'priority' | 'status', value?: number | string) => {
@@ -47,6 +48,7 @@ export const TaskCard = ({
   onPress,
   onDelete,
   permissionKey,
+  index = 0,
 }: TaskCardProps) => {
   const { canEdit } = usePermission();
   const hasPermission = permissionKey ? canEdit(permissionKey) : true;
@@ -56,7 +58,8 @@ export const TaskCard = ({
 
   return (
     <Card
-      className="w-full p-4 gap-1.5 cursor-pointer hover:shadow-sm transition-shadow"
+      className="w-full p-4 gap-1.5 cursor-pointer hover:shadow-sm hover:bg-background transition-[background-color,box-shadow] duration-200 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both"
+      style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
       onClick={onPress}
     >
       {/* ── Top Row: Id + Name + Delete ── */}

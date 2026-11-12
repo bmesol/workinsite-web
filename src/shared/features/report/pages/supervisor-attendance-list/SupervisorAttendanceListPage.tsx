@@ -5,11 +5,14 @@ import pdfIcon from "@/assets/icons/pdf.png";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
 import SupervisorAttendanceCard from "@/shared/components/SupervisorAttendanceCard/SupervisorAttendanceCard";
+import { SupervisorAttendanceCardSkeleton } from "@/shared/components/SupervisorAttendanceCard/SupervisorAttendanceCardSkeleton";
 import { DateFilter } from "../../components/DateFilter/DateFilter";
 import { useSupervisorAttendanceList } from "./useSuperVisorAttendanceList";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { usePermission } from "@/shared/hooks/usePermission";
 import { useNavigate } from "react-router-dom";
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import type { SupervisorAttendance } from "../../DTOs/SupervisorAttendanceProps";
 import { Loader2, ClipboardList } from "lucide-react";
 import {
@@ -64,14 +67,6 @@ const SupervisorAttendanceListPage = () => {
 
   if (!hasViewAccess) return null;
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
-      </div>
-    );
-  }
-
   const hasData = attendances.length > 0;
 
   return (
@@ -79,137 +74,156 @@ const SupervisorAttendanceListPage = () => {
       <div className="px-4">
         {/* ── Desktop: title + filter bar + export buttons on one row ── */}
         <div className="hidden sm:block">
-          <Header title="Supervisor Attendance">
-            <Actions>
-              <div className="flex items-center gap-2 flex-wrap justify-end">
-                <div className="-mt-4">
-                  <SearchFilterBar
-                    appliedFilters={appliedFilters}
-                    placeholder={t("Search supervisor attendance")}
-                    onFilterOpen={() => setFilterOpen(true)}
-                    onClearSearch={handleClearSearch}
-                  />
+          {loading ? (
+            <ListPageHeaderSkeleton buttonWidths={["w-44"]} />
+          ) : (
+            <Header title="Supervisor Attendance">
+              <Actions>
+                <div className="flex items-center gap-2 flex-wrap justify-end">
+                  <div className="-mt-4">
+                    <SearchFilterBar
+                      appliedFilters={appliedFilters}
+                      placeholder={t("Search supervisor attendance")}
+                      onFilterOpen={() => setFilterOpen(true)}
+                      onClearSearch={handleClearSearch}
+                    />
+                  </div>
+                  {hasData && (
+                    <>
+                      <Button
+                        onClick={() => {
+                          trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'excel' });
+                          void exportSupervisorAttendanceToExcel(
+                            attendances,
+                            dateRange,
+                            "Supervisor_Attendance_Report",
+                          );
+                        }}
+                        className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
+                        style={{
+                          fontSize: "var(--font-sm)",
+                          fontFamily: "Outfit, sans-serif",
+                        }}
+                      >
+                        <img
+                          src={sheetsIcon}
+                          alt=""
+                          className="w-3.5 h-3.5 object-contain"
+                        />
+                        Export Excel
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'pdf' });
+                          void exportSupervisorAttendanceToPDF(
+                            attendances,
+                            dateRange,
+                            "Supervisor_Attendance_Report",
+                          );
+                        }}
+                        className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        style={{
+                          fontSize: "var(--font-sm)",
+                          fontFamily: "Outfit, sans-serif",
+                        }}
+                      >
+                        <img
+                          src={pdfIcon}
+                          alt=""
+                          className="w-3.5 h-3.5 object-contain"
+                        />
+                        Download PDF
+                      </Button>
+                    </>
+                  )}
                 </div>
-                {hasData && (
-                  <>
-                    <Button
-                      onClick={() => {
-                        trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'excel' });
-                        void exportSupervisorAttendanceToExcel(
-                          attendances,
-                          dateRange,
-                          "Supervisor_Attendance_Report",
-                        );
-                      }}
-                      className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                      style={{
-                        fontSize: "var(--font-sm)",
-                        fontFamily: "Outfit, sans-serif",
-                      }}
-                    >
-                      <img
-                        src={sheetsIcon}
-                        alt=""
-                        className="w-3.5 h-3.5 object-contain"
-                      />
-                      Export Excel
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'pdf' });
-                        void exportSupervisorAttendanceToPDF(
-                          attendances,
-                          dateRange,
-                          "Supervisor_Attendance_Report",
-                        );
-                      }}
-                      className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                      style={{
-                        fontSize: "var(--font-sm)",
-                        fontFamily: "Outfit, sans-serif",
-                      }}
-                    >
-                      <img
-                        src={pdfIcon}
-                        alt=""
-                        className="w-3.5 h-3.5 object-contain"
-                      />
-                      Download PDF
-                    </Button>
-                  </>
-                )}
-              </div>
-            </Actions>
-          </Header>
+              </Actions>
+            </Header>
+          )}
         </div>
 
         {/* ── Mobile: title → filter bar → export buttons ── */}
         <div className="sm:hidden">
-          <h2 className="text-secondary font-bold text-xl leading-tight pt-4">
-            Supervisor Attendance
-          </h2>
-          <SearchFilterBar
-            appliedFilters={appliedFilters}
-            placeholder={t("Search supervisor attendance")}
-            onFilterOpen={() => setFilterOpen(true)}
-            onClearSearch={handleClearSearch}
-          />
-          {hasData && (
-            <div className="flex gap-3 mt-4">
-              <Button
-                onClick={() => {
-                  trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'excel' });
-                  void exportSupervisorAttendanceToExcel(
-                    attendances,
-                    dateRange,
-                    "Supervisor_Attendance_Report",
-                  );
-                }}
-                className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                style={{
-                  fontSize: "var(--font-sm)",
-                  fontFamily: "Outfit, sans-serif",
-                }}
-              >
-                <img
-                  src={sheetsIcon}
-                  alt=""
-                  className="w-3.5 h-3.5 object-contain"
-                />
-                Export Excel
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'pdf' });
-                  void exportSupervisorAttendanceToPDF(
-                    attendances,
-                    dateRange,
-                    "Supervisor_Attendance_Report",
-                  );
-                }}
-                className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                style={{
-                  fontSize: "var(--font-sm)",
-                  fontFamily: "Outfit, sans-serif",
-                }}
-              >
-                <img
-                  src={pdfIcon}
-                  alt=""
-                  className="w-3.5 h-3.5 object-contain"
-                />
-                Download PDF
-              </Button>
-            </div>
+          {loading ? (
+            <>
+              <div className="flex justify-between items-center pt-4">
+                <Skeleton className="h-7 w-52 bg-border" />
+                <Skeleton className="h-9 w-44 rounded-md bg-border" />
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-secondary font-bold text-xl leading-tight pt-4">
+                Supervisor Attendance
+              </h2>
+              <SearchFilterBar
+                appliedFilters={appliedFilters}
+                placeholder={t("Search supervisor attendance")}
+                onFilterOpen={() => setFilterOpen(true)}
+                onClearSearch={handleClearSearch}
+              />
+              {hasData && (
+                <div className="flex gap-3 mt-4">
+                  <Button
+                    onClick={() => {
+                      trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'excel' });
+                      void exportSupervisorAttendanceToExcel(
+                        attendances,
+                        dateRange,
+                        "Supervisor_Attendance_Report",
+                      );
+                    }}
+                    className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
+                    style={{
+                      fontSize: "var(--font-sm)",
+                      fontFamily: "Outfit, sans-serif",
+                    }}
+                  >
+                    <img
+                      src={sheetsIcon}
+                      alt=""
+                      className="w-3.5 h-3.5 object-contain"
+                    />
+                    Export Excel
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      trackEvent('download_report', { report_type: 'supervisor_attendance', format: 'pdf' });
+                      void exportSupervisorAttendanceToPDF(
+                        attendances,
+                        dateRange,
+                        "Supervisor_Attendance_Report",
+                      );
+                    }}
+                    className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    style={{
+                      fontSize: "var(--font-sm)",
+                      fontFamily: "Outfit, sans-serif",
+                    }}
+                  >
+                    <img
+                      src={pdfIcon}
+                      alt=""
+                      className="w-3.5 h-3.5 object-contain"
+                    />
+                    Download PDF
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
 
       {/* ── List ── */}
       <div className="px-4 grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
-        {attendances.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <SupervisorAttendanceCardSkeleton key={i} />
+          ))
+        ) : attendances.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center py-24 text-slate-400">
             <ClipboardList size={48} className="mb-4 opacity-30" />
             <p className="font-semibold text-slate-500">No Data Found</p>

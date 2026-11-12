@@ -32,6 +32,7 @@ import { FormActionButton } from "@/shared/components/FormActionButton/FormActio
 import { Card } from "@/shared/components/ui/card";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { SkField, SkSectionHeader, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const PurchaseEditScreen = () => {
   const { id } = useParams<{ id: string }>();
@@ -97,8 +98,23 @@ const PurchaseEditScreen = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Purchase')} />
+        <Card className="mt-4 p-6">
+          <div className="flex flex-col gap-4">
+            <SkField />
+            <SkField />
+            <SkField />
+            <SkField />
+            <SkSectionHeader />
+            <SkField />
+            <SkField />
+            <SkField />
+            <SkField />
+            <SkTextarea />
+            <SkButtons />
+          </div>
+        </Card>
       </div>
     );
   }

@@ -21,6 +21,7 @@ import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmis
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { usePermission } from "@/shared/hooks/usePermission";
+import { SkRow2, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const SiteEditPage = () => {
   const { t } = useLanguage();
@@ -78,8 +79,17 @@ const SiteEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t("Edit Site")} />
+        <Card className="mt-4">
+          <CardContent className="flex flex-col gap-6">
+            <SkRow2 />
+            <SkRow2 />
+            <SkRow2 />
+            <SkRow2 />
+            <SkButtons />
+          </CardContent>
+        </Card>
       </div>
     );
   }

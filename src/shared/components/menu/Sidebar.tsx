@@ -297,7 +297,7 @@
 
 import { Sheet, SheetContent } from "@/shared/components/ui/sheet";
 import { useMenu } from "./useMenu";
-import { LogOut, X, ChevronDown, ChevronUp, ChevronLeft, Moon, Globe } from "lucide-react";
+import { LogOut, X, ChevronDown, ChevronLeft, Moon, Globe } from "lucide-react";
 import { MenuItems } from "./MenuItems";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BaseUrls } from "@/shared/utils/UrlPages";
@@ -427,7 +427,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
         }}
       >
         {activeView === "menu" ? (
-          <>
+          <div key="menu" className="flex flex-col flex-1 overflow-hidden animate-in fade-in-0 slide-in-from-right-4 duration-150">
             {/* Profile section */}
             <div
               className="relative flex flex-col gap-3 px-4"
@@ -502,7 +502,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
                           handleNavigate(getEffectiveHref(href));
                         }
                       }}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition"
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors duration-150"
                       style={{
                         background: isActive ? "var(--primary-side)" : "var(--card)",
                         border: isActive ? "1.5px solid var(--primary)" : "1px solid var(--border)",
@@ -529,9 +529,10 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
                       </span>
 
                       {hasChildren && (
-                        <span style={{ color: "var(--secondary)" }}>
-                          {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                        </span>
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-200 ease-in-out ${isOpen ? "rotate-180" : "rotate-0"}`}
+                          style={{ color: "var(--secondary)" }}
+                        />
                       )}
                     </div>
 
@@ -543,7 +544,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
                             <div
                               key={child.href}
                               onClick={() => handleNavigate(child.href)}
-                              className="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition"
+                              className="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-colors duration-150"
                               style={{ background: isChildActive ? "var(--primary-side)" : "transparent" }}
                             >
                               <div style={{ width: "3px", height: "18px", borderRadius: "2px", background: "var(--primary)", flexShrink: 0 }} />
@@ -576,7 +577,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
               {/* Theme - opens theme layer */}
               <div
                 onClick={() => setActiveView("theme")}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors duration-150"
                 style={{
                   background: "var(--card)",
                   border: "1px solid var(--border)",
@@ -611,7 +612,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
               {/* Language - opens language layer */}
               <div
                 onClick={() => setActiveView("language")}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors duration-150"
                 style={{
                   background: "var(--card)",
                   border: "1px solid var(--border)",
@@ -651,9 +652,9 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
                 {t("Logout")}
               </button>
             </div>
-          </>
+          </div>
         ) : (
-          <>
+          <div key={activeView} className="flex flex-col flex-1 overflow-hidden animate-in fade-in-0 slide-in-from-right-4 duration-150">
             {/* Back header */}
             <div
               className="flex items-center gap-3 px-4"
@@ -680,7 +681,7 @@ const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
               {activeView === "theme" && <ThemeSelector onClose={() => handleSheetOpenChange(false)} />}
               {activeView === "language" && <LanguageSelector />}
             </div>
-          </>
+          </div>
         )}
       </SheetContent>
     </Sheet>

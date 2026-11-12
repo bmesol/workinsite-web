@@ -9,6 +9,7 @@ import { useWorkRateAbstractEdit } from "./useWorkRateAbstractEdit";
 import { usePermission } from "@/shared/hooks/usePermission";
 import { useParams } from "react-router-dom";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SkRow2, SkField, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const WorkRateAbstractEditPage = () => {
   const { t } = useLanguage();
@@ -41,8 +42,19 @@ const WorkRateAbstractEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Work Rate Abstract Edit')} />
+        <Card className="mt-4">
+          <CardContent className="flex flex-col gap-4">
+            <SkRow2 />
+            <SkRow2 />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SkField />
+            </div>
+            <SkTextarea />
+            <SkButtons />
+          </CardContent>
+        </Card>
       </div>
     );
   }

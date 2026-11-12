@@ -4,6 +4,7 @@ interface UserCardProps {
   role: string;
   phoneNumber: string;
   isActive: boolean;
+  index?: number;
 }
 
 export type { UserCardProps };

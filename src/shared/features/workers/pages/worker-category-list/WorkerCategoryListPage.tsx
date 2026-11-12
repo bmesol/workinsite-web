@@ -3,12 +3,15 @@ import { Actions, Header } from "@/shared/components/Header/Header";
 
 import { Button } from "@/shared/components/ui/button";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import { SearchBarSkeleton } from "@/shared/components/SearchBar/SearchBarSkeleton";
 import { useWorkerCategoryList } from "./useWorkerCategoryList";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
+import { ContactCardSkeleton } from "@/shared/components/ContactCard/ContactCardSkeleton";
 import { WorkerCategoriesUrls } from "../../utils/urls";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const WorkerCategoryListPage = () => {
   const { t } = useLanguage();
@@ -31,39 +34,41 @@ const WorkerCategoryListPage = () => {
     (item.name ?? "").toLowerCase().includes(searchText.trim().toLowerCase()),
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title={t('Worker Category List')}>
-        <Actions>
-          <Button onClick={() => navigate(WorkerCategoriesUrls.create)} disabled={!editable}>
-            {t('Create Worker Category')}
-          </Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-52"]} />
+      ) : (
+        <Header title={t('Worker Category List')}>
+          <Actions>
+            <Button onClick={() => navigate(WorkerCategoriesUrls.create)} disabled={!editable}>
+              {t('Create Worker Category')}
+            </Button>
+          </Actions>
+        </Header>
+      )}
 
       {/* Search Bar */}
-   <div className="flex justify-end mt-4 mb-4">
-  <div className="w-full md:w-3/12">
-    <SearchBar
-      searchText={searchText}
-      setSearchText={setSearchText}
-      searchCategory={t('Worker Category')}
-    />
-  </div>
-</div>
+      <div className="flex justify-end mt-4 mb-4">
+        <div className="w-full md:w-3/12">
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchText}
+              setSearchText={setSearchText}
+              searchCategory={t('Worker Category')}
+            />
+          )}
+        </div>
+      </div>
 
       {/* List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
-        {filteredWorkerCategoryList.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <ContactCardSkeleton key={i} />
+          ))
+        ) : filteredWorkerCategoryList.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-gray-500 text-sm break-words">
               {t('No Worker Category found')}

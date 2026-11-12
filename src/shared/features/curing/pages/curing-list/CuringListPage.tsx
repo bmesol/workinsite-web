@@ -13,8 +13,11 @@ import {
 import { useCuringList } from './useCuringList';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { CuringUrls } from '../../utils/urls';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 import CuringCard from '@/shared/components/CuringCard/CuringCard';
+import { CuringCardSkeleton } from '@/shared/components/CuringCard/CuringCardSkeleton';
 import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
+import { SearchFilterBarSkeleton } from '@/shared/components/SearchFilterBar/SearchFilterBarSkeleton';
 import curingImage from '@/assets/images/client-creation-illustration.png';
 
 const CuringListPage = () => {
@@ -43,15 +46,7 @@ const CuringListPage = () => {
 
   const isFiltered = !!(siteName.value || curingType.value);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
-      </div>
-    );
-  }
-
-  if (!curingList.length && !appliedFilters) {
+  if (!curingList.length && !appliedFilters && !loading) {
     return (
       <GetStartedCard
         imgSrc={curingImage}
@@ -68,23 +63,33 @@ const CuringListPage = () => {
     <div className="w-full min-h-screen px-4 py-6">
 
       {/* ── Header ── */}
-      <Header title={t('Curing List')}>
-        <Actions>
-          <Button onClick={handlePress}>{t('New Curing')}</Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-28"]} />
+      ) : (
+        <Header title={t('Curing List')}>
+          <Actions>
+            <Button onClick={handlePress}>{t('New Curing')}</Button>
+          </Actions>
+        </Header>
+      )}
 
       {/* ── Filter / Search bar ── */}
-      <SearchFilterBar
-        appliedFilters={appliedFilters}
-        placeholder={t('Search Curing')}
-        onFilterOpen={() => setFilterOpen(true)}
-        onClearSearch={handleClearSearch}
-      />
+      {loading ? <SearchFilterBarSkeleton /> : (
+        <SearchFilterBar
+          appliedFilters={appliedFilters}
+          placeholder={t('Search Curing')}
+          onFilterOpen={() => setFilterOpen(true)}
+          onClearSearch={handleClearSearch}
+        />
+      )}
 
       {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-        {curingList.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <CuringCardSkeleton key={i} />
+          ))
+        ) : curingList.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t('No curings found')}</p>
           </div>

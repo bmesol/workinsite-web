@@ -1,15 +1,18 @@
 import { ContactGetStartedPage } from "@/shared/features/contacts/pages/contact-get-started/ContactGetStartedPage";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
+import { ContactCardSkeleton } from "@/shared/components/ContactCard/ContactCardSkeleton";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import { useContactList } from "./useContactListPage";
 import { ContactsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import { SearchBarSkeleton } from "@/shared/components/SearchBar/SearchBarSkeleton";
 import { useState } from "react";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const ContactListPage = () => {
   const navigate = useNavigate();
@@ -31,45 +34,46 @@ const ContactListPage = () => {
     setDeleteId,
   } = useContactList();
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!contactList.length && !hasSearchFilter) return <ContactGetStartedPage />;
+  if (!contactList.length && !hasSearchFilter && !loading) return <ContactGetStartedPage />;
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title={t('Contact List')}>
-        <Actions>
-          <Button onClick={() => navigate(ContactsUrls.create)} disabled={!editable}>
-            {t('New Contact')}
-          </Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-28"]} />
+      ) : (
+        <Header title={t('Contact List')}>
+          <Actions>
+            <Button onClick={() => navigate(ContactsUrls.create)} disabled={!editable}>
+              {t('New Contact')}
+            </Button>
+          </Actions>
+        </Header>
+      )}
 
       {/* SearchBar */}
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
-          <SearchBar
-            searchText={searchValue}
-            setSearchText={(val) => {
-              setSearchValue(val);
-              fetchContact(val);
-            }}
-            searchCategory={t('Search contacts')}
-          />
-
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchValue}
+              setSearchText={(val) => {
+                setSearchValue(val);
+                fetchContact(val);
+              }}
+              searchCategory={t('Search contacts')}
+            />
+          )}
         </div>
       </div>
 
       {/* Contact List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pb-4">
-        {!contactList.length ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <ContactCardSkeleton key={i} />
+          ))
+        ) : !contactList.length ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t('No contacts found')}</p>
           </div>

@@ -2,9 +2,11 @@ import { Header, Actions } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
 import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
+import { SearchFilterBarSkeleton } from '@/shared/components/SearchFilterBar/SearchFilterBarSkeleton';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import TransactionCard from '@/shared/components/TransactionCard/TransactionCard';
+import { TransactionCardSkeleton } from '@/shared/components/TransactionCard/TransactionCardSkeleton';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +21,7 @@ import workerTransactionImage from '@/assets/images/client-creation-illustration
 import { WorkerTransactionUrls } from '../../utils/urls';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const WorkerTransactionListPage = () => {
   const { canEdit } = usePermission();
@@ -54,15 +57,7 @@ const WorkerTransactionListPage = () => {
 
   const isFiltered = !!(fromDate || toDate || worker?.value);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!transactions.length && !appliedFilters) {
+  if (!transactions.length && !appliedFilters && !loading) {
     return (
       <GetStartedCard
         imgSrc={workerTransactionImage}
@@ -80,23 +75,33 @@ const WorkerTransactionListPage = () => {
     <div className="min-h-screen w-full px-4 py-6 pb-10">
 
       {/* ── Header ── */}
-      <Header title={t('Worker Transaction List')}>
-        <Actions>
-          <Button onClick={handleCreate} disabled={!hasPermission}>{t('New Worker Transaction')}</Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-48"]} />
+      ) : (
+        <Header title={t('Worker Transaction List')}>
+          <Actions>
+            <Button onClick={handleCreate} disabled={!hasPermission}>{t('New Worker Transaction')}</Button>
+          </Actions>
+        </Header>
+      )}
 
       {/* ── Search Filter Bar ── */}
-      <SearchFilterBar
-        appliedFilters={appliedFilters}
-        placeholder={t('Search worker transaction')}
-        onFilterOpen={() => setFilterOpen(true)}
-        onClearSearch={handleClearSearch}
-      />
+      {loading ? <SearchFilterBarSkeleton /> : (
+        <SearchFilterBar
+          appliedFilters={appliedFilters}
+          placeholder={t('Search worker transaction')}
+          onFilterOpen={() => setFilterOpen(true)}
+          onClearSearch={handleClearSearch}
+        />
+      )}
 
       {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-        {transactions.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <TransactionCardSkeleton key={i} />
+          ))
+        ) : transactions.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">No worker transaction found</p>
           </div>

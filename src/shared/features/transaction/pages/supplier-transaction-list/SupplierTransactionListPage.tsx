@@ -4,7 +4,9 @@ import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCar
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import TransactionCard from '@/shared/components/TransactionCard/TransactionCard';
+import { TransactionCardSkeleton } from '@/shared/components/TransactionCard/TransactionCardSkeleton';
 import { SearchFilterBar } from '@/shared/components/SearchFilterBar/SearchFilterBar';
+import { SearchFilterBarSkeleton } from '@/shared/components/SearchFilterBar/SearchFilterBarSkeleton';
 import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import {
   Dialog,
@@ -17,6 +19,7 @@ import { SupplierTransactionUrls } from '../../utils/urls';
 import supplierTransactionImage from '@/assets/images/client-creation-illustration.png';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const SupplierTransactionListPage = () => {
   const { t } = useLanguage();
@@ -49,15 +52,7 @@ const SupplierTransactionListPage = () => {
 
   const isFiltered = !!(fromDate || toDate || supplier?.value);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!transactions.length && !appliedFilters) {
+  if (!transactions.length && !appliedFilters && !loading) {
     return (
       <GetStartedCard
         imgSrc={supplierTransactionImage}
@@ -75,25 +70,35 @@ const SupplierTransactionListPage = () => {
     <div className="min-h-screen w-full px-4 py-6">
 
       {/* ── Header ── */}
-      <Header title={t('Supplier Transaction List')}>
-        <Actions>
-          <Button onClick={handleCreate} disabled={!hasPermission}>{t('New Supplier Transaction')}</Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-52"]} />
+      ) : (
+        <Header title={t('Supplier Transaction List')}>
+          <Actions>
+            <Button onClick={handleCreate} disabled={!hasPermission}>{t('New Supplier Transaction')}</Button>
+          </Actions>
+        </Header>
+      )}
 
       {/* ── Filter / Search bar ── */}
       <div className="flex justify-end">
-        <SearchFilterBar
-          appliedFilters={appliedFilters}
-          placeholder={t('Search supplier transaction')}
-          onFilterOpen={() => setFilterOpen(true)}
-          onClearSearch={handleClearSearch}
-        />
+        {loading ? <SearchFilterBarSkeleton /> : (
+          <SearchFilterBar
+            appliedFilters={appliedFilters}
+            placeholder={t('Search supplier transaction')}
+            onFilterOpen={() => setFilterOpen(true)}
+            onClearSearch={handleClearSearch}
+          />
+        )}
       </div>
 
       {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
-        {transactions.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <TransactionCardSkeleton key={i} />
+          ))
+        ) : transactions.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">No supplier transaction found</p>
           </div>

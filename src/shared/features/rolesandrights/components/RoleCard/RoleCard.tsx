@@ -7,6 +7,7 @@ interface RoleCardProps {
   onDelete: (id: number) => void;
   handlePress: (role: Roles) => void;
   isSuperAdmin: boolean;
+  index?: number;
 }
 
 const RoleCard: React.FC<RoleCardProps> = ({
@@ -15,6 +16,7 @@ const RoleCard: React.FC<RoleCardProps> = ({
   onDelete,
   handlePress,
   isSuperAdmin,
+  index = 0,
 }) => {
   // Avatar initials
   const initials = role.name
@@ -27,8 +29,8 @@ const RoleCard: React.FC<RoleCardProps> = ({
   return (
     <div
       onClick={() => handlePress(role)}
-      className="bg-white dark:bg-[var(--card)] rounded-xl p-3 flex items-center justify-between cursor-pointer hover:shadow-sm transition-shadow border"
-      style={{ borderColor: 'var(--border)' }}
+      className="bg-white dark:bg-[var(--card)] rounded-xl p-3 flex items-center justify-between cursor-pointer hover:shadow-sm transition-shadow border animate-in fade-in-0 slide-in-from-bottom-2 duration-200 fill-mode-both"
+      style={{ borderColor: 'var(--border)', animationDelay: `${Math.min(index, 5) * 40}ms` }}
     >
       {/* ── Left: Avatar + Name ── */}
       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -61,7 +63,7 @@ const RoleCard: React.FC<RoleCardProps> = ({
             {/* Edit */}
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(role); }}
-              className="w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-gray-100"
+              className="w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-gray-100 cursor-pointer"
             >
               <Pencil
                 className="w-4 h-4"
@@ -72,7 +74,7 @@ const RoleCard: React.FC<RoleCardProps> = ({
             {/* Delete */}
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(role.id); }}
-              className="w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-red-50"
+              className="w-8 h-8 rounded-md flex items-center justify-center transition-colors hover:bg-red-50 cursor-pointer"
             >
               <Trash2
                 className="w-4 h-4"

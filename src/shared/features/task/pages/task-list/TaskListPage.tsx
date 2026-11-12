@@ -8,10 +8,13 @@ import { useTaskList } from "./useTaskList";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { TaskCard } from "@/shared/components/TaskCard/TaskCard";
+import { TaskCardSkeleton } from "@/shared/components/TaskCard/TaskCardSkeleton";
 import { GetStartedCard } from "@/shared/components/GetStartedCard/GetStartedCard";
 import TaskCreationIllustration from "@/assets/images/site-creation-illustration.png";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import { SearchBarSkeleton } from "@/shared/components/SearchBar/SearchBarSkeleton";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const TaskListPage = () => {
   const navigate = useNavigate();
@@ -35,15 +38,7 @@ const TaskListPage = () => {
     item.taskName?.toLowerCase().includes(searchText.trim().toLowerCase()),
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
-      </div>
-    );
-  }
-
-  if (!taskDetails.length) return (
+  if (!taskDetails.length && !loading) return (
     <GetStartedCard
       imgSrc={TaskCreationIllustration}
       buttonClick={TaskUrls.create}
@@ -57,26 +52,36 @@ const TaskListPage = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
-      <Header title={t('Task List')}>
-        <Actions>
-          <Button onClick={() => navigate(TaskUrls.create)} disabled={!editable}>
-            {t('New Task')}
-          </Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-24"]} />
+      ) : (
+        <Header title={t('Task List')}>
+          <Actions>
+            <Button onClick={() => navigate(TaskUrls.create)} disabled={!editable}>
+              {t('New Task')}
+            </Button>
+          </Actions>
+        </Header>
+      )}
 
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
-          <SearchBar
-            searchText={searchText}
-            setSearchText={setSearchText}
-            searchCategory={t('Search Tasks')}
-          />
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchText}
+              setSearchText={setSearchText}
+              searchCategory={t('Search Tasks')}
+            />
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
-        {filteredTaskList.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <TaskCardSkeleton key={i} />
+          ))
+        ) : filteredTaskList.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t('No tasks found')}</p>
           </div>

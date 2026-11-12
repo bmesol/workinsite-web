@@ -14,10 +14,11 @@ interface ContactCardProps {
   email?: string;
   workType?: string;
   workerRole?: string;
+  index?: number;
   onDelete: (e: React.MouseEvent) => void;  // ← revert back to original
   onPress?: () => void;
   permissionKey?: string;
-  subDetails?: SubDetail[]; 
+  subDetails?: SubDetail[];
 }
 
 export type { ContactCardProps };

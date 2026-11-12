@@ -17,6 +17,7 @@ interface MaterialCardProps {
   hsnCode?: string;
   workmode?: string;
   permissionKey?: string;
+  index?: number;
 }
 
 interface InfoChipProps {
@@ -55,6 +56,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
   hsnCode,
   workmode,
   permissionKey,
+  index = 0,
 }) => {
   const { canEdit } = usePermission();
   const hasPermission = permissionKey ? canEdit(permissionKey) : true;
@@ -118,10 +120,10 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
   return (
     <div
       onClick={onPress}
-      className="p-4 rounded-xl border transition cursor-pointer hover:shadow-sm"
+      className="p-4 rounded-xl border bg-card cursor-pointer hover:shadow-sm hover:bg-background transition-[background-color,box-shadow] duration-200 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both"
       style={{
-        backgroundColor: 'var(--card)',
         borderColor: 'var(--border)',
+        animationDelay: `${Math.min(index, 5) * 40}ms`,
       }}
     >
       {/* Header */}

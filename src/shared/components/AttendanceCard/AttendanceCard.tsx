@@ -12,6 +12,7 @@ interface AttendanceCardProps {
   onDelete: () => void;
   onPress: () => void;
   permissionKey: string;
+  index?: number;
 }
 
 const IconRow = ({ Icon, text }: { Icon: LucideIcon; text: string }) => (
@@ -31,13 +32,15 @@ const AttendanceCard = ({
   onDelete,
   onPress,
   permissionKey,
+  index = 0,
 }: AttendanceCardProps) => {
   const { canEdit } = usePermission();
   const hasPermission = permissionKey ? canEdit(permissionKey) : true;
 
   return (
     <Card
-      className="w-full relative p-4 cursor-pointer hover:shadow-sm transition-shadow"
+      className="w-full relative p-4 cursor-pointer hover:shadow-sm transition-shadow animate-in fade-in-0 slide-in-from-bottom-2 duration-200 fill-mode-both"
+      style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
       onClick={onPress}
     >
       {/* Top-right — Delete Button */}
