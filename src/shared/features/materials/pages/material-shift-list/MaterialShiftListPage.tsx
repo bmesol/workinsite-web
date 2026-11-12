@@ -17,9 +17,12 @@ import { useMaterialShiftList } from "./useMaterialShiftList";
 import { MaterialShiftUrls } from "../../utils/urls";
 import materialShiftImage from "@/assets/images/client-creation-illustration.png";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
+import { SearchFilterBarSkeleton } from "@/shared/components/SearchFilterBar/SearchFilterBarSkeleton";
 import MaterialUsedCard from "@/shared/components/MaterialUsedCard/MaterialUsedCard";
+import { MaterialUsedCardSkeleton } from "@/shared/components/MaterialUsedCard/MaterialUsedCardSkeleton";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { usePermission } from "@/shared/hooks/usePermission";
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const MaterialShiftListPage = () => {
   const navigate = useNavigate();
@@ -68,15 +71,7 @@ const MaterialShiftListPage = () => {
     quantity
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!materialShiftDetails.length && !appliedFilters) {
+  if (!materialShiftDetails.length && !appliedFilters && !loading) {
     return (
       <GetStartedCard
         imgSrc={materialShiftImage}
@@ -92,25 +87,35 @@ const MaterialShiftListPage = () => {
   return (
     <div className="w-full min-h-screen px-4 py-6">
       {/* ── Header ── */}
-      <Header title={t("Material Shift List")}>
-        <Actions>
-          <Button onClick={handleAddShift} disabled={!editable}>New Material Shift</Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-36"]} />
+      ) : (
+        <Header title={t("Material Shift List")}>
+          <Actions>
+            <Button onClick={handleAddShift} disabled={!editable}>New Material Shift</Button>
+          </Actions>
+        </Header>
+      )}
 
       {/* ── Filter / Search bar ── */}
       <div className="flex justify-end ">
-        <SearchFilterBar
-          appliedFilters={appliedFilters}
-          placeholder={t('Search material shift')}
-          onFilterOpen={() => setFilterOpen(true)}
-          onClearSearch={handleClearSearch}
-        />
+        {loading ? <SearchFilterBarSkeleton /> : (
+          <SearchFilterBar
+            appliedFilters={appliedFilters}
+            placeholder={t('Search material shift')}
+            onFilterOpen={() => setFilterOpen(true)}
+            onClearSearch={handleClearSearch}
+          />
+        )}
       </div>
 
       {/* ── List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-        {materialShiftDetails.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <MaterialUsedCardSkeleton key={i} />
+          ))
+        ) : materialShiftDetails.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t("No material shift found")}</p>
           </div>

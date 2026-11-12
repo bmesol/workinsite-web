@@ -7,17 +7,19 @@ interface Props {
   amount: number | string;
   isFirst?: boolean;
   onPress: () => void;
+  index?: number;
 }
 
-export function RecordCard({ date, siteName, amount, isFirst, onPress }: Props) {
+export function RecordCard({ date, siteName, amount, isFirst, onPress, index = 0 }: Props) {
   return (
     <button
       onClick={onPress}
-      className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl border shadow-sm text-left transition-all ${
+      className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl border shadow-sm text-left transition-all animate-in fade-in-0 slide-in-from-bottom-2 duration-200 fill-mode-both ${
         isFirst
           ? "bg-[var(--primary-side)] border-[var(--primary)]/30"
           : "bg-card border-border"
       }`}
+      style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
     >
       <div className="flex-1 min-w-0 mr-3">
         {/* Date */}

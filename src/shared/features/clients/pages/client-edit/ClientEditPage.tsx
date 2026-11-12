@@ -22,6 +22,7 @@ import {
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { SkRow2, SkSectionHeader, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const ClientEditPage = () => {
   const { id } = useParams<string>();
@@ -58,8 +59,19 @@ const ClientEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Client')} />
+        <Card className="mt-4 p-6">
+          <div className="flex flex-col gap-4">
+            <SkRow2 />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SkSectionHeader />
+              <SkSectionHeader />
+            </div>
+            <SkTextarea />
+            <SkButtons />
+          </div>
+        </Card>
       </div>
     );
   }

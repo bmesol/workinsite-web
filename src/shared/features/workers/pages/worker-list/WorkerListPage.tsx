@@ -1,5 +1,6 @@
 import { WorkerGetStartedPage } from "../worker-get-started/WorkerGetStartedPage";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
+import { ContactCardSkeleton } from "@/shared/components/ContactCard/ContactCardSkeleton";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { ContactTypes } from "@/shared/features/contacts/DTOs/ContactProps";
 import { useWorkerList } from "./useWorkList";
@@ -17,8 +18,10 @@ import {
 } from "@/shared/components/ui/dialog";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { SearchFilterBar } from "@/shared/components/SearchFilterBar/SearchFilterBar";
+import { SearchFilterBarSkeleton } from "@/shared/components/SearchFilterBar/SearchFilterBarSkeleton";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const WorkerListPage = () => {
   const navigate = useNavigate();
@@ -49,34 +52,32 @@ const WorkerListPage = () => {
     isFiltered,
   } = useWorkerList();
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
-      </div>
-    );
-  }
-
-  if (!workerDetails.length && !appliedFilters) return <WorkerGetStartedPage />;
+  if (!workerDetails.length && !appliedFilters && !loading) return <WorkerGetStartedPage />;
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title={t('Worker List')}>
-        <Actions>
-          <Button onClick={() => navigate(WorkersUrls.create)} disabled={!editable}>
-            {t('Create Worker')}
-          </Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-32"]} />
+      ) : (
+        <Header title={t('Worker List')}>
+          <Actions>
+            <Button onClick={() => navigate(WorkersUrls.create)} disabled={!editable}>
+              {t('Create Worker')}
+            </Button>
+          </Actions>
+        </Header>
+      )}
 
       <div className="flex justify-end ">
-        <SearchFilterBar
-          appliedFilters={appliedFilters}
-          placeholder={t('Search workers')}
-          onFilterOpen={() => setFilterOpen(true)}
-          onClearSearch={handleClearSearch}
-        />
+        {loading ? <SearchFilterBarSkeleton /> : (
+          <SearchFilterBar
+            appliedFilters={appliedFilters}
+            placeholder={t('Search workers')}
+            onFilterOpen={() => setFilterOpen(true)}
+            onClearSearch={handleClearSearch}
+          />
+        )}
       </div>
 
       {/* Search Loading */}
@@ -88,7 +89,11 @@ const WorkerListPage = () => {
 
       {/* Worker Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mt-4 pb-4">
-        {!workerDetails.length ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <ContactCardSkeleton key={i} />
+          ))
+        ) : !workerDetails.length ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t('No workers found')}</p>
           </div>

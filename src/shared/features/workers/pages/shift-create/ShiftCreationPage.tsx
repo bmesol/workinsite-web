@@ -4,6 +4,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { useShiftCreation } from "./useShiftCreation";
 import { ShiftListPage } from "../shift-list/ShiftListPage";
+import { ShiftCreationSkeleton } from "./ShiftCreationSkeleton";
 import { usePermission } from "@/shared/hooks/usePermission";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
@@ -35,6 +36,8 @@ const ShiftCreationPage = () => {
     handleRefresh,
     isFixedMultiplier,
   } = useShiftCreation();
+
+  if (loading) return <ShiftCreationSkeleton />;
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,20 +111,14 @@ const ShiftCreationPage = () => {
               {t('Shift List')}
             </h2>
 
-            {loading ? (
-              <div className="flex items-center justify-center py-6">
-                <p className="text-sm text-gray-500">Loading...</p>
-              </div>
-            ) : (
-              <ShiftListPage
-                shiftDetails={shiftDetails ?? []}
-                handleShiftDelete={handleShiftDelete}
-                handleShiftEdit={setEditingShift}
-                editingShiftId={editingShiftId}
-                isLoading={isLoading}
-                handleRefresh={handleRefresh}
-              />
-            )}
+            <ShiftListPage
+              shiftDetails={shiftDetails ?? []}
+              handleShiftDelete={handleShiftDelete}
+              handleShiftEdit={setEditingShift}
+              editingShiftId={editingShiftId}
+              isLoading={isLoading}
+              handleRefresh={handleRefresh}
+            />
           </div>
 
         </CardContent>

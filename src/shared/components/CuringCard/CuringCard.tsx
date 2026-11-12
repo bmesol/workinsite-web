@@ -18,6 +18,7 @@ interface CuringCardProps {
   onPress: () => void;
   onDelete: () => void;
   permissionKey?: string;
+  index?: number;
 }
 
 const CuringCard = ({
@@ -28,6 +29,7 @@ const CuringCard = ({
   onPress,
   onDelete,
   permissionKey,
+  index = 0,
 }: CuringCardProps) => {
   const { canEdit } = usePermission();
   const hasPermission = permissionKey ? canEdit(permissionKey) : true;
@@ -38,10 +40,10 @@ const CuringCard = ({
   return (
     <div
       onClick={onPress}
-      className="flex items-stretch gap-3 p-4 rounded-xl border cursor-pointer hover:shadow-sm transition-shadow"
+      className="flex items-stretch gap-3 p-4 rounded-xl border bg-card cursor-pointer hover:shadow-sm hover:bg-background transition-[background-color,box-shadow] duration-200 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both"
       style={{
-        backgroundColor: 'var(--card)',
         borderColor: 'var(--border)',
+        animationDelay: `${Math.min(index, 5) * 40}ms`,
       }}
     >
       {/* ── Avatar ── */}

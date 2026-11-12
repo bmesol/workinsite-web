@@ -14,6 +14,7 @@ import {
 import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import RoleCard from '../../components/RoleCard/RoleCard';
 import { useRolesScreen } from './useRole';
+import { RolesPageSkeleton } from './RolesPageSkeleton';
 import type { Roles } from '../../DTOs/DTOs';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
@@ -59,15 +60,11 @@ const RolesPage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
-      </div>
-    );
+    return <RolesPageSkeleton />;
   }
 
   return (
-    <div className="min-h-screen w-full px-4 py-6 pb-10">
+    <div className="min-h-screen w-full px-4 pb-10">
 
       {/* ── Header ── */}
       <Header title={t('Roles & Rights')}>
@@ -85,10 +82,10 @@ const RolesPage = () => {
         )}
       </Header>
 
-      <Card className="mt-4 p-6">
+      <Card className="mt-4 px-6 pt-3 pb-6">
 
         {/* ── Section Header ── */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <span className="text-base font-bold" style={{ color: 'var(--foreground)' }}>
             {t('Existing Roles')}
           </span>

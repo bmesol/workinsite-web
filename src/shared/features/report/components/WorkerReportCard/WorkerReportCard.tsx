@@ -7,6 +7,7 @@ interface Props {
   workerCategoryName: string;
   amount?: string | number;
   onPress: () => void;
+  index?: number;
 }
 
 export function WorkerReportCard({
@@ -14,11 +15,13 @@ export function WorkerReportCard({
   workerCategoryName,
   amount,
   onPress,
+  index = 0,
 }: Props) {
   return (
     <button
       onClick={onPress}
-      className="w-full flex items-center justify-between px-4 py-3 bg-card rounded-xl border border-border hover:border-[var(--primary)] hover:shadow-sm transition-all text-left"
+      className="w-full flex items-center justify-between px-4 py-3 bg-card rounded-xl border border-border hover:border-[var(--primary)] hover:shadow-sm transition-all text-left animate-in fade-in-0 slide-in-from-bottom-2 duration-200 fill-mode-both"
+      style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
     >
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 rounded-full bg-[var(--primary-side)] border border-[var(--primary)] flex items-center justify-center shrink-0">

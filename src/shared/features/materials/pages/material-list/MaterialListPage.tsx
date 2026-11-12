@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Header, Actions } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import MaterialCard from "@/shared/components/MaterialCard/MaterialCard";
+import { MaterialCardSkeleton } from "@/shared/components/MaterialCard/MaterialCardSkeleton";
 import { GetStartedCard } from "@/shared/components/GetStartedCard/GetStartedCard";
 import { useMaterialList } from "./useMaterialList";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import { SearchBarSkeleton } from "@/shared/components/SearchBar/SearchBarSkeleton";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { usePermission } from "@/shared/hooks/usePermission";
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const MaterialListScreen = () => {
   const navigate = useNavigate();
@@ -38,15 +41,7 @@ const MaterialListScreen = () => {
     fetchMaterial("");
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!materialDetails.length) {
+  if (!materialDetails.length && !loading) {
     return (
       <GetStartedCard
         imgSrc="/images/empty.png"
@@ -60,27 +55,37 @@ const MaterialListScreen = () => {
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
-      <Header title={t("Materials")}>
-        <Actions>
-          <Button onClick={() => navigate("/materials/create")} disabled={!editable}>
-            {t('New Material')}
-          </Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-28"]} />
+      ) : (
+        <Header title={t("Materials")}>
+          <Actions>
+            <Button onClick={() => navigate("/materials/create")} disabled={!editable}>
+              {t('New Material')}
+            </Button>
+          </Actions>
+        </Header>
+      )}
 
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
-          <SearchBar
-            searchText={searchText}
-            setSearchText={setSearchText}
-            placeholder={t('Search materials')}
-            allowAllCharacters={true}
-          />
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchText}
+              setSearchText={setSearchText}
+              placeholder={t('Search materials')}
+              allowAllCharacters={true}
+            />
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
-        {filteredMaterialList.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <MaterialCardSkeleton key={i} />
+          ))
+        ) : filteredMaterialList.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t("No materials found")}</p>
           </div>

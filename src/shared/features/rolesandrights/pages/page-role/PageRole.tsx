@@ -14,8 +14,9 @@ import {
   AlertDialogTitle,
 } from '@/shared/components/ui/alert-dialog';
 import { usePageRole } from './usePageRole';
+import { PageRoleSkeleton } from './PageRoleSkeleton';
 import { cn } from '@/shared/components/lib/utils';
-import { useLanguage } from '@/shared/hooks/useLanguageContext'; 
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const PageRolePage = () => {
   const { t } = useLanguage();
@@ -42,11 +43,7 @@ const PageRolePage = () => {
   } = usePageRole();
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
-      </div>
-    );
+    return <PageRoleSkeleton />;
   }
 
   return (

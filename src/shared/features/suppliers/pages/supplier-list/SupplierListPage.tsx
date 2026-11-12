@@ -1,5 +1,6 @@
 import { SupplierGetStartedPage } from "../supplier-get-started/SupplierGetStartedPage";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
+import { ContactCardSkeleton } from "@/shared/components/ContactCard/ContactCardSkeleton";
 import { Header } from "@/shared/components/Header/Header";
 import { ContactTypes } from "../../../contacts/DTOs/ContactProps";
 import { useSupplierList } from "./useSupplierList";
@@ -7,10 +8,12 @@ import { SuppliersUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/components/ui/button";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import { SearchBarSkeleton } from "@/shared/components/SearchBar/SearchBarSkeleton";
 import { useState } from "react";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const SupplierListPage = () => {
   const navigate = useNavigate();
@@ -31,43 +34,45 @@ const SupplierListPage = () => {
     setDeleteId,
   } = useSupplierList();
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!supplierDetails.length && !hasSearchFilter)
+  if (!supplierDetails.length && !hasSearchFilter && !loading)
     return <SupplierGetStartedPage />;
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title={t('Supplier List')}>
-        <Button onClick={() => navigate(SuppliersUrls.create)} disabled={!editable}>
-          {t('New Supplier')}
-        </Button>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-28"]} />
+      ) : (
+        <Header title={t('Supplier List')}>
+          <Button onClick={() => navigate(SuppliersUrls.create)} disabled={!editable}>
+            {t('New Supplier')}
+          </Button>
+        </Header>
+      )}
 
       {/* SearchBar */}
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
-          <SearchBar
-            searchText={searchValue}
-            setSearchText={(val) => {
-              setSearchValue(val);
-              fetchSupplier(val);
-            }}
-            searchCategory={t('Suppliers')}
-          />
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchValue}
+              setSearchText={(val) => {
+                setSearchValue(val);
+                fetchSupplier(val);
+              }}
+              searchCategory={t('Suppliers')}
+            />
+          )}
         </div>
       </div>
 
       {/* Supplier Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pb-4">
-        {!supplierDetails.length ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <ContactCardSkeleton key={i} />
+          ))
+        ) : !supplierDetails.length ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t('No suppliers found')}</p>
           </div>

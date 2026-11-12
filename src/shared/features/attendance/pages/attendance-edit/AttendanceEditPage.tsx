@@ -21,6 +21,7 @@ import {
 } from '@/shared/components/ui/dialog';
 import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SkRow2, SkField, SkSectionHeader, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const AttendanceEditPage = () => {
   const { canEdit } = usePermission();
@@ -80,10 +81,23 @@ const AttendanceEditPage = () => {
     handleSubmit();
   };
 
-   if (loading) {
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Attendance')} />
+        <Card className="mt-4">
+          <CardContent className="pt-4">
+            <div className="flex flex-col gap-4">
+              <SkRow2 />
+              <SkRow2 />
+              <SkRow2 />
+              <SkField />
+              <SkSectionHeader />
+              <SkTextarea />
+              <SkButtons />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

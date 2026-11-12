@@ -14,6 +14,7 @@ import { useWorkerRoleCostEdit } from './useWorkerRoleCostEdit';
 import type { WorkerRoles } from '../../DTOs/WorkRoleProps';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 
 const WorkerRoleCostEditPage = () => {
   const { t } = useLanguage();
@@ -40,8 +41,21 @@ const WorkerRoleCostEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">{t('Loading...')}</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Worker Role Costs')} />
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[0, 1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardContent className="py-3 px-2.5 flex flex-col gap-3">
+                <Skeleton className="h-5 w-32 bg-border" />
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-9 flex-1 bg-border" />
+                  <Skeleton className="h-9 flex-1 bg-border" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }

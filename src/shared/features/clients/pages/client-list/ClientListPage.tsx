@@ -1,5 +1,6 @@
 import { ClientGetStartedPage } from "../client-get-started/ClientGetStartedPage";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
+import { ContactCardSkeleton } from "@/shared/components/ContactCard/ContactCardSkeleton";
 import { Actions, Header } from "@/shared/components/Header/Header";
 import { Button } from "@/shared/components/ui/button";
 import { ContactTypes } from "../../../contacts/DTOs/ContactProps";
@@ -7,10 +8,12 @@ import { useClientList } from "./useClientList";
 import { ClientsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import { SearchBarSkeleton } from "@/shared/components/SearchBar/SearchBarSkeleton";
 import { useState } from "react";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { usePermission } from "@/shared/hooks/usePermission";
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 
 const ClientListPage = () => {
   const navigate = useNavigate();
@@ -31,47 +34,49 @@ const ClientListPage = () => {
     setDeleteId,
   } = useClientList();
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!clientDetails.length && !hasSearchFilter)
+  if (!clientDetails.length && !hasSearchFilter && !loading)
     return <ClientGetStartedPage />;
 
   return (
     <div className="min-h-screen w-full px-4 py-6">
       {/* Header */}
-      <Header title={t("Client List")}>
-        <Actions>
-          <Button
-            onClick={() => navigate(ClientsUrls.create)}
-            disabled={!editable}
-          >
-            {t("Create Client")}
-          </Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-32"]} />
+      ) : (
+        <Header title={t("Client List")}>
+          <Actions>
+            <Button
+              onClick={() => navigate(ClientsUrls.create)}
+              disabled={!editable}
+            >
+              {t("Create Client")}
+            </Button>
+          </Actions>
+        </Header>
+      )}
 
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
-          <SearchBar
-            searchText={searchValue}
-            setSearchText={(val) => {
-              setSearchValue(val);
-              fetchClient(val);
-            }}
-            searchCategory={t("Search clients")}
-          />
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchValue}
+              setSearchText={(val) => {
+                setSearchValue(val);
+                fetchClient(val);
+              }}
+              searchCategory={t("Search clients")}
+            />
+          )}
         </div>
       </div>
 
       {/* Client Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
-        {!clientDetails.length ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <ContactCardSkeleton key={i} />
+          ))
+        ) : !clientDetails.length ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t("No clients found")}</p>
           </div>

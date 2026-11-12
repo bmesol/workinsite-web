@@ -201,6 +201,7 @@ import PaymentMethodSelector from '../../components/PaymentMethodSelector/Paymen
 import { usePermission } from '@/shared/hooks/usePermission';
 import { ClientTransactionUrls } from '../../utils/urls';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { SkRow2, SkPaymentMethod, SkSectionHeader, SkTextarea, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const ClientTransactionEditPage = () => {
   const navigate = useNavigate();
@@ -240,8 +241,17 @@ const ClientTransactionEditPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">Loading...</p>
+      <div className="w-full min-h-screen px-4 pb-10">
+        <Header title={t('Edit Client Transaction')} />
+        <Card className="mt-4 p-6">
+          <div className="flex flex-col gap-4">
+            <SkRow2 />
+            <SkPaymentMethod />
+            <SkSectionHeader />
+            <SkTextarea />
+            <SkButtons />
+          </div>
+        </Card>
       </div>
     );
   }

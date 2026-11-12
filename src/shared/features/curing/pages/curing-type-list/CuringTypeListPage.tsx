@@ -4,11 +4,14 @@ import { Header, Actions } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { GetStartedCard } from '@/shared/components/GetStartedCard/GetStartedCard';
 import { SearchBar } from '@/shared/components/SearchBar/SearchBar';
+import { SearchBarSkeleton } from '@/shared/components/SearchBar/SearchBarSkeleton';
 import { ContactCard } from '@/shared/components/ContactCard/ContactCard';
+import { ContactCardSkeleton } from '@/shared/components/ContactCard/ContactCardSkeleton';
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useCuringTypeList } from './useCuringTypeList';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { CuringTypeUrls } from '../../utils/urls';
+import { ListPageHeaderSkeleton } from "@/shared/components/Header/ListPageHeaderSkeleton";
 import curingImage from '@/assets/images/client-creation-illustration.png';
 
 const CuringTypeListPage = () => {
@@ -35,15 +38,7 @@ const CuringTypeListPage = () => {
     [curingTypeList, searchText],
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground text-sm">{t('Loading...')}</p>
-      </div>
-    );
-  }
-
-  if (!curingTypeList.length) {
+  if (!curingTypeList.length && !loading) {
     return (
       <GetStartedCard
         imgSrc={curingImage}
@@ -58,27 +53,37 @@ const CuringTypeListPage = () => {
   return (
     <div className="w-full min-h-screen px-4 py-6">
 
-      <Header title={t('Curing Type List')}>
-        <Actions>
-          <Button onClick={() => navigate(CuringTypeUrls.create)}>
-            {t('New Curing Type')}
-          </Button>
-        </Actions>
-      </Header>
+      {loading ? (
+        <ListPageHeaderSkeleton buttonWidths={["w-32"]} />
+      ) : (
+        <Header title={t('Curing Type List')}>
+          <Actions>
+            <Button onClick={() => navigate(CuringTypeUrls.create)}>
+              {t('New Curing Type')}
+            </Button>
+          </Actions>
+        </Header>
+      )}
 
       <div className="flex justify-end mt-4 mb-4">
         <div className="w-full md:w-3/12">
-          <SearchBar
-            searchText={searchText}
-            setSearchText={setSearchText}
-            searchCategory={t('Search Curing Types')}
-            allowAllCharacters
-          />
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchText}
+              setSearchText={setSearchText}
+              searchCategory={t('Search Curing Types')}
+              allowAllCharacters
+            />
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-        {filteredList.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <ContactCardSkeleton key={i} />
+          ))
+        ) : filteredList.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">{t('No curing types found')}</p>
           </div>

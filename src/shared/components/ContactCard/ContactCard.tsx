@@ -17,6 +17,7 @@ const ContactCard = (props: ContactCardProps) => {
     email,
     workType,
     workerRole,
+    index = 0,
     onDelete,
     onPress,
     permissionKey,
@@ -35,7 +36,8 @@ const ContactCard = (props: ContactCardProps) => {
 
   return (
     <Card
-      className="w-full flex flex-row justify-between items-center p-4 cursor-pointer hover:shadow-sm transition-shadow"
+      className="w-full flex flex-row justify-between items-center p-4 cursor-pointer hover:shadow-sm hover:bg-background transition-[background-color,box-shadow] duration-200 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-both"
+      style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
       onClick={onPress}
     >
       <div className="flex items-center gap-4">

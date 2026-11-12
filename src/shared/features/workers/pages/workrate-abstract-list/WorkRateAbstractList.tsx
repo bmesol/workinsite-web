@@ -3,10 +3,12 @@ import { Header } from "@/shared/components/Header/Header";
 
 import { Button } from "@/shared/components/ui/button";
 import { ContactCard } from "@/shared/components/ContactCard/ContactCard";
+import { ContactCardSkeleton } from "@/shared/components/ContactCard/ContactCardSkeleton";
 import { WorkRateAbstractUrls } from "../../utils/urls";
 import { useWorkRateAbstractList } from "./useWorkRateAbstractList";
 import type { WorkRateAbstractProps } from "../../DTOs/WorkRateAbstract";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
+import { SearchBarSkeleton } from "@/shared/components/SearchBar/SearchBarSkeleton";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
@@ -34,14 +36,6 @@ const WorkRateAbstractListPage = () => {
     item.site?.name?.toLowerCase().includes(searchText.trim().toLowerCase()),
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-sm">Loading...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen w-full px-4 py-6 pb-10">
       <Header title={t('Work Rate Abstract List')}>
@@ -51,18 +45,24 @@ const WorkRateAbstractListPage = () => {
       </Header>
 
       {/* Search bar */}
-     <div className="flex justify-end mt-4 mb-4">
-  <div className="w-full md:w-3/12">
-    <SearchBar
-      searchText={searchText}
-      setSearchText={setSearchText}
-      placeholder={t('Search work rate abstract')}
-    />
-  </div>
-</div>
+      <div className="flex justify-end mt-4 mb-4">
+        <div className="w-full md:w-3/12">
+          {loading ? <SearchBarSkeleton /> : (
+            <SearchBar
+              searchText={searchText}
+              setSearchText={setSearchText}
+              placeholder={t('Search work rate abstract')}
+            />
+          )}
+        </div>
+      </div>
 
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
-        {filteredList.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <ContactCardSkeleton key={i} />
+          ))
+        ) : filteredList.length === 0 ? (
           <div className="col-span-full flex w-full flex-col items-center justify-center py-16 px-4">
             <p className="text-center text-muted-foreground text-sm break-words">
               {t('No Work Rate Abstract found')}

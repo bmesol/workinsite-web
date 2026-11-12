@@ -4,6 +4,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { useWorkModeCreation } from "./useWorkerModeCreation";
 import { WorkModeList } from "../worker-mode-list/WorkerModeList";
+import { WorkModeCreationSkeleton } from "./WorkModeCreationSkeleton";
 import { usePermission } from "@/shared/hooks/usePermission";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
@@ -30,6 +31,8 @@ const WorkModeCreationPage = () => {
     cancelDelete,
     setEditingWorkMode,
   } = useWorkModeCreation();
+
+  if (loading) return <WorkModeCreationSkeleton />;
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,18 +91,12 @@ const WorkModeCreationPage = () => {
               {t('Work Mode List')}
             </h2>
 
-            {loading ? (
-              <div className="flex items-center justify-center py-6">
-                <p className="text-sm text-gray-500">Loading...</p>
-              </div>
-            ) : (
-              <WorkModeList
-                workModeDetails={workModeDetails ?? []}
-                handleWorkModeDelete={handleWorkModeDelete}
-                handleWorkModeEdit={setEditingWorkMode}
-                editingWorkModeId={editingWorkModeId}
-              />
-            )}
+            <WorkModeList
+              workModeDetails={workModeDetails ?? []}
+              handleWorkModeDelete={handleWorkModeDelete}
+              handleWorkModeEdit={setEditingWorkMode}
+              editingWorkModeId={editingWorkModeId}
+            />
           </div>
 
         </CardContent>
