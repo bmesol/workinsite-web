@@ -1,5 +1,6 @@
 import { Users, IndianRupee } from 'lucide-react';
 import { formatINR } from '@/shared/utils/formatters';
+import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 interface Props {
   totalWorkers: number;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function StatsBar({ totalWorkers, totalAmount }: Props) {
+  const { t } = useLanguage();
   return (
     <div className="flex gap-3 px-4 py-3 mt-4">
       {/* Workers */}
@@ -15,7 +17,7 @@ export function StatsBar({ totalWorkers, totalAmount }: Props) {
           <Users size={20} className="text-primary-foreground" />
         </div>
         <div>
-          <p className="text-sm font-medium text-secondary">Total Workers</p>
+          <p className="text-sm font-medium text-secondary">{t('Total Workers')}</p>
           <p className="text-lg font-bold text-secondary">{totalWorkers}</p>
         </div>
       </div>
@@ -26,7 +28,7 @@ export function StatsBar({ totalWorkers, totalAmount }: Props) {
           <IndianRupee size={20} className="text-primary-foreground" />
         </div>
         <div>
-          <p className="text-sm font-medium text-secondary">Total Amount</p>
+          <p className="text-sm font-medium text-secondary">{t('Total Amount')}</p>
           <p className="text-lg font-bold text-secondary">{formatINR(totalAmount)}</p>
         </div>
       </div>

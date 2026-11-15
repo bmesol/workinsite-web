@@ -39,7 +39,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 border rounded-md px-3 py-2.5 bg-background transition-colors cursor-text",
+        "flex items-center gap-2 border rounded-md px-3 h-9 bg-background transition-colors cursor-text",
         focused ? "border-ring" : "border-border"
       )}
       onClick={() => inputRef.current?.focus()}
@@ -55,12 +55,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onFocus={() => setFocused(true)}
   onBlur={() => setFocused(false)}
   placeholder={placeholder ?? `${searchCategory ? ` ${searchCategory}` : ""}...`}
-  style={{
-    fontSize: "var(--font-sm)",
-    color: "var(--foreground)",
-    fontFamily: "Outfit, sans-serif",
-  }}
-  className="border-none shadow-none focus-visible:ring-0 p-0 pl-2 h-auto bg-transparent"
+  style={{ color: "var(--foreground)" }}
+  className="border-none shadow-none focus-visible:ring-0 p-0 pl-2 h-full bg-transparent text-sm"
 />
 
       {/* Clear Button */}

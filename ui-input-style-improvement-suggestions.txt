@@ -1,0 +1,573 @@
+WorkInsite Web - UI & Input Style Improvement Suggestions
+Generated: 2026-11-13
+==============================================================
+
+SECTION 1: INPUT FIELD IMPROVEMENTS
+======================================
+
+[1] Component: FieldLabel
+    File: src/shared/components/FormFields/FieldLabel.tsx
+    Issue: Label text uses hardcoded `text-black` Tailwind class. This does not adapt
+           in dark mode — labels will appear black on a dark background.
+    Suggestion: Replace `text-black` with `text-foreground` or use the CSS variable
+                `style={{ color: 'var(--foreground)' }}` as already used in DatePicker
+                and SelectComboField labels.
+    Reason: Dark mode compatibility. All sibling components (DatePicker, SelectComboField)
+            already use `var(--foreground)` for label text. Hardcoded `text-black` is
+            inconsistent and breaks dark theme.
+    Priority: High
+
+[2] Component: TextareaField
+    File: src/shared/components/FormFields/TextareaField.tsx (line 31)
+    Issue: Label uses `className="mb-1 text-base font-medium text-black ..."` with
+           hardcoded `text-black`, not using the shared `FieldLabel` component.
+    Suggestion: Replace the inline `Label` with `<FieldLabel required={required}>` to
+                unify label rendering. This also removes the extra `mb-1` class (FormInput
+                already applies `gap-1.5` between children).
+    Reason: Consistency — every other shared FormField (GenericInputField, DateOfBirthField)
+            already delegates to FieldLabel. Avoids duplicate label markup and dark mode issue.
+    Priority: High
+
+[3] Component: RadioField
+    File: src/shared/components/FormFields/RadioField.tsx (line 24)
+    Issue: Group label is rendered as `<p className="mb-2 text-base font-medium text-black ...">`,
+           a paragraph element, instead of a semantic `<Label>` or `<FieldLabel>`. Also uses
+           hardcoded `text-black`.
+    Suggestion: Replace the `<p>` element with `<FieldLabel required={required}>{label}</FieldLabel>`
+                or at minimum `<Label className="text-base font-medium text-foreground ...">`.
+    Reason: Semantic HTML — `<p>` is not an appropriate element for a form group label.
+            Using `<Label>` or `<FieldLabel>` aligns with all other fields and fixes the
+            dark mode issue.
+    Priority: High                                                               ///////
+
+[4] Component: FormActionButton
+    File: src/shared/components/FormActionButton/FormActionButton.tsx (line 30)
+    Issue: Section heading uses `<span className="mb-1 text-base font-medium text-black ...">`,
+           hardcoded `text-black`, not using `FieldLabel` or `Label` component.
+    Suggestion: Use `<Label>` or `<FieldLabel>` with `text-foreground` or
+                `style={{ color: 'var(--foreground)' }}` to match how other field labels
+                are rendered.
+    Reason: Consistency and dark mode support. The heading next to Add/Edit buttons
+            should follow the same label pattern as adjacent form fields.
+    Priority: Medium                            ////
+
+[5] Component: PinField
+    File: src/shared/components/FormFields/PinField.tsx (line 67)
+    Issue: Label uses `className="mb-1 text-base font-medium text-black ..."` with
+           hardcoded `text-black`, not delegating to `FieldLabel`.
+    Suggestion: Replace inline `Label` with `<FieldLabel required={required}>`.
+                Also add `dark:border-input` to the individual PIN Input boxes to ensure
+                proper dark mode border styling.
+    Reason: Consistency with other form fields; dark mode support.
+    Priority: Medium                       ////
+
+[6] Component: DateOfBirthField
+    File: src/shared/components/FormFields/DateOfBirthField.tsx
+    Issue: Uses a plain text `<Input type="text">` with placeholder "DD/MM/YYYY" and
+           no format validation. Users must know the format and type it correctly.
+           Meanwhile, the main date-of-birth use case in WorkerCreationPage already uses
+           the proper `DatePicker` component.
+    Suggestion: Replace `DateOfBirthField` with a `DatePicker`-based component that
+                has an extended `minDate` for DOB (e.g. 100 years ago) and no `maxDate`
+                limit set to today. If the text-input variant must stay, add an
+                `aria-describedby` pointing to a format hint element, and enforce
+                DD/MM/YYYY masking.
+    Reason: Usability — free-text date input with no mask/validation leads to user
+            errors. The existing DatePicker provides a much better experience.
+    Priority: High                                       ///
+
+[7] Component: SearchBar
+    File: src/shared/components/SearchBar/SearchBar.tsx (line 42)
+    Issue: Wrapper div uses `px-3 py-2.5` padding, making the total height ~40px.
+           Adjacent components (Button, Input, SearchFilterBar) use standard `h-9` (36px).
+           The inner Input uses `h-auto` overriding the base `h-9`.
+    Suggestion: Change the wrapper from `py-2.5` to `h-9` (or `h-10`) to match
+                the fixed height of shadcn Input and Button components, ensuring
+                visual alignment when SearchBar appears next to other controls.
+    Reason: Visual consistency — mixed heights create a noticeably uneven toolbar.
+            SearchFilterBar already correctly uses `h-9` on its equivalent wrapper.
+    Priority: Medium
+
+[8] Component: SelectComboField (non-searchable variant)
+    File: src/shared/components/FormFields/SelectComboField.tsx (line 239)
+    Issue: The non-searchable dropdown renders in-flow (a plain `div` that opens below
+           the trigger, pushing page content down). It uses `z-50` but is not a true
+           overlay. This causes layout shift and can be clipped by parent containers
+           with `overflow-hidden` (Cards, dialogs).
+    Suggestion: Migrate the non-searchable variant to also use a `Popover`/`PopoverContent`
+                wrapper (as the searchable variant already does at line 86). The dropdown
+                list content is identical — only the trigger mechanism changes.
+    Reason: Prevents layout shift and clipping. Cards and dialogs throughout the app use
+            `overflow-hidden`; in-flow dropdowns are silently clipped there.
+    Priority: High
+
+[9] Component: SelectComboField (both variants)
+    File: src/shared/components/FormFields/SelectComboField.tsx
+    Issue: Searchable variant has `max-h-[160px]` for the command list (line 136).
+           Non-searchable variant has `max-h-[150px]` for the dropdown div (line 242).
+           10px discrepancy between the two modes of the same component.
+    Suggestion: Standardise to `max-h-[160px]` (or extract as a shared constant) for
+                both modes so the dropdown height is predictable.
+    Reason: Consistency — both paths serve the same selection UX and should feel identical.
+    Priority: Low
+
+[10] Component: GoogleLocation
+     File: src/shared/components/FormFields/GoogleLocation/GoogleLocation.tsx (line 12–13)
+     Issue: GoogleLocation wraps its content in a `<FormInput>` and passes an
+            `errorMessage` to it, while the inner `TextareaField` also renders inside
+            its own `<FormInput>`. This results in double FormInput nesting and can
+            cause the error message to render twice or at the wrong level.
+     Suggestion: Remove the outer `<FormInput errorMessage={errorMessage}>` wrapper in
+                 GoogleLocation and instead pass `errorMessage` directly to `TextareaField`.
+                 `TextareaField` already renders via `FormInput` internally.
+     Reason: Avoids duplicated error rendering and unnecessary DOM nesting.
+     Priority: Medium                                 ////
+
+[11] Component: SignUpPage (InputOTP)
+     File: src/shared/features/auth/pages/sign-up-page/SignUpPage.tsx (lines 161, 188)
+     Issue: InputOTPSlot has hardcoded responsive widths `w-[150px] md:w-[100px] lg:w-[100px]`.
+            On narrow screens the `w-[150px]` slots will overflow the card width (max-w-md ≈ 448px,
+            4 slots × 150px = 600px). Focus styles reference `--primary-color` (line 162)
+            which is undefined — the app defines `--primary`, not `--primary-color`.
+     Suggestion: Use `flex-1` or `w-full` on each slot inside the OTP group instead of fixed
+                 widths. Replace `--primary-color` references with `var(--primary)`.
+     Reason: Layout overflow on small screens; broken focus ring colour due to undefined CSS variable.
+     Priority: High
+
+[12] Component: SignUpPage (duplicate id attribute)
+     File: src/shared/features/auth/pages/sign-up-page/SignUpPage.tsx (lines 99, 116)
+     Issue: Both the Name field and Phone Number field use `id="name"`. The Phone field
+            also has `htmlFor="email"` on its Label (which is unrelated).
+     Suggestion: Give each Input a unique, semantically correct `id` matching its `htmlFor`:
+                 name → `id="name"`, phone → `id="phone"`, organization → `id="organization"`.
+     Reason: Duplicate IDs break label-for-input association (clicking the label focuses
+             the wrong field) and fail HTML validation / accessibility audits.
+     Priority: High                                     ////
+
+[13] Component: SignUpPage (not using shared FormField components)
+     File: src/shared/features/auth/pages/sign-up-page/SignUpPage.tsx
+     Issue: SignUpPage uses raw `Input`, `Label`, and `InputOTP` directly without the
+            shared `NameField`, `PhoneNumberField` components used everywhere else in
+            the app. Error messages are manually placed below each field.
+     Suggestion: Refactor to use `NameField`, `PhoneNumberField`, and the shared `PinField`
+                 (or the existing `InputOTP` via `PinField` wrappers) so layout, label
+                 styling, and error display are consistent with the rest of the app.
+     Reason: Consistency and maintainability — if label or error styling changes in
+             shared components, SignUpPage won't benefit.
+     Priority: Medium                                ////
+
+[14] Component: SignInForm (conflicting border radius)
+     File: src/shared/features/auth/components/signinform/SignInForm.tsx (line 43)
+     Issue: Sign In button has both `className="...!rounded-[12px]..."` and
+            `style={{ borderRadius: "16px" }}` applied simultaneously. The inline style
+            overrides the className, making the `!rounded-[12px]` effectively dead.
+     Suggestion: Remove one of the two. Use the design token approach via Tailwind
+                 (`rounded-2xl` = 16px) and drop the inline `style` prop entirely.
+                 Confirm whether the app's global `--radius` token (0.75rem = 12px)
+                 should be used instead.
+     Reason: Dead code and unpredictability — two conflicting radius values on the same element.
+     Priority: Low                           ///                      
+
+[15] Component: OtpVerificationPage (broken focus ring)
+     File: src/shared/features/auth/pages/otp-verification-page/OtpVerificationPage.tsx (lines 70–73)
+     Issue: InputOTPSlot references `var(--primary-color)` and `var(--primary-color)` in
+            focus/hover styles. This CSS variable is not defined anywhere in the app
+            (the app uses `--primary`). Focus ring will silently fail.
+     Suggestion: Replace `--primary-color` with `--primary` in all InputOTPSlot
+                 className strings.
+     Reason: Invisible focus ring breaks keyboard accessibility.
+     Priority: High                             ///
+
+[16] Component: DateFilter (quick option buttons)
+     File: src/shared/features/report/components/DateFilter/DateFilter.tsx (lines 34–38)
+     Issue: Date range quick-select buttons ("Last Week", "This Week", "Custom") use
+            `text-xs py-2 rounded-lg border` styling with hardcoded Tailwind gray tokens
+            (`border-slate-200`, `text-slate-700`) rather than semantic CSS variables
+            (`var(--border)`, `var(--foreground)`).
+     Suggestion: Replace `border-slate-200` with `border-border` and `text-slate-700`
+                 with `text-foreground`. Optionally unify button size to match the app's
+                 standard `h-9` input height.
+     Reason: Hardcoded slate values won't respond to the app's theme/dark mode changes.
+     Priority: Medium                              ///
+
+
+SECTION 2: UI STYLING IMPROVEMENTS
+=====================================
+
+[17] Component: UserCreationPage (card inconsistency)
+     File: src/shared/features/users/pages/user-creation-page/UserCreationPage.tsx (line 34)
+     Issue: Uses a raw `<div className="mt-4 rounded-2xl border border-border bg-card p-6 ...">`
+            instead of the `<Card>` component used by every other creation page
+            (WorkerCreationPage, ClientCreationPage, SiteCreationPage, AttendanceCreationPage,
+            MaterialCreationPage, CuringCreationPage).
+     Suggestion: Replace the raw div with `<Card className="mt-4 p-6">` to match all
+                 other creation pages.
+     Reason: Inconsistency — same visual intent but different implementation. If Card
+             styling changes (e.g. shadow, border-radius), UserCreationPage won't update.
+     Priority: Medium
+
+[18] Component: SiteCreationPage (raw Input/Textarea instead of shared components)
+     File: src/shared/features/sites/pages/site-creation/SiteCreationPage.tsx
+           (lines 80–93 for Name; lines 155–166 for Notes)
+     Issue: Site name uses raw `<Label>` + `<Input>` with manual error display instead
+            of `<NameField>`. Notes uses raw `<Label>` + `<Textarea>` with `rows={4}`
+            instead of `<TextareaField>`. This is inconsistent with all other creation
+            pages.
+     Suggestion: Replace raw Name field with `<NameField>` and raw Notes with
+                 `<TextareaField>`. Pass `errorMessage`, `required`, and `label` through
+                 the shared component interface.
+     Reason: Consistency — SiteCreationPage should follow the same form-field pattern
+             used in every other creation page.
+     Priority: Medium                                                 ///
+
+[19] Component: TaskCreationPage (raw Label+Textarea instead of TextareaField)
+     File: src/shared/features/task/pages/task-create/TaskCreationPage.tsx (lines 96–111, 147–158)
+     Issue: "Task Name" and "Remarks" both use raw `<Label>` + `<Textarea>` directly.
+            The Task Name Label uses `className="text-base"` without `font-medium`, while
+            all other labels in the app use `text-base font-medium`.
+     Suggestion: Replace raw `<Label>+<Textarea>` blocks with `<TextareaField>` and
+                 add `font-medium` to any remaining standalone `Label` classes.
+     Reason: Consistency and label weight — missing `font-medium` makes task form
+             labels lighter than every other page's labels.
+     Priority: Medium                                                    ///
+
+[20] Component: SiteCreationPage (RadioGroup label `font-sm`)
+     File: src/shared/features/sites/pages/site-creation/SiteCreationPage.tsx (line 199)
+     Issue: Status radio item label uses `className="font-sm cursor-pointer"`. `font-sm`
+            is not a valid Tailwind class — it has no effect. The intended style is likely
+            `text-sm` or `text-sm font-medium`.
+     Suggestion: Change `font-sm` to `text-sm font-medium` or just `text-sm`.
+     Reason: `font-sm` is a no-op; the label inherits body font size (16px) instead of
+             the intended smaller size.
+     Priority: Medium                                                 ///
+
+[21] Component: Navbar
+     File: src/shared/components/navbar/navbar.tsx
+     Issue: (a) Uses `h-18` which is not a default Tailwind size (Tailwind only ships
+                h-16, h-20). It likely works because of custom config but is undocumented.
+            (b) Brand name "WorkInSite" uses `<Label>` element with inline `fontSize: "26px"`.
+                A `Label` is semantically for form inputs.
+            (c) Box shadow applied via inline `style={{ boxShadow: "..." }}` instead of a
+                Tailwind shadow utility like `shadow-md`.
+     Suggestion: (a) Use `h-16` or `h-20` (or confirm `h-18` exists in tailwind.config).
+                 (b) Replace `<Label>` with `<span>` or `<h1>` for the brand name.
+                 (c) Replace inline boxShadow with `shadow-md` or `shadow-sm` Tailwind class.
+     Reason: Semantic HTML correctness, maintainability (Tailwind utility vs inline style).
+     Priority: Low
+
+[22] Component: SignInPage
+     File: src/shared/features/auth/pages/sign-in-page/SignInPage.tsx (line 8)
+     Issue: Outer container has both `bg-gray-50` and `bg-white` applied to the same
+            element. The last class `bg-white` wins, making `bg-gray-50` dead code.
+     Suggestion: Remove the duplicate — keep only the intended background class.
+     Reason: Dead code that could confuse future developers about the intended background.
+     Priority: Low
+
+[23] Component: ContactCard
+     File: src/shared/components/ContactCard/ContactCard.tsx (lines 63, 71, 76, 83, 91, 97, 108, 114)
+     Issue: All text and icon elements use hardcoded `text-black`. Contact name, phone,
+            email, workType, workerRole all use `text-black` / `text-sm text-black`
+            which does not adapt to dark mode.
+     Suggestion: Replace all `text-black` instances with `text-foreground` to use the
+                 CSS variable. For secondary info, use `text-muted-foreground`.
+                 Replace icon classes `text-black` with `text-foreground`.
+     Reason: Dark mode support. The app has a dark theme toggle — ContactCard will
+             show black text on dark backgrounds without this change.
+     Priority: High
+
+[24] Component: DeleteConfirmDialog (destructive button variant)
+     File: src/shared/components/DeleteConfirmDialog/DeleteConfirmDialog.tsx (line 70)
+     Issue: The "Delete" confirm button uses `variant="default"` (renders with primary
+            yellow/gold color). A destructive action should use `variant="destructive"`
+            (red) to signal danger clearly and differentiate from the Cancel button.
+     Suggestion: Change `<Button className="cursor-pointer" onClick={onConfirm}>`
+                 to `<Button variant="destructive" className="cursor-pointer" onClick={onConfirm}>`.
+     Reason: UX convention — destructive actions (delete, remove) should use red/danger
+             color. Currently Delete and Cancel have similar visual weight.
+     Priority: High
+
+[25] Component: UploadButton
+     File: src/shared/components/UploadButton/UploadButton.tsx (line 42)
+     Issue: Button uses `rounded-full px-6 py-5` making it noticeably taller and
+            pill-shaped compared to all other buttons in the app which use `rounded-md`
+            and standard padding from the Button variant. `text-base font-semibold` also
+            differs from the app's standard `text-sm font-medium` for buttons.
+     Suggestion: Change to `rounded-md` or `rounded-lg`, reduce padding to match standard
+                 button height (`h-9` or `h-10`), and use `text-sm font-medium` to align
+                 with the app's Button component defaults.
+     Reason: Visual inconsistency — the pill shape and large size makes the upload button
+             look out of place next to other form action buttons.
+     Priority: Medium                                    
+
+[26] Component: FormSubmissionButtons (mobile button order)
+     File: src/shared/components/FormFields/FormSubmissionButton.tsx (line 15)
+     Issue: Uses `flex-col-reverse` on mobile, so the Save button appears at the top and
+            Cancel at the bottom when stacked vertically. Users typically expect the primary
+            action (Save) at the bottom on mobile (closer to the thumb).
+     Suggestion: Change to `flex-col` (Save first = at bottom in mobile stacking) or
+                 keep `flex-col-reverse` with `Save` declared first in JSX so it renders
+                 at top — but document the intentional choice.
+     Reason: Mobile UX convention — primary CTA at the bottom of a stacked layout.
+     Priority: Low                              ///
+
+[27] Component: StatsBar (untranslated strings)
+     File: src/shared/features/report/components/StatsBar/StatsBar.tsx (lines 18, 22)
+     Issue: "Total Workers" and "Total Amount" are hardcoded English strings not wrapped
+            in the `t()` translation function. The app supports Tamil language.
+     Suggestion: Add `const { t } = useLanguage();` and wrap labels:
+                 `{t('Total Workers')}` and `{t('Total Amount')}`.
+     Reason: i18n consistency — all other UI strings visible to end users are translated.
+     Priority: Medium                              ///
+
+[28] Component: MaterialCreationPage (untranslated dialog strings)
+     File: src/shared/features/materials/pages/material-creation/MaterialCreationPage.tsx (lines 100–103)
+     Issue: The "Unsaved Changes" dialog title and description are hardcoded English
+            strings: `"Unsaved Changes"` and `"You have unsaved changes. Do you want to
+            save before exiting?"`. WorkerTransactionCreationPage and TaskCreationPage
+            correctly wrap these in `t()`.
+     Suggestion: Wrap all dialog strings in `t()`: `t('Unsaved Changes')` and
+                 `t('You have unsaved changes. Do you want to save before exiting?')`.
+     Reason: i18n consistency.
+     Priority: Medium
+
+[29] Component: EngineerDashboard (custom loading spinner)
+     File: src/shared/features/dashboard/Engineering-dashboard/EngineeringDasboardPage.tsx (line 220–226)
+     Issue: Loading state uses a custom `div` with `animate-spin` and inline border
+            styles instead of the existing `<Spinner>` component from
+            `@/shared/components/ui/spinner`.
+     Suggestion: Replace the custom spinner with `<Spinner className="text-primary" size={40} />`
+                 or the equivalent using the shared component.
+     Reason: Reuse shared component — if spinner design changes, the dashboard won't
+             automatically update.
+     Priority: Low
+
+[30] Component: EngineerDashboard (hardcoded hex colors)
+     File: src/shared/features/dashboard/Engineering-dashboard/EngineeringDasboardPage.tsx
+           (lines 266–299 statCards, lines 34–45 STATUS_BADGE_COLORS)
+     Issue: Stat card backgrounds and text colors are all hardcoded hex values (#dbeafe,
+            #dcfce7, #ffedd5, #fce7f3, #1d4ed8, #15803d, etc.). Status badge colors are
+            also hardcoded (#fee2e2, #991b1b, etc.).
+     Suggestion: These are semantic colors (blue for sites, orange for workers, green for
+                 wages, pink for tasks) — consider mapping them to Tailwind semantic classes
+                 (`bg-blue-100 text-blue-700`, etc.) or extracting them to a named constant
+                 file for easier maintenance.
+     Reason: Maintainability — hex values scattered in component code are hard to audit
+             and update when design tokens change.
+     Priority: Low
+
+[31] Component: WorkerListPage (filter dialog raw label)
+     File: src/shared/features/workers/pages/worker-list/WorkerListPage.tsx (line 138)
+     Issue: Filter dialog uses `<label className="text-base font-medium">` (lowercase
+            HTML `label`) without a `htmlFor` attribute linking it to the input below.
+            This breaks label-click-to-focus behaviour.
+     Suggestion: Replace with `<Label htmlFor="worker-search" className="text-base font-medium">`
+                 and add `id="worker-search"` to the corresponding `<Input>`.
+     Reason: Accessibility — clicking the label should focus the input. Without `htmlFor`,
+             it does nothing.
+     Priority: Medium                                              ///
+
+[32] Component: Sidebar (large commented-out code block)
+     File: src/shared/components/menu/Sidebar.tsx (lines 1–296)
+     Issue: The first 296 lines of the file are the entire old Sidebar implementation,
+            fully commented out. The new implementation starts at line 298. This makes
+            the file ~700 lines and adds confusion.
+     Suggestion: Delete the commented-out old Sidebar code. Git history preserves it
+                 if needed.
+     Reason: Code quality and readability. Dead code adds noise and slows file loading
+             in IDEs.
+     Priority: Low
+
+[33] Component: SiteCreationPage vs ClientCreationPage vs WorkerCreationPage (gap inconsistency)
+     File: src/shared/features/sites/pages/site-creation/SiteCreationPage.tsx
+           vs src/shared/features/clients/pages/client-creation/ClientCreationPage.tsx
+     Issue: SiteCreationPage uses `gap-6` between top-level form sections (CardContent
+            has no gap, but individual grids are spaced with `gap-6`). ClientCreationPage
+            and WorkerCreationPage use `gap-4` throughout.
+     Suggestion: Standardise to `gap-4` between form field rows and `gap-6` between
+                 major sections (or vice versa), applied consistently across all creation pages.
+     Reason: Visual consistency — mixed spacing makes forms feel uneven across the app.
+     Priority: Low
+
+
+SECTION 3: GLOBAL / CROSS-CUTTING CONCERNS
+============================================
+
+[34] Global: `input { box-shadow: none !important; }` override
+     File: src/shared/styles/global.css (line 173)
+     Issue: A global `input { box-shadow: none !important; }` rule removes all box shadows
+            from every input element. The shadcn `Input` component uses `shadow-xs` as its
+            base. While the focus ring uses `ring` (outline) rather than box-shadow, this
+            `!important` can interfere with any third-party input components or custom shadow
+            treatments added in future.
+     Suggestion: Scope the rule to the app's own inputs if needed:
+                 `[data-slot="input"] { box-shadow: none; }` (without !important). Or remove
+                 it entirely if `shadow-xs` on inputs is acceptable.
+     Reason: `!important` rules are hard to override and create specificity debt. The current
+             global rule is broader than necessary.
+     Priority: Low
+
+[35] Global: Duplicate `@layer base` blocks
+     File: src/shared/styles/global.css (lines 130–143 and 191–198)
+     Issue: There are two separate `@layer base` blocks in global.css. The second block
+            (lines 191–198) is a subset of the first and duplicates both the `* { border-border ... }`
+            and `body { bg-background text-foreground }` rules.
+     Suggestion: Remove the second `@layer base` block (lines 191–198) entirely. The first
+                 block covers the same rules.
+     Reason: Duplicate CSS adds unnecessary file size and can cause confusion about which
+             rules are active.
+     Priority: Low                                          ///
+
+[36] Global: `button { font-size: 16px; }` rule conflicts with Button component
+     File: src/shared/styles/global.css (line 178)
+     Issue: A global `button { font-size: 16px; }` rule applies to ALL button elements.
+            The shadcn `Button` component is based on `text-sm` (14px). The global rule
+            is overridden by the component's Tailwind class, but the conflict creates
+            unnecessary CSS specificity battles and can cause unexpected sizes in native
+            button elements that do not use the Button component.
+     Suggestion: Remove the global `button { font-size: 16px; }` rule. If 16px button
+                 text is intended, apply it via the Button component's `cva` definition
+                 or via a CSS variable.
+     Reason: Avoids specificity conflicts; makes font size management explicit.
+     Priority: Low
+
+[37] Global: `--primary-color` CSS variable never defined
+     File: src/shared/features/auth/pages/sign-up-page/SignUpPage.tsx
+           and src/shared/features/auth/pages/otp-verification-page/OtpVerificationPage.tsx
+     Issue: Multiple InputOTPSlot className strings reference `var(--primary-color)` for
+            focus and hover border styles. This variable is nowhere defined in global.css
+            or the design token system (which uses `--primary`). Focus rings on these
+            OTP fields are silently broken.
+     Suggestion: Do a codebase-wide search for `--primary-color` and replace all instances
+                 with `--primary`.
+     Reason: Silent runtime failure — the focus ring colour renders as browser default
+             (transparent/black) rather than the app's brand colour.
+     Priority: High
+
+[38] Global: Inconsistent date format display
+     File: src/shared/components/FormFields/DatePicker.tsx (line 231)
+           vs src/shared/features/report/components/DateFilter/DateFilter.tsx (line 68–70)
+     Issue: DatePicker displays dates as `dd-MM-yyyy` (e.g. "13-11-2026") using
+            `format(committedDate, 'dd-MM-yyyy')`. The DateFilter summary displays
+            `dateRange.from` and `dateRange.to` which are stored in `dd/MM/yyyy`
+            format (slashes). Two different separators for dates across the same app.
+     Suggestion: Standardise on one date display format. Either `dd/MM/yyyy` or `dd-MM-yyyy`
+                 — whichever is chosen, apply it consistently to DatePicker, DateFilter range
+                 display, and any other date rendering.
+     Reason: Consistency — users will see "13-11-2026" in some places and "13/11/2026"
+             in others, which is confusing.
+     Priority: Medium
+
+[39] Global: Duplicate IfscCodeField files
+     File: src/shared/components/FormFields/IfscCodeField.tsx
+           and src/shared/components/FormFields/IfscCodeFiled.tsx (typo: "Filed" vs "Field")
+     Issue: Two files with the same purpose exist — `IfscCodeField.tsx` (correct spelling)
+            and `IfscCodeFiled.tsx` (typo in filename). It is unclear which is the canonical
+            version. Having both risks imports pointing to the wrong file.
+     Suggestion: Check which file is actually imported across the codebase, delete the unused
+                 one (keeping the correctly-spelled `IfscCodeField.tsx`).
+     Reason: Duplicate files cause confusion and risk silent regressions if the wrong
+             file is modified.
+     Priority: Medium
+
+[40] Global: Two StatCard components with overlapping purpose
+     File: src/shared/components/StatCard/StatCard.tsx
+           and src/shared/components/DashboardStatCard/DashboardStatCard.tsx
+     Issue: Two distinct stat card components exist. `StatCard` renders a vertical centred
+            layout. `DashboardStatCard` renders a horizontal layout with an icon. Both accept
+            similar `value`, `label`, `bgColor`/`bg`, `textColor`/`color` props. The naming
+            does not clearly communicate when to use which.
+     Suggestion: Document or rename to make the distinction explicit
+                 (e.g., `StatCard` → `VerticalStatCard` or merge into one component with a
+                 `variant` prop). Or consolidate if both use cases can be served by one component.
+     Reason: Reduces developer confusion about which component to use for a new stat display.
+     Priority: Low
+
+[41] Global: Inline `style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}`
+             repeated throughout
+     File: Multiple — SelectComboField.tsx (lines 109–113, 133, 158), DatePicker.tsx
+           (lines 221–226, 239), WorkerReportPage.tsx (lines 128, 135, 165, 173), etc.
+     Issue: The same inline style block `{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }`
+            is repeated on dozens of elements across the codebase. The global CSS already
+            sets `font-family: "Outfit", sans-serif` on `body`, making the `fontFamily`
+            part redundant. The `fontSize` could be a Tailwind class.
+     Suggestion: Remove redundant `fontFamily: 'Outfit, sans-serif'` from inline styles
+                 (body already sets this). Replace `fontSize: 'var(--font-sm)'` with
+                 Tailwind `text-sm` class where applicable. Create a Tailwind utility class
+                 `.text-app-sm { font-size: var(--font-sm); }` if pixel-perfect matching
+                 of the CSS variable is needed.
+     Reason: Reduces boilerplate; makes font changes manageable from one place.
+     Priority: Low
+
+[42] Global: `no-global-btn` utility class used for a Resend OTP link
+     File: src/shared/features/auth/pages/otp-verification-page/OtpVerificationPage.tsx (line 82)
+           and src/shared/styles/global.css (lines 181–185)
+     Issue: `no-global-btn` strips all button styles (`all: unset`) and sets
+            `font-size: 12px`. The Resend OTP button uses `<Button variant="link"
+            className="no-global-btn">`. This combination is fragile — `all: unset` overrides
+            Tailwind utility classes applied by `variant="link"`.
+     Suggestion: Replace with `<button type="button" className="text-xs text-primary
+                 hover:underline cursor-pointer">` or use the Button component's `variant="link"
+                 size="xs"` without the `no-global-btn` override.
+     Reason: `all: unset` with Tailwind utilities creates unpredictable rendering. The class
+             name is also non-descriptive for a resend-OTP CTA.
+     Priority: Low
+
+[43] Global: Responsive layout padding inconsistency on list pages
+     File: src/shared/features/workers/pages/worker-list/WorkerListPage.tsx (line 58)
+           vs src/shared/features/report/pages/worker-report/WorkerReportPage.tsx (line 107)
+     Issue: WorkerListPage uses `px-4 py-6` as page padding. WorkerReportPage uses `py-6`
+            on the outer div but then adds an extra `px-4` wrapper for the header/filter
+            section and a separate `px-4` for the list section. This inconsistency makes
+            some pages feel narrower or wider than others.
+     Suggestion: Establish a single app-level page container class (e.g., `page-container`
+                 → `px-4 py-6 min-h-screen w-full`) and apply it uniformly to all list and
+                 form pages.
+     Reason: Consistent page margins create a more professional look across the app.
+     Priority: Low
+
+[44] Global: Missing `aria-label` on icon-only buttons
+     File: Multiple — SearchFilterBar.tsx (line 83: filter icon button),
+           ContactCard.tsx (line 124: Trash2 button), AttendanceCreationPage.tsx
+           (line 220: X button on uploaded images)
+     Issue: Several icon-only buttons have no `aria-label` or accessible name. Screen
+            readers will announce these as "button" with no context.
+     Suggestion: Add `aria-label` to all icon-only buttons:
+                 - Filter button: `aria-label="Filter workers"`
+                 - Delete button in ContactCard: `aria-label={t('Delete')} + ' ' + name`
+                 - Remove image button: `aria-label="Remove image"`
+     Reason: Accessibility (WCAG 2.1 AA) — interactive controls must have accessible names.
+     Priority: Medium
+
+[45] Global: `SearchBar` and `SearchFilterBar` serve similar purposes but are separate
+     File: src/shared/components/SearchBar/SearchBar.tsx
+           and src/shared/components/SearchFilterBar/SearchFilterBar.tsx
+     Issue: `SearchBar` provides an inline search input with text entry. `SearchFilterBar`
+            provides a filter-open button that shows applied filters. Some list pages use
+            `SearchBar`, others use `SearchFilterBar`. The two patterns are not unified —
+            some pages have live search, others have dialog-based filter. This is not an
+            inconsistency per se (they serve different UX patterns) but the naming is
+            confusing since neither is simply a "search bar".
+     Suggestion: Rename to make the distinction explicit:
+                 `SearchBar` → `InlineSearchInput` or `LiveSearchBar`
+                 `SearchFilterBar` → `FilterTriggerBar` or `DialogFilterBar`
+                 Document in a brief comment why each exists.
+     Reason: Developer clarity — prevents using the wrong component or duplicating them.
+     Priority: Low
+
+
+SUMMARY
+========
+Total issues found: 45
+High priority:   10  (#1, #3, #6, #11, #12, #15, #23, #24, #37)
+Medium priority: 18  (#2, #4, #5, #7, #10, #13, #16, #17, #18, #19, #20, #27, #28, #31, #38, #39, #41, #44)
+Low priority:    17  (#8, #9, #14, #21, #22, #25, #26, #29, #30, #32, #33, #34, #35, #36, #40, #43, #45)
+
+TOP 5 QUICK WINS (high impact, small change):
+  1. [#37] Replace `--primary-color` with `--primary` in OTP slot classes — fixes
+     broken focus rings across sign-up and OTP pages (2-line change each).
+  2. [#24] Add `variant="destructive"` to DeleteConfirmDialog's Delete button —
+     immediate UX improvement, 1-line change.
+  3. [#1/#2/#3] Change FieldLabel, TextareaField, RadioField `text-black` to `text-foreground`
+     — fixes dark mode across all forms at once.
+  4. [#12] Fix duplicate `id="name"` on SignUpPage — accessibility fix, 1-line change.
+  5. [#35] Remove duplicate `@layer base` block from global.css — cleanup, delete 8 lines.

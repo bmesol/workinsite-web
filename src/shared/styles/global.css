@@ -143,6 +143,10 @@ input::placeholder {
 }
 
 /* ================= UTILITIES ================= */
+.page-container {
+  @apply min-h-screen w-full px-4 py-6;
+}
+
 .disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -170,13 +174,10 @@ input::placeholder {
   box-shadow: none !important;
 }
 
-input {
-  box-shadow: none !important;
+[data-slot="input"] {
+  box-shadow: none;
 }
 
-button {
-  font-size: 16px;
-}
 
 .no-global-btn {
   all: unset;
@@ -188,14 +189,6 @@ body {
   background-color: var(--body-bg-color);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
 
 .date-picker-btn {
   color: var(--gray-color) !important;
@@ -217,7 +210,7 @@ body {
   --ta-label-weight: 600;
   --ta-heading-size: 17px;
   --ta-heading-weight: 700;
-  --ta-button-size: 14px;
+  --ta-button-size: 16px;
   --ta-button-weight: 600;
 }
 

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { WorkersUrls } from "../../utils/urls";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
 import { useState } from "react";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import {
@@ -135,8 +136,9 @@ const WorkerListPage = () => {
           <div className="flex flex-col gap-4 pt-2">
             {/* Worker Name */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-base font-medium"> {t('Search Workers')}</label>
+              <Label htmlFor="worker-search" className="text-base font-medium">{t('Search Workers')}</Label>
               <Input
+                id="worker-search"
                 placeholder={t('Enter worker name')}
                 value={searchText}
                 maxLength={75}

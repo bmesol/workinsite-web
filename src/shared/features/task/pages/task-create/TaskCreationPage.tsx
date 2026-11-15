@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Label } from "@/shared/components/ui/label";
-import { Textarea } from "@/shared/components/ui/textarea";
 import { Card } from "@/shared/components/ui/card";
+import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import {
   Dialog,
   DialogContent,
@@ -93,22 +92,15 @@ const TaskCreationPage = () => {
           />
 
           {/* Task Name */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="taskName" className="text-base">
-              {t('Task Name')} <span className="text-red-500">*</span>
-            </Label>
-            <Textarea
-              id="taskName"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
-              placeholder={t('Enter your Task name')}
-              rows={2}
-              disabled={!editable}
-            />
-            {error.taskName && (
-              <p className="text-sm text-red-500">{error.taskName}</p>
-            )}
-          </div>
+          <TextareaField
+            label={t('Task Name')}
+            inputValue={taskName}
+            setInputValue={setTaskName}
+            errorMessage={error.taskName}
+            placeholder={t('Enter your Task name')}
+            isDisabled={!editable}
+            required
+          />
 
           {/* Date */}
           <DatePicker
@@ -144,19 +136,13 @@ const TaskCreationPage = () => {
           />
 
           {/* Remarks */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="remarks" className="text-base">
-              {t('Remarks')}
-            </Label>
-            <Textarea
-              id="remarks"
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              placeholder={t('Enter Remark')}
-              rows={3}
-              disabled={!editable}
-            />
-          </div>
+          <TextareaField
+            label={t('Remarks')}
+            inputValue={remarks}
+            setInputValue={setRemarks}
+            placeholder={t('Enter Remark')}
+            isDisabled={!editable}
+          />
           {/* ── Assign Supervisor ── */}
           {siteId && (
             <div>

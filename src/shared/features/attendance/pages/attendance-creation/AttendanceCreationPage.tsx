@@ -219,6 +219,7 @@ const AttendanceCreationPage = () => {
                     />
                     <button
                       type="button"
+                      aria-label="Remove image"
                       onClick={() => deleteImage(index)}
                       className="absolute -top-1 -right-1 bg-destructive text-white rounded-full p-0.5"
                     >

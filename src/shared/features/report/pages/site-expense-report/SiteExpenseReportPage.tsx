@@ -90,8 +90,8 @@ export default function SiteExpenseReportPage() {
   if (!hasViewAccess) return null;
 
   return (
-    <div className="min-h-screen w-full py-6">
-      <div className="px-4">
+    <div className="min-h-screen w-full px-4 py-6">
+      <div>
         {/* ── Desktop / tablet: title + filter bar + export buttons on one row ── */}
         <div className="hidden sm:block">
         <Header title="Site-Wise Expense Summary">
@@ -113,7 +113,6 @@ export default function SiteExpenseReportPage() {
                   <Button
                     onClick={() => { trackEvent('download_report', { report_type: 'site_expense', format: 'excel' }); void exportToExcel(allItems, 'Site_Expense_Report', dateRange); }}
                     className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                    style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                   >
                     <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                     Export Excel
@@ -122,7 +121,6 @@ export default function SiteExpenseReportPage() {
                     variant="outline"
                     onClick={() => { trackEvent('download_report', { report_type: 'site_expense', format: 'pdf' }); void exportToPDF(allItems, 'Site_Expense_Report', dateRange); }}
                     className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                   >
                     <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                     Download PDF
@@ -153,7 +151,6 @@ export default function SiteExpenseReportPage() {
               <Button
                 onClick={() => { trackEvent('download_report', { report_type: 'site_expense', format: 'excel' }); void exportToExcel(allItems, 'Site_Expense_Report', dateRange); }}
                 className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >
                 <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                 Export Excel
@@ -162,7 +159,6 @@ export default function SiteExpenseReportPage() {
                 variant="outline"
                 onClick={() => { trackEvent('download_report', { report_type: 'site_expense', format: 'pdf' }); void exportToPDF(allItems, 'Site_Expense_Report', dateRange); }}
                 className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >
                 <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                 Download PDF
@@ -182,7 +178,7 @@ export default function SiteExpenseReportPage() {
         />
       )}
 
-      <div className="px-4 pb-24 mt-2">
+      <div className="pb-24 mt-2">
         {loading ? (
           <TableSkeleton />
         ) : !hasData ? (

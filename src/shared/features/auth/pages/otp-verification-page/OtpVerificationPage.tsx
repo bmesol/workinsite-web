@@ -68,7 +68,7 @@ export const OtpVerificationPage = () => {
                             key={item}
                             index={item}
                             className="otp-slot-primary w-[50px] sm:w-[50px] md:w-[52px] lg:w-[50px] h-10 text-lg box-border border
-                           hover:!border hover:!border-[var(--primary-color)] focus-visible:!border-2 focus-visible:!border-[var(--primary-color)]
+                           hover:!border hover:!border-[var(--primary)] focus-visible:!border-2 focus-visible:!border-[var(--primary)]
                            focus-visible:!ring-1 focus-visible:!ring-offset-0"
                           />
                         ))}

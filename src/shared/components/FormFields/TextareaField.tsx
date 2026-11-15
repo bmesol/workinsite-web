@@ -1,8 +1,8 @@
 import { FormInput } from "../FormInput/FormInput";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { Label } from "@/shared/components/ui/label";
 import type { InputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
+import { FieldLabel } from "./FieldLabel";
 
 const TextareaField = (props: InputPropTypes) => {
   const {
@@ -28,10 +28,7 @@ const TextareaField = (props: InputPropTypes) => {
     <FormInput errorMessage={errorMessage} className={className}>
       {/* Label */}
       {!isHideLabel && label && (
-        <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
-          {label}
-          {required && <span className="text-red-500">*</span>}
-        </Label>
+        <FieldLabel required={required}>{label}</FieldLabel>
       )}
 
       {/* Textarea */}
@@ -41,8 +38,7 @@ const TextareaField = (props: InputPropTypes) => {
         placeholder={placeholder}
         disabled={isDisabled}
         required={required}
-        className="w-full disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800"
-        style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
+        className="w-full text-sm disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800"
       />
     </FormInput>
   );

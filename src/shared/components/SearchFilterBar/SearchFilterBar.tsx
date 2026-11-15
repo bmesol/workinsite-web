@@ -35,17 +35,14 @@ const SearchFilterBar = ({
             style={iconStyle}
           />
           <span
-            className="truncate flex-1"
-            style={{
-              fontSize: 'var(--font-sm)',
-              color: 'var(--foreground)',
-              fontFamily: 'Outfit, sans-serif',
-            }}
+            className="truncate flex-1 text-sm"
+            style={{ color: 'var(--foreground)' }}
           >
             {appliedFilters}
           </span>
           <button
             onClick={onClearSearch}
+            aria-label="Clear filters"
             style={{ color: 'var(--gray-color)' }}
             className="hover:text-foreground transition-colors shrink-0"
           >
@@ -68,11 +65,8 @@ const SearchFilterBar = ({
             style={iconStyle}
           />
           <span
-            style={{
-              fontSize: 'var(--font-sm)',
-              color: 'var(--gray-color)',
-              fontFamily: 'Outfit, sans-serif',
-            }}
+            className="text-sm"
+            style={{ color: 'var(--gray-color)' }}
           >
             {placeholder}
           </span>
@@ -80,7 +74,7 @@ const SearchFilterBar = ({
       )}
 
       {appliedFilters && (
-        <Button variant="outline" size="icon" onClick={onFilterOpen}>
+        <Button variant="outline" size="icon" aria-label="Open filters" onClick={onFilterOpen}>
           <SlidersHorizontal
             style={iconStyle}
           />

@@ -3,8 +3,8 @@ import { FormInput } from "../FormInput/FormInput";
 import type { InputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
 import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
+import { FieldLabel } from "./FieldLabel";
 
 const PinField = (props: InputPropTypes) => {
   const { t } = useLanguage();
@@ -64,10 +64,7 @@ const PinField = (props: InputPropTypes) => {
 
   return (
     <FormInput errorMessage={errorMessage} className={className}>
-      <Label className="mb-1 text-base font-medium text-black flex items-center gap-0.5">
-        {label || t("Pin")}
-        {required && <span className="text-red-500">*</span>}
-      </Label>
+      <FieldLabel required={required}>{label || t("Pin")}</FieldLabel>
       <div className="flex gap-6 w-full">
         {digits.map((digit, index) => (
           <Input
@@ -82,7 +79,7 @@ const PinField = (props: InputPropTypes) => {
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
             onFocus={(e) => e.target.select()}
-            className="w-16 h-14 text-center text-lg font-semibold tracking-widest"
+            className="w-16 h-14 text-center text-lg font-semibold tracking-widest dark:border-input"
           />
         ))}
       </div>

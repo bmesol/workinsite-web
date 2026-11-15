@@ -3,8 +3,8 @@ import { useState } from "react";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { Label } from "@/shared/components/ui/label";
-import { Textarea } from "@/shared/components/ui/textarea";
-import { Input } from "@/shared/components/ui/input";
+import { NameField } from "@/shared/components/FormFields/NameField";
+import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
@@ -74,23 +74,16 @@ const SiteCreationPage = () => {
       <Header title={t('Create Site')} />
 
       <Card className="mt-4">
-        <CardContent className=" flex flex-col gap-6">
+        <CardContent className="flex flex-col gap-4">
           {/* Row 1: Name + Client */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="site-name" className="text-base font-medium">
-                {t('Name')} <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="site-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={t('Enter site name')}
-              />
-              {error.name && (
-                <p className="text-sm text-red-500">{error.name}</p>
-              )}
-            </div>
+            <NameField
+              inputValue={name}
+              setInputValue={setName}
+              errorMessage={error.name}
+              placeholder={t('Enter site name')}
+              required
+            />
 
             <ComboboxField
               id="client-combobox"
@@ -151,18 +144,12 @@ const SiteCreationPage = () => {
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="notes" className="text-base font-medium">
-                {t('Notes')}
-              </Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder={t('Enter your notes')}
-                rows={4}
-              />
-            </div>
+            <TextareaField
+              label={t('Notes')}
+              inputValue={notes}
+              setInputValue={setNotes}
+              placeholder={t('Enter your notes')}
+            />
           </div>
 
           {/* Row 3: Supervisors + Status */}
@@ -197,7 +184,7 @@ const SiteCreationPage = () => {
                     />
                     <Label
                       htmlFor={`status-${item.value}`}
-                      className="font-sm cursor-pointer"
+                      className="text-sm font-medium cursor-pointer"
                     >
                       {item.label}
                     </Label>

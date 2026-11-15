@@ -106,11 +106,7 @@ const SelectComboField = ({
                 isDisabled && "bg-gray-100 dark:bg-neutral-800 disabled:opacity-75",
                 className,
               )}
-              style={{
-                fontFamily: "Outfit, sans-serif",
-                fontSize: "var(--font-sm)",
-                color: selectedLabel ? "var(--foreground)" : "var(--gray-color)",
-              }}
+              style={{ color: selectedLabel ? "var(--foreground)" : "var(--gray-color)" }}
             >
               {selectedLabel ?? `${t("Select")}...`}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -130,7 +126,6 @@ const SelectComboField = ({
                   setSearchValue(val);
                   onSearch?.(val);
                 }}
-                style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
               />
               <CommandList
                 ref={listRef}
@@ -155,7 +150,6 @@ const SelectComboField = ({
                           onValueChange(val);
                           setIsOpen(false);
                         }}
-                        style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
                         className={cn(
                           "px-3 py-1.5 min-h-9 leading-tight rounded-none cursor-pointer justify-between transition-opacity active:opacity-60",
                           "text-[var(--gray-color)]",
@@ -206,69 +200,79 @@ const SelectComboField = ({
     );
   }
 
-  // searchable=false: plain dropdown (original SelectField behavior)
+  // searchable=false: Popover-based dropdown (overlay, no layout shift)
   return (
     <div className="flex flex-col gap-1.5">
       {labelNode}
 
-      <Button
-        type="button"
-        variant="outline"
-        role="combobox"
-        disabled={isDisabled}
-        onClick={() => {
-          if (!isDisabled) {
-            if (!isOpen) scrollToSelected();
-            setIsOpen((prev) => !prev);
-          }
+      <Popover
+        open={isOpen}
+        onOpenChange={(val) => {
+          if (isDisabled) return;
+          setIsOpen(val);
+          if (val) scrollToSelected();
         }}
-        className={cn(
-          "w-full justify-between font-normal bg-transparent text-sm",
-          !selectedLabel && "text-muted-foreground",
-          isDisabled && "opacity-50 cursor-not-allowed",
-          isOpen && "border-primary",
-        )}
       >
-        {selectedLabel ?? (placeholder ?? t("Select"))}
-        {isOpen
-          ? <ChevronUp className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          : <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        }
-      </Button>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            role="combobox"
+            aria-expanded={isOpen}
+            disabled={isDisabled}
+            className={cn(
+              "w-full justify-between font-normal bg-transparent text-sm",
+              !selectedLabel && "text-muted-foreground",
+              isDisabled && "bg-gray-100 dark:bg-neutral-800 disabled:opacity-75",
+            )}
+            style={{ color: selectedLabel ? "var(--foreground)" : "var(--gray-color)" }}
+          >
+            {selectedLabel ?? (placeholder ?? t("Select"))}
+            {isOpen
+              ? <ChevronUp className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              : <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            }
+          </Button>
+        </PopoverTrigger>
 
-      {isOpen && (
-        <div
-          ref={listRef}
-          className="w-full rounded-md border border-border shadow-md z-50 max-h-[150px] overflow-y-auto animate-in fade-in-0 zoom-in-95 flex flex-col gap-1 py-1"
-          style={{ backgroundColor: "var(--card)" }}
+        <PopoverContent
+          className="p-0 bg-white dark:bg-background z-[200]"
+          align="start"
+          collisionPadding={{ top: 72 }}
+          style={{ width: "var(--radix-popover-trigger-width)" }}
         >
-          {items.map((item) => {
-            const isSelected = item.value === selectedValue;
-            return (
-              <div
-                key={item.value}
-                data-selected-item={isSelected ? "true" : undefined}
-                onClick={() => { onValueChange(item.value); setIsOpen(false); }}
-                className={cn(
-                  "flex items-center justify-between px-3 py-1.5 min-h-9 leading-tight text-sm cursor-pointer rounded-none transition-opacity active:opacity-60",
-                  "text-[var(--gray-color)]",
-                  // unselected hover: half-strength so it stays visibly lighter than the selected row
-                  "hover:bg-[color-mix(in_srgb,var(--select-hover-bg)_50%,transparent)]",
-                  isSelected && "bg-[var(--select-hover-bg)] font-semibold text-[var(--secondary)] hover:bg-[var(--select-hover-bg)]",
-                )}
-              >
-                <span>{item.label}</span>
-                <Check
+          <div
+            ref={listRef}
+            className="max-h-[160px] overflow-y-auto flex flex-col gap-1 py-1"
+          >
+            {items.map((item) => {
+              const isSelected = item.value === selectedValue;
+              return (
+                <div
+                  key={item.value}
+                  data-selected-item={isSelected ? "true" : undefined}
+                  onClick={() => { onValueChange(item.value); setIsOpen(false); }}
                   className={cn(
-                    "h-4 w-4 shrink-0 text-primary",
-                    !isSelected && "invisible",
+                    "flex items-center justify-between px-3 py-1.5 min-h-9 leading-tight text-sm cursor-pointer rounded-none transition-opacity active:opacity-60",
+                    "text-[var(--gray-color)]",
+                    // unselected hover: half-strength so it stays visibly lighter than the selected row
+                    "hover:bg-[color-mix(in_srgb,var(--select-hover-bg)_50%,transparent)]",
+                    isSelected && "bg-[var(--select-hover-bg)] font-semibold text-[var(--secondary)] hover:bg-[var(--select-hover-bg)]",
                   )}
-                />
-              </div>
-            );
-          })}
-        </div>
-      )}
+                >
+                  <span>{item.label}</span>
+                  <Check
+                    className={cn(
+                      "h-4 w-4 shrink-0 text-primary",
+                      !isSelected && "invisible",
+                    )}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </PopoverContent>
+      </Popover>
 
       {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
     </div>

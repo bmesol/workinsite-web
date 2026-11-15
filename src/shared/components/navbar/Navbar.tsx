@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Label } from "@/shared/components/ui/label";
 import workInSiteLogo from "@/assets/images/work-insite-logo.png";
 import { MenuBar } from "@/shared/components/menu/Menubar";
 import Sidebar from "@/shared/components/menu/Sidebar";
@@ -12,19 +11,18 @@ export const Navbar = () => {
   return (
     <>
       <nav
-        style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }}
         className="
           fixed top-0 left-0 z-50 w-full
           flex items-center justify-between
-          px-6 h-18 bg-white
+          px-6 h-18 bg-white shadow-md
         "
       >
         {/* Logo */}
         <div className="flex items-center gap-2">
           <img src={workInSiteLogo} alt="logo" className="h-12 w-auto" />
-          <Label style={{ fontSize: "26px", fontWeight: "600" }}>
+          <span className="text-[26px] font-semibold">
             WorkInSite
-          </Label>
+          </span>
         </div>
 
         {/* Right side: Notification Bell + Menu icon */}

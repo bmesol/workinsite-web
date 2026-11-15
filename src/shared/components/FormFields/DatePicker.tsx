@@ -218,25 +218,20 @@ const DatePicker = ({
               disable && 'bg-gray-100 dark:bg-neutral-800 disabled:opacity-75',
               className,
             )}
-            style={{
-              fontFamily: 'Outfit, sans-serif',
-              fontSize: 'var(--font-sm)',
-              color: committedDate ? 'var(--foreground)' : 'var(--gray-color)',
-            }}
+            style={{ color: committedDate ? 'var(--foreground)' : 'var(--gray-color)' }}
           >
             <CalendarIcon
               className="mr-2 h-4 w-4"
               style={{ color: 'var(--gray-color)' }}
             />
-            {committedDate ? format(committedDate, 'dd-MM-yyyy') : 'Select date'}
+            {committedDate ? format(committedDate, 'dd/MM/yyyy') : 'Select date'}
           </Button>
         </PopoverTrigger>
 
         <PopoverContent
-          className="w-[260px] overflow-hidden rounded-xl border-0 bg-white p-0 shadow-2xl dark:bg-background"
+          className="w-[260px] overflow-hidden rounded-xl border-0 bg-white p-0 shadow-2xl text-xs dark:bg-background"
           align="start"
           collisionPadding={8}
-          style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-xs)' }}
         >
           <div className="flex flex-col">
             {/* Header band */}

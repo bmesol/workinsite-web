@@ -1,5 +1,4 @@
 import { MapPin } from "lucide-react";
-import { FormInput } from "../../FormInput/FormInput";
 import { TextareaField } from "../TextareaField";
 import type { GoogleLocationProps } from "./DTOs";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
@@ -10,16 +9,15 @@ const GoogleLocation = (props: GoogleLocationProps) => {
 
   return (
     <div className={`relative ${classNames}`}>
-      <FormInput errorMessage={errorMessage}>
-        <TextareaField
-          label={t("Google Location")}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          placeholder={placeholder || t("Enter google location")}
-          required={required}
-          isDisabled={disabled}
-        />
-      </FormInput>
+      <TextareaField
+        label={t("Google Location")}
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        placeholder={placeholder || t("Enter google location")}
+        required={required}
+        isDisabled={disabled}
+        errorMessage={errorMessage}
+      />
 
       <div className="absolute top-0 right-0 mr-4 flex items-center gap-1.5 get-location">
         <MapPin className="w-5 h-5 text-muted-foreground" />

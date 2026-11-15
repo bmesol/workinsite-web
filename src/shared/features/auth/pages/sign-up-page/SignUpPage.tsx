@@ -4,20 +4,15 @@ import {
   Card,
   CardContent,
 } from "@/shared/components/ui/card";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
 import workInSiteLogo from "@/assets/images/work-insite-logo.png";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/shared/components/ui/input-otp";
-
-import { REGEXP_ONLY_DIGITS } from "input-otp";
 import "@/shared/features/auth/pages/sign-up-page/SignUpPage.scss";
 import { useState } from "react";
 import { Footer } from "@/shared/components/footer/Footer";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { NameField } from "@/shared/components/FormFields/NameField";
+import { PhoneNumberField } from "@/shared/components/FormFields/PhoneNumberField";
+import { GenericInputField } from "@/shared/components/FormFields/GenericInputField";
+import { PinField } from "@/shared/components/FormFields/PinField";
 
 interface SignUpErrors {
   name?: string;
@@ -91,114 +86,41 @@ export const SignUpPage = () => {
             <CardContent>
               <form>
                 <div className="flex flex-col gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">
-                      {t('Name')}<span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder={t('Enter your name')}
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                    {errors.name && (
-                      <p className="text-red-500 text-sm">{errors.name}</p>
-                    )}
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">
-                      {t('Phone Number')}<span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      value={phone}
-                      onChange={(e) =>
-                        setPhone(e.target.value.replace(/\D/g, ""))
-                      }
-                      maxLength={10}
-                      placeholder={t('Enter phone number')}
-                    />
-                    {errors.phone && (
-                      <p className="text-red-500 text-sm">{errors.phone}</p>
-                    )}
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="Orhanization">
-                      Organisation Name<span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="password"
-                      type="text"
-                      placeholder="Enter organization name"
-                      value={organization}
-                      onChange={(e) => setOrganization(e.target.value)}
-                    />
-                    {errors.organization && (
-                      <p className="text-red-500 text-sm">
-                        {errors.organization}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <Label htmlFor="email">
-                      PIN<span className="text-red-500">*</span>
-                    </Label>
-                    <InputOTP
-                      type="password"
-                      value={pin}
-                      onChange={(value) => setPin(value)}
-                      maxLength={4}
-                      pattern={REGEXP_ONLY_DIGITS}
-                      placeholder="*"
-                    >
-                      <InputOTPGroup className="w-full gap-4 mt-1 ">
-                        {[0, 1, 2, 3].map((item) => (
-                          <InputOTPSlot
-                            key={item}
-                            index={item}
-                            className="otp-slot-primary w-[150px] md:w-[100px] lg:w-[100px] h-10 text-lg box-border border
-                           hover:!border hover:!border-[var(--primary-color)] focus-visible:!border-2 focus-visible:!border-[var(--primary-color)]
-                           focus-visible:!ring-1 focus-visible:!ring-offset-0"
-                          />
-                        ))}
-                      </InputOTPGroup>
-                    </InputOTP>
-                    {errors.pin && (
-                      <p className="text-red-500 text-sm">{errors.pin}</p>
-                    )}
-                  </div>
-                  <div>
-                    <Label htmlFor="email">
-                      Confirm PIN<span className="text-red-500">*</span>
-                    </Label>
-                    <InputOTP
-                      value={confirmPin}
-                      onChange={(value) => setConfirmPin(value)}
-                      maxLength={4}
-                      pattern={REGEXP_ONLY_DIGITS}
-                      placeholder="*"
-                    >
-                      <InputOTPGroup className="w-full gap-4 mt-1">
-                        {[0, 1, 2, 3].map((item) => (
-                          <InputOTPSlot
-                            key={item}
-                            index={item}
-                            className="otp-slot-primary w-[150px] md:w-[100px] lg:w-[100px] h-10 text-lg box-border border
-                            hover:!border hover:!border-[var(--primary-color)] focus-visible:!border-2 
-                            focus-visible:!border-[var(--primary-color)]
-                            focus-visible:!ring-1 focus-visible:!ring-offset-0"
-                          />
-                        ))}
-                      </InputOTPGroup>
-                    </InputOTP>
-                    {errors.confirmPin && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.confirmPin}
-                      </p>
-                    )}
-                  </div>
+                  <NameField
+                    inputValue={name}
+                    setInputValue={setName}
+                    errorMessage={errors.name}
+                    placeholder={t('Enter your name')}
+                    required
+                  />
+                  <PhoneNumberField
+                    inputValue={phone}
+                    setInputValue={setPhone}
+                    errorMessage={errors.phone}
+                    required
+                  />
+                  <GenericInputField
+                    label="Organisation Name"
+                    inputValue={organization}
+                    setInputValue={setOrganization}
+                    errorMessage={errors.organization}
+                    placeholder="Enter organization name"
+                    noStartSpace
+                    required
+                  />
+                  <PinField
+                    inputValue={pin}
+                    setInputValue={setPin}
+                    errorMessage={errors.pin}
+                    required
+                  />
+                  <PinField
+                    label={t("Confirm PIN")}
+                    inputValue={confirmPin}
+                    setInputValue={setConfirmPin}
+                    errorMessage={errors.confirmPin}
+                    required
+                  />
                   <Button
                     onClick={handleSubmit}
                     className="w-full h-10 bg-[var(--primary)] text-black

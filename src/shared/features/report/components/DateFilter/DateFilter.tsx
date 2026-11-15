@@ -31,10 +31,10 @@ export function DateFilter({ selectedOption, dateRange, setDateRange, onOptionCh
             key={opt.key}
             type="button"
             onClick={() => { trackEvent('filter_applied', { filter_type: 'date_range', option: opt.key }); onOptionChange(opt.key); }}
-          className={`flex-1 py-2 rounded-lg border text-xs font-medium transition-colors ${
+          className={`flex-1 h-9 rounded-lg border text-sm font-medium transition-colors ${
   selectedOption === opt.key
     ? 'bg-primary text-primary-foreground border-primary'
-    : 'bg-background text-slate-700 border-slate-200 hover:border-primary'
+    : 'bg-background text-foreground border-border hover:border-primary'
 }`}
           >
             {opt.label}
@@ -47,17 +47,17 @@ export function DateFilter({ selectedOption, dateRange, setDateRange, onOptionCh
         <div className="grid grid-cols-2 gap-3">
           <DatePicker
             label="From Date"
-            date={dateRange.from.replace(/-/g, '/')}
+            date={dateRange.from}
             onDateChange={(val) =>
-              setDateRange(prev => ({ ...prev, from: val.replace(/\//g, '-') }))
+              setDateRange(prev => ({ ...prev, from: val }))
             }
             errorMessage={errors.fromDate}
           />
           <DatePicker
             label="To Date"
-            date={dateRange.to.replace(/-/g, '/')}
+            date={dateRange.to}
             onDateChange={(val) =>
-              setDateRange(prev => ({ ...prev, to: val.replace(/\//g, '-') }))
+              setDateRange(prev => ({ ...prev, to: val }))
             }
             errorMessage={errors.toDate}
           />

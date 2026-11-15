@@ -14,8 +14,7 @@ const NameField = (props: InputPropTypes) => {
       filterRegex={regex ? new RegExp(regex) : NAME_REGEX}
       noStartSpace
       defaultPlaceholder={t("Enter name")}
-      inputClassName={`disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800 ${props.inputClassName ?? ""}`}
-      inputStyle={{ fontFamily: "Outfit, sans-serif", fontSize: "var(--font-sm)" }}
+      inputClassName={`text-sm disabled:opacity-75 disabled:bg-gray-100 dark:disabled:bg-neutral-800 ${props.inputClassName ?? ""}`}
     />
   );
 };

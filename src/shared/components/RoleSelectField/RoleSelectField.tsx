@@ -57,11 +57,7 @@ const RoleSelectField = ({
         value={selectedItem ? selectedItem.label : ""}
         placeholder={t("Select Role")}
         onClick={() => setOpen(true)}
-        className={cn("w-full cursor-pointer caret-transparent")}
-        style={{
-          fontFamily: "Outfit, sans-serif",
-          fontSize: "var(--font-sm)",
-        }}
+        className={cn("w-full cursor-pointer caret-transparent text-sm")}
       />
 
       {/* Dialog — shows full role list, same as mobile Modal + FlatList */}

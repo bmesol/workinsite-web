@@ -70,8 +70,8 @@ const SupervisorAttendanceListPage = () => {
   const hasData = attendances.length > 0;
 
   return (
-    <div className="min-h-screen w-full py-6">
-      <div className="px-4">
+    <div className="min-h-screen w-full px-4 py-6">
+      <div>
         {/* ── Desktop: title + filter bar + export buttons on one row ── */}
         <div className="hidden sm:block">
           {loading ? (
@@ -100,10 +100,6 @@ const SupervisorAttendanceListPage = () => {
                           );
                         }}
                         className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                        style={{
-                          fontSize: "var(--font-sm)",
-                          fontFamily: "Outfit, sans-serif",
-                        }}
                       >
                         <img
                           src={sheetsIcon}
@@ -123,10 +119,6 @@ const SupervisorAttendanceListPage = () => {
                           );
                         }}
                         className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                        style={{
-                          fontSize: "var(--font-sm)",
-                          fontFamily: "Outfit, sans-serif",
-                        }}
                       >
                         <img
                           src={pdfIcon}
@@ -175,10 +167,6 @@ const SupervisorAttendanceListPage = () => {
                       );
                     }}
                     className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                    style={{
-                      fontSize: "var(--font-sm)",
-                      fontFamily: "Outfit, sans-serif",
-                    }}
                   >
                     <img
                       src={sheetsIcon}
@@ -198,10 +186,6 @@ const SupervisorAttendanceListPage = () => {
                       );
                     }}
                     className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    style={{
-                      fontSize: "var(--font-sm)",
-                      fontFamily: "Outfit, sans-serif",
-                    }}
                   >
                     <img
                       src={pdfIcon}
@@ -218,7 +202,7 @@ const SupervisorAttendanceListPage = () => {
       </div>
 
       {/* ── List ── */}
-      <div className="px-4 grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <SupervisorAttendanceCardSkeleton key={i} />
@@ -247,7 +231,7 @@ const SupervisorAttendanceListPage = () => {
 
       {/* ── View More ── */}
       {hasMore && attendances.length > 0 && (
-        <div className="px-4 flex justify-end mt-4">
+        <div className="flex justify-end mt-4">
           {paginationLoading ? (
             <Loader2
               className="animate-spin"

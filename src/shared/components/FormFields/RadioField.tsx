@@ -4,6 +4,7 @@ import { FormInput } from "../FormInput/FormInput";
 import type { SelectInputPropTypes } from "./InputPropTypes";
 import { useInputField } from "./useInputField";
 import { cn } from "@/shared/components/lib/utils";
+import { FieldLabel } from "./FieldLabel";
 
 const RadioField = (props: SelectInputPropTypes) => {
   const {
@@ -21,15 +22,14 @@ const RadioField = (props: SelectInputPropTypes) => {
     <FormInput errorMessage={errorMessage}>
       {/* Label */}
       {label && (
-        <p className="mb-2 text-base font-medium text-black flex items-center gap-0.5">
-          {label} {required && <span className="text-red-500">*</span>}
-        </p>
+        <FieldLabel required={required}>{label}</FieldLabel>
       )}
 
       {/* Radio Group */}
       <RadioGroup
         value={String(inputValue)}
         onValueChange={handleInputChange}
+        aria-label={label}
         className={cn("flex flex-row gap-4", className)}
       >
         {items.map((item) => (

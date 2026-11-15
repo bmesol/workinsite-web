@@ -1,6 +1,7 @@
 import { FormInput } from "../FormInput/FormInput";
 import { Button } from "@/shared/components/ui/button";
 import { PlusCircle, Pencil, BookUser } from "lucide-react";
+import { FieldLabel } from "@/shared/components/FormFields/FieldLabel";
 
 const FormActionButton = (props: {
   heading: string;
@@ -26,12 +27,7 @@ const FormActionButton = (props: {
   return (
     <div className="flex flex-col gap-1">
       <FormInput className={`${isColsTwo ? "w-full" : "md:w-2/3 lg:w-1/2"} flex-row justify-between items-center`}>
-        <div className="flex items-center gap-1">
-          <span className="mb-1 text-base font-medium text-black flex items-center gap-0.5">{heading}</span>
-         {required && (
-            <span className="text-red-500 text-base leading-none">*</span>
-          )}
-        </div>
+        <FieldLabel required={required}>{heading}</FieldLabel>
         <Button
           type="button"
           variant="secondary"

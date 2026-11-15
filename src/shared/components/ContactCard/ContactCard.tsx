@@ -7,6 +7,7 @@ import { Card } from "@/shared/components/ui/card";
 import { Phone, Mail, Trash2, Briefcase, Users } from "lucide-react";
 import type { ContactCardProps } from "./DTOs";
 import { usePermission } from "@/shared/hooks/usePermission";
+import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
 const ContactCard = (props: ContactCardProps) => {
   const {
@@ -25,6 +26,7 @@ const ContactCard = (props: ContactCardProps) => {
   } = props;
 
   const { canEdit } = usePermission();
+  const { t } = useLanguage();
   const hasPermission = permissionKey ? canEdit(permissionKey) : true;
 
   const initials = (name ?? "")
@@ -60,15 +62,15 @@ const ContactCard = (props: ContactCardProps) => {
         <div className="flex flex-col gap-1 min-w-0">
           {/* Name */}
           {name && (
-            <span className="font-semibold text-base text-black">
+            <span className="font-semibold text-base text-foreground">
               {displayName ?? name}
             </span>
           )}
 
           {subDetails?.map((detail, index) => (
             <div key={index} className="flex items-center gap-1">
-              <detail.icon className="h-3 w-3 text-black shrink-0" />
-              <span className="text-sm text-black truncate">{detail.text}</span>
+              <detail.icon className="h-3 w-3 text-muted-foreground shrink-0" />
+              <span className="text-sm text-muted-foreground truncate">{detail.text}</span>
             </div>
           ))}
 
@@ -77,10 +79,10 @@ const ContactCard = (props: ContactCardProps) => {
               className="flex items-center gap-1"
               onClick={(e) => e.stopPropagation()}
             >
-              <Phone className="h-3 w-3 text-black" />
+              <Phone className="h-3 w-3 text-muted-foreground" />
               <a
                 href={`tel:${phone}`}
-                className="text-sm text-black hover:underline"
+                className="text-sm text-muted-foreground hover:underline"
               >
                 {phone}
               </a>
@@ -92,10 +94,10 @@ const ContactCard = (props: ContactCardProps) => {
               className="flex items-center gap-1"
               onClick={(e) => e.stopPropagation()}
             >
-              <Mail className="h-3 w-3 text-black" />
+              <Mail className="h-3 w-3 text-muted-foreground" />
               <a
                 href={`mailto:${email}`}
-                className="text-sm text-black hover:underline"
+                className="text-sm text-muted-foreground hover:underline"
               >
                 {email}
               </a>
@@ -105,16 +107,16 @@ const ContactCard = (props: ContactCardProps) => {
           {/* workType with icon — same as mobile */}
           {workType && (
             <div className="flex items-center gap-1">
-              <Briefcase className="h-3 w-3 text-black" />
-              <span className="text-sm text-black">{workType}</span>
+              <Briefcase className="h-3 w-3 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{workType}</span>
             </div>
           )}
 
           {/* workerRole with icon — same as mobile */}
           {workerRole && (
             <div className="flex items-center gap-1">
-              <Users className="h-3 w-3 text-black" />
-              <span className="text-sm text-black">{workerRole}</span>
+              <Users className="h-3 w-3 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{workerRole}</span>
             </div>
           )}
         </div>
@@ -123,6 +125,7 @@ const ContactCard = (props: ContactCardProps) => {
       {/* Right — Delete */}
       <button
         disabled={!hasPermission}
+        aria-label={`${t('Delete')} ${name ?? ''}`}
         className="self-center ml-2 shrink-0 p-2 rounded-md transition-colors hover:bg-destructive/10"
         style={{
           opacity: hasPermission ? 1 : 0.4,

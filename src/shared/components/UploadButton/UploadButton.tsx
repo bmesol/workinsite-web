@@ -39,12 +39,12 @@ const UploadButton: React.FC<UploadButtonProps> = ({
         variant="secondary"
         onClick={handleClick}
         disabled={disabled}
-        className={`flex items-center gap-2 rounded-full px-6 py-5 text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+        className={`flex items-center gap-2 rounded-md h-10 px-4 text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
           buttonClassName ?? ""
         }`}
       >
         <UploadCloud className="h-6 w-6" />
-        <span className={`text-base font-semibold ${textClassName ?? ""}`}>
+        <span className={`text-sm font-medium ${textClassName ?? ""}`}>
           {text}
         </span>
       </Button>

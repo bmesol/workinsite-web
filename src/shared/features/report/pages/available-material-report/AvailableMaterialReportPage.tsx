@@ -78,8 +78,8 @@ const AvailableMaterialReportScreen = () => {
   const exportFilters = { site: site.name, date: date?.toString() };
 
   return (
-    <div className="min-h-screen w-full py-6">
-      <div className="px-4">
+    <div className="min-h-screen w-full px-4 py-6">
+      <div>
         {/* Desktop / tablet: title + filter bar + export buttons on one row */}
         <div className="hidden sm:block">
           <Header title="Available Material Report">
@@ -109,7 +109,6 @@ const AvailableMaterialReportScreen = () => {
                         }
                       }}
                       className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                      style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                     >
                       <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                       Export Excel
@@ -126,7 +125,6 @@ const AvailableMaterialReportScreen = () => {
                         }
                       }}
                       className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                      style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                     >
                       <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                       Download PDF
@@ -165,7 +163,6 @@ const AvailableMaterialReportScreen = () => {
                   }
                 }}
                 className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >
                 <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                 Export Excel
@@ -182,7 +179,6 @@ const AvailableMaterialReportScreen = () => {
                   }
                 }}
                 className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >
                 <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                 Download PDF
@@ -194,7 +190,7 @@ const AvailableMaterialReportScreen = () => {
 
       {/* Availability Badge */}
       {hasData && (
-        <div className="flex justify-end mt-2 px-4">
+        <div className="flex justify-end mt-2">
           <div className={cn(
             'self-start px-2.5 py-2 rounded-md border text-sm font-medium',
             'bg-blue-50 border-blue-200 text-blue-700',
@@ -205,7 +201,7 @@ const AvailableMaterialReportScreen = () => {
       )}
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto mt-2 px-4 pb-10">
+      <div className="flex-1 overflow-y-auto mt-2 pb-10">
         {refreshing && (
           <div className="text-center py-2 text-sm text-gray-400">
             {t('Refreshing...')}

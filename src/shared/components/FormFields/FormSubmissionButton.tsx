@@ -12,7 +12,7 @@ const FormSubmissionButtons = (props: {
   const { t } = useLanguage();
   return (
     <FormInput className={props.className}>
-      <div className="flex flex-col-reverse gap-3 md:flex-row md:justify-end">
+      <div className="flex flex-col gap-3 md:flex-row md:justify-end">
         <Button
           variant="outline"
           className="cursor-pointer"

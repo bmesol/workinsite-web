@@ -5,7 +5,7 @@ import { SignInForm } from "@/shared/features/auth/components/signinform/SignInF
 
 const SignInPage = () => {
   return (
-    <div className="min-h-screen bg-white flex items-start md:items-center bg-gray-50 bg-white  ">
+    <div className="min-h-screen flex items-start md:items-center bg-gray-50">
       <div className="w-full mx-auto flex flex-col md:flex-row items-start md:items-center px-4 md:px-10 signin-page-bg ">
 
         {/* Left column */}

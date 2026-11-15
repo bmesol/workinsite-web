@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { RadioField } from "@/shared/components/FormFields/RadioField";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { Header } from "@/shared/components/Header/Header";
+import { Card } from "@/shared/components/ui/card";
 import { useUserCreation } from "./useUserCreation.ts";
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
@@ -31,7 +32,7 @@ const UserCreationPage = () => {
       <Header title={t('Create User')} />
 
       {/* ── Form Card ── */}
-      <div className="mt-4 rounded-2xl border border-border bg-card p-6 flex flex-col gap-6">
+      <Card className="mt-4 p-6 flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <NameField
             inputValue={name}
@@ -58,7 +59,7 @@ const UserCreationPage = () => {
 />
 
         <FormSubmissionButtons onCancel={handleOnCancel} onSave={handleOnSave} />
-      </div>
+      </Card>
 
       {/* ── PIN Modal ── */}
       <Dialog open={pinModalOpen} onOpenChange={setPinModalOpen}>

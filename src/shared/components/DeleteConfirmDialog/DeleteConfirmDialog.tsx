@@ -67,7 +67,7 @@ const DeleteConfirmDialog = ({
           </AlertDialogCancel>
 
           <AlertDialogAction asChild>
-            <Button className="cursor-pointer" onClick={onConfirm}>
+            <Button variant="destructive" className="cursor-pointer" onClick={onConfirm}>
               {t("Delete")}
             </Button>
           </AlertDialogAction>

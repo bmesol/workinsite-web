@@ -89,8 +89,8 @@ export default function InventoryStockReportPage() {
   if (!hasViewAccess) return null;
 
   return (
-    <div className="min-h-screen w-full py-6">
-      <div className="px-4">
+    <div className="min-h-screen w-full px-4 py-6">
+      <div>
         {/* ── Desktop / tablet: title + filter bar + export buttons on one row ── */}
         <div className="hidden sm:block">
           <Header title="Inventory Stock Report">
@@ -120,7 +120,6 @@ export default function InventoryStockReportPage() {
                         }
                       }}
                       className="h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                      style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                     >
                       <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                       Export Excel
@@ -137,7 +136,6 @@ export default function InventoryStockReportPage() {
                         }
                       }}
                       className="h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                      style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
                     >
                       <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                       Download PDF
@@ -176,7 +174,6 @@ export default function InventoryStockReportPage() {
                   }
                 }}
                 className="flex-1 h-9 gap-1.5 rounded-md bg-green-700 text-white hover:bg-green-800"
-                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >
                 <img src={sheetsIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                 Export Excel
@@ -193,7 +190,6 @@ export default function InventoryStockReportPage() {
                   }
                 }}
                 className="flex-1 h-9 gap-1.5 rounded-md border-red-400 text-red-600 hover:bg-red-50 hover:text-red-700"
-                style={{ fontSize: 'var(--font-sm)', fontFamily: 'Outfit, sans-serif' }}
               >
                 <img src={pdfIcon} alt="" className="w-3.5 h-3.5 object-contain" />
                 Download PDF
@@ -207,7 +203,7 @@ export default function InventoryStockReportPage() {
         <SummaryCards totalMaterials={totalMaterials} totals={overallTotals} />
       )}
 
-      <div className="px-4 pb-24 mt-2">
+      <div className="pb-24 mt-2">
         {loading ? (
           <TableSkeleton />
         ) : !hasData ? (

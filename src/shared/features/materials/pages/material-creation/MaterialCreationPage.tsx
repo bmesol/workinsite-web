@@ -97,9 +97,9 @@ const MaterialCreationPage = () => {
       <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Do you want to save before exiting?
+              {t('You have unsaved changes. Do you want to save before exiting?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">

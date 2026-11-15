@@ -96,17 +96,13 @@ const MaterialMultiSelect = ({
         className={cn(
           'w-full h-10 inline-flex items-center justify-between',
           'border border-input rounded-md bg-transparent',
-          'px-4 py-2 font-normal text-sm',
+          'px-4 py-2 font-normal text-base',
           'transition-colors outline-none',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           'hover:bg-accent hover:text-accent-foreground',
           'disabled:pointer-events-none disabled:opacity-50',
         )}
-        style={{
-          fontFamily: 'Outfit, sans-serif',
-          fontSize: 'var(--font-sm)',
-          color: hasSelection ? 'var(--foreground)' : 'var(--gray-color)',
-        }}
+        style={{ color: hasSelection ? 'var(--foreground)' : 'var(--gray-color)' }}
       >
         <span className="flex-1 truncate text-left">{triggerLabel}</span>
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -129,7 +125,6 @@ const MaterialMultiSelect = ({
               placeholder={t('Search...')}
               aria-label={t('Search...')}
               className="flex-1 py-1 outline-none bg-transparent text-[var(--foreground)] placeholder:text-[var(--gray-color)]"
-              style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
             />
           </div>
 
@@ -151,7 +146,6 @@ const MaterialMultiSelect = ({
                       'text-[var(--gray-color)] hover:bg-[color-mix(in_srgb,var(--select-hover-bg)_50%,transparent)]',
                       isSelected && 'bg-[var(--select-hover-bg)] font-semibold text-[var(--secondary)] hover:bg-[var(--select-hover-bg)]',
                     )}
-                    style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
                   >
                     <div
                       className="w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors"
@@ -177,8 +171,7 @@ const MaterialMultiSelect = ({
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="w-full py-2.5 text-sm font-semibold border-t border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-            style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'var(--font-sm)' }}
+            className="w-full py-2.5 text-base font-semibold border-t border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             {t('Close')}
           </button>

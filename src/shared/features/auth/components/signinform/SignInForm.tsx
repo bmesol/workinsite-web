@@ -40,8 +40,7 @@ const SignInForm = () => {
 
         <Button
           onClick={handleSubmission}
-          className="w-full h-10 bg-[var(--primary)] text-black font-semibold !rounded-[12px] shadow-md hover:bg-[var(--primary)] transition-opacity duration-300 hover:opacity-90 mt-2 cursor-pointer"
-          style={{ borderRadius: "16px" }}
+          className="w-full h-10 bg-[var(--primary)] text-black font-semibold rounded-[12px] shadow-md hover:bg-[var(--primary)] transition-opacity duration-300 hover:opacity-90 mt-2 cursor-pointer"
         >
           {t('Sign in')}
         </Button>
