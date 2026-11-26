@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate } from 'react-router-dom';
 import { useWorkRateAbstractValidate } from '../../components/InputValidate/WorkRateAbstractValidate';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
@@ -27,6 +28,7 @@ const useWorkRateAbstractEdit = (id: string) => {
   const [unitList, setUnitList] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [workRateAbstract, setWorkRateAbstract] = useState<WorkRateAbstractProps>();
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const siteService = useSiteService();
   const workTypeService = useWorkTypeService();
@@ -188,19 +190,28 @@ const useWorkRateAbstractEdit = (id: string) => {
     }
   };
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBackPress = () => {
     if (hasUnsavedChanges()) {
-      const confirmed = window.confirm(
-        'You have unsaved changes. Click OK to exit without saving, or Cancel to stay.',
-      );
-      if (confirmed) {
-        resetFormFields();
-        navigate(WorkRateAbstractUrls.list);
-      }
+      setShowUnsavedDialog(true);
     } else {
       resetFormFields();
       navigate(WorkRateAbstractUrls.list);
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(WorkRateAbstractUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   return {
@@ -215,8 +226,12 @@ const useWorkRateAbstractEdit = (id: string) => {
     workTypeDetails,
     unitDetails,
     loading,
+    showUnsavedDialog,
     hasUnsavedChanges,
     handleBackPress,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     setSiteId,
     handleSubmission,
     handleWorkTypeChange,

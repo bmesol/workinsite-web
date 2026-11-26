@@ -3,6 +3,7 @@ import { Header } from '@/shared/components/Header/Header';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useAttendanceEditScreen } from './useAttendanceEdit';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { AttendanceSplitCreationPage } from '../attendance-split-creation/AttendanceSplitCreationPage';
 import AttendanceSplitList from '../attendance-split-list/AttendanceSplitList';
 import { NameField } from '@/shared/components/FormFields/NameField';
@@ -66,7 +67,11 @@ const AttendanceEditPage = () => {
     fetchWorkers,
     fetchWageTypes,
     fetchWorkModes,
+    showUnsavedDialog,
     handleBackPress,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     handleSubmit,
     confirmDelete,
     handleDelete,
@@ -341,6 +346,13 @@ const AttendanceEditPage = () => {
         onClose={cancelDelete}
         onConfirm={() => handleDelete(deleteIndex!)}
         description={t('Are you sure you want to remove this attendance split? This action cannot be undone.')}
+      />
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
       />
 
     </div>

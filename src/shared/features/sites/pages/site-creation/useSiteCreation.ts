@@ -15,6 +15,7 @@ import { SitesUrls } from "../../utils/urls";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { parseApiError } from "@/shared/utils/parseApiError";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 
 const useSiteCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -33,8 +34,9 @@ const useSiteCreation = (queryString: URLSearchParams) => {
   const [contactId, setContactId] = useState(getQueryParam("contactId"));
   const [supervisorIds, setSupervisorIds] = useState<number[]>(JSON.parse(initialSupervisorIds));
   const [status, setStatus] = useState(getQueryParam("status") || SiteStatus.YET_TO_START);
-  const [wageTypeId, setWageTypeId] = useState(getQueryParam("wageTypeId")); // 👈
-  const [wageTypeList, setWageTypeList] = useState<WageType[]>([]);           // 👈
+  const [wageTypeId, setWageTypeId] = useState(getQueryParam("wageTypeId"));
+  const [wageTypeList, setWageTypeList] = useState<WageType[]>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const [clientList, setClientList] = useState<Client[]>([]);
   const [client, setClient] = useState<Client>();
@@ -146,6 +148,18 @@ const useSiteCreation = (queryString: URLSearchParams) => {
     navigate(`${ContactsUrls.edit(parseInt(contactId))}?${contactEditParams.toString()}`);
   };
 
+  const hasUnsavedChanges = () =>
+    name.trim() !== '' ||
+    clientId !== '' ||
+    googleLocation.trim() !== '' ||
+    notes.trim() !== '' ||
+    contactId !== '' ||
+    supervisorIds.length > 0 ||
+    wageTypeId !== '' ||
+    status !== SiteStatus.YET_TO_START;
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleSubmission = async () => {
     if (validate()) {
       const site = {
@@ -156,7 +170,7 @@ const useSiteCreation = (queryString: URLSearchParams) => {
         contactId: parseInt(contactId),
         supervisorIds,
         status,
-        wageTypeId: parseInt(wageTypeId), // 👈
+        wageTypeId: parseInt(wageTypeId),
       };
       try {
         await siteService.createSite(site);
@@ -165,6 +179,23 @@ const useSiteCreation = (queryString: URLSearchParams) => {
         toast.error(parseApiError(error, 'Site already exists'));
       }
     }
+  };
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
+    navigate(SitesUrls.list);
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(SitesUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   return {
@@ -198,10 +229,15 @@ const useSiteCreation = (queryString: URLSearchParams) => {
     siteStatus,
     redirectUrl,
     redirectParams,
-    wageTypeId,       // 👈
-    setWageTypeId,    // 👈
-    wageTypeDetails,  // 👈
-    fetchWageTypes,   // 👈
+    wageTypeId,
+    setWageTypeId,
+    wageTypeDetails,
+    fetchWageTypes,
+    handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };
 

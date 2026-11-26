@@ -18,6 +18,7 @@ import { SitesUrls } from "../../utils/urls";
 import { useSiteCreation } from "./useSiteCreation";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 
 // ─── SiteCreationPage ─────────────────────────────────────────────────────────
 
@@ -58,10 +59,15 @@ const SiteCreationPage = () => {
     siteStatus,
     redirectUrl,
     redirectParams,
-     wageTypeId,      
-  setWageTypeId,   
-  wageTypeDetails, 
-  fetchWageTypes,   
+    wageTypeId,
+    setWageTypeId,
+    wageTypeDetails,
+    fetchWageTypes,
+    handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useSiteCreation(queryString);
   const handleMoreDetails = () => {
     if (contact) setContactEditOpen(true);
@@ -209,7 +215,7 @@ const SiteCreationPage = () => {
 
           {/* Footer: Cancel + Save */}
           <FormSubmissionButtons
-            onCancel={() => navigate(SitesUrls.list)}
+            onCancel={handleCancel}
             onSave={handleSubmission}
           />
         </CardContent>
@@ -245,6 +251,13 @@ const SiteCreationPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

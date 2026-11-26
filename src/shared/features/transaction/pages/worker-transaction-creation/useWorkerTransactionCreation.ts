@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 import { toast } from 'sonner';
 import type { Worker } from '@/shared/features/workers/DTOs/WorkerProps';
 import { useWorkerService } from '@/shared/features/workers/service/WorkerService';
@@ -68,13 +69,25 @@ const useWorkerTransactionCreation = () => {
     );
   }, [amount, remark, workerId, date, paymentMethod]);
 
-  const handleBack = () => {
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
     } else {
       resetFormFields();
       navigate(WorkerTransactionUrls.list);
     }
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(WorkerTransactionUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -99,7 +112,7 @@ const useWorkerTransactionCreation = () => {
   };
 
   return {
-    handleBack,
+    handleCancel,
     handleSelect,
     handleSubmit,
     amount, setAmount,
@@ -112,7 +125,9 @@ const useWorkerTransactionCreation = () => {
     error,
     hasUnsavedChanges,
     showUnsavedDialog,
-    setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     resetFormFields,
   };
 };

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useMaterialPurchaseService } from '../../service/PurchaseService';
@@ -66,6 +67,8 @@ export const usePurchaseEdit = (id: string) => {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [showImage, setShowImage] = useState<ShowImage[]>([]);
   const [removedImages, setRemovedImages] = useState<RemovedImages[]>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const initialMaterialsRef = useRef<PurchaseMaterialUpdationListProps[]>([]);
 
   const { error, validate, setError, initialError } = usePurchaseInputValidate({
     billNumber,
@@ -112,6 +115,7 @@ export const usePurchaseEdit = (id: string) => {
   }));
 
       setUpdatedPurchaseMaterials(mappedUpdatedMaterials);
+      initialMaterialsRef.current = mappedUpdatedMaterials;
     } catch (error) {
       toast.error('Failed to fetch purchase data.');
     } finally {
@@ -227,24 +231,32 @@ export const usePurchaseEdit = (id: string) => {
 
   // ── Has Unsaved Changes ──
   const hasUnsavedChanges = useCallback(() => {
+    // Data not yet loaded — guard should not block navigation
+    if (!purchaseDetails) return false;
+
+    // Compare using the initial mapped structure (same shape as updatedPurchaseMaterials)
+    // rather than the raw purchaseDetails.purchaseMaterials (different field names/types).
     const materialsChanged =
       JSON.stringify(updatedPurchaseMaterials) !==
-      JSON.stringify(purchaseDetails?.purchaseMaterials ?? []);
+      JSON.stringify(initialMaterialsRef.current);
 
     const imagesChanged =
       uploadedImages.length > 0 ||
       removedImages.length > 0;
 
     return (
-      billNumber !== purchaseDetails?.billNumber ||
-      supplierId !== purchaseDetails?.supplier.id.toString() ||
-      siteId !== purchaseDetails?.site.id.toString() ||
-      date !== purchaseDetails?.date?.toString() ||
-      totalAmount !== purchaseDetails?.totalAmount?.toString() ||
-      gst !== purchaseDetails?.gst?.toString() ||
-      additionalCharges !== purchaseDetails?.additionalCharges?.toString() ||
-      discount !== purchaseDetails?.discount?.toString() ||
-      notes !== purchaseDetails?.note ||
+      billNumber !== purchaseDetails.billNumber ||
+      supplierId !== purchaseDetails.supplier.id.toString() ||
+      siteId !== purchaseDetails.site.id.toString() ||
+      date !== purchaseDetails.date ||
+      // Use parseFloat to normalise format differences: updateTotals rewrites
+      // these fields as x.toFixed(2), but the stored API value may lack decimals.
+      parseFloat(totalAmount || '0') !== parseFloat(purchaseDetails.totalAmount || '0') ||
+      parseFloat(gst || '0') !== parseFloat(purchaseDetails.gst || '0') ||
+      parseFloat(additionalCharges || '0') !== parseFloat(purchaseDetails.additionalCharges || '0') ||
+      parseFloat(discount || '0') !== parseFloat(purchaseDetails.discount || '0') ||
+      // Normalise null/undefined note to empty string before comparing.
+      notes !== (purchaseDetails.note ?? '') ||
       newPurchaseMaterials.length > 0 ||
       removedPurchaseMaterialIds.length > 0 ||
       materialsChanged ||
@@ -256,6 +268,29 @@ export const usePurchaseEdit = (id: string) => {
     updatedPurchaseMaterials, removedPurchaseMaterialIds,
     uploadedImages, removedImages, purchaseDetails,
   ]);
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+    } else {
+      navigate(PurchaseUrls.list);
+    }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(PurchaseUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
 
   // ── Submit ──
   const handleSubmission = async () => {
@@ -348,6 +383,11 @@ export const usePurchaseEdit = (id: string) => {
     error,
     loading,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     hasUnsavedChanges,
     addPurchaseMaterial,
     newPurchaseMaterials, setNewPurchaseMaterials,

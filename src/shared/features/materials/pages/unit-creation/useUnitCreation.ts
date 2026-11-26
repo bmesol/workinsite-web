@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Unit } from '../../DTOs/UnitProps';
 import { useUnitService } from '../../service/UnitService';
 import { useUnitInputValidate } from '../../components/InputValidate/UnitInputValidate';
-import { useNavigate } from 'react-router-dom';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 import { toast } from 'sonner';
 import { parseApiError } from '@/shared/utils/parseApiError';
 
@@ -11,12 +12,13 @@ export const useUnitCreation = () => {
   const unitService = useUnitService();
 
   const [name, setName] = useState('');
+  const [initialEditName, setInitialEditName] = useState('');
   const [unitDetails, setUnitDetails] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editingUnitId, setEditingUnitId] = useState<number | null>(null);
-
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const { error, validate, setError, initialError } = useUnitInputValidate({ name });
 
@@ -41,6 +43,7 @@ export const useUnitCreation = () => {
 
   const resetFormFields = () => {
     setName('');
+    setInitialEditName('');
     setError(initialError);
     setIsEditing(false);
     setEditingUnitId(null);
@@ -50,6 +53,33 @@ export const useUnitCreation = () => {
     setIsEditing(true);
     setEditingUnitId(unit.id);
     setName(unit.name);
+    setInitialEditName(unit.name);
+  };
+
+  const hasUnsavedChanges = () => {
+    if (isEditing) {
+      return name !== initialEditName;
+    }
+    return name.trim() !== '';
+  };
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(-2);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    if (isEditing) {
+      await handleUnitUpdate();
+    } else {
+      await handleSubmission();
+    }
   };
 
   const handleSubmission = async () => {
@@ -95,21 +125,6 @@ export const useUnitCreation = () => {
     }
   };
 
-  const handleBackPress = () => {
-    if (name.trim() !== '') {
-      const confirmed = window.confirm(
-        'You have unsaved changes. Click OK to exit without saving, or Cancel to stay.',
-      );
-      if (confirmed) {
-        resetFormFields();
-        navigate('/');
-      }
-    } else {
-      resetFormFields();
-      navigate('/');
-    }
-  };
-
   return {
     name,
     unitDetails,
@@ -118,13 +133,16 @@ export const useUnitCreation = () => {
     error,
     editingUnitId,
     deleteId,
+    showUnsavedDialog,
     setDeleteId,
     setName,
     resetFormFields,
     handleSubmission,
-    handleBackPress,
     handleUnitUpdate,
     handleUnitDelete,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     confirmDelete,
     setEditingUnit,
   };

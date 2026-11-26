@@ -151,6 +151,7 @@
 
 
 import { useState, useEffect, useCallback } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { Client } from '@/shared/features/clients/DTOs/ClientProps';
@@ -306,6 +307,8 @@ const useClientTransactionEdit = () => {
     );
   }, [date, remark, clientId, paymentMethod, splits, clientTransaction, originalSplitsJson]);
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBack = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
@@ -313,6 +316,19 @@ const useClientTransactionEdit = () => {
       resetFormFields();
       navigate(ClientTransactionUrls.list);
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(ClientTransactionUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -398,6 +414,9 @@ const useClientTransactionEdit = () => {
     hasUnsavedChanges,
     showUnsavedDialog,
     setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     resetFormFields,
   };
 };

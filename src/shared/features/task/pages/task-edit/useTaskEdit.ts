@@ -343,6 +343,7 @@
 // };
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
@@ -528,6 +529,8 @@ export const useTaskEdit = (id: string) => {
     uploadedImages, removedImages, showImage, taskDetails,
   ]);
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBack = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
@@ -535,6 +538,19 @@ export const useTaskEdit = (id: string) => {
       resetFormFields();
       navigate(TaskUrls.list);
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(TaskUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   const siteDetails = siteList.map(site => ({
@@ -705,6 +721,9 @@ export const useTaskEdit = (id: string) => {
     taskCreatorId,
     showUnsavedDialog,
     setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     fetchTask,
     resetFormFields,
     setError,

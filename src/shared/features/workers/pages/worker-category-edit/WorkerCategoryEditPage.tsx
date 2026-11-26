@@ -5,6 +5,7 @@ import { NameField } from "@/shared/components/FormFields/NameField";
 import { Header } from "@/shared/components/Header/Header";
 import { useWorkerCategoryEdit } from "./useWorkerCategoryEditPage";
 import { useParams, useSearchParams } from "react-router-dom";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { Card, CardContent } from "@/shared/components/ui/card";
 import WorkTypeCreateForm from "../../components/WorkTypeCreateForm/WorkTypeCreateForm";
 import WorkTypeList from "../worker-type-list/WorkTypeList";
@@ -36,6 +37,10 @@ const WorkerCategoryEditPage = () => {
     error,
     handleCancel,
     handleSubmission,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     loading,
     workTypeList,
     setWorkTypeList,
@@ -185,6 +190,12 @@ const WorkerCategoryEditPage = () => {
         </DialogContent>
       </Dialog>
 
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

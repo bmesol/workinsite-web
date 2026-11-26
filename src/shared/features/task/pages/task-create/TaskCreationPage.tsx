@@ -8,17 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/shared/components/ui/alert-dialog";
-import { Button } from "@/shared/components/ui/button";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { Header } from "@/shared/components/Header/Header";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
@@ -28,9 +17,9 @@ import { SelectField } from "@/shared/components/FormFields/SelectField";
 import SupervisorSelector from "../../components/SupervisorSelector/SupervisorSelector";
 import SelectedSupervisorCard from "@/shared/components/SelectedSupervisorCard/SelectedSupervisorCard";
 import { useTaskCreation } from "./useTaskCreation";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
-import { TaskUrls } from "../../utils/urls";
 import PurchasePhoto from "@/shared/features/materials/pages/purchase-photo/PurchasePhoto";
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
 
@@ -58,19 +47,19 @@ const TaskCreationPage = () => {
     siteDetails,
     fetchSites,
     handleSubmission,
-    handleBackPress,
+    handleCancel,
     handleSiteChange,
     supervisorId,
     setSupervisorId,
     supervisorDetails,
     loading,
-    navigate,
     uploadedImages,
     setUploadedImages,
     handleFileChange,
     showUnsavedDialog,
-    setShowUnsavedDialog,
-    resetFormFields,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useTaskCreation();
 
   return (
@@ -206,7 +195,7 @@ const TaskCreationPage = () => {
         {/* ── Footer ── */}
         <div className="flex justify-end gap-2 pt-6">
           <FormSubmissionButtons
-            onCancel={handleBackPress}
+            onCancel={handleCancel}
             onSave={handleSubmission}
             disabled={loading || !editable}
           />
@@ -231,45 +220,12 @@ const TaskCreationPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ── Unsaved Changes Dialog ──
-          Mirrors mobile's 3-option Alert: Save / Exit without saving / Cancel */}
-      <AlertDialog
+      <UnsavedChangesDialog
         open={showUnsavedDialog}
-        onOpenChange={setShowUnsavedDialog}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('You have unsaved changes. Do you want to save them?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowUnsavedDialog(false)}>
-              {t('Cancel')}
-            </AlertDialogCancel>
-            <AlertDialogCancel
-              onClick={() => {
-                resetFormFields();
-                setShowUnsavedDialog(false);
-                navigate(TaskUrls.list);
-              }}
-            >
-              {t('Exit without Saving')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                onClick={() => {
-                  handleSubmission();
-                  setShowUnsavedDialog(false);
-                }}
-              >
-                {t('Save')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

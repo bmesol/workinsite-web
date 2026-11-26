@@ -12,17 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/shared/components/ui/alert-dialog";
 import { usePurchaseEdit } from "./usePurchaseEdit";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import PurchaseMaterialsList from "../purchase-material-list/PurchaseMaterialListPage";
 import PurchaseMaterialsCreationScreen from "../purchase-material-creation/PurchaseMaterialCreationPage";
 import PurchasePhoto from "../purchase-photo/PurchasePhoto";
@@ -42,7 +33,6 @@ const PurchaseEditScreen = () => {
   const { t } = useLanguage();
 
   const [addMaterialOpen, setAddMaterialOpen] = useState(false);
-  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const {
     billNumber,
@@ -71,6 +61,11 @@ const PurchaseEditScreen = () => {
     error,
     loading,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     hasUnsavedChanges,
     addPurchaseMaterial,
     newPurchaseMaterials,
@@ -88,13 +83,6 @@ const PurchaseEditScreen = () => {
     setRemovedImages,
   } = usePurchaseEdit(id!);
 
-  const handleBack = () => {
-    if (hasUnsavedChanges()) {
-      setShowUnsavedDialog(true);
-    } else {
-      navigate(PurchaseUrls.list);
-    }
-  };
 
   if (loading) {
     return (
@@ -270,7 +258,7 @@ const PurchaseEditScreen = () => {
           {/* Save Button */}
           <FormSubmissionButtons
             onSave={() => handleSubmission()}
-            onCancel={handleBack}
+            onCancel={handleCancel}
             disabled={!editable}
           />
         </Card>
@@ -292,32 +280,12 @@ const PurchaseEditScreen = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Unsaved Changes Dialog */}
-      <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Do you want to save them before leaving?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => navigate(PurchaseUrls.list)}>
-              Exit without Saving
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                onClick={() => {
-                  handleSubmission();
-                  setShowUnsavedDialog(false);
-                }}
-              >
-                {t('Save')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

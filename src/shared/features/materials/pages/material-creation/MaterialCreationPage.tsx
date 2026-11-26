@@ -1,24 +1,13 @@
-import React, { useState } from 'react';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-} from '@/shared/components/ui/alert-dialog';
-import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { useMaterialCreation } from './useMaterialCreation';
 import { Header } from '@/shared/components/Header/Header';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import { NameField } from '@/shared/components/FormFields/NameField';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const MaterialCreationPage = () => {
-  const [showExitDialog, setShowExitDialog] = useState(false);
   const { t } = useLanguage();
 
   const {
@@ -31,16 +20,13 @@ const MaterialCreationPage = () => {
     setHsnCode,
     error,
     handleSubmission,
-    handleBackPress,
-    handleConfirmExit,
-    handleSaveAndExit,
+    handleCancel,
     fetchUnits,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useMaterialCreation();
-
-  const onBackPress = () => {
-    const hasChanges = handleBackPress();
-    if (hasChanges) setShowExitDialog(true);
-  };
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
@@ -87,45 +73,18 @@ const MaterialCreationPage = () => {
           {/* Save / Cancel Buttons */}
           <FormSubmissionButtons
             onSave={() => handleSubmission()}
-            onCancel={onBackPress}
+            onCancel={handleCancel}
           />
 
         </div>
       </Card>
 
-      {/* Unsaved Changes Dialog */}
-      <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Do you want to save before exiting?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button
-              onClick={() => {
-                setShowExitDialog(false);
-                handleSaveAndExit();
-              }}
-            >
-              {t('Save')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                setShowExitDialog(false);
-                handleConfirmExit();
-              }}
-            >
-              {t('Exit Without Saving')}
-            </Button>
-            <AlertDialogCancel onClick={() => setShowExitDialog(false)}>
-              {t('Cancel')}
-            </AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
     </div>
   );

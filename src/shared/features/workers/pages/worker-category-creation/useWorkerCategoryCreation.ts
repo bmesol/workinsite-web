@@ -65,6 +65,7 @@ import type { WorkerCategoryCreationRequest } from "../../DTOs/WorkerCategoryPro
 import { toast } from "sonner";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { parseApiError } from "@/shared/utils/parseApiError";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 
 const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -80,6 +81,7 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
   const [workerRoleList, setWorkerRoleList] = useState<
     (WorkerRole | WorkerRoles)[]
   >([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const { error, validate } = useWorkerCategoryInputValidate(
     workerCategoryName,
@@ -87,12 +89,37 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
     workerRoleList
   );
 
-  const handleCancel = () => {
+  const hasUnsavedChanges = () =>
+    workerCategoryName.trim() !== '' ||
+    notes.trim() !== '' ||
+    workTypeList.length > 0 ||
+    workerRoleList.length > 0;
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const navigateBack = () => {
     if (redirectUrl) {
       navigate(redirectUrl);
       return;
     }
     navigate(WorkerCategoriesUrls.list);
+  };
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
+    navigateBack();
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigateBack();
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
  const handleSubmission = async () => {
@@ -137,6 +164,10 @@ const useWorkerCategoryCreation = (queryString: URLSearchParams) => {
     error,
     handleCancel,
     handleSubmission,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };
 

@@ -10,6 +10,7 @@ import { ContactsUrls } from "../../../contacts/utils/urls";
 import { SuppliersUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 
 const useSupplierEdit = (id: string, queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -23,8 +24,10 @@ const useSupplierEdit = (id: string, queryString: URLSearchParams) => {
   const [isActive, setIsActive] = useState(true);
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
-  const [contactEditOpen, setContactEditOpen] = useState(false); 
+  const [contactEditOpen, setContactEditOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [initialData, setInitialData] = useState<{ name: string; notes: string | undefined; isActive: boolean; contactId: string } | null>(null);
 
   const [supplierDetails, setSupplierDetails] = useState<Supplier | SupplierRequest>(
     {
@@ -46,7 +49,14 @@ const useSupplierEdit = (id: string, queryString: URLSearchParams) => {
       setName(supplierData.name);
       setNotes(supplierData.note);
       setIsActive(supplierData.isActive as boolean);
+      const fetchedContactId = newContactId || supplierData.contact.id.toString();
       if (!newContactId) setContactId(supplierData.contact.id.toString());
+      setInitialData({
+        name: supplierData.name,
+        notes: supplierData.note,
+        isActive: supplierData.isActive as boolean,
+        contactId: fetchedContactId,
+      });
     } finally {
       setLoading(false); 
     }
@@ -104,6 +114,35 @@ const useSupplierEdit = (id: string, queryString: URLSearchParams) => {
     setContactEditOpen(false);
   };
 
+  const hasUnsavedChanges = () => {
+    if (!initialData) return false;
+    return (
+      name !== initialData.name ||
+      notes !== initialData.notes ||
+      isActive !== initialData.isActive ||
+      contactId !== initialData.contactId
+    );
+  };
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+    } else {
+      navigate(SuppliersUrls.list);
+    }
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(SuppliersUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
+
   const handleSubmission = async () => {
     if (validate()) {
       const supplier = {
@@ -130,8 +169,12 @@ const useSupplierEdit = (id: string, queryString: URLSearchParams) => {
     supplierDetails,
     setSupplierDetails,
     error,
-    navigate,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     isKycAddDisabled,
     isBankAccountsAddDisabled,
     isUpiAddDisabled,

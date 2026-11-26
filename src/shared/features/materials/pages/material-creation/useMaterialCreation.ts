@@ -6,6 +6,7 @@ import type { Unit } from '../../DTOs/UnitProps';
 import { useUnitService } from '../../service/UnitService';
 import { useMaterialService } from '../../service/MaterialService';
 import { MaterialsUrls } from '../../utils/urls';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 
 const useMaterialCreation = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const useMaterialCreation = () => {
   const [unitId, setUnitId] = useState('');
   const [hsnCode, setHsnCode] = useState('');
   const [unitList, setUnitList] = useState<Unit[]>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const { error, validate, setError, initialError } = useMaterialInputValidate({
     name,
@@ -38,21 +40,24 @@ const useMaterialCreation = () => {
   const hasUnsavedChanges = () =>
     name.trim() !== '' || unitId !== '' || hsnCode.trim() !== '';
 
-  const handleBackPress = () => {
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
     if (hasUnsavedChanges()) {
-      return true;
+      setShowUnsavedDialog(true);
+      return;
     }
     resetFormFields();
     navigate(MaterialsUrls.list);
-    return false;
   };
-
-  const handleConfirmExit = () => {
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
     resetFormFields();
     navigate(MaterialsUrls.list);
   };
-
-  const handleSaveAndExit = async () => {
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
     await handleSubmission(true);
   };
 
@@ -95,12 +100,14 @@ const handleSubmission = async (redirectAfter = true) => {
     setHsnCode,
     error,
     handleSubmission,
-    handleBackPress,
-    handleConfirmExit,
-    handleSaveAndExit,
+    handleCancel,
     handleUnitChange,
     fetchUnits,
     hasUnsavedChanges,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };
 

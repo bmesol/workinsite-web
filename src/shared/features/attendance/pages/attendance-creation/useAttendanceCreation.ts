@@ -17,6 +17,7 @@ import { formatDateToString } from '../../utils/functions';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { parseApiError } from '@/shared/utils/parseApiError';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 
 type UploadedImage = {
   uri: string;   
@@ -77,6 +78,7 @@ const useAttendanceCreation = () => {
   const [deleteConfirmIndex, setDeleteConfirmIndex] = useState<number | null>(null);
   const [isWorkTypeChangeDialogOpen, setIsWorkTypeChangeDialogOpen] = useState(false);
   const [pendingWorkType, setPendingWorkType] = useState<WorkType | null>(null);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const siteService = useSiteService();
   const workTypeService = useWorkTypeService();
@@ -270,6 +272,25 @@ const fetchWorkers = async (WorkerName: string = '') => {
       uploadedImages.length > 0 ||
       attendanceSplit.length > 0
     );
+  };
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
+    handleNavigate();
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    handleNavigate();
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   // Web: replace Alert.alert with dialog state
@@ -469,8 +490,14 @@ const handleSubmit = async () => {
     resetFormFields,
     hasUnsavedChanges,
     handleNavigate,
+    handleCancel,
     handleImageUpload,
     deleteImage,
+    // unsaved changes dialog
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     // delete split dialog
     deleteConfirmIndex,
     confirmDelete,

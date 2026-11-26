@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { toast } from 'sonner';
@@ -100,12 +101,26 @@ export const useCuringEdit = (id: string) => {
     );
   }, [siteId, curingTypeId, startDate, endDate, note, curing]);
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBack = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
     } else {
       navigate(CuringUrls.list);
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(CuringUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   const handleSubmission = async () => {
@@ -142,6 +157,9 @@ export const useCuringEdit = (id: string) => {
     hasUnsavedChanges,
     showUnsavedDialog,
     setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     fetchCuring,
     setError,
     initialError,

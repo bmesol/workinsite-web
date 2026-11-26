@@ -26,6 +26,7 @@ import { useSupplierCreation } from "./useSupplierCreation";
 import { SuppliersUrls } from "../../utils/urls";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 
 // ─── Dialog state type ────────────────────────────────────────────────────────
 
@@ -62,6 +63,11 @@ const SupplierCreationPage = () => {
     primaryContactDetails,
     hasMoreDetails,
     handleContactEdit,
+    handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useSupplierCreation(queryString);
 
   return (
@@ -197,7 +203,7 @@ const SupplierCreationPage = () => {
         {/* Footer: Cancel + Save */}
         <div className="flex justify-end gap-2 pt-4  ">
           <FormSubmissionButtons
-            onCancel={() => navigate(SuppliersUrls.list)}
+            onCancel={handleCancel}
             onSave={handleSubmission}
           />
         </div>
@@ -279,6 +285,13 @@ const SupplierCreationPage = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

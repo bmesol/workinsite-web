@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useUnitService } from '../../service/UnitService';
@@ -18,6 +19,7 @@ export const useMaterialEdit = (id: string) => {
   const [hsnCode, setHsnCode] = useState('');
   const [unitList, setUnitList] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const { error, validate, setError, initialError } = useMaterialInputValidate({
     name,
@@ -73,28 +75,33 @@ export const useMaterialEdit = (id: string) => {
   };
 
   const hasUnsavedChanges = () => {
+    if (!materialDetails) return false;
     return (
-      name !== materialDetails?.name ||
-      hsnCode !== materialDetails?.hsnCode ||
-      unitId !== materialDetails?.unit?.id.toString()
+      name !== materialDetails.name ||
+      hsnCode !== materialDetails.hsnCode ||
+      unitId !== materialDetails.unit?.id.toString()
     );
   };
 
-  const handleBackPress = () => {
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
     if (hasUnsavedChanges()) {
-      return true; // UI layer will show AlertDialog
+      setShowUnsavedDialog(true);
+    } else {
+      navigate('/materials');
     }
-    navigate('/materials');
-    return false;
   };
 
-  const handleConfirmExit = () => {
-    fetchMaterial();
-    setError(initialError);
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
     navigate('/materials');
   };
 
-  const handleSaveAndExit = async () => {
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
     await handleSubmission(true);
   };
 
@@ -129,13 +136,15 @@ export const useMaterialEdit = (id: string) => {
     setHsnCode,
     error,
     handleSubmission,
-    handleBackPress,
-    handleConfirmExit,
-    handleSaveAndExit,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     handleUnitCreate,
     handleUnitChange,
     fetchUnits,
     hasUnsavedChanges,
+    showUnsavedDialog,
     loading,
   };
 };

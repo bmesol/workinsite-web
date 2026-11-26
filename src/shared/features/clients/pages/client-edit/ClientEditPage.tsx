@@ -11,7 +11,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { Card } from "@/shared/components/ui/card";
 import type { Client } from "../../DTOs/ClientProps";
 import { useClientEdit } from "./useClientEdit";
-import { ClientsUrls } from "../../utils/urls";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useState } from "react";
 import {
   Dialog,
@@ -42,9 +42,13 @@ const ClientEditPage = () => {
     clientDetails,
     setClientDetails,
     error,
-    navigate,
     handleContactEdit,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     isAddDisabled,
     contactDetails,
     contactId,
@@ -158,7 +162,7 @@ const ClientEditPage = () => {
 
           {/* Submit */}
           <FormSubmissionButtons
-            onCancel={() => navigate(ClientsUrls.list)}
+            onCancel={handleCancel}
             onSave={handleSubmission}
             disabled={!editable}
           />
@@ -194,6 +198,13 @@ const ClientEditPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

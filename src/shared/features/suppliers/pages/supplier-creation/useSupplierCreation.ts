@@ -11,6 +11,7 @@ import { ContactsUrls } from "../../../contacts/utils/urls";
 import { SuppliersUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 
 const DRAFT_KEY = "create-supplier-draft";
 
@@ -62,6 +63,7 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
   const [isActive, setIsActive] = useState(true);
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const [supplierDetails, setSupplierDetails] = useState<Supplier | SupplierRequest>(
     initialDraft
@@ -184,6 +186,16 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
     onClose?.();
   };
 
+  const hasUnsavedChanges = () =>
+    name.trim() !== '' ||
+    notes.trim() !== '' ||
+    contactId !== '' ||
+    validKycDetails.length > 0 ||
+    validBankAccounts.length > 0 ||
+    validUpiDetails.length > 0;
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleSubmission = async () => {
     if (validate()) {
       const supplier = {
@@ -199,6 +211,23 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
       sessionStorage.removeItem(DRAFT_KEY);
       navigate(SuppliersUrls.list);
     }
+  };
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
+    navigate(SuppliersUrls.list);
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(SuppliersUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   return {
@@ -221,10 +250,15 @@ const useSupplierCreation = (queryString: URLSearchParams) => {
     handleContactCreate,
     handleContactChange,
     fetchContacts,
-    contact,                  
+    contact,
     primaryContactDetails,
     hasMoreDetails,
     handleContactEdit,
+    handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };
 

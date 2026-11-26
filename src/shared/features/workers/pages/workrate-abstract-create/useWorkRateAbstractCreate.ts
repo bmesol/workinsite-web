@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';        
+import { useNavigate } from 'react-router-dom';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { SITE_STATUS } from '@/shared/constants/appEnums';
@@ -8,9 +8,10 @@ import { useWorkRateAbstractService } from '../../service/WorkRateAbstractServic
 import { WorkRateAbstractUrls } from '../../utils/urls';
 import { parseApiError } from '@/shared/utils/parseApiError';
 import type { Unit } from '@/shared/features/materials/DTOs/UnitProps';
-import { toast } from 'sonner';                        
+import { toast } from 'sonner';
 import type { WorkTypeProp } from '../../DTOs/WorkTypeProps';
 import { useWorkRateAbstractValidate } from '../../components/InputValidate/WorkRateAbstractValidate';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 
 const useWorkRateAbstractCreate = () => {             
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const useWorkRateAbstractCreate = () => {
   const [siteList, setSiteList] = useState<Site[]>([]);
   const [workTypeList, setWorkTypeList] = useState<WorkTypeProp[]>([]);
   const [unitList, setUnitList] = useState<Unit[]>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const siteService = useSiteService();
   const workTypeService = useWorkTypeService();
@@ -110,19 +112,25 @@ const useWorkRateAbstractCreate = () => {
     );
   };
 
-  const handleBackPress = () => {
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
     if (hasUnsavedChanges()) {
-      const confirmed = window.confirm(
-        'You have unsaved changes. Click OK to exit without saving, or Cancel to stay.',
-      );
-      if (confirmed) {
-        resetFormFields();
-        navigate(WorkRateAbstractUrls.list);
-      }
-    } else {
-      resetFormFields();
-      navigate(WorkRateAbstractUrls.list);
+      setShowUnsavedDialog(true);
+      return;
     }
+    resetFormFields();
+    navigate(WorkRateAbstractUrls.list);
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(WorkRateAbstractUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -157,7 +165,7 @@ const useWorkRateAbstractCreate = () => {
     totalRate,
     totalQuantity,
     notes,
-    handleBackPress,
+    handleCancel,
     hasUnsavedChanges,
     setSiteId,
     fetchSites,
@@ -167,6 +175,10 @@ const useWorkRateAbstractCreate = () => {
     setTotalQuantity,
     setNotes,
     handleSubmit,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };
 

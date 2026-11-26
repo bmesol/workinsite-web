@@ -5,6 +5,7 @@ import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import { useCuringCreate } from './useCuringCreation';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { formatStringToDate, nextYear } from '@/shared/utils/formatters';
@@ -26,7 +27,11 @@ export const CuringCreationPage = () => {
     fetchCuringTypes,
     error,
     handleSubmission,
-    handleBack,
+    handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useCuringCreate();
 
   return (
@@ -104,12 +109,19 @@ export const CuringCreationPage = () => {
           <FormSubmissionButtons
             label={t('Create')}
             onSave={handleSubmission}
-            onCancel={handleBack}
+            onCancel={handleCancel}
             disabled={!editable}
           />
 
         </div>
       </Card>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
     </div>
   );

@@ -9,6 +9,7 @@ import { usePermission } from "@/shared/hooks/usePermission";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SearchBar } from "@/shared/components/SearchBar/SearchBar";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 
@@ -42,13 +43,16 @@ const UnitCreationPage = () => {
     error,
     editingUnitId,
     deleteId,
+    showUnsavedDialog,
     setDeleteId,
     setName,
     resetFormFields,
     handleSubmission,
-    handleBackPress,
     handleUnitUpdate,
     handleUnitDelete,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     confirmDelete,
     setEditingUnit,
   } = useUnitCreation();
@@ -183,6 +187,13 @@ const UnitCreationPage = () => {
         onClose={() => setDeleteId(null)}
         onConfirm={() => deleteId && handleUnitDelete(deleteId)}
         description={t('Are you sure you want to delete this unit?')}
+      />
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
       />
     </div>
   );

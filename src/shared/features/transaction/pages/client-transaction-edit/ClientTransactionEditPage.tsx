@@ -178,16 +178,6 @@ import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -195,6 +185,7 @@ import {
   DialogFooter,
 } from '@/shared/components/ui/dialog';
 import { useClientTransactionEdit } from './useClientTransactionEdit';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { FormActionButton } from '@/shared/components/FormActionButton/FormActionButton';
 import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
 import PaymentMethodSelector from '../../components/PaymentMethodSelector/PaymentMethodSelector';
@@ -235,8 +226,9 @@ const ClientTransactionEditPage = () => {
     handleAddSplit,
     handleRemoveSplit,
     showUnsavedDialog,
-    setShowUnsavedDialog,
-    resetFormFields,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useClientTransactionEdit();
 
   if (loading) {
@@ -398,37 +390,12 @@ const ClientTransactionEditPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ── Unsaved Changes Dialog ── */}
-      <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('You have unsaved changes. Do you want to save them before leaving?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                resetFormFields();
-                navigate(ClientTransactionUrls.list);
-              }}
-            >
-              {t('Exit without Saving')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                onClick={() => {
-                  handleSubmit();
-                  setShowUnsavedDialog(false);
-                }}
-              >
-                {t('Save')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
       {/* ── Delete Site Split Confirm Dialog ── */}
       <DeleteConfirmDialog

@@ -17,8 +17,8 @@ import { UserEditPinForm } from "../../components/UserEditPinForm/UserEditPinFor
 import { RadioField } from "@/shared/components/FormFields/RadioField";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { Header, Actions } from "@/shared/components/Header/Header";
-import { UsersUrls } from "../../utils/urls";
 import { useUserEdit } from "./useUserEdit";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { RoleSelectField } from "@/shared/components/RoleSelectField/RoleSelectField";
 import { Skeleton } from '@/shared/components/ui/skeleton';
@@ -46,7 +46,11 @@ const UserEditPage = () => {
     setIsActive,
     setNotes,
     handleSubmission,
-    navigate,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useUserEdit(id as string);
 
   if (loading) {
@@ -135,7 +139,7 @@ const UserEditPage = () => {
 
         <div>
           <FormSubmissionButtons
-            onCancel={() => navigate(UsersUrls.list)}
+            onCancel={handleCancel}
             onSave={handleSubmission}
           />
         </div>
@@ -154,6 +158,13 @@ const UserEditPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

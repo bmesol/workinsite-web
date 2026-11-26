@@ -11,6 +11,7 @@ import { useClientCreation } from "./useClientCreation";
 import { useSearchParams } from "react-router-dom";
 import { Card } from "@/shared/components/ui/card";
 import { useState } from "react";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,10 @@ const ClientCreationPage = () => {
     hasMoreDetails,
     handleContactEdit,
     handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     isContactEditOpen,
     setIsContactEditOpen,
   } = useClientCreation(queryString);
@@ -159,6 +164,13 @@ const ClientCreationPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { useWorkRateAbstractEdit } from "./useWorkRateAbstractEdit";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { usePermission } from "@/shared/hooks/usePermission";
 import { useParams } from "react-router-dom";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
@@ -29,7 +30,11 @@ const WorkRateAbstractEditPage = () => {
     workTypeDetails,
     unitDetails,
     loading,
+    showUnsavedDialog,
     handleBackPress,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     setSiteId,
     handleSubmission,
     handleWorkTypeChange,
@@ -160,6 +165,12 @@ const WorkRateAbstractEditPage = () => {
 
         </CardContent>
       </Card>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

@@ -18,7 +18,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import type { Worker } from "../../DTOs/WorkerProps";
 import type { GenderTypes } from "../../DTOs/WorkerProps";
 import { useWorkerEdit } from "./useWorkerEdit";
-import { WorkersUrls } from "../../utils/urls";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { Card } from "@/shared/components/ui/card";
 import { Switch } from "@/shared/components/ui/switch";
 import { Label } from "@/shared/components/ui/label";
@@ -58,8 +58,12 @@ const WorkerEditPage = () => {
     workerDetails,
     setWorkerDetails,
     error,
-    navigate,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     isKycAddDisabled,
     isBankAccountsAddDisabled,
     isUpiAddDisabled,
@@ -308,7 +312,7 @@ const WorkerEditPage = () => {
 
           {/* Submit */}
           <FormSubmissionButtons
-            onCancel={() => navigate(WorkersUrls.list)}
+            onCancel={handleCancel}
             onSave={handleSubmission}
             disabled={!editable}
           />
@@ -380,6 +384,13 @@ const WorkerEditPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };
