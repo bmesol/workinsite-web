@@ -17,6 +17,7 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
+  --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-ring: var(--ring);
   --color-card: var(--card);
@@ -60,6 +61,8 @@
 
 
   font-family: "Outfit", sans-serif;
+
+  --destructive: rgb(220, 56, 72);
 
   --success-color: rgb(25, 134, 83);
   --success-bg-text-color: white;

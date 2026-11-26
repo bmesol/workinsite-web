@@ -9,6 +9,7 @@ import { ContactsUrls } from "../../../contacts/utils/urls";
 import { ClientsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 
 const useClientCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const useClientCreation = (queryString: URLSearchParams) => {
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
   const [isContactEditOpen, setIsContactEditOpen] = useState(false);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const [clientDetails, setClientDetails] = useState<Client | ClientRequest>({
     name: "",
@@ -89,6 +91,14 @@ const useClientCreation = (queryString: URLSearchParams) => {
     setIsContactEditOpen(false);
   };
 
+  const hasUnsavedChanges = () =>
+    name.trim() !== '' ||
+    notes.trim() !== '' ||
+    contactId !== '' ||
+    clientDetails.kycDetails.some((item) => item.value);
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleSubmission = async () => {
     if (validate()) {
       const client = { name, note: notes, contactId: parseInt(contactId), kycDetails: validKycDetails };
@@ -101,12 +111,29 @@ const useClientCreation = (queryString: URLSearchParams) => {
     }
   };
 
-  const handleCancel = () => {
+  const navigateBack = () => {
     if (queryStringRedirectUrl) {
       navigate(queryStringRedirectUrl);
       return;
     }
     navigate(ClientsUrls.list);
+  };
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
+    navigateBack();
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigateBack();
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   return {
@@ -129,6 +156,10 @@ const useClientCreation = (queryString: URLSearchParams) => {
     hasMoreDetails,
     handleContactEdit,
     handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     isContactEditOpen,
     setIsContactEditOpen,
   };

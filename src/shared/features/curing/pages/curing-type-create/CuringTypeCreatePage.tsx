@@ -4,6 +4,7 @@ import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import { useCuringTypeCreate } from './useCuringTypeCreate';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
@@ -17,7 +18,11 @@ export const CuringTypeCreationPage = () => {
     remark, setRemark,
     error,
     handleSubmission,
-    handleBack,
+    handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useCuringTypeCreate();
 
   return (
@@ -49,12 +54,19 @@ export const CuringTypeCreationPage = () => {
           <FormSubmissionButtons
             label={t('Create')}
             onSave={handleSubmission}
-            onCancel={handleBack}
+            onCancel={handleCancel}
             disabled={!editable}
           />
 
         </div>
       </Card>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
     </div>
   );

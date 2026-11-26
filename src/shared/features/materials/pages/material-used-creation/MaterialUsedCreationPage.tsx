@@ -1,29 +1,16 @@
-import { useNavigate } from 'react-router-dom';
 import { Header } from '@/shared/components/Header/Header';
-import { Button } from '@/shared/components/ui/button';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
 import { useMaterialUsedCreation } from './useMaterialUsedCreation';
-import { MaterialUsedUrls } from '../../utils/urls';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { Loader2 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/card';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const MaterialUsedCreationPage = () => {
-  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const {
@@ -41,12 +28,13 @@ const MaterialUsedCreationPage = () => {
     fetchSites,
     fetchMaterials,
     handleSubmission,
-    handleBack,
+    handleCancel,
     availableQuantity,
     isFetchingMaterials,
     showUnsavedDialog,
-    setShowUnsavedDialog,
-    resetFormFields,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useMaterialUsedCreation();
 
   const renderAvailabilityBadge = () => {
@@ -169,43 +157,18 @@ const MaterialUsedCreationPage = () => {
           {/* ── Save / Cancel ── */}
           <FormSubmissionButtons
             onSave={handleSubmission}
-            onCancel={handleBack}
+            onCancel={handleCancel}
           />
 
         </div>
       </Card>
 
-      {/* ── Unsaved Changes Dialog ── */}
-      <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Do you want to save them before leaving?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                resetFormFields();
-                navigate(MaterialUsedUrls.list);
-              }}
-            >
-              {t("Exit Without Saving")}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                onClick={() => {
-                  handleSubmission();
-                  setShowUnsavedDialog(false);
-                }}
-              >
-                {t("Save")}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
     </div>
   );

@@ -14,6 +14,7 @@ import { SiteStatus } from "../../DTOs/SiteProps";
 import { useNavigate } from "react-router-dom";
 import { SitesUrls } from "../../utils/urls";
 import { useEffect, useState } from "react";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 
 const useSiteEdit = (id: string, queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -57,6 +58,8 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
   const [wageTypeList, setWageTypeList] = useState<WageType[]>([]);
 
   const [siteDetails, setSiteDetails] = useState<Site>();
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [initialData, setInitialData] = useState<{ name: string; clientId: string; googleLocation: string; notes: string; contactId: string; supervisorIds: number[]; status: string; wageTypeId: string } | null>(null);
 
  const fetchSite = async () => {
     setLoading(true); 
@@ -73,6 +76,16 @@ const useSiteEdit = (id: string, queryString: URLSearchParams) => {
       if (!newStatus) setStatus(siteData.status);
       setWageTypeId(siteData.wageType.id.toString());
       setWageTypeList([siteData.wageType]);
+      setInitialData({
+        name: newName || siteData.name,
+        clientId: newClientId || siteData.client.id.toString(),
+        googleLocation: newGoogleLocation || siteData.googleLocation,
+        notes: newNotes || siteData.note,
+        contactId: newContactId || siteData.contact.id.toString(),
+        supervisorIds: validSupervisorIds.length > 0 ? validSupervisorIds : (siteData.supervisors?.map(s => s.id) ?? []),
+        status: newStatus || siteData.status,
+        wageTypeId: siteData.wageType.id.toString(),
+      });
     } finally {
       setLoading(false); 
     }
@@ -184,6 +197,39 @@ const siteStatus = [
     model.close();
   };
 
+  const hasUnsavedChanges = () => {
+    if (!initialData) return false;
+    return (
+      name !== initialData.name ||
+      clientId !== initialData.clientId ||
+      googleLocation !== initialData.googleLocation ||
+      notes !== initialData.notes ||
+      contactId !== initialData.contactId ||
+      JSON.stringify(supervisorIds) !== JSON.stringify(initialData.supervisorIds) ||
+      status !== initialData.status ||
+      wageTypeId !== initialData.wageTypeId
+    );
+  };
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+    } else {
+      navigate(SitesUrls.list);
+    }
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(SitesUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
+
   const handleSubmission = async () => {
     if (validate()) {
       const site = {
@@ -224,8 +270,12 @@ const siteStatus = [
     primaryContactDetails,
     hasMoreDetails,
     error,
-    navigate,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     supervisorIds,
     setSupervisorIds,
     status,

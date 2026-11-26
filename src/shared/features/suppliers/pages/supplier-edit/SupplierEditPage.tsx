@@ -16,7 +16,7 @@ import { KycTypes } from "@/shared/components/Kyc/KycTypes/KycTypes";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useSupplierEdit } from "./useSupplierEdit";
 import type { Supplier } from "../../DTOs/SupplierProps";
-import { SuppliersUrls } from "../../utils/urls";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { Card } from "@/shared/components/ui/card";
 import {
@@ -52,8 +52,12 @@ const SupplierEditPage = () => {
     supplierDetails,
     setSupplierDetails,
     error,
-    navigate,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     isKycAddDisabled,
     isBankAccountsAddDisabled,
     isUpiAddDisabled,
@@ -242,7 +246,7 @@ const SupplierEditPage = () => {
         {/* Form Submission Buttons */}
         <div className="col-span-12">
           <FormSubmissionButtons
-            onCancel={() => navigate(SuppliersUrls.list)}
+            onCancel={handleCancel}
             onSave={handleSubmission}
             disabled={!editable}
           />
@@ -315,6 +319,13 @@ const SupplierEditPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { parseApiError } from "@/shared/utils/parseApiError";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 
 const useWorkerCreation = (queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
   const [workerCategoryId, setWorkerCategoryId] = useState(getQueryParam("workerCategoryId"));
   const [notes, setNotes] = useState(getQueryParam("notes"));
   const [gender, setGender] = useState(getQueryParam("gender") as GenderTypes);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const [contactList, setContactList] = useState<Contact[]>([]);
   const [contact, setContact] = useState<Contact>({ id: 0, name: "", contactDetails: [] });
@@ -224,6 +226,37 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     model.close();
   };
 
+  // ─── Unsaved changes ─────────────────────────────────────────────────────────
+  const hasUnsavedChanges = () =>
+    name.trim() !== '' ||
+    dateOfBirth !== '' ||
+    contactId !== '' ||
+    workerCategoryId !== '' ||
+    notes.trim() !== '' ||
+    (gender as string) !== '' ||
+    validKycDetails.length > 0 ||
+    validBankAccounts.length > 0 ||
+    validUpiDetails.length > 0;
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
+    navigate(WorkersUrls.list);
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(WorkersUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
+
   // ─── Submit ───────────────────────────────────────────────────────────────────
   const handleSubmission = async () => {
     if (!validate()) return;
@@ -280,6 +313,11 @@ const useWorkerCreation = (queryString: URLSearchParams) => {
     primaryContactDetails,
     hasMoreDetails,
     handleContactEdit,
+    handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };
 

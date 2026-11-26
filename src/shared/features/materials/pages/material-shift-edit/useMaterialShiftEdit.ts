@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
@@ -193,12 +194,26 @@ export const useMaterialShiftEdit = (id: string) => {
     );
   }, [materialId, sourceSiteId, targetSiteId, quantity, date, notes, materialShift]);
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBack = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
     } else {
       navigate(MaterialShiftUrls.list);
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(MaterialShiftUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   // ─── Submit ───────────────────────────────────────────────────────────────
@@ -242,5 +257,8 @@ export const useMaterialShiftEdit = (id: string) => {
     isFetchingMaterials,
     showUnsavedDialog,
     setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };

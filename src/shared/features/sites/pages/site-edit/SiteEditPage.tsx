@@ -12,8 +12,8 @@ import { ContactEditForm } from "@/shared/features/contacts/components/ContactEd
 import { SupervisorListForm } from "../../components/SupervisorListForm/SuperVisorListForm";
 import { SupervisorAddForm } from "../../components/SupervisorAddForm/SupervisorAddForm";
 import { Header } from "@/shared/components/Header/Header";
-import { SitesUrls } from "../../utils/urls";
 import { useSiteEdit } from "./useSiteEdit";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { ContactTypes } from "@/shared/features/contacts/DTOs/ContactProps";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
@@ -54,8 +54,12 @@ const SiteEditPage = () => {
     primaryContactDetails,
     hasMoreDetails,
     error,
-    navigate,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     supervisorIds,
     setSupervisorIds,
     status,
@@ -65,9 +69,9 @@ const SiteEditPage = () => {
     redirectUrl,
     redirectParams,
     siteDetails,
-     wageTypeId,     
-  setWageTypeId,   
-  wageTypeDetails,  
+     wageTypeId,
+  setWageTypeId,
+  wageTypeDetails,
   fetchWageTypes,
   } = useSiteEdit(id as string, queryString);
 
@@ -239,7 +243,7 @@ const SiteEditPage = () => {
 
             {/* Footer: Cancel + Save */}
             <FormSubmissionButtons
-              onCancel={() => navigate(SitesUrls.list)}
+              onCancel={handleCancel}
               onSave={handleSubmission}
               disabled={!editable}
             />
@@ -279,6 +283,13 @@ const SiteEditPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

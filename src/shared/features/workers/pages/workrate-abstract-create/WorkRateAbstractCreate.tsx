@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { useWorkRateAbstractCreate } from "./useWorkRateAbstractCreate";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkRateAbstractCreationPage = () => {
@@ -21,7 +22,7 @@ const WorkRateAbstractCreationPage = () => {
     totalRate,
     totalQuantity,
     notes,
-    handleBackPress,
+    handleCancel,
     setSiteId,
     fetchSites,
     fetchWorkTypes,
@@ -30,6 +31,10 @@ const WorkRateAbstractCreationPage = () => {
     setTotalQuantity,
     setNotes,
     handleSubmit,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useWorkRateAbstractCreate();
 
   return (
@@ -119,12 +124,19 @@ const WorkRateAbstractCreationPage = () => {
           />
 
           <FormSubmissionButtons
-            onCancel={handleBackPress}
+            onCancel={handleCancel}
             onSave={handleSubmit}
           />
 
         </CardContent>
       </Card>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

@@ -1,23 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Header } from "@/shared/components/Header/Header";
 import { Card } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-} from "@/shared/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { TextareaField } from "@/shared/components/FormFields/TextareaField";
 import { ComboboxField } from "@/shared/components/FormFields/ComboBoxField";
@@ -32,7 +22,6 @@ import { useLanguage } from "@/shared/hooks/useLanguageContext";
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
 
 const PurchaseCreationPage = () => {
-  const [showExitDialog, setShowExitDialog] = useState(false);
   const [addMaterialOpen, setAddMaterialOpen] = useState(false);
   const { t } = useLanguage();
 
@@ -61,21 +50,18 @@ const PurchaseCreationPage = () => {
     supplierDetails,
     error,
     handleSubmission,
-    handleBackPress,
-    handleConfirmExit,
-    handleSaveAndExit,
+    handleCancel,
     purchaseMaterials,
     setPurchaseMaterials,
     addPurchaseMaterial,
     uploadedImages,
     setUploadedImages,
     handleImageUpload,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = usePurchaseCreation();
-
-  const onBackPress = () => {
-    const hasChanges = handleBackPress();
-    if (hasChanges) setShowExitDialog(true);
-  };
 
   return (
     <div className="w-full min-h-screen px-4 pb-10">
@@ -203,7 +189,7 @@ const PurchaseCreationPage = () => {
     {/* Save / Cancel */}
     <FormSubmissionButtons
       onSave={() => handleSubmission()}
-      onCancel={onBackPress}
+      onCancel={handleCancel}
     />
   </div>
 </Card>
@@ -223,39 +209,12 @@ const PurchaseCreationPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Unsaved Changes Dialog */}
-      <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Do you want to save them?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button
-              onClick={() => {
-                setShowExitDialog(false);
-                handleSaveAndExit();
-              }}
-            >
-              {t('Save')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                setShowExitDialog(false);
-                handleConfirmExit();
-              }}
-            >
-              {t('Exit Without Saving')}
-            </Button>
-            <AlertDialogCancel onClick={() => setShowExitDialog(false)}>
-              {t('Cancel')}
-            </AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { useCuringTypeService } from '../../service/CuringTypeService';
 import { useCuringTypeInputValidate } from '../../components/InputValidate/CuringTypeInputValidate';
 import { CuringTypeUrls } from '../../utils/urls';
 import { parseApiError } from '@/shared/utils/parseApiError';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 
 export const useCuringTypeCreate = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export const useCuringTypeCreate = () => {
 
   const [curingType, setCuringType] = useState('');
   const [remark, setRemark] = useState('');
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const { error, validate, setError, initialError } =
     useCuringTypeInputValidate({ curingType, remark });
@@ -22,7 +24,28 @@ export const useCuringTypeCreate = () => {
     setError(initialError);
   };
 
-  const handleBack = () => navigate(CuringTypeUrls.list);
+  const hasUnsavedChanges = () =>
+    curingType.trim() !== '' ||
+    remark.trim() !== '';
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
+    navigate(CuringTypeUrls.list);
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(CuringTypeUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
 
   const handleSubmission = async () => {
     if (!validate()) return;
@@ -43,7 +66,11 @@ export const useCuringTypeCreate = () => {
     remark, setRemark,
     error,
     handleSubmission,
-    handleBack,
+    handleCancel,
     resetForm,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };

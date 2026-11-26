@@ -18,6 +18,7 @@ import { useWorkerCreation } from "./useWorkerCreation";
 import { useSearchParams } from "react-router-dom";
 import { WorkersUrls } from "../../utils/urls";
 import { Card } from "@/shared/components/ui/card";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +52,11 @@ const WorkerCreationPage = () => {
     fetchContacts, fetchWorkerCategories,
     contact, workerCategory,
     primaryContactDetails, hasMoreDetails,
+    handleCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useWorkerCreation(queryString);
 
   return (
@@ -179,7 +185,7 @@ const WorkerCreationPage = () => {
           <TextareaField label={t('Notes')} inputValue={notes} setInputValue={setNotes} placeholder={t('Enter your notes')} />
 
           {/* Submit */}
-          <FormSubmissionButtons onCancel={() => navigate(WorkersUrls.list)} onSave={handleSubmission} />
+          <FormSubmissionButtons onCancel={handleCancel} onSave={handleSubmission} />
         </div>
       </Card>
 
@@ -224,6 +230,13 @@ const WorkerCreationPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

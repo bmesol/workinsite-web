@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
 import { useWorkTypeService } from '@/shared/features/workers/service/WorkerTypeService';
@@ -82,6 +83,7 @@ const useAttendanceEditScreen = () => {
   const [viewImages, setViewImages] = useState<ViewImages[]>([]);
   const [removeImages, setRemoveImages] = useState<RemoveImages[]>([]);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const siteService = useSiteService();
   const workTypeService = useWorkTypeService();
@@ -267,19 +269,28 @@ const useAttendanceEditScreen = () => {
     setError(initialError);
   };
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBackPress = () => {
     if (hasUnsavedChanges()) {
-      const confirmed = window.confirm(
-        'You have unsaved changes. Click OK to exit without saving, or Cancel to stay.',
-      );
-      if (confirmed) {
-        resetFormFields();
-        handleNavigateAfterSave();
-      }
+      setShowUnsavedDialog(true);
     } else {
       resetFormFields();
       handleNavigateAfterSave();
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    handleNavigateAfterSave();
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   const handleImageUpload = (files: FileList | null) => {
@@ -460,7 +471,11 @@ const useAttendanceEditScreen = () => {
     fetchWorkers,
     fetchWageTypes,
     fetchWorkModes,
+    showUnsavedDialog,
     handleBackPress,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     handleSubmit,
     hasUnsavedChanges,
     confirmDelete,

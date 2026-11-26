@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useContactEdit } from "./useContactEdit";
 import { useState } from "react";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
@@ -39,6 +40,10 @@ const ContactEditPage = () => {
     handleCancel,
     handleSubmission,
     isAddDisabled,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useContactEdit(id as string, queryString);
 
   const handleAdd = () => {
@@ -107,6 +112,7 @@ const ContactEditPage = () => {
         </div>
       </Card>
 
+      {/* Additional Details Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="border overflow-visible">
           <DialogHeader>
@@ -119,6 +125,13 @@ const ContactEditPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

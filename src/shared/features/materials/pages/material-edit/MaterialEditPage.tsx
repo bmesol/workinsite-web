@@ -1,28 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-} from '@/shared/components/ui/alert-dialog';
-import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { Header } from '@/shared/components/Header/Header';
 import { NameField } from '@/shared/components/FormFields/NameField';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import { useMaterialEdit } from './useMaterialEdit';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { SkField, SkButtons } from '@/shared/components/EditPageSkeleton/EditPageSkeleton';
 
 const MaterialEditPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [showExitDialog, setShowExitDialog] = useState(false);
   const { canEdit } = usePermission();
   const editable = canEdit('Material');
   const { t } = useLanguage();
@@ -37,18 +27,15 @@ const MaterialEditPage = () => {
     setHsnCode,
     error,
     handleSubmission,
-    handleBackPress,
-    handleConfirmExit,
-    handleSaveAndExit,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
+    showUnsavedDialog,
     fetchUnits,
     handleUnitChange,
     loading,
   } = useMaterialEdit(id!);
-
-  const onBackPress = () => {
-    const hasChanges = handleBackPress();
-    if (hasChanges) setShowExitDialog(true);
-  };
 
   if (loading) {
     return (
@@ -114,45 +101,18 @@ const MaterialEditPage = () => {
           {/* Save / Cancel Buttons */}
           <FormSubmissionButtons
             onSave={() => handleSubmission()}
-            onCancel={onBackPress}
+            onCancel={handleCancel}
           />
 
         </div>
       </Card>
 
-      {/* Unsaved Changes Dialog */}
-      <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Do you want to save them?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button
-              onClick={() => {
-                setShowExitDialog(false);
-                handleSaveAndExit();
-              }}
-            >
-              {t('Save')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                setShowExitDialog(false);
-                handleConfirmExit();
-              }}
-            >
-              {t('Exit Without Saving')}
-            </Button>
-            <AlertDialogCancel onClick={() => setShowExitDialog(false)}>
-              {t('Cancel')}
-            </AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
     </div>
   );

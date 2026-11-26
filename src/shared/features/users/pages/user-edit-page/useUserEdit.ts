@@ -5,6 +5,7 @@ import type { RoleListItem } from "../../services/RoleService";
 import { useNavigate } from "react-router-dom";
 import { UsersUrls } from "../../utils/urls";
 import { useEffect, useState } from "react";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import type { User } from "@/shared/features/users/DTOs/User";
 import { toast } from "sonner";
 
@@ -19,6 +20,8 @@ const useUserEdit = (id: string) => {
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
   const [roleList, setRoleList] = useState<{ label: string; value: string }[]>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [initialData, setInitialData] = useState<{ name: string; phoneNumber: string; role: string; notes: string; isActive: boolean } | null>(null);
 
   const { error, validate } = useInputValidate({ name, phoneNumber, role });
   const navigate = useNavigate();
@@ -59,6 +62,13 @@ const useUserEdit = (id: string) => {
 
       setRoleList(roleItems);
       setRole(userRoleId ?? "");
+      setInitialData({
+        name: userData.name,
+        phoneNumber: userData.phone,
+        role: userRoleId ?? "",
+        notes: userData.note ?? "",
+        isActive: userData.isActive,
+      });
     } catch (err) {
       toast.error("Failed to load user details");
     } finally {
@@ -70,6 +80,38 @@ const useUserEdit = (id: string) => {
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // ── Unsaved changes guard ──
+
+  const hasUnsavedChanges = () => {
+    if (!initialData) return false;
+    return (
+      name !== initialData.name ||
+      phoneNumber !== initialData.phoneNumber ||
+      role !== initialData.role ||
+      notes !== initialData.notes ||
+      isActive !== initialData.isActive
+    );
+  };
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+    } else {
+      navigate(UsersUrls.list);
+    }
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(UsersUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
 
   // ── Save handler ──
 
@@ -108,7 +150,11 @@ const useUserEdit = (id: string) => {
     setIsActive,
     setNotes,
     handleSubmission,
-    navigate,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };
 

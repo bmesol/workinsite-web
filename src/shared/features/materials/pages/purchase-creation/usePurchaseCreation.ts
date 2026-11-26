@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 import { toast } from 'sonner';
 import { usePurchaseInputValidate } from '../../components/InputValidate/PurchaseInputValidate';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
@@ -42,6 +43,7 @@ export const usePurchaseCreation = () => {
   const [supplierList, setSupplierList] = useState<Supplier[]>([]);
   const [purchaseMaterials, setPurchaseMaterials] = useState<PurchaseMaterialCreationListProps[]>([]);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const { error, validate, setError, initialError } = usePurchaseInputValidate({
     billNumber,
@@ -114,21 +116,24 @@ export const usePurchaseCreation = () => {
     );
   };
 
-  const handleBackPress = () => {
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
     if (hasUnsavedChanges()) {
-      return true; // UI layer shows AlertDialog
+      setShowUnsavedDialog(true);
+      return;
     }
     resetFormFields();
     navigate('/materials/purchase');
-    return false;
   };
-
-  const handleConfirmExit = () => {
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
     resetFormFields();
     navigate('/materials/purchase');
   };
-
-  const handleSaveAndExit = async () => {
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
     await handleSubmission(true);
   };
 
@@ -265,9 +270,7 @@ export const usePurchaseCreation = () => {
     fetchSuppliers,
     error,
     handleSubmission,
-    handleBackPress,
-    handleConfirmExit,
-    handleSaveAndExit,
+    handleCancel,
     purchaseMaterials,
     setPurchaseMaterials,
     addPurchaseMaterial,
@@ -277,5 +280,9 @@ export const usePurchaseCreation = () => {
     uploadedImages,
     setUploadedImages,
     handleImageUpload,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };

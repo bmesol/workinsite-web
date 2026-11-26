@@ -13,13 +13,18 @@ import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { toast } from "sonner";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 
 const ContactCreationPage = () => {
   const [queryString] = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLanguage();
 
-  const { name, phone, setName, setPhone, error, contactList, setContactList, handleSubmission, handleCancel, isAddDisabled } = useContactCreation(queryString);
+  const {
+    name, phone, setName, setPhone, error, contactList, setContactList,
+    handleSubmission, handleCancel, isAddDisabled,
+    showUnsavedDialog, handleKeepEditing, handleDiscardChanges, handleSaveFromDialog,
+  } = useContactCreation(queryString);
   const { isSupported, pickContact } = useContactPicker();
 
   const handleSelectContact = async () => {
@@ -111,6 +116,13 @@ const ContactCreationPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

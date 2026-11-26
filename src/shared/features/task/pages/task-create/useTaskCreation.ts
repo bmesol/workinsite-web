@@ -10,6 +10,8 @@ import { SITE_STATUS, TASK_PRIORITY_OPTIONS, TASK_STATUS_OPTIONS } from '@/share
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { TaskUrls } from '../../utils/urls';
 import { parseApiError } from '@/shared/utils/parseApiError';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
+import { formatDateToString } from '@/shared/features/attendance/utils/functions';
 
 export type UploadedImage = {
   uri: string;
@@ -25,9 +27,11 @@ export const useTaskCreation = () => {
   const siteService = useSiteService();
   const taskService = useTaskService();
 
+  const defaultDate = formatDateToString(new Date());
+
   const [siteId, setSiteId] = useState('');
   const [taskName, setTaskName] = useState('');
-  const [date, setDate] = useState<string>('');
+  const [date, setDate] = useState<string>(defaultDate);
   const [remarks, setRemarks] = useState('');
   const [priority, setPriority] = useState<string>('Urgent');
   const [status, setStatus] = useState<string>('Open');
@@ -111,7 +115,7 @@ export const useTaskCreation = () => {
   const resetFormFields = useCallback(() => {
     setSiteId('');
     setTaskName('');
-    setDate('');
+    setDate(defaultDate);
     setPriority('Urgent');
     setStatus('Open');
     setError(initialError);
@@ -124,7 +128,7 @@ export const useTaskCreation = () => {
     return (
       siteId !== '' ||
       taskName !== '' ||
-      date !== '' ||
+      date !== defaultDate ||
       priority !== 'Urgent' ||
       status !== 'Open' ||
       supervisorId !== '' ||
@@ -240,8 +244,9 @@ export const useTaskCreation = () => {
     }
   };
 
-  // ── Back / Cancel (mirrors mobile's 3-option Alert via a dialog) ───────
-  const handleBackPress = useCallback(() => {
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = useCallback(() => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
     } else {
@@ -249,6 +254,17 @@ export const useTaskCreation = () => {
       navigate(TaskUrls.list);
     }
   }, [hasUnsavedChanges, navigate, resetFormFields]);
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(TaskUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
 
   return {
     siteId,
@@ -270,7 +286,7 @@ export const useTaskCreation = () => {
     siteDetails,
     fetchSites,
     handleSubmission,
-    handleBackPress,
+    handleCancel,
     hasUnsavedChanges,
     handleSiteChange,
     supervisorId,
@@ -281,7 +297,9 @@ export const useTaskCreation = () => {
     setUploadedImages,
     handleFileChange,
     showUnsavedDialog,
-    setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     resetFormFields,
   };
 };

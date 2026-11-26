@@ -7,6 +7,7 @@ import { ShiftListPage } from "../shift-list/ShiftListPage";
 import { ShiftCreationSkeleton } from "./ShiftCreationSkeleton";
 import { usePermission } from "@/shared/hooks/usePermission";
 import { DeleteConfirmDialog } from "@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ShiftCreationPage = () => {
@@ -24,12 +25,16 @@ const ShiftCreationPage = () => {
     editingShiftId,
     isLoading,
     deleteId,
+    showUnsavedDialog,
     setName,
     setMultiplier,
     resetFormFields,
     handleSubmission,
     handleUpdate,
     handleShiftDelete,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     confirmDelete,
     cancelDelete,
     setEditingShift,
@@ -130,6 +135,13 @@ const ShiftCreationPage = () => {
         onClose={cancelDelete}
         onConfirm={confirmDelete}
         description={t('Are you sure you want to delete this shift? This action cannot be undone.')}
+      />
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
       />
     </div>
   );

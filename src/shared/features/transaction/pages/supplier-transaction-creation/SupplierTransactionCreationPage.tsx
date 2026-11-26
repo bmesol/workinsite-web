@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { Header } from '@/shared/components/Header/Header';
 import { ComboboxField } from '@/shared/components/FormFields/ComboBoxField';
@@ -7,27 +5,16 @@ import { NameField } from '@/shared/components/FormFields/NameField';
 import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
 import { useSupplierTransactionCreation } from './useSupplierTransactionCreation';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import PaymentMethodSelector from '../../components/PaymentMethodSelector/PaymentMethodSelector';
-import { SupplierTransactionUrls } from '../../utils/urls';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const SupplierTransactionCreationPage = () => {
-  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const {
-    handleBack,
+    handleCancel,
     handleSelect,
     handleSubmit,
     amount, setAmount,
@@ -39,8 +26,9 @@ const SupplierTransactionCreationPage = () => {
     paymentMethod,
     error,
     showUnsavedDialog,
-    setShowUnsavedDialog,
-    resetFormFields,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useSupplierTransactionCreation();
 
   return (
@@ -105,43 +93,18 @@ const SupplierTransactionCreationPage = () => {
           {/* ── Save / Cancel ── */}
           <FormSubmissionButtons
             onSave={handleSubmit}
-            onCancel={handleBack}
+            onCancel={handleCancel}
           />
 
         </div>
       </Card>
 
-      {/* ── Unsaved Changes Dialog ── */}
-      <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('You have unsaved changes. Do you want to save them before leaving?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                resetFormFields();
-                navigate(SupplierTransactionUrls.list);
-              }}
-            >
-              {t('Exit without Saving')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                onClick={() => {
-                  handleSubmit();
-                  setShowUnsavedDialog(false);
-                }}
-              >
-                {t('Save')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
     </div>
   );

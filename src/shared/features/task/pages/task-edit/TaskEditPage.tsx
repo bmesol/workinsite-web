@@ -15,18 +15,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
 import { useState } from 'react';
 import { useTaskEdit } from './useTaskEdit';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 import { TaskUrls } from '../../utils/urls';
 import SupervisorSelector from '../../components/SupervisorSelector/SupervisorSelector';
@@ -77,7 +68,9 @@ export const TaskEditPage = () => {
     newRemark, setNewRemark,
     taskCreatorId,
     showUnsavedDialog,
-    setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     fetchTask,
     resetFormFields,
     setError,
@@ -281,42 +274,12 @@ export const TaskEditPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ── Unsaved Changes Dialog ── */}
-      <AlertDialog
+      <UnsavedChangesDialog
         open={showUnsavedDialog}
-        onOpenChange={setShowUnsavedDialog}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('You have unsaved changes. Do you want to save them before leaving?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                resetFormFields();
-                fetchTask();
-                setError(initialError);
-                navigate(TaskUrls.list);
-              }}
-            >
-              {t('Exit without Saving')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                onClick={() => {
-                  handleSubmission();
-                  setShowUnsavedDialog(false);
-                }}
-              >
-                {t('Save')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

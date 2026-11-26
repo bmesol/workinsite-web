@@ -9,17 +9,8 @@ import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { Header } from '@/shared/components/Header/Header';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import { QuantityLimitBadge } from '../../components/QuantityLimitBadge';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
 import { useMaterialUsedEdit } from './useMaterialUsedEdit';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import { usePermission } from '@/shared/hooks/usePermission';
 import { MaterialUsedUrls } from '../../utils/urls';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
@@ -52,7 +43,9 @@ const MaterialUsedEditContent = ({ id }: { id: string }) => {
     maximumAllowedQuantity,
     isFetchingMaterials,
     showUnsavedDialog,
-    setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useMaterialUsedEdit(id);
 
   if (loading) {
@@ -178,32 +171,12 @@ const MaterialUsedEditContent = ({ id }: { id: string }) => {
         </div>
       </Card>
 
-      {/* Unsaved Changes Dialog */}
-      <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('You have unsaved changes. Do you want to save them before leaving?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => navigate(MaterialUsedUrls.list)}>
-              {t('Exit Without Saving')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                onClick={() => {
-                  setShowUnsavedDialog(false);
-                  handleSubmission();
-                }}
-              >
-                {t('Save')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

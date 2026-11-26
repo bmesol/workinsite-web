@@ -153,7 +153,6 @@
 
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
@@ -164,16 +163,6 @@ import { TextareaField } from '@/shared/components/FormFields/TextareaField';
 import { DatePicker } from '@/shared/components/FormFields/DatePicker';
 import { FormSubmissionButtons } from '@/shared/components/FormFields/FormSubmissionButton';
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/shared/components/ui/alert-dialog';
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -183,17 +172,16 @@ import {
 import { useClientTransactionCreation } from './useClientTransactionCreation';
 import { FormActionButton } from '@/shared/components/FormActionButton/FormActionButton';
 import { DeleteConfirmDialog } from '@/shared/components/DeleteConfirmDialog/DeleteConfirmDialog';
+import { UnsavedChangesDialog } from '@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog';
 import PaymentMethodSelector from '../../components/PaymentMethodSelector/PaymentMethodSelector';
-import { ClientTransactionUrls } from '../../utils/urls';
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const ClientTransactionCreationPage = () => {
-  const navigate = useNavigate();
   const { t } = useLanguage();
   const [pendingDeleteIndex, setPendingDeleteIndex] = useState<number | null>(null);
 
   const {
-    handleBack,
+    handleCancel,
     handleSelect,
     handleSubmit,
     remark, setRemark,
@@ -216,8 +204,9 @@ const ClientTransactionCreationPage = () => {
     handleAddSplit,
     handleRemoveSplit,
     showUnsavedDialog,
-    setShowUnsavedDialog,
-    resetFormFields,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useClientTransactionCreation();
 
   return (
@@ -308,7 +297,7 @@ const ClientTransactionCreationPage = () => {
           {/* Save / Cancel */}
           <FormSubmissionButtons
             onSave={handleSubmit}
-            onCancel={handleBack}
+            onCancel={handleCancel}
           />
 
         </div>
@@ -356,37 +345,12 @@ const ClientTransactionCreationPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ── Unsaved Changes Dialog ── */}
-      <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Unsaved Changes')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('You have unsaved changes. Do you want to save them before leaving?')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                resetFormFields();
-                navigate(ClientTransactionUrls.list);
-              }}
-            >
-              {t('Exit without Saving')}
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                onClick={() => {
-                  handleSubmit();
-                  setShowUnsavedDialog(false);
-                }}
-              >
-                {t('Save')}
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
       {/* ── Delete Site Split Confirm Dialog ── */}
       <DeleteConfirmDialog

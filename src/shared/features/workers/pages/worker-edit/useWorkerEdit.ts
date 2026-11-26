@@ -12,6 +12,7 @@ import { KYCTypes } from "../../../clients/DTOs/ClientProps";
 import { ContactsUrls } from "../../../contacts/utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useWorkerRoleCostService } from "../../service/WorkerRoleService";
 
 const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
@@ -42,6 +43,8 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
   const [loading, setLoading] = useState(true);
 
   const [workerRoleCost, setWorkerRoleCost] = useState<any>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [initialData, setInitialData] = useState<{ name: string; dateOfBirth: string; contactId: string; workerCategoryId: string; notes: string | undefined; gender: string; isActive: boolean } | null>(null);
 
   const [workerDetails, setWorkerDetails] = useState<Worker | WorkerRequest>({
     id: 0,
@@ -69,6 +72,15 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
       setIsActive(workerData.isActive as boolean);
       if (!newContactId) setContactId(workerData.contact.id.toString());
       if (!newWorkerCategoryId) setWorkerCategoryId(workerData.workerCategory.id.toString());
+      setInitialData({
+        name: workerData.name,
+        dateOfBirth: workerData.dateOfBirth,
+        contactId: newContactId || workerData.contact.id.toString(),
+        workerCategoryId: newWorkerCategoryId || workerData.workerCategory.id.toString(),
+        notes: workerData.note,
+        gender: workerData.gender,
+        isActive: workerData.isActive as boolean,
+      });
     } finally {
       setLoading(false);
     }
@@ -190,6 +202,38 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
     );
   };
 
+  const hasUnsavedChanges = () => {
+    if (!initialData) return false;
+    return (
+      name !== initialData.name ||
+      dateOfBirth !== initialData.dateOfBirth ||
+      contactId !== initialData.contactId ||
+      workerCategoryId !== initialData.workerCategoryId ||
+      notes !== initialData.notes ||
+      gender !== initialData.gender ||
+      isActive !== initialData.isActive
+    );
+  };
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+    } else {
+      navigate(WorkersUrls.list);
+    }
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(WorkersUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
+
   const handleSubmission = async () => {
     if (validate()) {
       const worker = {
@@ -216,8 +260,13 @@ const useWorkerEdit = (id: string, queryString: URLSearchParams) => {
     isActive, setIsActive,
     workerDetails, setWorkerDetails,
     loading,
-    error, navigate,
+    error,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     isKycAddDisabled, isBankAccountsAddDisabled, isUpiAddDisabled,
     contactDetails, workerCategoryDetails,
     contactId, workerCategoryId,

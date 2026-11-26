@@ -9,6 +9,7 @@ import { ContactsUrls } from "../../../contacts/utils/urls";
 import { ClientsUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 
 const useClientEdit = (id: string, queryString: URLSearchParams) => {
   const navigate = useNavigate();
@@ -35,6 +36,8 @@ const useClientEdit = (id: string, queryString: URLSearchParams) => {
   const [contact, setContact] = useState<Contact>(initialContactList);
   const [isContactEditOpen, setIsContactEditOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [initialData, setInitialData] = useState<{ name: string; notes: string | undefined; contactId: string } | null>(null);
   const { error, validate } = useInputValidate({ name });
   const { primaryContactDetails, hasMoreDetails } = useContactValidate(contact, true);
 
@@ -45,7 +48,13 @@ const useClientEdit = (id: string, queryString: URLSearchParams) => {
       setClientDetails(clientData);
       setName(clientData.name);
       setNotes(clientData.note);
+      const fetchedContactId = newContactId || clientData.contact.id.toString();
       if (!newContactId) setContactId(clientData.contact.id.toString());
+      setInitialData({
+        name: clientData.name,
+        notes: clientData.note,
+        contactId: fetchedContactId,
+      });
     } finally {
       setLoading(false);
     }
@@ -110,6 +119,34 @@ const useClientEdit = (id: string, queryString: URLSearchParams) => {
     setIsContactEditOpen(false);
   };
 
+  const hasUnsavedChanges = () => {
+    if (!initialData) return false;
+    return (
+      name !== initialData.name ||
+      notes !== initialData.notes ||
+      contactId !== initialData.contactId
+    );
+  };
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+    } else {
+      navigate(ClientsUrls.list);
+    }
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(ClientsUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
+
   const handleSubmission = async () => {
     if (validate()) {
       const client = {
@@ -132,9 +169,13 @@ const useClientEdit = (id: string, queryString: URLSearchParams) => {
     setClientDetails,
     error,
     loading,
-    navigate,
     handleContactEdit,
     handleSubmission,
+    showUnsavedDialog,
+    handleCancel,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     isAddDisabled,
     contactDetails,
     contactId,

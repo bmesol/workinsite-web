@@ -6,6 +6,7 @@ import { RadioField } from "@/shared/components/FormFields/RadioField";
 import { NameField } from "@/shared/components/FormFields/NameField";
 import { Header } from "@/shared/components/Header/Header";
 import { useUserCreation } from "./useUserCreation.ts";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
@@ -16,11 +17,28 @@ const UserCreationPage = () => {
   const [queryString] = useSearchParams();
   const [pinModalOpen, setPinModalOpen] = useState(false);
 
-  const { name, setName, phoneNumber, setPhoneNumber, role, setRole, error, validate, userDetail, roles, handleOnCancel } = useUserCreation(queryString);
+  const {
+    name, setName,
+    phoneNumber, setPhoneNumber,
+    role, setRole,
+    error, validate,
+    userDetail, roles,
+    handleOnCancel,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+  } = useUserCreation(queryString);
 
   const handleOnSave = () => {
     if (validate()) {
-      setPinModalOpen(true); 
+      setPinModalOpen(true);
+    }
+  };
+
+  const handleSaveFromDialog = () => {
+    handleKeepEditing();
+    if (validate()) {
+      setPinModalOpen(true);
     }
   };
 
@@ -70,10 +88,17 @@ const UserCreationPage = () => {
           <UserCreationPinForm
             queryString={queryString}
             userDetail={userDetail}
-            onClose={() => setPinModalOpen(false)} 
+            onClose={() => setPinModalOpen(false)}
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
 
     </div>
   );

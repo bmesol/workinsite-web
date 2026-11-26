@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 import { toast } from 'sonner';
 import { useSupplierService } from '@/shared/features/suppliers/service/SupplierService';
 import { useSupplierTransactionService } from '../../service/SupplierTransactionService';
@@ -66,13 +67,25 @@ const useSupplierTransactionCreation = () => {
     paymentMethod !== PaymentMethodEnum.CASH,
   [amount, remark, supplierId, date, paymentMethod, formatted]);
 
-  const handleBack = () => {
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
     } else {
       resetFormFields();
       navigate(SupplierTransactionUrls.list);
     }
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(SupplierTransactionUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -97,7 +110,7 @@ const useSupplierTransactionCreation = () => {
   };
 
   return {
-    handleBack,
+    handleCancel,
     handleSelect,
     handleSubmit,
     amount, setAmount,
@@ -110,7 +123,9 @@ const useSupplierTransactionCreation = () => {
     error,
     hasUnsavedChanges,
     showUnsavedDialog,
-    setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     resetFormFields,
   };
 };

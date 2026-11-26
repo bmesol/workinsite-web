@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSiteService } from '@/shared/features/sites/service/SiteService';
@@ -188,12 +189,26 @@ export const useMaterialUsedEdit = (id: string) => {
     );
   }, [siteId, materialId, workModeId, quantity, notes, date, materialUsedDetails]);
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBack = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
     } else {
       navigate(MaterialUsedUrls.list);
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(MaterialUsedUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   // ── Submit ──
@@ -239,5 +254,8 @@ export const useMaterialUsedEdit = (id: string) => {
     isFetchingMaterials,
     showUnsavedDialog,
     setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };

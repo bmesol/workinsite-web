@@ -130,6 +130,7 @@ import { ClientTransactionUrls } from '../../utils/urls';
 import type { Client } from '@/shared/features/clients/DTOs/ClientProps';
 import type { Site } from '@/shared/features/sites/DTOs/SiteProps';
 import { SITE_STATUS } from '@/shared/constants/appEnums';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 
 export interface SplitItem {
   siteId: string;
@@ -257,13 +258,25 @@ const useClientTransactionCreation = () => {
     splits.length > 0,
   [remark, clientId, date, paymentMethod, splits, formatted]);
 
-  const handleBack = () => {
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
     } else {
       resetFormFields();
       navigate(ClientTransactionUrls.list);
     }
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(ClientTransactionUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -292,7 +305,7 @@ const useClientTransactionCreation = () => {
   };
 
   return {
-    handleBack,
+    handleCancel,
     handleSelect,
     handleSubmit,
     remark, setRemark,
@@ -316,7 +329,9 @@ const useClientTransactionCreation = () => {
     handleRemoveSplit,
     hasUnsavedChanges,
     showUnsavedDialog,
-    setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     resetFormFields,
   };
 };

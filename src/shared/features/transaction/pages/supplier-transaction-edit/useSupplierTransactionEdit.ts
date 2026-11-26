@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { Supplier } from '@/shared/features/suppliers/DTOs/SupplierProps';
@@ -73,6 +74,8 @@ const useSupplierTransactionEdit = () => {
     setError(initialError);
   };
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBack = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
@@ -80,6 +83,19 @@ const useSupplierTransactionEdit = () => {
       resetFormFields();
       navigate(SupplierTransactionUrls.list);
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(SupplierTransactionUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -144,6 +160,9 @@ const useSupplierTransactionEdit = () => {
     hasUnsavedChanges,
     showUnsavedDialog,
     setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     resetFormFields,
   };
 };

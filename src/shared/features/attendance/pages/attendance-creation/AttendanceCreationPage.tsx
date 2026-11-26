@@ -29,6 +29,7 @@ import { X } from "lucide-react";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
 import { FormSubmissionButtons } from "@/shared/components/FormFields/FormSubmissionButton";
 import { UploadButton } from "@/shared/components/UploadButton/UploadButton";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const AttendanceCreationPage = () => {
@@ -79,7 +80,12 @@ const AttendanceCreationPage = () => {
     cancelWorkTypeChange,
     handleWorkTypeChange,
     handleNavigate,
+    handleCancel,
     workQuantityIndicator,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useAttendanceCreation();
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -248,7 +254,7 @@ const AttendanceCreationPage = () => {
             {/* Save / Cancel Buttons */}
             <FormSubmissionButtons
               onSave={handleSubmit}
-              onCancel={handleNavigate}
+              onCancel={handleCancel}
             />
           </form>
         </CardContent>
@@ -299,6 +305,13 @@ const AttendanceCreationPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

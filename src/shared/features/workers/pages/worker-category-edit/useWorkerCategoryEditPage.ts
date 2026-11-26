@@ -125,6 +125,7 @@ import type { WorkerCategoryProps } from "../../DTOs/WorkerCategoryProps";
 import { WorkerCategoriesUrls } from "../../utils/urls";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { toast } from "sonner";
 import { parseApiError } from "@/shared/utils/parseApiError";
 import type { WorkType, WorkTypeNew } from "../../DTOs/WorkTypeProps";
@@ -150,6 +151,8 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
   const [deleteworkerRoleList, setDeleteWorkerRoleList] = useState<number[]>([]);
 
   const [loading, setLoading] = useState(false);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [initialData, setInitialData] = useState<{ name: string; notes: string; isActive: boolean; updatedWorkTypeList: WorkType[]; updateworkerRoleList: WorkerRoles[] } | null>(null);
 
   const { error, validate } = useWorkerCategoryInputValidate(
     name,
@@ -170,6 +173,13 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
 
       setUpdatedWorkTypeList(workerCategory.workTypes ?? []);
       setUpdateWorkerRoleList(workerCategory.workerRoles ?? []);
+      setInitialData({
+        name: workerCategory.name ?? workerCategory.workerCategoryName ?? "",
+        notes: workerCategory.note ?? "",
+        isActive: workerCategory.isActive,
+        updatedWorkTypeList: workerCategory.workTypes ?? [],
+        updateworkerRoleList: workerCategory.workerRoles ?? [],
+      });
     } catch (error: unknown) {
       toast.error(parseApiError(error, "Could not fetch worker category. Please try again"));
     } finally {
@@ -181,12 +191,46 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     fetchWorkerCategory();
   }, [id]);
 
+  const hasUnsavedChanges = () => {
+    if (!initialData) return false;
+    return (
+      name !== initialData.name ||
+      notes !== initialData.notes ||
+      isActive !== initialData.isActive ||
+      workTypeList.length > 0 ||
+      deletedWorkTypeList.length > 0 ||
+      workerRoleList.length > 0 ||
+      deleteworkerRoleList.length > 0 ||
+      JSON.stringify(updatedWorkTypeList) !== JSON.stringify(initialData.updatedWorkTypeList) ||
+      JSON.stringify(updateworkerRoleList) !== JSON.stringify(initialData.updateworkerRoleList)
+    );
+  };
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
     if (redirectUrl) {
       navigate(redirectUrl);
       return;
     }
     navigate(WorkerCategoriesUrls.list);
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    if (redirectUrl) {
+      navigate(redirectUrl);
+      return;
+    }
+    navigate(WorkerCategoriesUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
   };
 
   // backend ignores flat "workTypes"/"workerRoles" keys; use newWorkTypes/updatedWorkTypes/
@@ -243,6 +287,10 @@ const useWorkerCategoryEdit = (id: string, queryString: URLSearchParams) => {
     error,
     handleCancel,
     handleSubmission,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     loading,
 
     workTypeList,

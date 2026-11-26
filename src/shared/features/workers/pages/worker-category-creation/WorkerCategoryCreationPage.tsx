@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { FormActionButton } from "@/shared/components/FormActionButton/FormActionButton";
+import { UnsavedChangesDialog } from "@/shared/components/UnsavedChangesDialog/UnsavedChangesDialog";
 import { useLanguage } from '@/shared/hooks/useLanguageContext';
 
 const WorkerCategoryCreationPage = () => {
@@ -36,6 +37,10 @@ const WorkerCategoryCreationPage = () => {
     setWorkTypeList,
     workerRoleList,
     setWorkerRoleList,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   } = useWorkerCategoryCreation(queryString);
 
   const [workTypeDialogOpen, setWorkTypeDialogOpen] = useState(false);
@@ -136,6 +141,13 @@ const WorkerCategoryCreationPage = () => {
           />
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onKeepEditing={handleKeepEditing}
+        onDiscard={handleDiscardChanges}
+        onSave={handleSaveFromDialog}
+      />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useUnsavedChangesGuard } from "@/shared/hooks/useUnsavedChangesGuard";
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { Worker } from '@/shared/features/workers/DTOs/WorkerProps';
@@ -72,6 +73,8 @@ const fetchWorkers = async (WorkerName: string = '') => {
     setError(initialError);
   };
 
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
   const handleBack = () => {
     if (hasUnsavedChanges()) {
       setShowUnsavedDialog(true);
@@ -79,6 +82,19 @@ const fetchWorkers = async (WorkerName: string = '') => {
       resetFormFields();
       navigate(WorkerTransactionUrls.list);
     }
+  };
+
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    resetFormFields();
+    navigate(WorkerTransactionUrls.list);
+  };
+
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -143,6 +159,9 @@ const fetchWorkers = async (WorkerName: string = '') => {
     hasUnsavedChanges,
     showUnsavedDialog,
     setShowUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
     resetFormFields,
   };
 };

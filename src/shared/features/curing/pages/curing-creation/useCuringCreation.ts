@@ -10,6 +10,7 @@ import { SITE_STATUS } from '@/shared/constants/appEnums';
 import type { CuringType } from '../../DTOs/CuringTypeProps';
 import { CuringUrls } from '../../utils/urls';
 import { parseApiError } from '@/shared/utils/parseApiError';
+import { useUnsavedChangesGuard } from '@/shared/hooks/useUnsavedChangesGuard';
 
 export const useCuringCreate = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export const useCuringCreate = () => {
   const [siteList, setSiteList] = useState<Site[]>([]);
   const [allSites, setAllSites] = useState<Site[]>([]);
   const [curingTypeList, setCuringTypeList] = useState<CuringType[]>([]);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const { error, validate, setError, initialError } = useCuringInputValidate({
     siteId,
@@ -76,7 +78,31 @@ export const useCuringCreate = () => {
     setError(initialError);
   };
 
-  const handleBack = () => navigate(CuringUrls.list);
+  const hasUnsavedChanges = () =>
+    siteId !== '' ||
+    curingTypeId !== '' ||
+    startDate !== '' ||
+    endDate !== '' ||
+    note.trim() !== '';
+
+  useUnsavedChangesGuard(hasUnsavedChanges, () => setShowUnsavedDialog(true));
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowUnsavedDialog(true);
+      return;
+    }
+    navigate(CuringUrls.list);
+  };
+  const handleKeepEditing = () => setShowUnsavedDialog(false);
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    navigate(CuringUrls.list);
+  };
+  const handleSaveFromDialog = async () => {
+    setShowUnsavedDialog(false);
+    await handleSubmission();
+  };
 
   const handleSubmission = async () => {
     if (!validate()) return;
@@ -107,7 +133,11 @@ export const useCuringCreate = () => {
     fetchCuringTypes,
     error,
     handleSubmission,
-    handleBack,
+    handleCancel,
     resetForm,
+    showUnsavedDialog,
+    handleKeepEditing,
+    handleDiscardChanges,
+    handleSaveFromDialog,
   };
 };
